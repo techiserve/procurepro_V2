@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('banks', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->nullable();
             $table->integer('companyId')->nullable();
             $table->integer('userId')->nullable();
             $table->string('isActive')->nullable();

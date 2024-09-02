@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('rolepermissions', function (Blueprint $table) {
             $table->id();
-            $table->integer('role_id');
-            $table->string('permission');
+            $table->integer('role_id')->nullable();
+            $table->string('permission')->nullable();
             $table->timestamps();
         });
     }

@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('bankaccounts', function (Blueprint $table) {
             $table->id();
-            $table->string('bankName');
-            $table->string('branch');
-            $table->string('accountName');
-            $table->string('accountType');
-            $table->string('accountNumber');
-            $table->string('accountPurpose');
-            $table->integer('companyId');
+            $table->string('bankName')->nullable();
+            $table->string('branch')->nullable();
+            $table->string('accountName')->nullable();
+            $table->string('accountType')->nullable();
+            $table->string('accountNumber')->nullable();
+            $table->string('accountPurpose')->nullable();
+            $table->integer('companyId')->nullable();
             $table->string('branchCode')->nullable();
             $table->integer('userId')->nullable();
             $table->integer('isActive')->nullable();

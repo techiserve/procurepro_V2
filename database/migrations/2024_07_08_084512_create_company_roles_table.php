@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('company_roles', function (Blueprint $table) {
             $table->id();
-            $table->string('userName');
-            $table->integer('userId');
-            $table->integer('companyId');
-            $table->integer('roleId');
-            $table->integer('isActive');
+            $table->string('userName')->nullable();
+            $table->integer('userId')->nullable();
+            $table->integer('companyId')->nullable();
+            $table->integer('roleId')->nullable();
+            $table->integer('isActive')->nullable();
             $table->timestamps();
         });
     }

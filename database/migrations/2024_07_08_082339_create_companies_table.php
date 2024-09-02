@@ -13,18 +13,18 @@ return new class extends Migration
     {
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('domain');
-            $table->string('username');
-            $table->string('password');
-            $table->string('confirmPassword');
-            $table->string('contactPerson');
-            $table->string('email');
-            $table->string('address');
-            $table->string('user');
-            $table->boolean('IsActive');
-            $table->integer('phoneNumber');
-            $table->integer('userrole');
+            $table->string('name')->nullable();
+            $table->string('domain')->nullable();
+            $table->string('username')->nullable();
+            $table->string('password')->nullable();
+            $table->string('confirmPassword')->nullable();
+            $table->string('contactPerson')->nullable();
+            $table->string('email')->nullable();
+            $table->string('address')->nullable();
+            $table->string('user')->nullable();
+            $table->boolean('IsActive')->nullable();
+            $table->integer('phoneNumber')->nullable();
+            $table->integer('userrole')->nullable();
             $table->timestamps();
         });
     }

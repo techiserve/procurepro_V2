@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('executives', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('userName');
-            $table->string('confirmPassword');
-            $table->string('password');
-            $table->string('email');
-            $table->string('address');
-            $table->integer('companyId');
-            $table->boolean('IsActive');
-            $table->integer('phonenumber');
+            $table->string('name')->nullable();
+            $table->string('userName')->nullable();
+            $table->string('confirmPassword')->nullable();
+            $table->string('password')->nullable();
+            $table->string('email')->nullable();
+            $table->string('address')->nullable();
+            $table->integer('companyId')->nullable();
+            $table->boolean('IsActive')->nullable();
+            $table->integer('phonenumber')->nullable();
             $table->timestamps();
         });
     }
