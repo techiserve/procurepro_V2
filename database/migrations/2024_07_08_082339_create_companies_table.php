@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('contactPerson');
             $table->string('email');
             $table->string('address');
+            $table->string('user');
             $table->boolean('IsActive');
             $table->integer('phoneNumber');
             $table->integer('userrole');

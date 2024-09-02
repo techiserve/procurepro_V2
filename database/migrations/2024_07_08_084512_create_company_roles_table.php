@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('userId');
             $table->integer('companyId');
             $table->integer('roleId');
+            $table->integer('isActive');
             $table->timestamps();
         });
     }

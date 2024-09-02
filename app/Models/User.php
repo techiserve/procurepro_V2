@@ -24,6 +24,7 @@ class User extends Authenticatable
         'password',
         'confirmPassword',
         'address',
+        'userrole',
         'companyId',
         'isActive',
         'phoneNumber',

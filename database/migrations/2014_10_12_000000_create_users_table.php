@@ -17,8 +17,15 @@ return new class extends Migration
             $table->string('userName');
             $table->integer('phoneNumber');
             $table->integer('companyId');
+            $table->integer('executiveId');
+            $table->integer('selectedCompanyId');
             $table->boolean('isActive');
+            $table->string('companyName');
+            $table->integer('department');
             $table->string('address');
+            $table->string('position');
+            $table->string('userrole');
+            $table->integer('isActive');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
