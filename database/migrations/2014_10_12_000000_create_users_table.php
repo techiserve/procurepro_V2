@@ -19,7 +19,6 @@ return new class extends Migration
             $table->integer('companyId');
             $table->integer('executiveId');
             $table->integer('selectedCompanyId');
-            $table->boolean('isActive');
             $table->string('companyName');
             $table->integer('department');
             $table->string('address');
