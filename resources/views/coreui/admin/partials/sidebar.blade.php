@@ -109,19 +109,19 @@
           </li>
           @endif
 
-          @if( auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR$data->contains('Manage Purchase Orders'))
+          <!-- @if( auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR$data->contains('Manage Purchase Orders'))
           <li class="nav-item active">
             <a class="nav-link" href="/procurement/approvalpurchaseorder">
               <i class="nav-icon icon-settings"></i>Manage Purchase Orders</a>
           </li>
-          @endif
+          @endif -->
         </ul>
       </li>
       @endif
 
 
       @if(auth()->user()->userrole == 3 OR auth()->user()->userrole == 2)
-             <!-- RISK MANAGEMENT -->
+             <!-- RISK MANAGEMENT
              <li class="nav-item nav-dropdown active  ">
         <a class="nav-link nav-dropdown-toggle" href="#">
           <i class="nav-icon icon-lock"></i>Settings</a>
@@ -139,7 +139,7 @@
               <i class="nav-icon icon-settings"></i>Manage Roles</a>
           </li>
         </ul>
-      </li>
+      </li> -->
       @endif
 
 
@@ -217,21 +217,13 @@
               <i class="nav-icon icon-user-follow"></i>Departments</a>
           </li>
           <li class="nav-item active">
-            <a class="nav-link" href="/master/vendortypes">
-              <i class="nav-icon icon-settings"></i> Vendor Type </a>
-          </li>
-          <li class="nav-item active">
             <a class="nav-link" href="/master/banks">
               <i class="nav-icon icon-user-following"></i>Manage Banks</a>
           </li>
           <li class="nav-item active">
             <a class="nav-link" href="/master/bankAccount">
               <i class="nav-icon icon-user-follow"></i> Bank Accounts</a>
-          </li>
-          <li class="nav-item active">
-            <a class="nav-link" href="/master/expenseClassification">
-              <i class="nav-icon icon-settings"></i>Expense Classification</a>
-          </li>
+          </li>     
         </ul>
       </li>
       @endif

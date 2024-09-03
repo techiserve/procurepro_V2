@@ -94,7 +94,7 @@
 
             <div class="col-sm-6">
                 <div class="form-group">
-                  <label for="grower_number">Company Address</label>
+                  <label for="grower_number">Quotation</label>
                   <input type="file" class="form-control" id="inputGroupFile04" name="file" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
                 </div>
               </div>    
