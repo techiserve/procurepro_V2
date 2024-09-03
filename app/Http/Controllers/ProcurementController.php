@@ -62,7 +62,7 @@ class ProcurementController extends Controller
         // Add as many suppliers as needed
    //  ];
 
-        dd($servicetype);
+      //  dd($servicetype);
 
      $departments = Department::where('companyId', Auth::user()->companyId)->get();
 

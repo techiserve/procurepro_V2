@@ -22,7 +22,7 @@
                   <select class="js-example-basic-single form-control" id="grower_sizesss" name="vendor">
                            <option value="" >Select Vendor</option>
                            @foreach($vendors as $vendor)
-                           <option value="{{ $vendor['SupplierName'] }}"> {{ $vendor['SupplierName'] }}</option>
+                           <option value="{{ $vendor->SupplierName }}"> {{ $vendor->SupplierName }}</option>
                            @endforeach
                   </select>
                 </div>
@@ -34,7 +34,7 @@
                   <select class="js-example-basic-single form-control" id="servicetype" name="service">
                           <option value="" >Select Services</option>
                            @foreach($servicetype as $servicetype)
-                            <option value="{{ $servicetype['ServiceTypeDescription'] }}"> {{ $servicetype['ServiceTypeDescription'] }}</option>
+                            <option value="{{ $servicetype->ServiceTypeDescription }}"> {{ $servicetype->ServiceTypeDescription }}</option>
                             @endforeach
                         </select>
                 </div>
