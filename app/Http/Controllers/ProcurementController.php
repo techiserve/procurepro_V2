@@ -30,38 +30,39 @@ class ProcurementController extends Controller
     public function createrequisition()
     {
 
-     //   $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();
-        $vendors = [
-            [
-                'SupplierID' => 1,
-                'SupplierName' => 'Supplier One',
-            ],
-            [
-                'SupplierID' => 2,
-                'SupplierName' => 'Supplier Two',
-            ],
-            [
-                'SupplierID' => 3,
-                'SupplierName' => 'Supplier Three',
-            ],
+        $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();
+        // $vendors = [
+        //     [
+        //         'SupplierID' => 1,
+        //         'SupplierName' => 'Supplier One',
+        //     ],
+        //     [
+        //         'SupplierID' => 2,
+        //         'SupplierName' => 'Supplier Two',
+        //     ],
+        //     [
+        //         'SupplierID' => 3,
+        //         'SupplierName' => 'Supplier Three',
+        //     ],
             // Add as many suppliers as needed
-        ];
-       // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
+       // ];
 
-       $servicetype = [
-        [
-            'ServiceTypeDescription' => ' One',
-        ],
-        [
-            'ServiceTypeDescription' => ' Two',
-        ],
-        [
-            'ServiceTypeDescription' => ' Three',
-        ],
+        $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
+
+    //    $servicetype = [
+    //     [
+    //         'ServiceTypeDescription' => ' One',
+    //     ],
+    //     [
+    //         'ServiceTypeDescription' => ' Two',
+    //     ],
+    //     [
+    //         'ServiceTypeDescription' => ' Three',
+    //     ],
         // Add as many suppliers as needed
-     ];
+   //  ];
 
-       // dd($servicetype);
+        dd($servicetype);
 
      $departments = Department::where('companyId', Auth::user()->companyId)->get();
 
