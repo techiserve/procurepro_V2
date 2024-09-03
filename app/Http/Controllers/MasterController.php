@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Userrole;
+use App\Models\userrole;
 use App\Models\User;
 use App\Models\Bank;
 use App\Models\Department;
@@ -18,7 +18,7 @@ class MasterController extends Controller
 {
     public function manageRole()
     {
-         $users = Userrole::all();
+         $users = userrole::all();
     
         return view('master.manageRole', compact('users'));
     }
@@ -26,7 +26,7 @@ class MasterController extends Controller
 
     public function department()
     {
-         $roles = Userrole::all();
+         $roles = userrole::all();
     
         return view('master.department',compact('roles'));
     }
@@ -102,7 +102,7 @@ class MasterController extends Controller
 
     public function editrole($id)
     {
-         $role = Userrole::where('id', $id)->first();
+         $role = userrole::where('id', $id)->first();
          $permissions = Rolepermission::where('role_id', $id)->pluck('permission')->toArray();
     
         return view('master.editRole', compact('role','permissions'));
@@ -112,7 +112,7 @@ class MasterController extends Controller
     public function update(Request $request, string $id)
     {
 
-          $updateRole = Userrole::where('id', $id)->update([
+          $updateRole = userrole::where('id', $id)->update([
 
             'name' => $request->roleName,
             'description' => $request->description,
