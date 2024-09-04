@@ -6,7 +6,7 @@
     <div class="row">
       <div class="col-sm-12">
         
-       <form method="POST" action="/requisition/store">
+       <form method="POST" action="/requisition/store"  enctype="multipart/form-data">
        @csrf
         <div class="card">
           <div class="card-header">
