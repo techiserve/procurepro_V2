@@ -145,7 +145,8 @@ class ProcurementController extends Controller
         $level = Departmentapproval::where('departmentId', $request->department)->min('approvalId');
         $totalapprovallevels = Departmentapproval::where('departmentId', $request->department)->count();
         $approver = Departmentapproval::where('departmentId', $request->department)->where('approvalId', $level)->first();
-       // dd($approver);
+
+       // dd($request->file('file'));
 
        $quotationfile = $request->file('file')->store('uploads', 'public');
 
