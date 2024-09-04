@@ -19,5 +19,19 @@ class UserroleTableSeeder extends Seeder
             'description' => 'handles all functionality of the system',
     
         ]);
+
+        userrole::create([
+
+            'name' => 'Executive Admin',
+            'description' => 'handles all functionality of the system',
+    
+        ]);
+
+        userrole::create([
+
+            'name' => 'Company Admin',
+            'description' => 'handles all functionality of the company only',
+    
+        ]);
     }
 }
