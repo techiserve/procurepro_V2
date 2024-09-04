@@ -38,7 +38,7 @@
       Company Admin
       @else 
       @php
-     $data = App\Models\Userrole::where('id', '=', auth()->user()->userrole )->first()
+     $data = App\Models\userrole::where('id', '=', auth()->user()->userrole )->first()
      @endphp
      {{  $data->name }}
       @endif
