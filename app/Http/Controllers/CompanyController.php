@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Userrole;
+use App\Models\userrole;
 use App\Models\User;
 use App\Models\Company;
 use App\Models\CompanyRole;

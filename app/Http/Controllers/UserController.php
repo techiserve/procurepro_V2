@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Userrole;
+use App\Models\userrole;
 use App\Models\User;
 use App\Models\Rolepermission;
 use App\Models\Company;
@@ -22,7 +22,7 @@ class UserController extends Controller
     {
            $user = Auth::user()->companyId;
         
-         $users = User::where('companyId', '=', $user)->where('userrole', '>',4)->get();
+         $users = User::where('companyId', '=', $user)->where('userrole', '>',1)->get();
 
         return view('users.index', compact('users'));
     }
@@ -61,7 +61,7 @@ class UserController extends Controller
      */
     public function create()
     {
-         $roles = Userrole::all();
+         $roles = userrole::all();
     
         return view('users.create', compact('roles'));
     }
@@ -165,7 +165,7 @@ class UserController extends Controller
     public function userrolestore(Request $request)
     {
          
-        $user = new Userrole();
+        $user = new userrole();
         $user->name = $request->roleName;
         $user->description = $request->description; 
         $user->save();
