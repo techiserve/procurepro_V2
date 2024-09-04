@@ -18,7 +18,7 @@ class MasterController extends Controller
 {
     public function manageRole()
     {
-         $users = userrole::all();
+         $users = userrole::where('id' ,'>',3)->get();
     
         return view('master.manageRole', compact('users'));
     }
@@ -26,7 +26,7 @@ class MasterController extends Controller
 
     public function department()
     {
-         $roles = userrole::all();
+         $roles = userrole::where('id' ,'>',3)->get();
     
         return view('master.department',compact('roles'));
     }
@@ -202,7 +202,7 @@ class MasterController extends Controller
 
     public function delete($id)
     {
-         $role = Userrole::where('id', $id)->delete();
+         $role = userrole::where('id', $id)->delete();
          $permissions = Rolepermission::where('role_id', $id)->delete();
     
 
