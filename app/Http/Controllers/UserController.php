@@ -61,7 +61,7 @@ class UserController extends Controller
      */
     public function create()
     {
-         $roles = userrole::all();
+         $roles = userrole::where('id' > 3)->get();
     
         return view('users.create', compact('roles'));
     }
