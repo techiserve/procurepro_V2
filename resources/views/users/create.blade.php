@@ -13,7 +13,7 @@
        @csrf
         <div class="card">
           <div class="card-header">
-            <strong>Add New Company</strong>
+            <strong>Add New User</strong>
             <a href="/users/index" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="fa fa-align-justify"></i> Users List</a>
            </div>
 
@@ -126,7 +126,7 @@
           </div>
           <div class="card-footer">
             <div class="form-group pull-right">
-    				<input type="submit" class="btn btn-success" value="Save New Company"/>
+    				<input type="submit" class="btn btn-success" value="Save New User"/>
     				<input type="reset" class="btn btn-danger" value="Cancel Registration"/>
     			</div>
           </div>

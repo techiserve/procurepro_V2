@@ -11,7 +11,7 @@
         <div class="card">
           <div class="card-header">
             <strong>Add Purchase Requisition</strong>
-            <a href="/companies/index" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="fa fa-align-justify"></i> Requisition List</a>
+            <a href="/procurement/indexrequisition" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="fa fa-align-justify"></i> Requisition List</a>
            </div>
 
            <div class="card-body">
@@ -87,7 +87,7 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="grower_type">Amount (Rands)</label>
-                  <input class="form-control" id="national_id" name="amount" type="text" placeholder="Amount">
+                  <input class="form-control" id="national_id" name="amount" type="text" placeholder="Amount" required>
                 </div>
               </div>
             
@@ -95,7 +95,7 @@
             <div class="col-sm-6">
                 <div class="form-group">
                   <label for="grower_number">Quotation</label>
-                  <input type="file" class="form-control" id="inputGroupFile04" name="file" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+                  <input type="file" class="form-control" id="inputGroupFile04" name="file" aria-describedby="inputGroupFileAddon04" aria-label="Upload" required>
                 </div>
               </div>    
           

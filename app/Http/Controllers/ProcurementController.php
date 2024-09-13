@@ -76,8 +76,9 @@ class ProcurementController extends Controller
     {
      
         $requisitions = Requisition::where('userId', Auth::user()->id)->orwhere('approvedby', Auth::user()->userrole)->where('isActive', '=', 1)->get();
+        $roles = userrole::all();
 
-        return view('procurement.indexrequisiton', compact('requisitions'));
+        return view('procurement.indexrequisiton', compact('requisitions','roles'));
     }
 
 
@@ -85,8 +86,9 @@ class ProcurementController extends Controller
     {
      
         $purchaseorders = Purchaseorder::where('userId', Auth::user()->id)->orwhere('approvedby', Auth::user()->userrole)->where('isActive', '=', 1)->get();
+        $roles = userrole::all();
 
-        return view('procurement.indexpurchaseorder', compact('purchaseorders'));
+        return view('procurement.indexpurchaseorder', compact('purchaseorders','roles'));
     }
 
 
@@ -235,7 +237,7 @@ class ProcurementController extends Controller
 
        if($requisition){
 
-        return back()->with('success', 'Documents Uploaded succeffully!');
+        return redirect()->route('procurement.updatepurchaseorder')->with('success', 'Documents Uploaded succeffully!');
     }
       return back()->with('error', 'Failed to update documents!');
 

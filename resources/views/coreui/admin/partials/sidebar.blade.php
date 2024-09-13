@@ -19,11 +19,11 @@
           <i class="nav-icon icon-speedometer"></i> Dashboard
         </a>
       </li>
-      <li class="nav-item active">
+      <!-- <li class="nav-item active">
         <a class="nav-link" href="/profile">
           <i class="nav-icon fa fa-user-secret"></i>Profile
         </a>
-      </li>
+      </li> -->
 <!-- 
       <li class="nav-item active">
         <a class="nav-link" href="/bone-auth">
@@ -40,7 +40,7 @@
 
       <li class="nav-title">Procure Pro 360 - Modules</li>
       <!-- MANAGE GROWERS -->
-      @if(auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('Request New Vendor') OR $data->contains('Pending Requests') OR $data->contains('Manage Vendors') OR $data->contains('My Requests'))
+      <!-- @if(auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('Request New Vendor') OR $data->contains('Pending Requests') OR $data->contains('Manage Vendors') OR $data->contains('My Requests'))
       <li class="nav-item nav-dropdown  active ">
         <a class="nav-link nav-dropdown-toggle" href="#">
           <i class="nav-icon icon-people "></i> Vendors</a>
@@ -79,7 +79,7 @@
 
         </ul>
       </li>
-      @endif
+      @endif -->
 
 
       @if(auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('Create Purchase Requistion') OR $data->contains('View Requisitions') OR $data->contains('View Purchase Orders') OR $data->contains('Manage Purchase Orders'))

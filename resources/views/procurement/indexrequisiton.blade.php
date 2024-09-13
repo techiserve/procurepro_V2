@@ -9,7 +9,6 @@
           <div class="card-header">
             <strong>Requisition</strong>
             <small>List</small>
-             <a style="color:white;" href="/companies/create" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="icon-cloud-upload"></i> Add New Company</a>
           </div>
 
           <div class="card-body">
@@ -17,13 +16,13 @@
               <thead>
                 <tr>
                   <th>#</th>
-                  <th> vendor Name</th>
-                  <th> services</th>
-                  <th>paymentmethod</th>
-                  <th class="text-center">expenses</th>
-                  <th class="text-center">amount</th>
+                  <th class="text-center"> Vendor Name</th>
+                  <th class="text-center"> Services</th>
+                  <th class="text-center">Payment method</th>
+                  <th class="text-center">Expenses</th>
+                  <th class="text-center">Amount</th>
                  
-                  <th class="text-center">Level</th>
+                  <th class="text-center">Approved By</th>
                   <th class="text-center">Status</th>
                 
                   <th class="text-center">Action</th>   
@@ -33,23 +32,19 @@
                 @foreach($requisitions as $company)
                 <tr>
                 <td></td>
-                  <td>{{$company->vendor}}</td>
-                  <td>{{$company->services}}</td>
-                  <td>{{$company->paymentmethod}}</td>
-                  <td>{{$company->expenses}}</td>
-                  <td>{{$company->amount}}</td>
+                  <td class="text-center">{{$company->vendor}}</td>
+                  <td class="text-center">{{$company->services}}</td>
+                  <td class="text-center">{{$company->paymentmethod}}</td>
+                  <td class="text-center">{{$company->expenses}}</td>
+                  <td class="text-center">{{$company->amount}}</td>
                   <td class="text-center">
-              
-                  @if($company->approvallevel == 1)
-                    <span class='badge badge-info'>1st Line</span>
-                    @elseif($company->approvallevel == 2)
-                    <span class='badge badge-info'>2nd Line</span>
-                    @elseif($company->approvallevel == 3)
-                    <span class='badge badge-info'>3rd Line</span>
-                    @else
-                    <span class='badge badge-info'>4th Line</span>
-                    @endif
-                  
+
+                  @foreach($roles as $role)
+                  @if($company->approvedby == $role->id)
+                     {{$role->name}}
+                  @endif
+                   @endforeach
+             
                   </td>
 
                   <td class="text-center">

@@ -90,7 +90,7 @@
           </div>
           <div class="card-footer">
             <div class="form-group pull-right">
-    				<input type="submit" class="btn btn-success" value="Save New Bank"/>
+    				<input type="submit" class="btn btn-success" value="Save New Department"/>
     				<input type="reset" class="btn btn-danger" value="Cancel Registration"/>
     			</div>
           </div>

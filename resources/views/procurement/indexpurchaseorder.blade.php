@@ -9,7 +9,7 @@
           <div class="card-header">
             <strong>Purchase Order</strong>
             <small>List</small>
-             <a style="color:white;" href="#" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="icon-cloud-upload"></i></a>
+             <!-- <a style="color:white;" href="#" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="icon-cloud-upload"></i></a> -->
           </div>
 
           <div class="card-body">
@@ -17,13 +17,13 @@
               <thead>
                 <tr>
                   <th>#</th>
-                  <th> vendor Name</th>
-                  <th> services</th>
-                  <th>paymentmethod</th>
-                  <th class="text-center">expenses</th>
-                  <th class="text-center">amount</th>
+                  <th class="text-center"> Vendor Name</th>
+                  <th class="text-center"> Services</th>
+                  <th class="text-center">Payment method</th>
+                  <th class="text-center">Expenses</th>
+                  <th class="text-center">Amount</th>
                  
-                  <th class="text-center">Level</th>
+                  <th class="text-center">Approved By</th>
 
                   <th class="text-center">Status</th>
 
@@ -41,20 +41,12 @@
                   <td>{{$company->amount}}</td>
                   <td class="text-center">
               
-                  @if($company->approvallevel == 1)
-                    <span class='badge badge-info'>1st Line</span>
-                    @elseif($company->approvallevel == 2)
-                    <span class='badge badge-info'>2nd Line</span>
-                    @elseif($company->approvallevel == 3)
-                    <span class='badge badge-info'>3rd Line</span>
-                    @elseif($company->approvallevel == 4)
-                    <span class='badge badge-info'>4th Line</span>
-                    @elseif($company->approvallevel == 5)
-                    <span class='badge badge-info'>5th Line</span>
-                    @else
-                    <span class='badge badge-success'>Awaiting Documents</span>
-                    @endif
-                  
+                  @foreach($roles as $role)
+                  @if($company->approvedby == $role->id)
+                     {{$role->name}}
+                  @endif
+                   @endforeach
+             
                   </td>
 
                   <td class="text-center">
