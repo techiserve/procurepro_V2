@@ -68,23 +68,23 @@
                   <td class="text-center">
 
                     @if($company->userId != auth()->user()->id)
-                    <a  href="{{ asset('/storage/uploads/'.$company->file) }}" target="_blank" class='btn btn-info btn-sm' style='color: white;'>
+                    <a  href="/procurement/{{$company->id}}/viewrequisition"  class='btn btn-info btn-sm' style='color: white;'>
                       <span class='fa fa-desktop'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'> View Quotation</span>
+                      <span class='hidden-sm hidden-sm hidden-md'> View Requisition</span>
                     </a>&nbsp;
-                    <a href='/procurement/{{$company->id}}/approve' class='btn btn-success btn-sm' style='color: white;'>
+                    <!-- <a href='/procurement/{{$company->id}}/approve' class='btn btn-success btn-sm' style='color: white;'>
                       <span class='fa fa-pencil'></span>
                       <span class='hidden-sm hidden-sm hidden-md'> Approve</span>
                     </a>&nbsp;
                     <a href='/procurement/{{$company->id}}/rejection' class='btn btn-danger btn-sm' style='color: white;'>
                       <span class='fa fa-pencil'></span>
                       <span class='hidden-sm hidden-sm hidden-md'> Reject</span>
-                    </a>
+                    </a> -->
                    @else
-                   <a  href="{{ asset('/storage/uploads/'.$company->file) }}" target="_blank"class='btn btn-info btn-sm' style='color: white;'>
+                   <a  href="/procurement/{{$company->id}}/viewrequisition" class='btn btn-info btn-sm' style='color: white;'>
                       <span class='fa fa-desktop'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'> View Quotation</span>
-                    </a>
+                      <span class='hidden-sm hidden-sm hidden-md'> View Requisition</span>
+                   </a>
 
                    @endif
                   </td>

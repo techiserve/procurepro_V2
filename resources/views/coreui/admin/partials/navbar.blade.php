@@ -56,9 +56,9 @@
           <div class="dropdown-header text-center">
             <strong>Settings</strong>
           </div>
-          <a class="dropdown-item" href="/profile">
+          <!-- <a class="dropdown-item" href="/profile">
             <i class="fa fa-user"></i> Profile
-          </a>
+          </a> -->
           {{--<a class="dropdown-item" href="/settings">
             <i class="fa fa-wrench"></i> Settings
           </a>--}}

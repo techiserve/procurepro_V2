@@ -40,3 +40,6 @@
                                     @endif  @endforeach</option>
                                     @endforeach
                                 </select>
+
+
+                                {{ asset('/storage/uploads/'.$company->file) }}

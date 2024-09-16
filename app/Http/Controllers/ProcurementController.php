@@ -82,6 +82,17 @@ class ProcurementController extends Controller
     }
 
 
+    
+    public function viewrequisition(string $id)
+    {
+     
+        $purchaseorder = Requisition::where('id', $id)->first();
+        $files = Requisitionfile::where('requisitionId', $id)->get();
+
+        return view('procurement.viewrequisition', compact('purchaseorder','files'));
+    }
+
+
     public function indexpurchaseorder()
     {
      
@@ -142,7 +153,7 @@ class ProcurementController extends Controller
      */
     public function requisitionstore(Request $request)
     {
-       // dd($request->all());
+
 
         $level = Departmentapproval::where('departmentId', $request->department)->min('approvalId');
         $totalapprovallevels = Departmentapproval::where('departmentId', $request->department)->count();
@@ -150,9 +161,9 @@ class ProcurementController extends Controller
 
        // dd($request->file('file'));
 
-       $quotationfile = $request->file('file')->store('uploads', 'public');
+    //    $quotationfile = $request->file('file')->store('uploads', 'public');
 
-       $quotation =  Str::afterLast($quotationfile, '/');
+    //    $quotation =  Str::afterLast($quotationfile, '/');
 
 
        $requisition = Requisition::create([
@@ -164,7 +175,7 @@ class ProcurementController extends Controller
         'expenses'  => $request->expenses,
         'projectcode'  => $request->projectcode,
         'amount'  => $request->amount,
-        'file'  => $quotation,
+     //   'file'  => $quotation,
         'userId'  =>Auth::user()->id,
         'status'  => 1,
         'approvallevel'  => $level,
@@ -174,18 +185,31 @@ class ProcurementController extends Controller
         
        ]);
 
-
-       $file = Requisitionfile::create([
-
-        'requisitionId' => $requisition->id,
-        'file'  => $request->file,
-        'userId'  =>Auth::user()->id,
-        'path'  => 1,
         
-       ]);
+
+       if ($request->hasFile('file')) {
+        // Loop through each file
+        foreach ($request->file('file') as $file) {
+            // Generate a unique name for the file
+            $quotationfile = $file->store('uploads', 'public');
+
+            $quotation =  Str::afterLast($quotationfile, '/');
+
+            // Save the filename in the database
+            $savefile = Requisitionfile::create([
+
+                'requisitionId' => $requisition->id,
+                'file'  =>  $quotation,
+                'userId'  =>Auth::user()->id,
+                'path'  => 1,
+                
+               ]);
+        }
+
+    } 
 
 
-       if($requisition){
+       if($requisition && $savefile){
 
         return back()->with('success', 'Requisition created successfully!');
     }
@@ -288,7 +312,6 @@ class ProcurementController extends Controller
 
         }else{
  
-            // dd('zviriko');
             $updatedapprovallevel = $requisition->approvallevel+1;
             $approver = Departmentapproval::where('departmentId', $requisition->department)->where('approvalId', $updatedapprovallevel)->first();
 
@@ -299,15 +322,13 @@ class ProcurementController extends Controller
 
                  ]);   
 
-         //   dd($approver);
-
         }
 
 
         if($updatereq){
 
             
-        return back()->with('success', 'Requisition approved successfully!');
+        return redirect()->route('procurement.indexrequisition')->with('success', 'Requisition approved successfully!');
 
         }
     }
@@ -322,9 +343,10 @@ class ProcurementController extends Controller
 
                 'approvedby' => Auth::user()->userrole,
                 'approvallevel' => $requisition->approvallevel,
+                'reason' => $request->message,
                 'isActive' => 0, 
                 'status'  => 3,
-                'purchaseorderstatus'  => 3,
+              //  'purchaseorderstatus'  => 3,
 
                  ]);   
 
@@ -332,6 +354,32 @@ class ProcurementController extends Controller
         if($updatereq){
    
          return redirect()->route('procurement.indexrequisition')->with('success', 'Requisition order rejected!');
+
+        }
+    }
+
+
+
+    public function sendbackrequistion(Request $request, string $id)
+    {
+
+        $requisition = Requisition::where('id', $id)->first();
+
+                 $updatereq = Requisition::where('id', $id)->update([
+
+                'approvedby' => Auth::user()->userrole,
+                'approvallevel' => $requisition->approvallevel,
+                'reason' => $request->message,
+                'isActive' => 0, 
+                'status'  => 2,
+               // 'purchaseorderstatus'  => 3,
+
+                 ]);   
+
+
+        if($updatereq){
+   
+         return redirect()->route('procurement.indexrequisition')->with('success', 'Requisition returned!');
 
         }
     }
