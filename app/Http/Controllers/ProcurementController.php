@@ -103,6 +103,16 @@ class ProcurementController extends Controller
     }
 
 
+    public function logs(string $id)
+    { 
+       // dd($id);
+     
+        $histories = RequisitionHistory::where('requisitionId', '=', $id)->get();
+        return view('procurement.logs', compact('histories'));
+
+    }
+
+
     public function purchaseorder(string $id)
     {
      
@@ -208,6 +218,29 @@ class ProcurementController extends Controller
 
     } 
 
+   // dd( $requisition->id);
+
+    $requisitionhistory = RequisitionHistory::create([
+
+        'requisitionId' => $requisition->id,
+        'vendor' => $request->vendor,
+        'services' => $request->service,
+        'paymentmethod'  => $request->paymentmethod,
+        //'department'  => $request->department,
+        'expenses'  => $request->expenses,
+        'projectcode'  => $request->projectcode,
+        'amount'  => $request->amount,
+     //   'file'  => $quotation,
+        'userId'  =>Auth::user()->id,
+        'status'  => 1,
+        'approvallevel'  => $level,
+        'totalapprovallevels'  => $totalapprovallevels,
+        'approvedby' => $approver->roleId, 
+        'isActive'  => 1,
+        'action'  => "Created Purchase Requisition",
+        'doneby' => Auth::user()->name
+        
+       ]);
 
        if($requisition && $savefile){
 
@@ -310,6 +343,23 @@ class ProcurementController extends Controller
            ]);
 
 
+           $requisitiond = RequisitionHistory::create([
+
+            'requisitionId' => $id,
+            'amount'  => $requisition->amount,
+         //   'file'  => $quotation,
+            'userId'  =>Auth::user()->id,
+            'status'  => 1,
+            'approvallevel' =>  $updatedapprovallevel,
+            'approvedby' => Auth::user()->userrole, 
+            'isActive'  => 1,
+            'action'  => "Purchase Requisition Approved and Purchase Order Created",
+            'doneby' => Auth::user()->name
+            
+           ]);
+    
+
+
         }else{
  
             $updatedapprovallevel = $requisition->approvallevel+1;
@@ -321,7 +371,22 @@ class ProcurementController extends Controller
                 'approvedby' => $approver->roleId,              
 
                  ]);   
+               
 
+                 $requisition = RequisitionHistory::create([
+
+                    'requisitionId' => $requisition->id,
+                    'amount'  => $requisition->amount,
+                    'userId'  =>Auth::user()->id,
+                    'status'  => 1,
+                    'approvallevel' =>  $updatedapprovallevel,
+                    'approvedby' => Auth::user()->userrole, 
+                    'isActive'  => 1,
+                    'action'  => "Purchase Requisition Approved",
+                    'doneby' => Auth::user()->name
+                    
+                   ]);
+            
         }
 
 
@@ -351,6 +416,22 @@ class ProcurementController extends Controller
                  ]);   
 
 
+
+                 $requisition = RequisitionHistory::create([
+
+                    'requisitionId' => $requisition->id,
+                    'amount'  => $requisition->amount,
+                    'userId'  =>Auth::user()->id,
+                    'status'  => 1,
+                 //   'approvallevel' =>  $updatedapprovallevel,
+                    'approvedby' => Auth::user()->userrole, 
+                    'isActive'  => 1,
+                    'action'  => "Purchase Requisition Rejected",
+                    'doneby' => Auth::user()->name
+                    
+                   ]);
+
+
         if($updatereq){
    
          return redirect()->route('procurement.indexrequisition')->with('success', 'Requisition order rejected!');
@@ -374,7 +455,22 @@ class ProcurementController extends Controller
                 'status'  => 2,
                // 'purchaseorderstatus'  => 3,
 
-                 ]);   
+                 ]);  
+                 
+                 
+                 $requisition = RequisitionHistory::create([
+
+                    'requisitionId' => $requisition->id,
+                    'amount'  => $requisition->amount,
+                    'userId'  =>Auth::user()->id,
+                    'status'  => 1,
+                    'approvallevel' =>  $updatedapprovallevel,
+                    'approvedby' => Auth::user()->userrole, 
+                    'isActive'  => 1,
+                    'action'  => "Purchase Requisition Returned",
+                    'doneby' => Auth::user()->name
+                    
+                   ]);
 
 
         if($updatereq){

@@ -77,6 +77,7 @@ Route::middleware('auth')->group(function () {
      Route::get('/procurement/indexrequisition', [ProcurementController::class, 'indexrequisition'])->name('procurement.indexrequisition');
      Route::post('/requisition/store', [ProcurementController::class, 'requisitionstore'])->name('procurement.requisitionstore');
      Route::get('/procurement/{id}/approve', [ProcurementController::class, 'requisitionapproval'])->name('procurement.requisitionapproval');
+     Route::get('/procurement/{id}/logs', [ProcurementController::class, 'logs'])->name('procurement.logs');
      Route::put('/procurement/{id}/rejection', [ProcurementController::class, 'requisitionrejection'])->name('procurement.rejection');
      Route::put('/procurement/{id}/sendbackrequistion', [ProcurementController::class, 'sendbackrequistion'])->name('procurement.sendbackrequistion');
      Route::get('/procurement/indexpurchaseorder', [ProcurementController::class, 'indexpurchaseorder'])->name('procurement.indexpurchaseorder');
