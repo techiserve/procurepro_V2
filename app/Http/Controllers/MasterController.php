@@ -220,6 +220,21 @@ class MasterController extends Controller
 
 
 
+    public function bankaccountupdate(Request $request, string $id)
+    {
+
+    $record = Bankaccount::findOrFail($id);
+
+     $record->update($request->only(['bankName', 'branch','accountName','accountType','accountNumber','accountPurpose','branchCode']));
+
+     if($record){
+
+        return redirect()->route('master.bankAccount')->with('success', 'Bank Account updated successfully!');
+
+     }
+
+    }
+
     
 
     public function bankaccountdelete($id)
@@ -236,6 +251,14 @@ class MasterController extends Controller
         }
 
         
+    }
+
+    public function bankaccountedit($id)
+    {
+         $bank = Bankaccount::where('id', $id)->first();
+         $banks = Bank::all();
+    
+        return view('master.editbank',compact('bank','banks'));
     }
 
 }
