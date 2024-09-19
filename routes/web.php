@@ -64,6 +64,7 @@ Route::middleware('auth')->group(function () {
      Route::get('/manageRole/{id}/editrole', [MasterController::class, 'editrole'])->name('editrole');
      Route::get('/manageRole/{id}/delete', [MasterController::class, 'delete'])->name('delete');
      Route::get('/bankaccount/{id}/delete', [MasterController::class, 'bankaccountdelete'])->name('bankaccount.delete');
+     Route::get('/department/{id}/delete', [MasterController::class, 'departmentdelete'])->name('department.delete');
      Route::get('/bankaccount/{id}/edit', [MasterController::class, 'bankaccountedit'])->name('bankaccount.edit');
      Route::put('/bankaccount/{id}/update', [MasterController::class, 'bankaccountupdate'])->name('bankaccount.update');
      Route::put('/role/update/{id}', [MasterController::class, 'update'])->name('roleUpdate');

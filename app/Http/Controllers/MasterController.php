@@ -27,8 +27,10 @@ class MasterController extends Controller
     public function department()
     {
          $roles = userrole::where('id' ,'>',3)->get();
+         $departments = Department::all();
+         $users = User::all();
     
-        return view('master.department',compact('roles'));
+        return view('master.department',compact('roles','departments','users'));
     }
 
     public function banks()
@@ -248,6 +250,23 @@ class MasterController extends Controller
         }else{
 
            return back()->with('error', 'Failed to delete bank account!');
+        }
+
+        
+    }
+
+    public function departmentdelete($id)
+    {
+         $department = Department::where('id', $id)->delete();
+         $da = Departmentapproval::where('departmentId', $id)->delete();
+    
+         if($department){
+      
+            return back()->with('success', 'Department  deleted successfully!');
+
+        }else{
+
+           return back()->with('error', 'Failed to delete department!');
         }
 
         
