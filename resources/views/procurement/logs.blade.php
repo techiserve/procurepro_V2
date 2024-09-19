@@ -155,10 +155,19 @@ h5, h6 {
 @section('content')
 
 <div class="container">
+
     <div class="row">
         <div class="col-xl-12">
             <div class="card">
+                
                 <div class="card-body">
+                <div class="row mt-3">
+                    <div class="col-xl-12">
+                        <a href="{{ url()->previous() }}" class="btn btn-primary btn-rounded waves-effect waves-light">
+                            ← Return Back
+                        </a>
+                    </div>
+                </div>
                     <div class="row justify-content-center mt-4 pt-3">
                         <div class="col-xl-10">
                             <ul class="timeline mb-0">
@@ -180,7 +189,7 @@ h5, h6 {
                                                 </div>
                                                 <div class="timeline-text">
                                                     <h3 class="fs-17">{{$history->action}}</h3>
-                                                    <p class="mb-0 mt-2 pt-1 text-muted" > <h4 > Done By: {{$history->doneby}}</Done></h4></p>
+                                                    <p class="mb-0 mt-2 pt-1 text-muted" > <h4 > Done by: {{$history->doneby}}</Done></h4></p>
 
                                                     <button class="btn btn-success btn-rounded waves-effect waves-light mt-4">
                                                     {{$date->format('h:i:s')}}

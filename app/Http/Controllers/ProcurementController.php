@@ -294,7 +294,7 @@ class ProcurementController extends Controller
 
        if($requisition){
 
-        return redirect()->route('procurement.updatepurchaseorder')->with('success', 'Documents Uploaded succeffully!');
+        return redirect()->route('procurement.indexpurchaseorder')->with('success', 'Documents Uploaded successfully!');
     }
       return back()->with('error', 'Failed to update documents!');
 
@@ -498,7 +498,25 @@ class ProcurementController extends Controller
                 'isActive'  => 1,
                 'status'  => 2,
 
-                 ]);   
+                 ]);  
+                 
+                 
+
+                 $requisitiond = RequisitionHistory::create([
+
+                    'requisitionId' => $requisition->requisitionId,
+                    'amount'  => $requisition->amount,
+                 //   'file'  => $quotation,
+                    'userId'  =>Auth::user()->id,
+                    'status'  => 1,
+                    'approvallevel' =>  $updatedapprovallevel,
+                    'approvedby' => Auth::user()->userrole, 
+                    'isActive'  => 1,
+                    'action'  => "Purchase Order Approved and Sent to Upload File",
+                    'doneby' => Auth::user()->name
+                    
+                   ]);
+            
 
 
         }else{
@@ -512,6 +530,24 @@ class ProcurementController extends Controller
                 'approvedby' => $approver->roleId,              
 
                  ]);   
+
+
+
+                 $requisitiond = RequisitionHistory::create([
+
+                    'requisitionId' => $requisition->requisitionId,
+                    'amount'  => $requisition->amount,
+                 //   'file'  => $quotation,
+                    'userId'  =>Auth::user()->id,
+                    'status'  => 1,
+                    'approvallevel' =>  $updatedapprovallevel,
+                    'approvedby' => Auth::user()->userrole, 
+                    'isActive'  => 1,
+                    'action'  => "Purchase Order Approved",
+                    'doneby' => Auth::user()->name
+                    
+                   ]);
+            
 
         }
 
@@ -538,7 +574,24 @@ class ProcurementController extends Controller
                 'purchaseorderstatus'  => 3,
                 'reason'  => $request->message,
 
-                 ]);   
+                 ]);  
+                 
+                 
+                 
+                 $requisitiond = RequisitionHistory::create([
+
+                    'requisitionId' => $requisition->requisitionId,
+                    'amount'  => $requisition->amount,
+                 //   'file'  => $quotation,
+                    'userId'  =>Auth::user()->id,
+                    'status'  => 1,
+                    'approvallevel' =>  $updatedapprovallevel,
+                    'approvedby' => Auth::user()->userrole, 
+                    'isActive'  => 1,
+                    'action'  => "Purchase Order Rejected",
+                    'doneby' => Auth::user()->name
+                    
+                   ]);
 
 
         if($updatereq){
@@ -568,6 +621,22 @@ class ProcurementController extends Controller
 
         ]);   
 
+
+        
+        $requisitiond = RequisitionHistory::create([
+
+            'requisitionId' => $requisition->requisitionId,
+            'amount'  => $requisition->amount,
+         //   'file'  => $quotation,
+            'userId'  =>Auth::user()->id,
+            'status'  => 1,
+            'approvallevel' =>  $updatedapprovallevel,
+            'approvedby' => Auth::user()->userrole, 
+            'isActive'  => 1,
+            'action'  => "Purchase Order Returned",
+            'doneby' => Auth::user()->name
+            
+           ]);
 
       if($updatereq){
 

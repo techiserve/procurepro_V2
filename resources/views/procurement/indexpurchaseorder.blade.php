@@ -17,8 +17,8 @@
               <thead>
                 <tr>
                   <th>#</th>
-                  <th class="text-center"> Vendor Name</th>
-                  <th class="text-center"> Services</th>
+                  <th class="text-center">Vendor Name</th>
+                  <th class="text-center">Services</th>
                   <th class="text-center">Payment method</th>
                   <th class="text-center">Expenses</th>
                   <th class="text-center">Amount</th>
@@ -73,12 +73,22 @@
                     <a href='/procurement/{{$company->id}}/purchaseorder' class='btn btn-info btn-sm' style='color: white;'>
                       <span class='fa fa-pencil'></span>
                       <span class='hidden-sm hidden-sm hidden-md'>Upload Documents</span>
-                    </a>
+                    </a>&nbsp;
+                   <a  href="/procurement/{{$company->requisitionId}}/logs" class='btn btn-success btn-sm' style='color: white;'>
+                      <span class='fa fa-pencil'></span>
+                      <span class='hidden-sm hidden-sm hidden-md'> View Logs</span>
+                   </a>&nbsp;
+
                     @else
                     <a href='/procurement/{{$company->id}}/viewpurchaseorder' class='btn btn-info btn-sm' style='color: white;'>
                       <span class='fa fa-pencil'></span>
                       <span class='hidden-sm hidden-sm hidden-md'>View Purchase Order</span>
-                    </a>
+                    </a>&nbsp;
+                   <a  href="/procurement/{{$company->requisitionId}}/logs" class='btn btn-success btn-sm' style='color: white;'>
+                      <span class='fa fa-pencil'></span>
+                      <span class='hidden-sm hidden-sm hidden-md'> View Logs</span>
+                   </a>&nbsp;
+
 
                     @endif
                   </td>
