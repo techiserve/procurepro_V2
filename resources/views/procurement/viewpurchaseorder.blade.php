@@ -12,7 +12,7 @@
         <div class="card">
           <div class="card-header">
             <strong>Edit Purchase Order</strong>
-            <a href="/procurement/index" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="fa fa-align-justify"></i> Purchase Order List</a>
+            <a href="/procurement/indexpurchaseorder" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="fa fa-align-justify"></i> Purchase Order List</a>
            </div>
 
            <div class="card-body">

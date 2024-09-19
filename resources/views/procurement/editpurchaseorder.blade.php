@@ -12,7 +12,7 @@
         <div class="card">
           <div class="card-header">
             <strong>Edit Purchase Order</strong>
-            <a href="/companies/index" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="fa fa-align-justify"></i> Purchase Order List</a>
+            <a href="/procurement/indexpurchaseorder" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="fa fa-align-justify"></i> Purchase Order List</a>
            </div>
 
            <div class="card-body">
@@ -76,7 +76,7 @@
               <div class="col-sm-6">
           <div class="form-group">
             <label for="grower_type">Invoice Amount (Rands)</label>
-            <input class="form-control" id="national_id" name="invoiceamount" type="number"  max="{{ $purchaseorder->amount }}" placeholder="Amount" >
+            <input class="form-control" id="national_id" name="invoiceamount" type="number"  max="{{ $purchaseorder->amount }}" placeholder="Amount" required>
           </div>
         </div>
          
@@ -86,7 +86,7 @@
         <div class="col-sm-6">
                 <div class="form-group">
                   <label for="grower_number">Upload Invoice</label>
-                  <input type="file" class="form-control" id="inputGroupFile04" name="invoice" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+                  <input type="file" class="form-control" id="inputGroupFile04" name="invoice" aria-describedby="inputGroupFileAddon04" aria-label="Upload" required>
                 </div>
               </div>    
           
