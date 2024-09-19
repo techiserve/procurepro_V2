@@ -155,7 +155,7 @@
                   <a href='#' class='btn btn-danger btn-sm'   onclick="
                         event.preventDefault(); // Prevent the default link behavior
                         Swal.fire({
-                            title: 'Delete Bank Account?',
+                            title: 'Delete Department?',
                             text: 'You won\'t be able to undo this!',
                             icon: 'info', // Updated property for SweetAlert2
                             showCancelButton: true,
