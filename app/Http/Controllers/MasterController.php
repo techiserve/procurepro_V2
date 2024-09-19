@@ -214,6 +214,28 @@ class MasterController extends Controller
 
            return back()->with('error', 'Failed to delete role!');
         }
+
+        
+    }
+
+
+
+    
+
+    public function bankaccountdelete($id)
+    {
+         $bank = Bankaccount::where('id', $id)->delete();
+    
+         if($bank){
+      
+            return back()->with('success', 'Bank Account deleted successfully!');
+
+        }else{
+
+           return back()->with('error', 'Failed to delete bank account!');
+        }
+
+        
     }
 
 }

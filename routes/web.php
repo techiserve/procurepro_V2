@@ -63,6 +63,7 @@ Route::middleware('auth')->group(function () {
      Route::post('/userrole/store', [UserController::class, 'userrolestore'])->name('userrole.store');
      Route::get('/manageRole/{id}/editrole', [MasterController::class, 'editrole'])->name('editrole');
      Route::get('/manageRole/{id}/delete', [MasterController::class, 'delete'])->name('delete');
+     Route::get('/bankaccount/{id}/delete', [MasterController::class, 'bankaccountdelete'])->name('bankaccount.delete');
      Route::put('/role/update/{id}', [MasterController::class, 'update'])->name('roleUpdate');
      Route::get('/master/banks', [MasterController::class, 'banks'])->name('master.banks');
      Route::get('/master/bankAccount', [MasterController::class, 'bankAccount'])->name('master.bankAccount');
