@@ -9,6 +9,7 @@
 
     var TYPE_NAME = {
         json: 'JSON',
+        pdf: 'PDF',
         xml: 'XML',
         png: 'PNG',
         csv: 'CSV',
@@ -18,14 +19,14 @@
         excel: 'MS-Excel',
         xlsx: 'MS-Excel (OpenXML)',
         powerpoint: 'MS-Powerpoint',
-        pdf: 'PDF'
+     
     };
 
     $.extend($.fn.bootstrapTable.defaults, {
         showExport: false,
         exportDataType: 'basic', // basic, all, selected
         // 'json', 'xml', 'png', 'csv', 'txt', 'sql', 'doc', 'excel', 'powerpoint', 'pdf'
-        exportTypes: ['json', 'xml', 'csv', 'txt', 'sql', 'excel'],
+        exportTypes: ['json','pdf', 'xml', 'csv', 'txt', 'sql', 'excel'],
         exportOptions: {}
     });
 

@@ -109,6 +109,13 @@
           </li>
           @endif
 
+          @if( auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR$data->contains('View Purchase Orders'))
+          <li class="nav-item active">
+            <a class="nav-link" href="/procurement/managepurchaseorder">
+              <i class="nav-icon icon-settings"></i>Manage Purchase Orders</a>
+          </li>
+          @endif
+
           <!-- @if( auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR$data->contains('Manage Purchase Orders'))
           <li class="nav-item active">
             <a class="nav-link" href="/procurement/approvalpurchaseorder">
@@ -233,37 +240,27 @@
         <a class="nav-link nav-dropdown-toggle" href="#">
           <i class="nav-icon icon-settings"></i>Reports</a>
         <ul class="nav-dropdown-items">
+  
           <li class="nav-item active">
-            <a class="nav-link" href="/risk-management/approve-growers">
-              <i class="nav-icon icon-check"></i> Vendor List</a>
-          </li>
-          <li class="nav-item active">
-            <a class="nav-link" href="/risk-management/uploads">
+            <a class="nav-link" href="/reports/requisitionreport">
               <i class="nav-icon icon-cloud-upload"></i> Purchase Requistion Summary</a>
           </li>
           <li class="nav-item active">
-            <a class="nav-link" href="/risk-parameters">
+            <a class="nav-link" href="/reports/purchaseorderreport">
               <i class="nav-icon icon-settings"></i>Purchase Order Summary</a>
           </li>
           <li class="nav-item active">
-            <a class="nav-link" href="/risk-management/approve-growers">
+            <a class="nav-link" href="/reports/waitingpurchaseorder">
               <i class="nav-icon icon-check"></i>Purchase Orders Awaiting Payment</a>
           </li>
-          <li class="nav-item active">
-            <a class="nav-link" href="/risk-management/uploads">
-              <i class="nav-icon icon-cloud-upload"></i> Spend Overview</a>
-          </li>
-          <li class="nav-item active">
-            <a class="nav-link" href="/risk-parameters">
-              <i class="nav-icon icon-settings"></i>One Time Vendor</a>
-          </li>
+     
         </ul>
       </li>
       @endif
 
       
       @if(auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('Reports'))
-      <li class="nav-item nav-dropdown active  ">
+      <!-- <li class="nav-item nav-dropdown active  ">
         <a class="nav-link nav-dropdown-toggle" href="#">
           <i class="nav-icon fa fa-university"></i>Bank Reports</a>
         <ul class="nav-dropdown-items">
@@ -280,7 +277,7 @@
               <i class="nav-icon icon-settings"></i>FNB</a>
           </li>
         </ul>
-      </li>
+      </li> -->
       @endif
      
      

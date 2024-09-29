@@ -31,7 +31,9 @@ class Purchaseorder extends Model
         'totalapprovallevels',
         'isActive',
         'reason',
-        'approvedby'
+        'approvedby',
+        'releaseStatus',
+        'uploadStatus'
        
     ];
 

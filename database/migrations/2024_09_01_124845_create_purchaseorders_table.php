@@ -33,6 +33,8 @@ return new class extends Migration
             $table->integer('totalapprovallevels')->nullable();
             $table->string('reason')->nullable();
             $table->string('approvedby')->nullable();
+            $table->string('releaseStatus')->nullable();
+            $table->string('uploadStatus')->nullable();
             $table->timestamps();
         });
     }

@@ -818,7 +818,10 @@
           });
 
       } else if ( defaults.type == 'pdf' ) {
+        /////start of code/////////
 
+        const { jsPDF } = window.jspdf;
+       // console.log("Generating PDF...");
         if ( defaults.pdfmake.enabled === true ) {
           // pdf output using pdfmake
           // https://github.com/bpampuch/pdfmake
@@ -917,379 +920,78 @@
             }
           });
 
-        }
-        else if ( defaults.jspdf.autotable === false ) {
-          // pdf output using jsPDF's core html support
-
-          var addHtmlOptions = {
-            dim:       {
-              w: getPropertyUnitValue($(el).first().get(0), 'width', 'mm'),
-              h: getPropertyUnitValue($(el).first().get(0), 'height', 'mm')
+        
+      } else if (defaults.jspdf.autotable === false) {
+        // PDF output using jsPDF's core html support
+        var addHtmlOptions = {
+            dim: {
+                w: getPropertyUnitValue($(el).first().get(0), 'width', 'mm'),
+                h: getPropertyUnitValue($(el).first().get(0), 'height', 'mm')
             },
             pagesplit: false
-          };
-
-          var doc = new jsPDF(defaults.jspdf.orientation, defaults.jspdf.unit, defaults.jspdf.format);
-          doc.addHTML($(el).first(),
-            defaults.jspdf.margins.left,
-            defaults.jspdf.margins.top,
-            addHtmlOptions,
-            function () {
-              jsPdfOutput(doc, false);
-            });
-          //delete doc;
+        };
+    
+        var doc = new jsPDF(defaults.jspdf.orientation, defaults.jspdf.unit, defaults.jspdf.format);
+        doc.html($(el).first(), {
+            margin: defaults.jspdf.margins,
+            callback: function (doc) {
+                jsPdfOutput(doc, false);
+            }
+        });
+    } else {
+        // PDF output using jsPDF AutoTable plugin
+        var teOptions = defaults.jspdf.autotable.tableExport;
+    
+        if (teOptions.doc == null) {
+            teOptions.doc = new jsPDF(defaults.jspdf.orientation, defaults.jspdf.unit, defaults.jspdf.format);
         }
-        else {
-          // pdf output using jsPDF AutoTable plugin
-          // https://github.com/simonbengtsson/jsPDF-AutoTable
-
-          var teOptions = defaults.jspdf.autotable.tableExport;
-
-          // When setting jspdf.format to 'bestfit' tableExport tries to choose
-          // the minimum required paper format and orientation in which the table
-          // (or tables in multitable mode) completely fits without column adjustment
-          if ( typeof defaults.jspdf.format === 'string' && defaults.jspdf.format.toLowerCase() === 'bestfit' ) {
-            var pageFormats = {
-              'a0': [2383.94, 3370.39], 'a1': [1683.78, 2383.94],
-              'a2': [1190.55, 1683.78], 'a3': [841.89, 1190.55],
-              'a4': [595.28, 841.89]
-            };
-            var rk = '', ro = '';
-            var mw = 0;
-
-            $(el).filter(':visible').each(function () {
-              if ( $(this).css('display') != 'none' ) {
-                var w = getPropertyUnitValue($(this).get(0), 'width', 'pt');
-
-                if ( w > mw ) {
-                  if ( w > pageFormats.a0[0] ) {
-                    rk = 'a0';
-                    ro = 'l';
-                  }
-                  for ( var key in pageFormats ) {
-                    if ( pageFormats.hasOwnProperty(key) ) {
-                      if ( pageFormats[key][1] > w ) {
-                        rk = key;
-                        ro = 'l';
-                        if ( pageFormats[key][0] > w )
-                          ro = 'p';
-                      }
-                    }
-                  }
-                  mw = w;
-                }
-              }
+    
+        teOptions.columns = [];
+        teOptions.rows = [];
+    
+        // Collect table header
+        $(el).find('thead').each(function () {
+            var colKey = 0;
+            var headerRow = [];
+            $(this).find('tr').each(function () {
+                var headerCell = {};
+                $(this).find('th, td').each(function () {
+                    headerCell = { title: $(this).text(), dataKey: colKey++ };
+                    headerRow.push(headerCell);
+                });
             });
-            defaults.jspdf.format      = (rk === '' ? 'a4' : rk);
-            defaults.jspdf.orientation = (ro === '' ? 'w' : ro);
-          }
-
-          // The jsPDF doc object is stored in defaults.jspdf.autotable.tableExport,
-          // thus it can be accessed from any callback function
-          if ( teOptions.doc == null ) {
-            teOptions.doc = new jsPDF(defaults.jspdf.orientation,
-              defaults.jspdf.unit,
-              defaults.jspdf.format);
-
-            if ( typeof defaults.jspdf.onDocCreated === 'function' )
-              defaults.jspdf.onDocCreated(teOptions.doc);
-          }
-
-          if ( teOptions.outputImages === true )
-            teOptions.images = {};
-
-          if ( typeof teOptions.images != 'undefined' ) {
-            $(el).filter(function () {
-              return $(this).data("tableexport-display") != 'none' &&
-                ($(this).is(':visible') ||
-                $(this).data("tableexport-display") == 'always');
-            }).each(function () {
-              var rowCount = 0;
-
-              $hrows = $(this).find('thead').find(defaults.theadSelector);
-              $(this).find('tbody').each(function () {
-                $rows.push.apply($rows, $(this).find(defaults.tbodySelector));
-              });
-              if ( defaults.tfootSelector.length )
-                $rows.push.apply($rows, $(this).find('tfoot').find(defaults.tfootSelector));
-
-              $($rows).each(function () {
-                ForEachVisibleCell(this, 'td,th', $hrows.length + rowCount, $hrows.length + $rows.length,
-                  function (cell) {
-                    if ( typeof cell !== 'undefined' && cell !== null ) {
-                      var kids = $(cell).children();
-                      if ( typeof kids != 'undefined' && kids.length > 0 )
-                        collectImages(cell, kids, teOptions);
-                    }
-                  });
-                rowCount++;
-              });
-            });
-
-            $hrows = [];
-            $rows  = [];
-          }
-
-          loadImages(teOptions, function () {
-            $(el).filter(function () {
-              return $(this).data("tableexport-display") != 'none' &&
-                ($(this).is(':visible') ||
-                $(this).data("tableexport-display") == 'always');
-            }).each(function () {
-              var colKey;
-              var rowIndex = 0;
-
-              colNames = GetColumnNames(this);
-
-              teOptions.columns    = [];
-              teOptions.rows       = [];
-              teOptions.rowoptions = {};
-
-              // onTable: optional callback function for every matching table that can be used
-              // to modify the tableExport options or to skip the output of a particular table
-              // if the table selector targets multiple tables
-              if ( typeof teOptions.onTable === 'function' )
-                if ( teOptions.onTable($(this), defaults) === false )
-                  return true; // continue to next iteration step (table)
-
-              // each table works with an own copy of AutoTable options
-              defaults.jspdf.autotable.tableExport = null;  // avoid deep recursion error
-              var atOptions                        = $.extend(true, {}, defaults.jspdf.autotable);
-              defaults.jspdf.autotable.tableExport = teOptions;
-
-              atOptions.margin = {};
-              $.extend(true, atOptions.margin, defaults.jspdf.margins);
-              atOptions.tableExport = teOptions;
-
-              // Fix jsPDF Autotable's row height calculation
-              if ( typeof atOptions.beforePageContent !== 'function' ) {
-                atOptions.beforePageContent = function (data) {
-                  if ( data.pageCount == 1 ) {
-                    var all = data.table.rows.concat(data.table.headerRow);
-                    all.forEach(function (row) {
-                      if ( row.height > 0 ) {
-                        row.height += (2 - FONT_ROW_RATIO) / 2 * row.styles.fontSize;
-                        data.table.height += (2 - FONT_ROW_RATIO) / 2 * row.styles.fontSize;
-                      }
-                    });
-                  }
-                };
-              }
-
-              if ( typeof atOptions.createdHeaderCell !== 'function' ) {
-                // apply some original css styles to pdf header cells
-                atOptions.createdHeaderCell = function (cell, data) {
-
-                  // jsPDF AutoTable plugin v2.0.14 fix: each cell needs its own styles object
-                  cell.styles = $.extend({}, data.row.styles);
-
-                  if ( typeof teOptions.columns [data.column.dataKey] != 'undefined' ) {
-                    var col = teOptions.columns [data.column.dataKey];
-
-                    if ( typeof col.rect != 'undefined' ) {
-                      var rh;
-
-                      cell.contentWidth = col.rect.width;
-
-                      if ( typeof teOptions.heightRatio == 'undefined' || teOptions.heightRatio === 0 ) {
-                        if ( data.row.raw [data.column.dataKey].rowspan )
-                          rh = data.row.raw [data.column.dataKey].rect.height / data.row.raw [data.column.dataKey].rowspan;
-                        else
-                          rh = data.row.raw [data.column.dataKey].rect.height;
-
-                        teOptions.heightRatio = cell.styles.rowHeight / rh;
-                      }
-
-                      rh = data.row.raw [data.column.dataKey].rect.height * teOptions.heightRatio;
-                      if ( rh > cell.styles.rowHeight )
-                        cell.styles.rowHeight = rh;
-                    }
-
-                    if ( typeof col.style != 'undefined' && col.style.hidden !== true ) {
-                      cell.styles.halign = col.style.align;
-                      if ( atOptions.styles.fillColor === 'inherit' )
-                        cell.styles.fillColor = col.style.bcolor;
-                      if ( atOptions.styles.textColor === 'inherit' )
-                        cell.styles.textColor = col.style.color;
-                      if ( atOptions.styles.fontStyle === 'inherit' )
-                        cell.styles.fontStyle = col.style.fstyle;
-                    }
-                  }
-                };
-              }
-
-              if ( typeof atOptions.createdCell !== 'function' ) {
-                // apply some original css styles to pdf table cells
-                atOptions.createdCell = function (cell, data) {
-                  var rowopt = teOptions.rowoptions [data.row.index + ":" + data.column.dataKey];
-
-                  if ( typeof rowopt != 'undefined' &&
-                    typeof rowopt.style != 'undefined' &&
-                    rowopt.style.hidden !== true ) {
-                    cell.styles.halign = rowopt.style.align;
-                    if ( atOptions.styles.fillColor === 'inherit' )
-                      cell.styles.fillColor = rowopt.style.bcolor;
-                    if ( atOptions.styles.textColor === 'inherit' )
-                      cell.styles.textColor = rowopt.style.color;
-                    if ( atOptions.styles.fontStyle === 'inherit' )
-                      cell.styles.fontStyle = rowopt.style.fstyle;
-                  }
-                };
-              }
-
-              if ( typeof atOptions.drawHeaderCell !== 'function' ) {
-                atOptions.drawHeaderCell = function (cell, data) {
-                  var colopt = teOptions.columns [data.column.dataKey];
-
-                  if ( (colopt.style.hasOwnProperty("hidden") !== true || colopt.style.hidden !== true) &&
-                    colopt.rowIndex >= 0 )
-                    return prepareAutoTableText(cell, data, colopt);
-                  else
-                    return false; // cell is hidden
-                };
-              }
-
-              if ( typeof atOptions.drawCell !== 'function' ) {
-                atOptions.drawCell = function (cell, data) {
-                  var rowopt = teOptions.rowoptions [data.row.index + ":" + data.column.dataKey];
-                  if ( prepareAutoTableText(cell, data, rowopt) ) {
-
-                    teOptions.doc.rect(cell.x, cell.y, cell.width, cell.height, cell.styles.fillStyle);
-
-                    if ( typeof rowopt != 'undefined' && typeof rowopt.kids != 'undefined' && rowopt.kids.length > 0 ) {
-
-                      var dh = cell.height / rowopt.rect.height;
-                      if ( dh > teOptions.dh || typeof teOptions.dh == 'undefined' )
-                        teOptions.dh = dh;
-                      teOptions.dw = cell.width / rowopt.rect.width;
-
-                      var y = cell.textPos.y;
-                      drawAutotableElements(cell, rowopt.kids, teOptions);
-                      cell.textPos.y = y;
-                      drawAutotableText(cell, rowopt.kids, teOptions);
-                    }
-                    else
-                      drawAutotableText(cell, {}, teOptions);
-                  }
-                  return false;
-                };
-              }
-
-              // collect header and data rows
-              teOptions.headerrows = [];
-              $hrows               = $(this).find('thead').find(defaults.theadSelector);
-              $hrows.each(function () {
-                colKey = 0;
-
-                teOptions.headerrows[rowIndex] = [];
-
-                ForEachVisibleCell(this, 'th,td', rowIndex, $hrows.length,
-                  function (cell, row, col) {
-                    var obj      = getCellStyles(cell);
-                    obj.title    = parseString(cell, row, col);
-                    obj.key      = colKey++;
-                    obj.rowIndex = rowIndex;
-                    teOptions.headerrows[rowIndex].push(obj);
-                  });
-                rowIndex++;
-              });
-
-              if ( rowIndex > 0 ) {
-                // iterate through last row
-                var lastrow = rowIndex - 1;
-                while ( lastrow >= 0 ) {
-                  $.each(teOptions.headerrows[lastrow], function () {
-                    var obj = this;
-
-                    if ( lastrow > 0 && this.rect === null )
-                      obj = teOptions.headerrows[lastrow - 1][this.key];
-
-                    if ( obj !== null && obj.rowIndex >= 0 &&
-                      (obj.style.hasOwnProperty("hidden") !== true || obj.style.hidden !== true) )
-                      teOptions.columns.push(obj);
-                  });
-
-                  lastrow = (teOptions.columns.length > 0) ? -1 : lastrow - 1;
-                }
-              }
-
-              var rowCount = 0;
-              $rows        = [];
-              $(this).find('tbody').each(function () {
-                $rows.push.apply($rows, $(this).find(defaults.tbodySelector));
-              });
-              if ( defaults.tfootSelector.length )
-                $rows.push.apply($rows, $(this).find('tfoot').find(defaults.tfootSelector));
-              $($rows).each(function () {
+            teOptions.columns = teOptions.columns.concat(headerRow);
+        });
+    
+        // Collect table body
+        $(el).find('tbody').each(function () {
+            $(this).find('tr').each(function () {
                 var rowData = [];
-                colKey      = 0;
-
-                ForEachVisibleCell(this, 'td,th', rowIndex, $hrows.length + $rows.length,
-                  function (cell, row, col) {
-                    var obj;
-
-                    if ( typeof teOptions.columns[colKey] === 'undefined' ) {
-                      // jsPDF-Autotable needs columns. Thus define hidden ones for tables without thead
-                      obj = {
-                        title: '',
-                        key:   colKey,
-                        style: {
-                          hidden: true
-                        }
-                      };
-                      teOptions.columns.push(obj);
-                    }
-                    if ( typeof cell !== 'undefined' && cell !== null ) {
-                      obj = getCellStyles(cell);
-                      obj.kids = $(cell).children();
-                      teOptions.rowoptions [rowCount + ":" + colKey++] = obj;
-                    }
-                    else {
-                      obj = $.extend(true, {}, teOptions.rowoptions [rowCount + ":" + (colKey - 1)]);
-                      obj.colspan = -1;
-                      teOptions.rowoptions [rowCount + ":" + colKey++] = obj;
-                    }
-
-                    rowData.push(parseString(cell, row, col));
-                  });
-                if ( rowData.length ) {
-                  teOptions.rows.push(rowData);
-                  rowCount++;
-                }
-                rowIndex++;
-              });
-
-              // onBeforeAutotable: optional callback function before calling
-              // jsPDF AutoTable that can be used to modify the AutoTable options
-              if ( typeof teOptions.onBeforeAutotable === 'function' )
-                teOptions.onBeforeAutotable($(this), teOptions.columns, teOptions.rows, atOptions);
-
-              teOptions.doc.autoTable(teOptions.columns, teOptions.rows, atOptions);
-
-              // onAfterAutotable: optional callback function after returning
-              // from jsPDF AutoTable that can be used to modify the AutoTable options
-              if ( typeof teOptions.onAfterAutotable === 'function' )
-                teOptions.onAfterAutotable($(this), atOptions);
-
-              // set the start position for the next table (in case there is one)
-              defaults.jspdf.autotable.startY = teOptions.doc.autoTableEndPosY() + atOptions.margin.top;
-
+                var colKey = 0;
+                $(this).find('td, th').each(function () {
+                    rowData.push({ content: $(this).text(), styles: { halign: 'center' } });
+                    colKey++;
+                });
+                teOptions.rows.push(rowData);
             });
-
-            jsPdfOutput(teOptions.doc, (typeof teOptions.images != 'undefined' && jQuery.isEmptyObject(teOptions.images) === false));
-
-            if ( typeof teOptions.headerrows != 'undefined' )
-              teOptions.headerrows.length = 0;
-            if ( typeof teOptions.columns != 'undefined' )
-              teOptions.columns.length = 0;
-            if ( typeof teOptions.rows != 'undefined' )
-              teOptions.rows.length = 0;
-            delete teOptions.doc;
-            teOptions.doc = null;
-          });
-        }
+        });
+    
+        // Prepare options for AutoTable
+        var autoTableOptions = {
+            margin: defaults.jspdf.margins,
+            headStyles: { fillColor: [2, 48, 71] }, // Example style
+            bodyStyles: { fontSize: 10 },
+            startY: 10, // Adjust as needed
+            theme: 'grid', // Or other themes as needed
+        };
+    
+        // Create the table
+        teOptions.doc.autoTable(teOptions.columns, teOptions.rows, autoTableOptions);
+    
+        jsPdfOutput(teOptions.doc, false);
+    }
       }
-
+  /////end of code
       /*
       function FindColObject (objects, colIndex, rowIndex) {
         var result = null;

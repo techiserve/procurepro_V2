@@ -6,6 +6,7 @@ use App\Http\Controllers\MasterController;
 use App\Http\Controllers\ProcurementController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -85,13 +86,24 @@ Route::middleware('auth')->group(function () {
      Route::put('/procurement/{id}/rejection', [ProcurementController::class, 'requisitionrejection'])->name('procurement.rejection');
      Route::put('/procurement/{id}/sendbackrequistion', [ProcurementController::class, 'sendbackrequistion'])->name('procurement.sendbackrequistion');
      Route::get('/procurement/indexpurchaseorder', [ProcurementController::class, 'indexpurchaseorder'])->name('procurement.indexpurchaseorder');
+     Route::get('/procurement/managepurchaseorder', [ProcurementController::class, 'managepurchaseorder'])->name('procurement.managepurchaseorder');
      Route::get('/procurement/{id}/purchaseorder', [ProcurementController::class, 'purchaseorder'])->name('procurement.purchaseorder');
+     Route::post('/procurement/purchaseorderrelease', [ProcurementController::class, 'purchaseorderrelease'])->name('purchaseorder.release');
      Route::get('/procurement/{id}/viewrequisition', [ProcurementController::class, 'viewrequisition'])->name('procurement.viewrequisition');
      Route::put('/purchaseorder/update/{id}', [ProcurementController::class, 'updatepurchaseorder'])->name('procurement.updatepurchaseorder');
      Route::get('/procurement/{id}/viewpurchaseorder', [ProcurementController::class, 'viewpurchaseorder'])->name('procurement.viewpurchaseorder');
      Route::get('/procurement/{id}/accept', [ProcurementController::class, 'approvepurchaseorder'])->name('procurement.approvepurchaseorder');
      Route::put('/procurement/{id}/reject', [ProcurementController::class, 'rejectpurchaseorder'])->name('procurement.rejectpurchaseorder');
      Route::put('/procurement/{id}/sendback', [ProcurementController::class, 'sendbackpurchaseorder'])->name('procurement.updatepurchaseorder');
+
+
+
+     //Reports
+     Route::get('/reports/requisitionreport', [ReportController::class, 'requisitionreport'])->name('reports.requisitionreport');
+     Route::post('/reports/filteredrequisitionreport', [ReportController::class, 'requisitionfiltered'])->name('requisition.filtered');
+     Route::post('/reports/filteredpurchaseorderreport', [ReportController::class, 'purchaseorderfiltered'])->name('purchaseorder.filtered');
+     Route::get('/reports/purchaseorderreport', [ReportController::class, 'purchaseorderreport'])->name('reports.purchaseorderreport');
+     Route::get('/reports/waitingpurchaseorder', [ReportController::class, 'waitingpurchaseorder'])->name('reports.waitingpurchaseorder');
 
 
 });

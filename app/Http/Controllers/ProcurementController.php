@@ -21,6 +21,7 @@ use App\Models\CompanyRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ProcurementController extends Controller
 {
@@ -103,6 +104,16 @@ class ProcurementController extends Controller
     }
 
 
+    public function managepurchaseorder()
+    {
+     
+        $purchaseorders = Purchaseorder::where('releaseStatus', '=', null)->get();
+        $roles = userrole::all();
+
+        return view('procurement.managepurchaseorder', compact('purchaseorders','roles'));
+    }
+
+
     public function logs(string $id)
     { 
        // dd($id);
@@ -122,6 +133,66 @@ class ProcurementController extends Controller
     }
 
 
+    public function purchaseorderrelease(Request $request)
+    { 
+
+      $selectedPurchaseOrders = $request->input('selected_items');
+     
+        if($request->input('action') == 'Complete_Selected_Orders'){
+        
+      if ($selectedPurchaseOrders) {
+
+        foreach ($selectedPurchaseOrders as $orderId) {
+
+            $purchaseOrder = PurchaseOrder::find($orderId);
+            if ($purchaseOrder) {
+                $purchaseOrder->releaseStatus = 1; // Set status to 1 (or any status you want)
+                $purchaseOrder->save();
+            }
+        }
+
+    }
+
+
+    return back()->with('success', 'Purchase Orders Completed!');
+
+}else{
+
+    return $this->exportToCsv();
+        
+}
+
+
+    }
+
+
+
+
+    private function exportToCsv()
+    {
+        // Fetch all purchase orders where status is 2
+        $purchaseOrders = PurchaseOrder::all();
+
+        $response = new StreamedResponse(function () use ($purchaseOrders) {
+            $handle = fopen('php://output', 'w');
+            
+            // Add CSV header
+            fputcsv($handle, ['ID', 'Order Number', 'RelaStatus', 'Status']);
+            
+            // Add rows for purchase orders with status = 2
+            foreach ($purchaseOrders as $purchaseOrder) {
+                fputcsv($handle, [$purchaseOrder->id, $purchaseOrder->vendor, $purchaseOrder->releaseStatus, $purchaseOrder->status]);
+            }
+
+            fclose($handle);
+        });
+
+        // Set headers for the CSV download
+        $response->headers->set('Content-Type', 'text/csv');
+        $response->headers->set('Content-Disposition', 'attachment; filename="purchase_orders.csv"');
+
+        return $response;
+    }
 
     
     public function viewpurchaseorder(string $id)

@@ -15,6 +15,8 @@
 <!-- <script src="{{ asset('coreui/js/sweetalert2.min.js') }}"></script> -->
 <!-- <script src="{{ asset('coreui/js/sweetalert.min.js') }}"></script> -->
 <script src="{{ asset('coreui/js/select2.min.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
 
 <!-- for bootstrap datatables -->
 <script src="{{ asset('coreui/js/data-table/bootstrap-table.js') }}"></script>
@@ -279,6 +281,47 @@
 <script>
     $(document).ready(function() {
         $('#areas').select2({
+            dropdownParent: $('#filterModal')
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('#status').select2({
+            dropdownParent: $('#filterModal')
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('#areas').select2({
+            dropdownParent: $('#filterModal')
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('#vendor').select2({
+            dropdownParent: $('#filterModal')
+        });
+    });
+</script>
+
+<script>
+    document.getElementById('selectAll').addEventListener('change', function(e) {
+        let checkboxes = document.querySelectorAll('input[name="selected_items[]"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = e.target.checked;
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('#service').select2({
             dropdownParent: $('#filterModal')
         });
     });
