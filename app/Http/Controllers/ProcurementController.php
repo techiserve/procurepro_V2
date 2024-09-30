@@ -356,7 +356,6 @@ class ProcurementController extends Controller
      */
     public function requisitionapproval(string $id)
     {
-     //   dd($id);
 
         $requisition = Requisition::where('id', $id)->first();
 
