@@ -13,6 +13,16 @@ class Requisition extends Model
 
         'vendor',
         'services',
+
+        'PropertyName',
+        'TransactionDescription',
+        'TaxTypeDescription',
+         
+        'SupplierCode',
+        'PropertyCode',
+        'TransactionCode',
+        'TaxTypeCode',
+
         'paymentmethod',
         'department',
         'expenses',
@@ -20,6 +30,7 @@ class Requisition extends Model
         'amount',
         'file',
         'userId',
+
         'status',
         'approvallevel',
         'totalapprovallevels',

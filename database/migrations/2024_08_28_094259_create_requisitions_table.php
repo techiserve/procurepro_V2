@@ -21,6 +21,13 @@ return new class extends Migration
             $table->integer('amount')->nullable();
             $table->integer('department')->nullable();
             $table->string('file')->nullable();
+            $table->string('SupplierCode')->nullable();
+            $table->string('PropertyCode')->nullable();
+            $table->string('TransactionCode')->nullable();
+            $table->string('TaxTypeCode')->nullable();
+            $table->string('PropertyName')->nullable();
+            $table->string('TransactionDescription')->nullable();
+            $table->string('TaxTypeDescription')->nullable();
             $table->integer('userId')->nullable();
             $table->integer('status')->nullable();
             $table->integer('isActive')->nullable();

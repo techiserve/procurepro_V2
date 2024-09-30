@@ -48,6 +48,34 @@
             <div class="row">
               <div class="col-sm-6">
                 <div class="form-group">
+                  <label for="grower_address">Property</label>
+                  <select class="js-example-basic-single form-control" id="property" name="property">
+                            <option value="" >Select Property</option>                       
+                            @foreach($properties as $propertie)
+                            <option value="{{ $propertie->PropertyName }}"> {{ $propertie->PropertyName }}</option>
+                            @endforeach
+                  </select>                                                     
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="grower_address">Transaction</label>
+                  <select class="js-example-basic-single form-control" id="transaction" name="transaction">
+                          <option value="" >Select Transaction</option>
+                           @foreach($transcations as $transcation)
+                            <option value="{{ $transcation->TransactionDescription }}"> {{ $transcation->TransactionDescription }}</option>
+                            @endforeach
+                        </select>
+                </div>
+              </div>
+            </div>
+     
+
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
                   <label for="grower_address">Payment Method</label>
                   <select class="js-example-basic-single form-control" id="grower_sizes" name="paymentmethod">
                             <option value="" >Select Payment Method</option>                       
@@ -94,6 +122,18 @@
                   <input class="form-control" id="national_id" name="amount" type="text" placeholder="Amount" required>
                 </div>
               </div> 
+
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="grower_address">Tax</label>
+                  <select class="js-example-basic-single form-control" id="tax" name="tax">
+                          <option value="" >Select Tax Type</option>
+                           @foreach($tax as $tax)
+                            <option value="{{ $tax->TaxTypeDescription }}"> {{ $tax->TaxTypeDescription }}</option>
+                            @endforeach
+                        </select>
+                </div>
+              </div>
           
             </div>
 

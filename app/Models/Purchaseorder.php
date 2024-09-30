@@ -20,6 +20,16 @@ class Purchaseorder extends Model
         'expenses',
         'projectcode',
         'amount',
+        
+        'PropertyName',
+        'TransactionDescription',
+        'TaxTypeDescription',
+         
+        'SupplierCode',
+        'PropertyCode',
+        'TransactionCode',
+        'TaxTypeCode',
+
         'invoiceamount',
         'jobcardfile',
         'invoice',

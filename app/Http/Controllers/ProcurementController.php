@@ -32,42 +32,20 @@ class ProcurementController extends Controller
     {
 
         $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();
-        // $vendors = [
-        //     [
-        //         'SupplierID' => 1,
-        //         'SupplierName' => 'Supplier One',
-        //     ],
-        //     [
-        //         'SupplierID' => 2,
-        //         'SupplierName' => 'Supplier Two',
-        //     ],
-        //     [
-        //         'SupplierID' => 3,
-        //         'SupplierName' => 'Supplier Three',
-        //     ],
-            // Add as many suppliers as needed
-       // ];
 
-        $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
+        $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->select('ServiceTypeDescription')->get();
 
-    //    $servicetype = [
-    //     [
-    //         'ServiceTypeDescription' => ' One',
-    //     ],
-    //     [
-    //         'ServiceTypeDescription' => ' Two',
-    //     ],
-    //     [
-    //         'ServiceTypeDescription' => ' Three',
-    //     ],
-        // Add as many suppliers as needed
-   //  ];
+        $properties = DB::connection('sqlsrv')->table('Properties')->select('PropertyName')->get();
 
-      //  dd($servicetype);
+        $transcations = DB::connection('sqlsrv')->table('TransactionCodes')->select('TransactionDescription')->get();
 
-     $departments = Department::where('companyId', Auth::user()->companyId)->get();
+        $tax = DB::connection('sqlsrv')->table('TaxTypes')->select('TaxTypeDescription')->get();
 
-     return view('procurement.createrequisition', compact('departments','vendors','servicetype'));
+        $departments = Department::where('companyId', Auth::user()->companyId)->get();
+
+       // dd($vendors);
+
+     return view('procurement.createrequisition', compact('departments','vendors','servicetype','properties','transcations','tax'));
     }
 
     /**
@@ -82,7 +60,6 @@ class ProcurementController extends Controller
         return view('procurement.indexrequisiton', compact('requisitions','roles'));
     }
 
-
     
     public function viewrequisition(string $id)
     {
@@ -92,7 +69,6 @@ class ProcurementController extends Controller
 
         return view('procurement.viewrequisition', compact('purchaseorder','files'));
     }
-
 
     public function indexpurchaseorder()
     {
@@ -116,8 +92,7 @@ class ProcurementController extends Controller
 
     public function logs(string $id)
     { 
-       // dd($id);
-     
+
         $histories = RequisitionHistory::where('requisitionId', '=', $id)->get();
         return view('procurement.logs', compact('histories'));
 
@@ -176,10 +151,10 @@ class ProcurementController extends Controller
         $response = new StreamedResponse(function () use ($purchaseOrders) {
             $handle = fopen('php://output', 'w');  
             // Add CSV header
-            fputcsv($handle, ['Vendor','Services','Paymend Method','Expense', 'Project Code', 'Invoice Amount', 'Date']);        
+            fputcsv($handle, ['Supplier Code','Property Code','Transaction Code','Expense', 'Tax Code', 'Invoice Amount', 'Date']);        
             // Add rows for purchase orders with status = 2
             foreach ($purchaseOrders as $purchaseOrder) {
-                fputcsv($handle, [$purchaseOrder->vendor, $purchaseOrder->services, $purchaseOrder->paymentmethod, $purchaseOrder->expenses, $purchaseOrder->projectcode,$purchaseOrder->invoiceamount, $purchaseOrder->created_at]);
+                fputcsv($handle, [$purchaseOrder->SupplierCode, $purchaseOrder->PropertyCode, $purchaseOrder->TransactionCode, $purchaseOrder->expenses, $purchaseOrder->TaxTypeCode,$purchaseOrder->invoiceamount, $purchaseOrder->created_at]);
             }
 
             fclose($handle);
@@ -238,12 +213,11 @@ class ProcurementController extends Controller
         $totalapprovallevels = Departmentapproval::where('departmentId', $request->department)->count();
         $approver = Departmentapproval::where('departmentId', $request->department)->where('approvalId', $level)->first();
 
-       // dd($request->file('file'));
-
-    //    $quotationfile = $request->file('file')->store('uploads', 'public');
-
-    //    $quotation =  Str::afterLast($quotationfile, '/');
-
+        $supplierCode = DB::connection('sqlsrv')->table('Suppliers')->where('SupplierName', $request->vendor)->select('SupplierCode')->first();
+        $Properties = DB::connection('sqlsrv')->table('Properties')->where('PropertyName', $request->property)->select('PropertyCode')->first();
+        $Transaction = DB::connection('sqlsrv')->table('TransactionCodes')->where('TransactionDescription', $request->transaction)->select('TransactionCode')->first();
+        $Tax = DB::connection('sqlsrv')->table('TaxTypes')->where('TaxTypeDescription', $request->tax)->select('TaxTypeCode')->first();
+        //dd($supplierCode->SupplierCode,$Properties,$Transaction,$Tax);
 
        $requisition = Requisition::create([
 
@@ -254,7 +228,16 @@ class ProcurementController extends Controller
         'expenses'  => $request->expenses,
         'projectcode'  => $request->projectcode,
         'amount'  => $request->amount,
-     //   'file'  => $quotation,
+
+        'PropertyName'  => $request->property,
+        'TransactionDescription'  => $request->transaction,
+        'TaxTypeDescription'  => $request->tax,
+
+        'SupplierCode' => $supplierCode->SupplierCode,
+        'PropertyCode'  => $Properties->PropertyCode,
+        'TransactionCode'  => $Transaction->TransactionCode,
+        'TaxTypeCode'  => $Tax->TaxTypeCode,
+
         'userId'  =>Auth::user()->id,
         'status'  => 1,
         'approvallevel'  => $level,
@@ -263,8 +246,7 @@ class ProcurementController extends Controller
         'isActive'  => 1,
         
        ]);
-
-        
+ 
 
        if ($request->hasFile('file')) {
         // Loop through each file
@@ -400,6 +382,16 @@ class ProcurementController extends Controller
             'paymentmethod'  => $requisition->paymentmethod,
             'department'  => $requisition->department,
             'expenses'  => $requisition->expenses,
+
+            'PropertyName'  => $requisition->PropertyName,
+            'TransactionDescription'  => $requisition->TransactionDescription,
+            'TaxTypeDescription'  => $requisition->TaxTypeDescription,
+    
+            'SupplierCode' => $requisition->SupplierCode,
+            'PropertyCode'  => $requisition->PropertyCode,
+            'TransactionCode'  => $requisition->TransactionCode,
+            'TaxTypeCode'  => $requisition->TaxTypeCode,
+
             'projectcode'  => $requisition->projectcode,
             'amount'  => $requisition->amount,
             'userId'  => $requisition->userId,

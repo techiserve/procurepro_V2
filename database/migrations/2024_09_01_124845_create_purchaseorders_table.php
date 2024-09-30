@@ -19,6 +19,13 @@ return new class extends Migration
             $table->string('paymentmethod')->nullable();
             $table->string('expenses')->nullable();
             $table->string('projectcode')->nullable();
+            $table->string('SupplierCode')->nullable();
+            $table->string('PropertyCode')->nullable();
+            $table->string('TransactionCode')->nullable();
+            $table->string('TaxTypeCode')->nullable();
+            $table->string('PropertyName')->nullable();
+            $table->string('TransactionDescription')->nullable();
+            $table->string('TaxTypeDescription')->nullable();
             $table->integer('amount')->nullable();
             $table->integer('invoiceamount')->nullable();
             $table->integer('department')->nullable();
