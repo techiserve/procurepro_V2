@@ -76,7 +76,7 @@ class ProcurementController extends Controller
     public function indexrequisition()
     {
      
-        $requisitions = Requisition::where('userId', Auth::user()->id)->orwhere('approvedby', Auth::user()->userrole)->where('isActive', '=', 1)->get();
+        $requisitions = Requisition::where('userId', Auth::user()->id)->orwhere('approvedby', Auth::user()->userrole)->where('status', '!=', 2)->get();
         $roles = userrole::all();
 
         return view('procurement.indexrequisiton', compact('requisitions','roles'));
@@ -97,7 +97,7 @@ class ProcurementController extends Controller
     public function indexpurchaseorder()
     {
      
-        $purchaseorders = Purchaseorder::where('userId', Auth::user()->id)->orwhere('approvedby', Auth::user()->userrole)->where('isActive', '=', 1)->get();
+        $purchaseorders = Purchaseorder::where('userId', Auth::user()->id)->orwhere('approvedby', Auth::user()->userrole)->where('status', '!=', 2)->get();
         $roles = userrole::all();
 
         return view('procurement.indexpurchaseorder', compact('purchaseorders','roles'));
@@ -171,17 +171,15 @@ class ProcurementController extends Controller
     private function exportToCsv()
     {
         // Fetch all purchase orders where status is 2
-        $purchaseOrders = PurchaseOrder::all();
+        $purchaseOrders = PurchaseOrder::where('status', 2)->get();
 
         $response = new StreamedResponse(function () use ($purchaseOrders) {
-            $handle = fopen('php://output', 'w');
-            
+            $handle = fopen('php://output', 'w');  
             // Add CSV header
-            fputcsv($handle, ['ID', 'Order Number', 'RelaStatus', 'Status']);
-            
+            fputcsv($handle, ['Vendor','Services','Paymend Method','Expense', 'Project Code', 'Invoice Amount', 'Date']);        
             // Add rows for purchase orders with status = 2
             foreach ($purchaseOrders as $purchaseOrder) {
-                fputcsv($handle, [$purchaseOrder->id, $purchaseOrder->vendor, $purchaseOrder->releaseStatus, $purchaseOrder->status]);
+                fputcsv($handle, [$purchaseOrder->vendor, $purchaseOrder->services, $purchaseOrder->paymentmethod, $purchaseOrder->expenses, $purchaseOrder->projectcode,$purchaseOrder->invoiceamount, $purchaseOrder->created_at]);
             }
 
             fclose($handle);

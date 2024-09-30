@@ -17,7 +17,7 @@
           <form action="{{ route('purchaseorder.release') }}" method="POST">
           @csrf <!-- Always include CSRF token for security -->
           <button  type="submit"  name="action" value="Complete_Selected_Orders" class="btn btn-primary btn-sm pull-right" ><i class="fa fa-filter"></i> Complete Selected Orders</button>
-          <button  type="submit"  name="action" value="Relase_Selected_Orders" class="btn btn-success btn-sm pull-right" ><i class="fa fa-filter"></i> Release Selected Orders</button>
+          <button  type="submit"  name="action" value="Release_Selected_Orders" class="btn btn-success btn-sm pull-right" ><i class="fa fa-filter"></i> Release Purchase Orders</button>
             <table class="table table-responsive-sm table-bordered table-striped table-sm">
               <thead>
                 <tr>
