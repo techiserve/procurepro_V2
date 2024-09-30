@@ -37,7 +37,7 @@ class MasterController extends Controller
     {  
         $companyId = Auth::user()->companyId;
 
-        $banks = Bank::where('companyId', $companyId )->get();
+        $banks = Bank::all();
 
         return view('master.banks', compact('banks'));
     }
@@ -47,8 +47,8 @@ class MasterController extends Controller
     {  
         $companyId = Auth::user()->companyId;
 
-        $banks = Bank::where('companyId', $companyId)->get();
-        $bankaccounts = Bankaccount::where('companyId', $companyId )->get();
+        $banks = Bank::all();
+        $bankaccounts = Bankaccount::all();
 
         return view('master.bankAccount', compact('banks','bankaccounts'));
     }
