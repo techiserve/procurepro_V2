@@ -88,7 +88,7 @@
                   <td class="text-center">{{$user->name}}</td>
                   <td class="text-center">
                   @if($user->isActive == null)
-                    <span class='badge badge-secondary'>Active</span>
+                    <span class='badge badge-success'>Active</span>
                     @else
                     <span class='badge badge-success'>Active</span>
                     @endif
