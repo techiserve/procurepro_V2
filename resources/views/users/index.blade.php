@@ -16,7 +16,7 @@
             <table class="table table-responsive-sm table-bordered table-striped table-sm">
               <thead>
                 <tr>
-                  <th>#</th>
+               
                   <th class="text-center">Status</th>
                   <th>Name</th>
 
@@ -30,14 +30,13 @@
               <tbody>
                 @foreach($users as $user)
                 <tr>
-                <td></td>
+           
                 <td class="text-center">
               
-              @if($user->isActive == null)
-              <div class="avatar avatar-md"><img class="avatar-img" src="{{ asset('/coreui/img/avatars/fnbbb.png') }}" alt="user@email.com"><span class="avatar-status bg-danger"></span></div>
+              @if($user->isActive == 1)
+              <button type="button" class="btn btn-outline-success"><span class="fa fa-check-circle"></span> Active</button>
                 @else
-                <!-- <span class='badge badge-success'>Active</span> -->
-                <div class="avatar avatar-md"><img class="avatar-img" src="{{ asset('/coreui/img/avatars/6.jpg') }}" alt="user@email.com"><span class="avatar-status bg-success"></span></div>
+                <button type="button" class="btn btn-outline-danger"><span class="fa fa-check-circle"></span> InActive</button>
                 @endif
               
               </td>
