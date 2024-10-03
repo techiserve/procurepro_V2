@@ -26,13 +26,22 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
     {
 
+  
         $request->authenticate();
     
         $request->session()->regenerate();
 
         if (Auth::guard('web')->check()) {
 
-            return redirect()->intended(RouteServiceProvider::HOME);
+            if (Auth::guard('web')->user()->isActive) {
+                return redirect()->intended(RouteServiceProvider::HOME);
+            } else {
+                // If the user is inactive, log them out and show an error message.
+                Auth::guard('web')->logout();
+                return redirect()->back()->withErrors([
+                    'email' => 'Your account is inactive. Please contact support.',
+                ]);
+            }
         }
     
         if (Auth::guard('company')->check()){
