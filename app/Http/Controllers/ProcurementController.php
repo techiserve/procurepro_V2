@@ -85,6 +85,18 @@ class ProcurementController extends Controller
         return view('procurement.viewrequisition', compact('purchaseorder','files'));
     }
 
+
+    public function editrequisition(string $id)
+    {
+     
+        $purchaseorder = Requisition::where('id', $id)->first();
+        $files = Requisitionfile::where('requisitionId', $id)->get();
+
+        return view('procurement.editrequisition', compact('purchaseorder','files'));
+    }
+
+
+
     public function indexpurchaseorder()
     {
      
@@ -155,6 +167,33 @@ class ProcurementController extends Controller
 
     }
 
+
+
+
+
+
+
+    public function updaterequisition(Request $request, $id)
+    {
+        $level = Departmentapproval::where('departmentId', $request->department)->min('approvalId');
+        $totalapprovallevels = Departmentapproval::where('departmentId', $request->department)->count();
+        $approver = Departmentapproval::where('departmentId', $request->department)->where('approvalId', $level)->first();
+
+      $updaterequisition = Requisition::where('id', $id)->update([
+
+        'expenses'  => $request->expenses,
+        'projectcode'  => $request->projectcode,
+        'amount'  => $request->amount,
+        'approvallevel'  => $level,
+        'totalapprovallevels'  => $totalapprovallevels,
+        'approvedby' => $approver->roleId, 
+        'isActive'  => 1,
+        'status'  => 1,
+
+      ]);
+
+      return redirect()->route('procurement.indexrequisition')->with('success', 'Requisition Updated successfully!');
+    }
 
 
 
@@ -527,7 +566,7 @@ class ProcurementController extends Controller
                 'approvallevel' => $requisition->approvallevel,
                 'reason' => $request->message,
                 'isActive' => 0, 
-                'status'  => 2,
+                'status'  => 4,
 
                  ]);  
                  
@@ -538,7 +577,7 @@ class ProcurementController extends Controller
                     'amount'  => $requisition->amount,
                     'userId'  =>Auth::user()->id,
                     'status'  => 1,
-                    'approvallevel' =>  $updatedapprovallevel,
+                    'approvallevel' =>  $requisition->approvallevel,
                     'approvedby' => Auth::user()->userrole, 
                     'isActive'  => 1,
                     'action'  => "Purchase Requisition Returned",

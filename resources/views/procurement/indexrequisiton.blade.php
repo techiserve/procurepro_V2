@@ -67,8 +67,19 @@
             
                   <td class="text-center">
 
-                    @if($company->userId != auth()->user()->id)
-                    <a  href="/procurement/{{$company->id}}/viewrequisition"  class='btn btn-info btn-sm' style='color: white;'>
+                    @if($company->userId == auth()->user()->id)
+
+                    @if($company->status == 4)
+                    <a  href="/procurement/{{$company->id}}/editrequisition"  class='btn btn-info btn-sm' style='color: white;'>
+                      <span class='fa fa-desktop'></span>
+                      <span class='hidden-sm hidden-sm hidden-md'> Update Requisition</span>
+                    </a>&nbsp;
+                    <a  href="/procurement/{{$company->id}}/logs" class='btn btn-success btn-sm' style='color: white;'>
+                      <span class='fa fa-pencil'></span>
+                      <span class='hidden-sm hidden-sm hidden-md'> View Logs</span>
+                   </a>&nbsp;
+                    @else
+                      <a  href="/procurement/{{$company->id}}/viewrequisition"  class='btn btn-info btn-sm' style='color: white;'>
                       <span class='fa fa-desktop'></span>
                       <span class='hidden-sm hidden-sm hidden-md'> View Requisition</span>
                     </a>&nbsp;
@@ -76,6 +87,10 @@
                       <span class='fa fa-pencil'></span>
                       <span class='hidden-sm hidden-sm hidden-md'> View Logs</span>
                    </a>&nbsp;
+                   @endif
+
+                    
+                
                     <!-- <a href='/procurement/{{$company->id}}/approve' class='btn btn-success btn-sm' style='color: white;'>
                       <span class='fa fa-pencil'></span>
                       <span class='hidden-sm hidden-sm hidden-md'> Approve</span>

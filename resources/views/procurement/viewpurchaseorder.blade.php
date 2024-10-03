@@ -203,8 +203,7 @@
                   @method('put')
 										<div class="form-group">
 											<label for="message">Reason for rejecting</label>
-											<textarea rows="3" name="message" class="form-control" maxlength="150" required>
-											</textarea>
+											<textarea rows="3" name="message" class="form-control" maxlength="150" required></textarea>
 										</div>
                   </div>
 
@@ -235,9 +234,8 @@
                    @csrf
                   @method('put')
 										<div class="form-group">
-											<label for="message">Reason for rejecting</label>
-											<textarea rows="3" name="message" class="form-control" maxlength="150" required>
-											</textarea>
+											<label for="message">Reason for Returning</label>
+											<textarea rows="3" name="message" class="form-control" maxlength="150" required></textarea>
 										</div>
                   </div>
 
