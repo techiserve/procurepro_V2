@@ -15,7 +15,7 @@
         <div class="card">
           <div class="card-header">
             <strong>Executive Registration</strong>
-            <a href="/growers/" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="fa fa-align-justify"></i> Users List</a>
+            <a href="/users/index" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="fa fa-align-justify"></i> Users List</a>
           </div>
 
           <div class="card-body">
@@ -285,7 +285,6 @@
           <div class="card-footer">
             <div class="form-group pull-right">
     				<input type="submit" class="btn btn-success" value="Edit Role"/>
-    				<input type="reset" class="btn btn-danger" value="Cancel Editing"/>
     			</div>
           </div>
        </div>

@@ -73,6 +73,13 @@ class UserController extends Controller
     {
        
       //  dd($request->all());
+      $searchemail = User::where('email','=', $request->email)->first();
+
+      if($searchemail){
+
+        return redirect()->route('users.create')->with('error', 'A user with this email already exists!');
+      }
+     
 
     if($request->password == $request->confirmpassword){
 

@@ -21,13 +21,18 @@ use App\Models\CompanyRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\HtmlString;
+use Symfony\Component\Mime\Part\TextPart;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-
+use App\Mail\SendSampleEmail;
+ 
 class ProcurementController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+    
     public function createrequisition()
     {
 
@@ -53,7 +58,17 @@ class ProcurementController extends Controller
      */
     public function indexrequisition()
     {
-     
+
+        $emailData = [
+
+               'title' => 'Test Email from Procure Pro ',
+               'body'  => 'This is a test email sent from to see if procurement is happening.'
+
+        ];
+
+        // Queue the email for background processing
+        Mail::to('v.mhokore@techiserve.com')->queue(new SendSampleEmail($emailData));
+
         $requisitions = Requisition::where('userId', Auth::user()->id)->orwhere('approvedby', Auth::user()->userrole)->where('status', '!=', 2)->get();
         $roles = userrole::all();
 
@@ -372,7 +387,8 @@ class ProcurementController extends Controller
 
                  ]);   
 
-          // gadzira purchase order
+          // gadzira purchase order then add upload file too
+
           $requisition = Purchaseorder::create([
 
             'requisitionId' => $requisition->id,
@@ -471,7 +487,7 @@ class ProcurementController extends Controller
                 'reason' => $request->message,
                 'isActive' => 0, 
                 'status'  => 3,
-              //  'purchaseorderstatus'  => 3,
+           
 
                  ]);   
 
@@ -483,7 +499,6 @@ class ProcurementController extends Controller
                     'amount'  => $requisition->amount,
                     'userId'  =>Auth::user()->id,
                     'status'  => 1,
-                 //   'approvallevel' =>  $updatedapprovallevel,
                     'approvedby' => Auth::user()->userrole, 
                     'isActive'  => 1,
                     'action'  => "Purchase Requisition Rejected",
@@ -513,7 +528,6 @@ class ProcurementController extends Controller
                 'reason' => $request->message,
                 'isActive' => 0, 
                 'status'  => 2,
-               // 'purchaseorderstatus'  => 3,
 
                  ]);  
                  
@@ -597,7 +611,6 @@ class ProcurementController extends Controller
 
                     'requisitionId' => $requisition->requisitionId,
                     'amount'  => $requisition->amount,
-                 //   'file'  => $quotation,
                     'userId'  =>Auth::user()->id,
                     'status'  => 1,
                     'approvallevel' =>  $updatedapprovallevel,
@@ -621,7 +634,6 @@ class ProcurementController extends Controller
 
     public function rejectpurchaseorder(Request $request, string $id)
     {
-       // dd($request->all(),$id);
 
         $requisition = Purchaseorder::where('id', $id)->first();
 
@@ -666,8 +678,6 @@ class ProcurementController extends Controller
      */
     public function sendbackpurchaseorder(Request $request, string $id)
     {
-       // dd($id,$request->all());
-       // $requisition = Purchaseorder::where('id', $id)->first();
 
         $updatereq = Purchaseorder::where('id', $id)->update([
 

@@ -223,14 +223,14 @@
             <a class="nav-link" href="/master/departments">
               <i class="nav-icon icon-user-follow"></i>Departments</a>
           </li>
-          <li class="nav-item active">
+          <!-- <li class="nav-item active">
             <a class="nav-link" href="/master/banks">
               <i class="nav-icon icon-user-following"></i>Manage Banks</a>
           </li>
           <li class="nav-item active">
             <a class="nav-link" href="/master/bankAccount">
               <i class="nav-icon icon-user-follow"></i> Bank Accounts</a>
-          </li>     
+          </li>      -->
         </ul>
       </li>
       @endif

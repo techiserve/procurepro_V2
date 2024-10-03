@@ -17,7 +17,7 @@
         <div class="card">
           <div class="card-header">
             <strong>Add New Department</strong>
-            <a href="#" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="fa fa-align-justify"></i></a>
+           
            </div>
 
            <div class="card-body">
