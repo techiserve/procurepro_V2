@@ -163,9 +163,9 @@ h5, h6 {
                 <div class="card-body">
                 <div class="row mt-3">
                     <div class="col-xl-12">
-                        <a href="{{ url()->previous() }}" class="btn btn-primary btn-rounded waves-effect waves-light">
+                        <!-- <a href="{{ url()->previous() }}" class="btn btn-primary btn-rounded waves-effect waves-light">
                             ← Return Back
-                        </a>
+                        </a> -->
                     </div>
                 </div>
                     <div class="row justify-content-center mt-4 pt-3">
@@ -208,4 +208,5 @@ h5, h6 {
         </div>
     </div>
 </div>
+
 @endsection

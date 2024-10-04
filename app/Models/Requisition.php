@@ -39,4 +39,11 @@ class Requisition extends Model
         'approvedby'
        
     ];
+
+
+
+    public function histories()
+    {
+        return $this->hasMany(RequisitionHistory::class);
+    }
 }

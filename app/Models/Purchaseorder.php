@@ -12,7 +12,7 @@ class Purchaseorder extends Model
     
     protected $fillable = [
 
-        'requisitionId',
+        'requisition_id',
         'vendor',
         'services',
         'paymentmethod',
@@ -46,5 +46,11 @@ class Purchaseorder extends Model
         'uploadStatus'
        
     ];
+
+    public function histories()
+    {
+        return $this->hasMany(RequisitionHistory::class, 'requisition_id', 'requisition_id');
+
+    }
 
 }

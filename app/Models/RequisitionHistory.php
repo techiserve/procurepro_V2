@@ -11,7 +11,7 @@ class RequisitionHistory extends Model
 
     protected $fillable = [
 
-        'requisitionId',
+        'requisition_id',
         'vendor',
         'services',
         'paymentmethod',
@@ -29,4 +29,17 @@ class RequisitionHistory extends Model
         'reason'
        
     ];
+
+
+    public function requisition()
+    {
+        return $this->belongsTo(Requisition::class);
+    }
+
+    public function purchaseorder()
+    {
+        return $this->belongsTo(Purchaseorder::class);
+    }
 }
+
+
