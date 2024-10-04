@@ -61,8 +61,8 @@ class ProcurementController extends Controller
 
         $emailData = [
 
-               'title' => 'Test Email from Procure Pro ',
-               'body'  => 'This is a test email sent from to see if procurement is happening.'
+               'title' => 'Test from Procure Pro',
+               'body'  => 'This is a test email.'
 
         ];
 
