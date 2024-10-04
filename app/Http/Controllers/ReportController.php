@@ -121,7 +121,7 @@ class ReportController extends Controller
         $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
         $departments = Department::all();
 
-      return view('reports.filteredpurchasereport', compact('requisitions','vendors','servicetype','departments'));
+      return view('reports.filteredpurchaseorderreport', compact('requisitions','vendors','servicetype','departments'));
     }
 
     /**

@@ -69,7 +69,7 @@
           {{ csrf_field() }}
           <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title">Filter Requisition Summary</h4>
+              <h4 class="modal-title">Filter Purchase Order Summary</h4>
               <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">×</span>
               </button>
