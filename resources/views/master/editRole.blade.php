@@ -15,7 +15,7 @@
         <div class="card">
           <div class="card-header">
             <strong>Executive Registration</strong>
-            <a href="/users/index" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="fa fa-align-justify"></i> Users List</a>
+            <a href="/master/manageRole" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="fa fa-align-justify"></i> Users Roles</a>
           </div>
 
           <div class="card-body">
