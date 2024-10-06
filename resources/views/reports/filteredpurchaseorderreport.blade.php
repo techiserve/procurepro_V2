@@ -93,19 +93,21 @@
                 </select>
               </div>
               <div class="form-group">
-                <label for="vendor">Service Type</label>
-                <select name="vendor" id="vendor" class="js-example-basic-single form-control"  style="width:100%;">   
+                <label for="vendor">Vendor</label>
+                <select name="vendor" id="vendor" class="js-example-basic-single form-control"  style="width:100%;"> 
+                <option value="">--Select Vendor--</option>   
                 @foreach($vendors as $vendor)
-                <option value="">--Select Vendor--</option> 
+              
                 <option value="{{ $vendor->SupplierName }}"> {{ $vendor->SupplierName }}</option>
                   @endforeach        
                 </select>
               </div>
               <div class="form-group">
-                <label for="service">Vendor</label>
+                <label for="service">Service</label>
                 <select name="service" id="service" class="js-example-basic-single form-control"  style="width:100%;"> 
-                @foreach($servicetype as $servicetype)  
                 <option value="">--Select Service--</option> 
+                @foreach($servicetype as $servicetype)  
+             
                 <option value="{{ $servicetype->ServiceTypeDescription }}"> {{ $servicetype->ServiceTypeDescription }}</option>
                   @endforeach          
                 </select>
