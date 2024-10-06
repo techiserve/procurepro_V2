@@ -93,7 +93,7 @@
                 </select>
               </div>
               <div class="form-group">
-                <label for="vendor">Service Type</label>
+                <label for="vendor">Vendor</label>
                 <select name="vendor" id="vendor" class="js-example-basic-single form-control"  style="width:100%;">   
                 <option value="">--Select Vendor--</option> 
                 @foreach($vendors as $vendor)
@@ -103,7 +103,7 @@
                 </select>
               </div>
               <div class="form-group">
-                <label for="service">Vendor</label>
+                <label for="service">Service Type</label>
                 <select name="service" id="service" class="js-example-basic-single form-control"  style="width:100%;"> 
                 <option value="">--Select Service--</option> 
                 @foreach($servicetype as $servicetype)  
