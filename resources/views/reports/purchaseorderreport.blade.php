@@ -105,8 +105,9 @@
               <div class="form-group">
                 <label for="service">Vendor</label>
                 <select name="service" id="service" class="js-example-basic-single form-control"  style="width:100%;"> 
-                @foreach($servicetype as $servicetype)  
                 <option value="">--Select Service--</option> 
+                @foreach($servicetype as $servicetype)  
+                
                 <option value="{{ $servicetype->ServiceTypeDescription }}"> {{ $servicetype->ServiceTypeDescription }}</option>
                   @endforeach          
                 </select>
