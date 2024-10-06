@@ -95,8 +95,9 @@
               <div class="form-group">
                 <label for="vendor">Service Type</label>
                 <select name="vendor" id="vendor" class="js-example-basic-single form-control"  style="width:100%;">   
-                @foreach($vendors as $vendor)
                 <option value="">--Select Vendor--</option> 
+                @foreach($vendors as $vendor)
+               
                 <option value="{{ $vendor->SupplierName }}"> {{ $vendor->SupplierName }}</option>
                   @endforeach        
                 </select>
