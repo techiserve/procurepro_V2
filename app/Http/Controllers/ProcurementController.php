@@ -621,7 +621,7 @@ class ProcurementController extends Controller
 
                  $requisitiond = RequisitionHistory::create([
 
-                    'requisition_id' => $requisition->requisitionId,
+                    'requisition_id' => $requisition->requisition_id,
                     'amount'  => $requisition->amount,
                  //   'file'  => $quotation,
                     'userId'  =>Auth::user()->id,
@@ -652,7 +652,7 @@ class ProcurementController extends Controller
 
                  $requisitiond = RequisitionHistory::create([
 
-                    'requisition_id' => $requisition->requisitionId,
+                    'requisition_id' => $requisition->requisition_id,
                     'amount'  => $requisition->amount,
                     'userId'  =>Auth::user()->id,
                     'status'  => 1,
@@ -690,17 +690,16 @@ class ProcurementController extends Controller
                 'reason'  => $request->message,
 
                  ]);  
-                 
-                 
+                                
                  
                  $requisitiond = RequisitionHistory::create([
 
-                    'requisition_id' => $requisition->requisitionId,
+                    'requisition_id' => $requisition->requisition_id,
                     'amount'  => $requisition->amount,
                  //   'file'  => $quotation,
                     'userId'  =>Auth::user()->id,
                     'status'  => 1,
-                    'approvallevel' =>  $updatedapprovallevel,
+                   // 'approvallevel' =>  $updatedapprovallevel,
                     'approvedby' => Auth::user()->userrole, 
                     'isActive'  => 1,
                     'action'  => "Purchase Order Rejected",
@@ -735,15 +734,16 @@ class ProcurementController extends Controller
         ]);   
 
 
+        $requisition = Purchaseorder::where('id', $id)->first();
         
         $requisitiond = RequisitionHistory::create([
 
-            'requisition_id' => $requisition->requisitionId,
+            'requisition_id' => $requisition->requisition_id,
             'amount'  => $requisition->amount,
          //   'file'  => $quotation,
             'userId'  =>Auth::user()->id,
             'status'  => 1,
-            'approvallevel' =>  $updatedapprovallevel,
+            'approvallevel' =>  0,
             'approvedby' => Auth::user()->userrole, 
             'isActive'  => 1,
             'action'  => "Purchase Order Returned",
