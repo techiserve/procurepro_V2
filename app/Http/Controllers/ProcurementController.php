@@ -149,10 +149,12 @@ class ProcurementController extends Controller
         foreach ($selectedPurchaseOrders as $orderId) {
 
             $purchaseOrder = PurchaseOrder::find($orderId);
+            if($purchaseOrder->status == 2 ){
             if ($purchaseOrder) {
                 $purchaseOrder->releaseStatus = 1; // Set status to 1 (or any status you want)
                 $purchaseOrder->save();
             }
+        }
         }
 
     }

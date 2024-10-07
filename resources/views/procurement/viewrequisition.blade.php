@@ -213,7 +213,6 @@
 										<div class="form-group">
 											<label for="message">Reason for Returning</label>
 											<textarea rows="3" name="message" class="form-control" maxlength="150" required></textarea>
-
 										</div>
                   </div>
 
