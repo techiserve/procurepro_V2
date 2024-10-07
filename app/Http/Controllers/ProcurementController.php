@@ -740,7 +740,6 @@ class ProcurementController extends Controller
 
             'requisition_id' => $requisition->requisition_id,
             'amount'  => $requisition->amount,
-         //   'file'  => $quotation,
             'userId'  =>Auth::user()->id,
             'status'  => 1,
             'approvallevel' =>  0,
