@@ -39,7 +39,8 @@
               <tbody>
                 @foreach($purchaseorders as $company)
                 <tr>
-                <td><input type="checkbox" name="selected_items[]" value="{{ $company->id }}">
+                @php  $active = $company->status; @endphp
+                <td><input type="checkbox" name="selected_items[]" value="{{ $company->id }}"   @if($active != '2') disabled @endif>
                 </td>
                   <td>{{$company->vendor}}</td>
                   <td>{{$company->services}}</td>
