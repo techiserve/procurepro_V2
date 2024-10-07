@@ -202,6 +202,57 @@ class MasterController extends Controller
     }
 
 
+
+    
+    public function departmentUpdate(Request $request,$id)
+    {  
+      
+        //dd($request->all(),$id);
+        $userId = Auth::user()->id;
+        $companyId = Auth::user()->companyId;
+        $approval = $request->input('approval');
+        $userrole = $request->input('role');
+
+        
+        $updatedepartment = Department::where('id', $id)->update([
+
+           'name' => $request->departmentname
+        ]);
+
+        $department = Department::where('id', $id)->first();
+        $deleteroles = Departmentapproval::where('departmentId', $department->id )->delete();
+
+        if($deleteroles){
+
+            foreach($approval as $key => $n ) {
+    
+                $arrData[] = array(
+    
+                    $companyrole = Departmentapproval::create([
+    
+                        'department' => $department->name,
+                        'userId' => $userId,
+                        'approvalId' =>$approval[$key],
+                        'companyId' => $companyId,
+                        'departmentId'  => $department->id,
+                        'roleId'  => $userrole[$key]
+                        
+                    ])
+                );
+    
+            }
+    
+            }
+
+        if($department){
+
+            return redirect()->route('master.department')->with('success', 'Department updated successfully!');
+        }
+          return redirect()->route('master.department')->with('error', 'Failed to update Department!');
+       
+    }
+
+
     public function delete($id)
     {
          $role = userrole::where('id', $id)->delete();

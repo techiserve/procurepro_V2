@@ -77,6 +77,7 @@ Route::middleware('auth')->group(function () {
      Route::get('/master/bankAccount', [MasterController::class, 'bankAccount'])->name('master.bankAccount');
      Route::post('/banks/store', [MasterController::class, 'banksStore'])->name('banks.store');
      Route::post('/department/store', [MasterController::class, 'departmentStore'])->name('department.store');
+     Route::put('/department/{id}/update', [MasterController::class, 'departmentUpdate'])->name('department.update');
      Route::post('/bankaccount/store', [MasterController::class, 'bankaccountStore'])->name('bankaccount.store');
      Route::get('/master/departments', [MasterController::class, 'department'])->name('master.department');
 

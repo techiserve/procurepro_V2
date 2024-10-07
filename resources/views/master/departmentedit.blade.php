@@ -12,11 +12,12 @@
     <div class="row">
       <div class="col-sm-12">
         
-       <form method="POST" action="/department/store">
+       <form method="POST" action="/department/{{$department->id}}/update">
        @csrf
+       @method('put')
         <div class="card">
           <div class="card-header">
-            <strong>Add New Department</strong>
+            <strong>Update Department</strong>
            
            </div>
 
@@ -52,9 +53,34 @@
 					<div class="col-md-6">
 						<div class="form-group">
                         <!-- <input type="email" placeholder="Email Address" id="email" required name="email[]" spellcheck="false" class="form-control" value=""/> -->
-                        <select class="js-example-basic-single form-control" id="grower_sizes" name="approval[]">
-                            <option value="" >Select Approval Level</option>                       
-                            <option value="1">First Line</option>                          
+                        <select class="js-example-basic-single form-control" id="{{$rolez->created_at}}" name="approval[]">
+
+                            @if($rolez->approvalId == 1)
+                            <option value="1">First Line</option> 
+                            @endif                                   
+                                      
+                            @if($rolez->approvalId == 2)
+                            <option value="2">Second Line</option>
+                            @endif                                                  
+                                           
+                            @if($rolez->approvalId == 3)
+                            <option value="3">Third Line</option> 
+                            @endif                                                                        
+                                           
+                            @if($rolez->approvalId == 4)
+                            <option value="4">Fourth Line</option> 
+                            @endif                                                                           
+                                           
+                            @if($rolez->approvalId == 5)
+                            <option value="5">Fiveth Line</option>
+                            @endif 
+                            
+                            @if($rolez->approvalId == 6)
+                            <option value="6">Sixth Line</option>
+                            @endif                                                                                                  
+
+
+                            <option value="1">First Line</option> 
                             <option value="2">Second Line</option>
                             <option value="3">Third Line</option>                         
                             <option value="4">Fourth Line</option>       
@@ -67,13 +93,12 @@
                     <div class="col-md-5">
 						<div class="form-group">
                          <!-- <input type="text" placeholder="Phone Number" required id="phone_number" name="phone_number[]" spellcheck="false" class="form-control" value=""/> -->
-                         <select class="js-example-basic-single form-control" id="grower_size" name="role[]">
-                          <option value="" >Select Role</option>
+                         <select class="js-example-basic-single form-control" id="{{$rolez->id}}" name="role[]">
+                    
                            @foreach($roles as $role)
                            @if ($role->id == $rolez->roleId)
                            <option value="{{ $role->id }}"> {{ $role->name }}</option> 
-                           @endif
-                           
+                           @endif                           
                             @endforeach
 
                             @foreach($roles as $role)
@@ -85,13 +110,14 @@
 
 			
 				</div>
+        @endforeach  
 			</div>
-      @endforeach
+   
 			<!-- end of dynamic field -->
           </div>
           <div class="card-footer">
             <div class="form-group pull-right">
-    				<input type="submit" class="btn btn-success" value="Save"/>
+    				<input type="submit" class="btn btn-success" value="Update"/>
     				<input type="reset" class="btn btn-danger" value="Cancel"/>
     			</div>
           </div>
