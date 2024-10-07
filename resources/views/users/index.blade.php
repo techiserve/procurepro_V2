@@ -1,5 +1,10 @@
 @extends('coreui.layouts.admin')
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 @section('content')
 <div class="container-fluid">
   <div class="animated fadeIn">
@@ -50,15 +55,32 @@
                   <td>{{$user->email}}</td>
                  
                
-                  <td class="text-center">
-                  <a href='' class='btn btn-success btn-sm'>
-                      <span class='fa fa-desktop'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'> View</span>
-                    </a>&nbsp;
-                    <a href='' class='btn btn-info btn-sm' style='color: white;'>
+                  <td class="text-center">                
+                    <a href='/users/{{$user->id}}/edit' class='btn btn-info btn-sm' style='color: white;'>
                       <span class='fa fa-pencil'></span>
                       <span class='hidden-sm hidden-sm hidden-md'> Edit</span>
                     </a>
+                    &nbsp;
+                    <a href='#' class='btn btn-danger btn-sm'   onclick="
+                        event.preventDefault(); // Prevent the default link behavior
+                        Swal.fire({
+                            title: 'Delete User?',
+                            text: 'You won\'t be able to undo this!',
+                            icon: 'info', // Updated property for SweetAlert2
+                            showCancelButton: true,
+                            confirmButtonText: 'Continue',
+                            cancelButtonText: 'Cancel'
+                          }).then((result) => {
+                            if (result.isConfirmed) {
+                              // Redirect to the URL or perform an action
+                              window.location.href = '/users/{{$user->id}}/delete'; // Replace with your actual URL
+                            }
+                          })
+                      "
+                    >
+                      <span class='fa fa-trash'></span>
+                      <span class='hidden-sm hidden-sm hidden-md'>Delete</span>
+                    </a>&nbsp;
                   </td>
                 </tr>
                 @endforeach

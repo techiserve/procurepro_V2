@@ -112,6 +112,31 @@ class UserController extends Controller
  }
 
 
+ public function userdelete($id)
+ {
+      $deleteuser = User::where('id', $id)->delete();
+ 
+      if($deleteuser){
+   
+         return back()->with('success', 'User deleted successfully!');
+
+     }else{
+
+        return back()->with('error', 'Failed to delete User!');
+     }
+
+     
+ }
+
+
+
+ public function useredit($id)
+ {
+      $user = User::where('id', $id)->first();
+      $roles = userrole::where('id' ,'>',3)->get();
+ 
+     return view('users.edit',compact('user','roles'));
+ }
 
 
     public function companyindex()
@@ -227,7 +252,29 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+
+        // dd($request->all());
+        $user = User::findOrFail($id);
+
+        // Update user fields
+        $user->name = $request->name;
+        //$user->username = $$request->username;
+        $user->email = $request->email;
+        $user->address = $request->address;
+        $user->userrole = $request->role;
+        $user->position = $request->position;
+        $user->address = $request->address;
+        $user->isActive = $request->IsActive;
+        $user->phoneNumber = $request->phonenumber;
+        $user->save();
+
+
+    if($user){
+
+       return redirect()->route('users.index')->with('success', 'User updated successfully!');
+
+    }
+
     }
 
     /**

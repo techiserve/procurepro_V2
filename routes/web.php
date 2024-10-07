@@ -43,6 +43,9 @@ Route::middleware('auth')->group(function () {
      Route::get('/users/show', [UserController::class, 'show'])->name('users.show');
      Route::get('/users/fetchData', [UserController::class, 'fetchData'])->name('users.fetchData');
      Route::post('/users/userRole', [UserController::class, 'userRole'])->name('users.userRole');
+     Route::get('/users/{id}/delete', [UserController::class, 'userdelete'])->name('user.delete');
+     Route::get('/users/{id}/edit', [UserController::class, 'useredit'])->name('edit.delete');
+     Route::put('/users/{id}/update', [UserController::class, 'update'])->name('user.update');
 
      //Company
      Route::get('/companies/index', [CompanyController::class, 'companyindex'])->name('companies.index');
