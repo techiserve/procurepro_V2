@@ -77,6 +77,16 @@ class ProcurementController extends Controller
     }
 
     
+
+    public function myrequisition()
+    {
+
+        $requisitions = Requisition::with('histories')->where('approvedby', Auth::user()->userrole)->where('status', '=', 1)->get();
+        $roles = userrole::all(); 
+     
+        return view('procurement.myrequisiton', compact('requisitions','roles'));
+    }
+
     public function viewrequisition(string $id)
     {
      
@@ -106,6 +116,17 @@ class ProcurementController extends Controller
 
          // dd($purchaseorders);
         return view('procurement.indexpurchaseorder', compact('purchaseorders','roles'));
+    }
+
+
+    public function mypurchaseorder()
+    {
+     
+        $purchaseorders = Purchaseorder::with('histories')->where('approvedby', Auth::user()->userrole)->where('status', '=', 1)->get();
+        $roles = userrole::all();
+
+         // dd($purchaseorders);
+        return view('procurement.mypurchaseorder', compact('purchaseorders','roles'));
     }
 
 

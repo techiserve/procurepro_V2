@@ -104,11 +104,27 @@
 
           @if( auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR$data->contains('View Purchase Orders'))
           <li class="nav-item active">
+            <a class="nav-link" href="/procurement/myrequisition">
+              <i class="nav-icon icon-settings"></i>Pending Requisition Approvals</a>
+          </li>
+          @endif
+
+
+          @if( auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR$data->contains('View Purchase Orders'))
+          <li class="nav-item active">
             <a class="nav-link" href="/procurement/indexpurchaseorder">
               <i class="nav-icon icon-settings"></i>Purchase Orders</a>
           </li>
           @endif
 
+          @if( auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR$data->contains('View Purchase Orders'))
+          <li class="nav-item active">
+            <a class="nav-link" href="/procurement/mypurchaseorder">
+              <i class="nav-icon icon-settings"></i>Pending Purchase Order Approvals</a>
+          </li>
+          @endif
+
+   
           @if( auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR$data->contains('View Purchase Orders'))
           <li class="nav-item active">
             <a class="nav-link" href="/procurement/managepurchaseorder">

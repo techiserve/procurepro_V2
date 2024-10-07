@@ -84,12 +84,14 @@ Route::middleware('auth')->group(function () {
      //Procurement
      Route::get('/procurement/createrequisition', [ProcurementController::class, 'createrequisition'])->name('procurement.createrequisition');
      Route::get('/procurement/indexrequisition', [ProcurementController::class, 'indexrequisition'])->name('procurement.indexrequisition');
+     Route::get('/procurement/myrequisition', [ProcurementController::class, 'myrequisition'])->name('procurement.myrequisition');
      Route::post('/requisition/store', [ProcurementController::class, 'requisitionstore'])->name('procurement.requisitionstore');
      Route::get('/procurement/{id}/approve', [ProcurementController::class, 'requisitionapproval'])->name('procurement.requisitionapproval');
      Route::get('/procurement/{id}/logs', [ProcurementController::class, 'logs'])->name('procurement.logs');
      Route::put('/procurement/{id}/rejection', [ProcurementController::class, 'requisitionrejection'])->name('procurement.rejection');
      Route::put('/procurement/{id}/sendbackrequistion', [ProcurementController::class, 'sendbackrequistion'])->name('procurement.sendbackrequistion');
      Route::get('/procurement/indexpurchaseorder', [ProcurementController::class, 'indexpurchaseorder'])->name('procurement.indexpurchaseorder');
+     Route::get('/procurement/mypurchaseorder', [ProcurementController::class, 'mypurchaseorder'])->name('procurement.mypurchaseorder');
      Route::get('/procurement/managepurchaseorder', [ProcurementController::class, 'managepurchaseorder'])->name('procurement.managepurchaseorder');
      Route::get('/procurement/{id}/purchaseorder', [ProcurementController::class, 'purchaseorder'])->name('procurement.purchaseorder');
      Route::post('/procurement/purchaseorderrelease', [ProcurementController::class, 'purchaseorderrelease'])->name('purchaseorder.release');
