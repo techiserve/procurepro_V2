@@ -278,7 +278,7 @@ class MasterController extends Controller
          $da = Departmentapproval::where('departmentId', $id)->get();
          $roles = Userrole::all();
 
-         dd($department,$da);
+        // dd($department,$da);
     
          return view('master.departmentedit',compact('department','da','roles'));
         

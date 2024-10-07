@@ -34,6 +34,7 @@
                                     <th data-field="grower_agent" class='text-center'>Project Code</th>
                                     <th data-field="action" class='text-center'>(ZAR) Amount</th>
                                     <th data-field="status" class='text-center'>Status</th>
+                                    <th data-field="date" class='text-center'>Date</th>
                                
                                 </tr>
                             </thead>
@@ -49,7 +50,8 @@
                                         <td>{{ $grower->expenses }}</td>
                                         <td>{{ $grower->projectcode }}</td>
                                         <td>{{$grower->amount}}</td>
-                                        <td>@if($grower->status == 0)<button type="button" class="btn btn-outline-primary"><span class="fa fa-spinner"></span>Pending</button>@elseif($grower->status == 1)<button type="button" class="btn btn-outline-primary"><span class="fa fa-spinner"></span>Pending</button>@elseif($grower->status == 2)<button type="button" class="btn btn-outline-success"><span class="fa fa-check-circle"></span>Approved</button>@elseif($grower->status == 3)<button type="button" class="btn btn-outline-danger"><span class="fa fa-times-circle"></span>Rejected</button>@elseif($grower->status == 4)<button type="button" class="btn btn-outline-info"><span class="fa fa-arrow-left"></span>Returned</button>@else<button type="button" class="btn btn-outline-primary"><span class="fa fa-spinner"></span>Processing</button>@endif</td>                                     
+                                        <td>@if($grower->status == 0)<button type="button" class="btn btn-outline-primary"><span class="fa fa-spinner"></span>Pending</button>@elseif($grower->status == 1)<button type="button" class="btn btn-outline-primary"><span class="fa fa-spinner"></span>Pending</button>@elseif($grower->status == 2)<button type="button" class="btn btn-outline-success"><span class="fa fa-check-circle"></span>Approved</button>@elseif($grower->status == 3)<button type="button" class="btn btn-outline-danger"><span class="fa fa-times-circle"></span>Rejected</button>@elseif($grower->status == 4)<button type="button" class="btn btn-outline-info"><span class="fa fa-arrow-left"></span>Returned</button>@else<button type="button" class="btn btn-outline-primary"><span class="fa fa-spinner"></span>Processing</button>@endif</td>   
+                                        <td>{{$grower->created_at}}</td>                                       
                                     </tr>
                                 @endforeach
                             </tbody>

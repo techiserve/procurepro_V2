@@ -46,6 +46,7 @@
 
             		<!-- the dynamic field for adding growers is suppped to go here -->
 			<div class="clearfix" id="dynamic_field">
+      @foreach($da as $rolez)
 				<div class="row">
 				
 					<div class="col-md-6">
@@ -69,17 +70,23 @@
                          <select class="js-example-basic-single form-control" id="grower_size" name="role[]">
                           <option value="" >Select Role</option>
                            @foreach($roles as $role)
+                           @if ($role->id == $rolez->roleId)
+                           <option value="{{ $role->id }}"> {{ $role->name }}</option> 
+                           @endif
+                           
+                            @endforeach
+
+                            @foreach($roles as $role)
                             <option value="{{ $role->id }}"> {{ $role->name }}</option>
                             @endforeach
                         </select>
 						</div>
 					</div>
 
-					<div class="col-md-1">
-						<button type="button" name="add" id="add" class="btn add-more btn-primary"> &nbsp;+&nbsp; </button>
-					</div>
+			
 				</div>
 			</div>
+      @endforeach
 			<!-- end of dynamic field -->
           </div>
           <div class="card-footer">
