@@ -69,7 +69,7 @@ class ProcurementController extends Controller
         // Queue the email for background processing
        // Mail::to('v.mhokore@techiserve.com')->queue(new SendSampleEmail($emailData));
 
-        $requisitions = Requisition::with('histories')->where('userId', Auth::user()->id)->orwhere('approvedby', Auth::user()->userrole)->where('status', '!=', 2)->get();
+        $requisitions = Requisition::with('histories')->where('userId', Auth::user()->id)->orwhere('approvedby', Auth::user()->userrole)->where('status', '!=', 1)->get();
         $roles = userrole::all(); 
        // dd($requisitions);
 
@@ -111,7 +111,7 @@ class ProcurementController extends Controller
     public function indexpurchaseorder()
     {
      
-        $purchaseorders = Purchaseorder::with('histories')->where('userId', Auth::user()->id)->orwhere('approvedby', Auth::user()->userrole)->where('status', '!=', 2)->get();
+        $purchaseorders = Purchaseorder::with('histories')->where('userId', Auth::user()->id)->orwhere('approvedby', Auth::user()->userrole)->where('status', '!=', 1)->get();
         $roles = userrole::all();
 
          // dd($purchaseorders);
