@@ -272,6 +272,18 @@ class MasterController extends Controller
         
     }
 
+    public function departmentedit($id)
+    {
+         $department = Department::where('id', $id)->first();
+         $da = Departmentapproval::where('departmentId', $id)->get();
+         $roles = Userrole::all();
+
+         dd($department,$da);
+    
+         return view('master.departmentedit',compact('department','da','roles'));
+        
+    }
+
     public function bankaccountedit($id)
     {
          $bank = Bankaccount::where('id', $id)->first();

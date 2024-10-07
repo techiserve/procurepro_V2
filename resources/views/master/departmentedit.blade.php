@@ -25,7 +25,7 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="grower_name">Department Name</label>
-                  <input class="form-control" id="grower_name" name="departmentname" type="text" placeholder="Enter Department Name...">
+                  <input class="form-control" id="grower_name" name="departmentname" type="text" value = "{{$department->name}}" placeholder="Enter Department Name...">
                 </div>
               </div>
        
@@ -33,13 +33,7 @@
               <div class="col-md-1 col-form-label">
                 <div class="form-group">
                 <div class="form-check">
-                <label for="province" style="visibility: hidden;">Email Address</label>  
-                <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" name="IsActive"  value="1"  id="flexSwitchCheckDefault" />
-                <label class="form-check-label" for="defaultCheck1">
-               Active
-               </label>
-                </div>
+              
              
                </div>
                 </div>
@@ -100,90 +94,6 @@
     </div>
 
 
-
-    <div class="row">
-      <div class="col-sm-12">
-        <div class="card">
-          <div class="card-header">
-            <strong>Department</strong>
-            <small>List</small>
-          </div>
-
-          <div class="card-body">
-            <table class="table table-responsive-sm table-bordered table-striped table-sm">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  
-                  <th class="text-center">Department Name</th>
-                  <th class="text-center">Added by</th>
-                  <th class="text-center">Status</th>
-                  <th class="text-center">Action</th>
-
-                </tr>
-              </thead>
-              <tbody>
-                @foreach($departments as $user)
-                <tr>
-
-            <td class="text-center">
-              </td>
-                
-                  <td class="text-center">{{$user->name}}</td>
-                  <td class="text-center">
-                  @foreach($users as $us)
-                   @if($user->userId ==  $us->id)
-                   {{ $us->name }}
-                   
-                   @endif
-              
-                    @endforeach
-
-                  </td>
-                  <td class="text-center">
-                  @if($user->IsActive == null)
-                    <span class='badge badge-secondary'>Inactive</span>
-                    @else
-                    <span class='badge badge-success'>Active</span>
-                    @endif
-                    </td>           
-                  <td class="text-center">
-                  <a href='/department/{{$user->id}}/edit' class='btn btn-info btn-sm' style='color: white;'>
-                      <span class='fa fa-pencil'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'> Edit</span>
-                    </a>
-                    &nbsp;
-                  <a href='#' class='btn btn-danger btn-sm'   onclick="
-                        event.preventDefault(); // Prevent the default link behavior
-                        Swal.fire({
-                            title: 'Delete Department?',
-                            text: 'You won\'t be able to undo this!',
-                            icon: 'info', // Updated property for SweetAlert2
-                            showCancelButton: true,
-                            confirmButtonText: 'Continue',
-                            cancelButtonText: 'Cancel'
-                          }).then((result) => {
-                            if (result.isConfirmed) {
-                              // Redirect to the URL or perform an action
-                              window.location.href = '/department/{{$user->id}}/delete'; // Replace with your actual URL
-                            }
-                          })
-                      "
-                    >
-                      <span class='fa fa-trash'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'>Delete</span>
-                    </a>&nbsp;
-                  
-                  </td>
-                </tr>
-                @endforeach
-              </tbody>
-            </table>
-          </div>
-
-        </div>
-      </div>
-    </div>
 
 
     

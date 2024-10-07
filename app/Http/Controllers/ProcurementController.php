@@ -122,7 +122,7 @@ class ProcurementController extends Controller
     public function logs(string $id)
     { 
 
-        $histories = RequisitionHistory::where('requisitionId', '=', $id)->get();
+        $histories = RequisitionHistory::where('requisition_id', '=', $id)->get();
         return view('procurement.logs', compact('histories'));
 
     }
@@ -331,7 +331,7 @@ class ProcurementController extends Controller
 
     $requisitionhistory = RequisitionHistory::create([
 
-        'requisitionId' => $requisition->id,
+        'requisition_id' => $requisition->id,
         'vendor' => $request->vendor,
         'services' => $request->service,
         'paymentmethod'  => $request->paymentmethod,
@@ -434,7 +434,7 @@ class ProcurementController extends Controller
 
           $requisition = Purchaseorder::create([
 
-            'requisitionId' => $requisition->id,
+            'requisition_id' => $requisition->id,
             'vendor' => $requisition->vendor,
             'services' => $requisition->services,
             'paymentmethod'  => $requisition->paymentmethod,
@@ -464,7 +464,7 @@ class ProcurementController extends Controller
 
            $requisitiond = RequisitionHistory::create([
 
-            'requisitionId' => $id,
+            'requisition_id' => $id,
             'amount'  => $requisition->amount,
          //   'file'  => $quotation,
             'userId'  =>Auth::user()->id,
@@ -494,7 +494,7 @@ class ProcurementController extends Controller
 
                  $requisition = RequisitionHistory::create([
 
-                    'requisitionId' => $requisition->id,
+                    'requisition_id' => $requisition->id,
                     'amount'  => $requisition->amount,
                     'userId'  =>Auth::user()->id,
                     'status'  => 1,
@@ -538,7 +538,7 @@ class ProcurementController extends Controller
 
                  $requisition = RequisitionHistory::create([
 
-                    'requisitionId' => $requisition->id,
+                    'requisition_id' => $requisition->id,
                     'amount'  => $requisition->amount,
                     'userId'  =>Auth::user()->id,
                     'status'  => 1,
@@ -577,7 +577,7 @@ class ProcurementController extends Controller
                  
                  $requisition = RequisitionHistory::create([
 
-                    'requisitionId' => $requisition->id,
+                    'requisition_id' => $requisition->id,
                     'amount'  => $requisition->amount,
                     'userId'  =>Auth::user()->id,
                     'status'  => 1,
@@ -621,7 +621,7 @@ class ProcurementController extends Controller
 
                  $requisitiond = RequisitionHistory::create([
 
-                    'requisitionId' => $requisition->requisitionId,
+                    'requisition_id' => $requisition->requisitionId,
                     'amount'  => $requisition->amount,
                  //   'file'  => $quotation,
                     'userId'  =>Auth::user()->id,
@@ -652,7 +652,7 @@ class ProcurementController extends Controller
 
                  $requisitiond = RequisitionHistory::create([
 
-                    'requisitionId' => $requisition->requisitionId,
+                    'requisition_id' => $requisition->requisitionId,
                     'amount'  => $requisition->amount,
                     'userId'  =>Auth::user()->id,
                     'status'  => 1,
@@ -695,7 +695,7 @@ class ProcurementController extends Controller
                  
                  $requisitiond = RequisitionHistory::create([
 
-                    'requisitionId' => $requisition->requisitionId,
+                    'requisition_id' => $requisition->requisitionId,
                     'amount'  => $requisition->amount,
                  //   'file'  => $quotation,
                     'userId'  =>Auth::user()->id,
@@ -738,7 +738,7 @@ class ProcurementController extends Controller
         
         $requisitiond = RequisitionHistory::create([
 
-            'requisitionId' => $requisition->requisitionId,
+            'requisition_id' => $requisition->requisitionId,
             'amount'  => $requisition->amount,
          //   'file'  => $quotation,
             'userId'  =>Auth::user()->id,

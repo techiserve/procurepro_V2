@@ -200,7 +200,7 @@
             	<div class="modal-dialog modal-primary modal-md" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h4 class="modal-title"><i style="color:white;" class="fa fa-envelope"></i> Return Purchase Order</h4>
+                    <h4 class="modal-title"><i style="color:white;" class="fa fa-envelope"></i> Return  Purchase Requisition</h4>
                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">×</span>
                     </button>
