@@ -91,7 +91,7 @@
             <div class="card-footer">
             <div class="form-group pull-right">
     				
-            <input type="submit" class="btn btn-success" value="Edit Requisition"/>
+            <input type="submit" class="btn btn-success" value="Update"/>
     			</div> 
           </div>
           

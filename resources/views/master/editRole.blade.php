@@ -284,7 +284,7 @@
           </div>
           <div class="card-footer">
             <div class="form-group pull-right">
-    				<input type="submit" class="btn btn-success" value="Edit Role"/>
+    				<input type="submit" class="btn btn-success" value="Edit"/>
     			</div>
           </div>
        </div>

@@ -126,8 +126,8 @@
           </div>
           <div class="card-footer">
             <div class="form-group pull-right">
-    				<input type="submit" class="btn btn-success" value="Save New User"/>
-    				<input type="reset" class="btn btn-danger" value="Cancel Registration"/>
+    				<input type="submit" class="btn btn-success" value="Save"/>
+    				<input type="reset" class="btn btn-danger" value="Cancel"/>
     			</div>
           </div>
        </div>

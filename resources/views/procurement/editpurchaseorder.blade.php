@@ -109,7 +109,7 @@
           <div class="card-footer">
             <div class="form-group pull-right">
     				<input type="submit" class="btn btn-success" value="Upload Documents"/>
-    				<input type="reset" class="btn btn-danger" value="Cancel Update"/>
+    				<input type="reset" class="btn btn-danger" value="Cancel"/>
     			</div>
           </div>
        </div>
