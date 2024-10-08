@@ -53,7 +53,7 @@
             width: 43%;
             background-color: #D9DFE647;
             border-radius: 28px;
-            border: 2px solid #5882C1;
+            border: 2px solid #FFFFFF;
             padding: 50px;
             color: white;
             margin-bottom: 40px;
