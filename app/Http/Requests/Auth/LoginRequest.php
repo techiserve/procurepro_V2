@@ -46,11 +46,6 @@ class LoginRequest extends FormRequest
             return true;
         }
 
-        // Attempt to authenticate company
-        if (Auth::guard('company')->attempt($credentials)) {
-            return true;
-        }
-
         // If neither authentication attempt was successful, throw an exception
         throw \Illuminate\Validation\ValidationException::withMessages([
             'email' => [trans('auth.failed')],

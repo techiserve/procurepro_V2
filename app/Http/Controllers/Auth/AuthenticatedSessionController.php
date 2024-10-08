@@ -43,12 +43,6 @@ class AuthenticatedSessionController extends Controller
                 ]);
             }
         }
-    
-        if (Auth::guard('company')->check()){
-   
-            return redirect()->intended(RouteServiceProvider::COMPANY_HOME);
-
-        }
 
        // return redirect('/');
    

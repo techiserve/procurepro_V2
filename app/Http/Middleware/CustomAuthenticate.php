@@ -15,10 +15,6 @@ class RedirectAfterLogin
             return redirect()->intended(RouteServiceProvider::HOME);
         }
 
-        if (Auth::guard('company')->check()) {
-            return redirect()->intended(RouteServiceProvider::COMPANY_HOME);
-        }
-
         return $response;
     }
 }
