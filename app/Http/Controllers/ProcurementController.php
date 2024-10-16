@@ -800,7 +800,7 @@ class ProcurementController extends Controller
 
         // Step 3: Retrieve existing PDF paths from the database (e.g., pdf_files table)
         $existingPDFs = Requisitionfile::where('requisitionId','=', $id)->pluck('file')->toArray();
-        //dd($existingPDFs);
+        dd($existingPDFs);
         $merger = new Merger();
 
         // Add PDFs to merge
