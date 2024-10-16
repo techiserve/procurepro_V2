@@ -79,6 +79,10 @@
                       <span class='fa fa-pencil'></span>
                       <span class='hidden-sm hidden-sm hidden-md'> View Logs</span>
                    </a>&nbsp;
+                   <a  href="/procurement/{{$company->id}}/download" class='btn btn-primary btn-sm'  style='color: white;'>
+                      <span class='fa fa-download'></span>
+                      <span class='hidden-sm hidden-sm hidden-md'>Download</span>
+                   </a>&nbsp;
                    
                 <!-- Modal Structure -->
                 <div class="modal fade" id="historyModal{{ $company->id }}" tabindex="-1" role="dialog" aria-labelledby="historyModalLabel{{ $company->id }}" aria-hidden="true">
@@ -152,6 +156,10 @@
                     <a  href="#" class='btn btn-success btn-sm' data-toggle="modal" data-target="#historyModal{{ $company->id }}" style='color: white;'>
                       <span class='fa fa-pencil'></span>
                       <span class='hidden-sm hidden-sm hidden-md'> View Logs</span>
+                   </a>&nbsp;
+                   <a  href="/procurement/{{$company->id}}/download" class='btn btn-primary btn-sm'  style='color: white;'>
+                      <span class='fa fa-download'></span>
+                      <span class='hidden-sm hidden-sm hidden-md'>Download</span>
                    </a>&nbsp;
 
                 <!-- Modal Structure -->
@@ -238,6 +246,10 @@
                    <a  href="#" class='btn btn-success btn-sm' data-toggle="modal" data-target="#historyModal{{ $company->id }}" style='color: white;'>
                       <span class='fa fa-pencil'></span>
                       <span class='hidden-sm hidden-sm hidden-md'> View Logs</span>
+                   </a>&nbsp;
+                   <a  href="/procurement/{{$company->id}}/download" class='btn btn-primary btn-sm'  style='color: white;'>
+                      <span class='fa fa-download'></span>
+                      <span class='hidden-sm hidden-sm hidden-md'>Download</span>
                    </a>&nbsp;
 
                                        <!-- Modal Structure -->

@@ -97,6 +97,7 @@ Route::middleware('auth')->group(function () {
      Route::get('/procurement/{id}/purchaseorder', [ProcurementController::class, 'purchaseorder'])->name('procurement.purchaseorder');
      Route::post('/procurement/purchaseorderrelease', [ProcurementController::class, 'purchaseorderrelease'])->name('purchaseorder.release');
      Route::get('/procurement/{id}/viewrequisition', [ProcurementController::class, 'viewrequisition'])->name('procurement.viewrequisition');
+     Route::get('/procurement/{id}/download', [ProcurementController::class, 'generateAndMergePDFs'])->name('procurement.viewrequisition');
      Route::get('/procurement/{id}/editrequisition', [ProcurementController::class, 'editrequisition'])->name('procurement.editrequisition');
      Route::put('/procurement/{id}/updaterequisition', [ProcurementController::class, 'updaterequisition'])->name('procurement.updaterequisition');
      Route::put('/purchaseorder/update/{id}', [ProcurementController::class, 'updatepurchaseorder'])->name('procurement.updatepurchaseorder');

@@ -13,6 +13,10 @@ use App\Models\RequisitionHistory;
 use App\Models\Requisitionfile;
 use App\Models\Bankaccount;
 use App\Models\Company;
+use Barryvdh\DomPDF\Facade\Pdf;
+use setasign\Fpdi\Fpdi;
+use setasign\Fpdf\Fpdf;
+use iio\libmergepdf\Merger;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Rolepermission;
 use Alert;
@@ -777,6 +781,43 @@ class ProcurementController extends Controller
 
       }
 
+    }
+
+
+    public function generateAndMergePDFs(string $id)
+    {
+
+        //dd('here');
+
+        $data = Requisition::where('id' ,'=', $id)->first();
+
+        // Step 2: Generate a PDF from the fetched data
+        $pdf = Pdf::loadView('pdf.bank', compact('data'));
+
+        // Save the newly generated PDF
+        $newPDFPath = storage_path('app/public/new_report.pdf');
+        $pdf->save($newPDFPath);
+
+        // Step 3: Retrieve existing PDF paths from the database (e.g., pdf_files table)
+        $existingPDFs = Requisitionfile::where('requisitionId','=', $id)->pluck('file')->toArray();
+        //dd($existingPDFs);
+        $merger = new Merger();
+
+        // Add PDFs to merge
+        $merger->addFile(storage_path('app/public/new_report.pdf'));
+        foreach ($existingPDFs as $existingPDFPath) {
+            $merger->addFile(storage_path('app/public/uploads/' . $existingPDFPath));
+        }
+        
+        // Merge and output
+        $mergedPdf = $merger->merge();
+        
+        // Save or output the merged PDF
+        file_put_contents(storage_path('app/public/consolidated_report.pdf'), $mergedPdf);
+        
+        // Return the merged PDF to the user
+        return response()->download(storage_path('app/public/consolidated_report.pdf'));
+        
     }
 
     /**
