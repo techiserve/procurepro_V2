@@ -820,6 +820,55 @@ class ProcurementController extends Controller
         
     }
 
+
+
+
+    
+    public function downloadrequisitions(Request $request)
+    {
+        $requisitionIds = $request->input('requisition_ids');
+        $consolidatedPDFs = [];
+
+         
+        foreach ($requisitionIds as $id) {
+            // Fetch requisition data and create PDF (same process as before)
+            $data = Requisition::where('id', '=', $id)->first();
+            $pdf = Pdf::loadView('pdf.bank', compact('data'));
+            $newPDFPath = storage_path("app/public/new_report_{$id}.pdf");
+            $pdf->save($newPDFPath);
+            
+            // Merge with existing PDFs as per your original logic
+            $existingPDFs = Requisitionfile::where('requisitionId', '=', $id)->pluck('file')->toArray();
+            $merger = new Merger();
+            $merger->addFile($newPDFPath);
+            foreach ($existingPDFs as $existingPDFPath) {
+                $merger->addFile(storage_path('app/public/uploads/' . $existingPDFPath));
+            }
+            $mergedPdf = $merger->merge();
+            $consolidatedPDFPath = storage_path("app/public/consolidated_report_{$id}.pdf");
+            file_put_contents($consolidatedPDFPath, $mergedPdf);
+            $consolidatedPDFs[] = $consolidatedPDFPath;
+        }
+    
+        // Use Laravel's Storage to create the zip
+        $zipFileName = 'consolidated_requisitions.zip';
+        $zipPath = storage_path('app/public/' . $zipFileName);
+    
+        // Create a new zip
+        $zip = new \ZipArchive();
+        if ($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === TRUE) {
+            foreach ($consolidatedPDFs as $pdfPath) {
+                $zip->addFile($pdfPath, basename($pdfPath));
+            }
+            $zip->close();
+        }
+    
+        return response()->download($zipPath)->deleteFileAfterSend(true);
+    }
+    
+
+
+
     /**
      * Remove the specified resource from storage.
      */

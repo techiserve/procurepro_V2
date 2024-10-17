@@ -96,8 +96,9 @@ Route::middleware('auth')->group(function () {
      Route::get('/procurement/managepurchaseorder', [ProcurementController::class, 'managepurchaseorder'])->name('procurement.managepurchaseorder');
      Route::get('/procurement/{id}/purchaseorder', [ProcurementController::class, 'purchaseorder'])->name('procurement.purchaseorder');
      Route::post('/procurement/purchaseorderrelease', [ProcurementController::class, 'purchaseorderrelease'])->name('purchaseorder.release');
+     Route::post('/procurement/downloadrequisitions', [ProcurementController::class, 'downloadrequisitions'])->name('procurement.downloadrequisitions');
      Route::get('/procurement/{id}/viewrequisition', [ProcurementController::class, 'viewrequisition'])->name('procurement.viewrequisition');
-     Route::get('/procurement/{id}/download', [ProcurementController::class, 'generateAndMergePDFs'])->name('procurement.viewrequisition');
+     Route::get('/procurement/{id}/download', [ProcurementController::class, 'generateAndMergePDFs'])->name('procurement.download');
      Route::get('/procurement/{id}/editrequisition', [ProcurementController::class, 'editrequisition'])->name('procurement.editrequisition');
      Route::put('/procurement/{id}/updaterequisition', [ProcurementController::class, 'updaterequisition'])->name('procurement.updaterequisition');
      Route::put('/purchaseorder/update/{id}', [ProcurementController::class, 'updatepurchaseorder'])->name('procurement.updatepurchaseorder');
@@ -105,6 +106,7 @@ Route::middleware('auth')->group(function () {
      Route::get('/procurement/{id}/accept', [ProcurementController::class, 'approvepurchaseorder'])->name('procurement.approvepurchaseorder');
      Route::put('/procurement/{id}/reject', [ProcurementController::class, 'rejectpurchaseorder'])->name('procurement.rejectpurchaseorder');
      Route::put('/procurement/{id}/sendback', [ProcurementController::class, 'sendbackpurchaseorder'])->name('procurement.updatepurchaseorder');
+     Route::get('download-pdf/{filename}', [YourController::class, 'downloadPDF'])->name('download.pdf');
 
 
 

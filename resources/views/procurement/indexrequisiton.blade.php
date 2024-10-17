@@ -1,3 +1,4 @@
+
 @extends('coreui.layouts.admin')
 <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.4/tutorials/timelines/timeline-7/assets/css/timeline-7.css">
@@ -11,8 +12,11 @@
             <strong>Requisition</strong>
             <small>List</small>
           </div>
-
+    
           <div class="card-body">
+          <form method="POST" action="{{ route('procurement.downloadrequisitions') }}">
+          @csrf
+          <button  type="submit" class="btn btn-success btn-sm pull-right" ><i class="fa fa-filter"></i>Download Requisitions</button>
             <table class="table table-responsive-sm table-bordered table-striped table-sm">
               <thead>
                 <tr>
@@ -21,18 +25,16 @@
                   <th class="text-center"> Services</th>
                   <th class="text-center">Payment method</th>
                   <th class="text-center">Expenses</th>
-                  <th class="text-center">Amount</th>
-                 
+                  <th class="text-center">Amount</th>              
                   <th class="text-center">Approved By</th>
-                  <th class="text-center">Status</th>
-                
+                  <th class="text-center">Status</th>             
                   <th class="text-center">Action</th>   
                 </tr>
               </thead>
               <tbody>
                 @foreach($requisitions as $company)
                 <tr>
-                <td></td>
+                <td> <input type="checkbox" id="select" name="requisition_ids[]" value="{{ $company->id }}"></td>
                   <td class="text-center">{{$company->vendor}}</td>
                   <td class="text-center">{{$company->services}}</td>
                   <td class="text-center">{{$company->paymentmethod}}</td>
@@ -320,7 +322,8 @@
                 </tr>
                 @endforeach
               </tbody>
-            </table>
+            </table>        
+          </form>
           </div>
 
         </div>
@@ -332,3 +335,30 @@
 </div>
 
 @endsection
+
+<script>
+    function downloadConsolidatedPDFs() {
+        fetch('{{ route('procurement.downloadrequisitions') }}', {  // Use route() helper to generate the URL
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'  // Ensure CSRF token is sent with the request
+            },
+            body: JSON.stringify({
+                requisition_ids: [/* Array of Requisition IDs */]
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Trigger download for each PDF URL
+            data.forEach(url => {
+                let link = document.createElement('a');
+                link.href = url;
+                link.download = url.substring(url.lastIndexOf('/') + 1);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        });
+    }
+</script>
