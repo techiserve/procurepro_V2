@@ -74,10 +74,12 @@ class ProcurementController extends Controller
        // Mail::to('v.mhokore@techiserve.com')->queue(new SendSampleEmail($emailData));
 
         $requisitions = Requisition::with('histories')->where('userId', Auth::user()->id)->orwhere('approvedby', Auth::user()->userrole)->where('status', '!=', 1)->get();
+        $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
+        $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
         $roles = userrole::all(); 
        // dd($requisitions);
 
-        return view('procurement.indexrequisiton', compact('requisitions','roles'));
+        return view('procurement.indexrequisiton', compact('requisitions','roles','vendors','servicetype'));
     }
 
     
@@ -96,8 +98,10 @@ class ProcurementController extends Controller
      
         $purchaseorder = Requisition::where('id', $id)->first();
         $files = Requisitionfile::where('requisitionId', $id)->get();
+        $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
+        $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
 
-        return view('procurement.viewrequisition', compact('purchaseorder','files'));
+        return view('procurement.viewrequisition', compact('purchaseorder','files','vendors','servicetype'));
     }
 
 
@@ -195,6 +199,54 @@ class ProcurementController extends Controller
 
 
     }
+
+
+
+
+
+    public function requisitionfilter(Request $request)
+    {
+        $query = Requisition::query();
+         
+       // dd($request->all());
+        // Check for search inputs
+        if ($request->filled('status')) {
+            $query->where('status', 'like', '%' . $request->input('status') . '%');
+        }
+        if ($request->filled('service')) {
+            $query->where('services', 'like', '%' . $request->input('service') . '%');
+        }
+        if ($request->filled('vendor')) {
+            $query->where('vendor', 'like', '%' . $request->input('vendor') . '%');
+        }
+     
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            // If both start_date and end_date are provided
+            $start_date = $request->input('start_date') . ' 00:00:00'; // Start of the start_date
+            $end_date = $request->input('end_date') . ' 23:59:59';
+            $query->whereBetween('created_at', [$start_date,$end_date]);
+        } elseif ($request->filled('start_date')) {
+            // If only start_date is provided
+            $start_date = $request->input('start_date') . ' 00:00:00';
+            $query->where('created_at', '>=', $start_date);
+        } elseif ($request->filled('end_date')) {
+            // If only end_date is provided
+            $end_date = $request->input('end_date') . ' 23:59:59';
+            $query->where('created_at', '<=', $end_date);
+        }
+
+        $requisitions = $query->get();
+
+        $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
+        $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
+        $departments = Department::all();
+        $roles = userrole::all(); 
+
+      return view('procurement.indexrequisiton', compact('requisitions','vendors','servicetype','departments','roles'));
+
+    }
+
+
 
 
 
@@ -789,10 +841,13 @@ class ProcurementController extends Controller
 
         //dd('here');
 
-        $data = Requisition::where('id' ,'=', $id)->first();
-
+        $company = Requisition::where('id' ,'=', $id)->first();
+        $user = User::where('id', $company->userId)->first();
+        $history = Requisitionhistory::where('requisition_id', $company->id)->get();
+        $department = Department::where('id', $company->department)->first();
         // Step 2: Generate a PDF from the fetched data
-        $pdf = Pdf::loadView('pdf.bank', compact('data'));
+        $pdf = Pdf::loadView('pdf.requisition', compact('company','user','history','department'));
+      
 
         // Save the newly generated PDF
         $newPDFPath = storage_path('app/public/new_report.pdf');
@@ -819,21 +874,20 @@ class ProcurementController extends Controller
         return response()->download(storage_path('app/public/consolidated_report.pdf'));
         
     }
-
-
-
-
-    
+   
     public function downloadrequisitions(Request $request)
     {
         $requisitionIds = $request->input('requisition_ids');
         $consolidatedPDFs = [];
-
-         
+   
         foreach ($requisitionIds as $id) {
             // Fetch requisition data and create PDF (same process as before)
-            $data = Requisition::where('id', '=', $id)->first();
-            $pdf = Pdf::loadView('pdf.bank', compact('data'));
+            $company = Requisition::where('id' ,'=', $id)->first();
+            $user = User::where('id', $company->userId)->first();
+            $history = Requisitionhistory::where('requisition_id', $company->id)->get();
+            $department = Department::where('id', $company->department)->first();
+            // Step 2: Generate a PDF from the fetched data
+            $pdf = Pdf::loadView('pdf.requisition', compact('company','user','history','department'));
             $newPDFPath = storage_path("app/public/new_report_{$id}.pdf");
             $pdf->save($newPDFPath);
             
