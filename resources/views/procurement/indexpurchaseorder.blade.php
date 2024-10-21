@@ -14,6 +14,7 @@
           </div>
 
           <div class="card-body">
+          <button class="btn btn-primary btn-sm pull-right"  data-toggle="modal" data-target="#filterModal" ><i class="fa fa-filter"></i> Filter Purchase Order List</button>
             <table class="table table-responsive-sm table-bordered table-striped table-sm">
               <thead>
                 <tr>
@@ -226,6 +227,69 @@
 
         </div>
       </div>
+    </div>
+
+
+                <!-- /.modal for documents-->
+    <div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-primary modal-md" role="document">
+        <form method="post" action="{{ route('purchaseorder.filter') }}" enctype="multipart/form-data">
+          {{ csrf_field() }}
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Filter Purchase Orders</h4>
+              <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="areas">Date From</label>
+                <input class="form-control" id="grower_name" name="start_date" type="date">
+              </div>
+              <div class="form-group">
+                <label for="assessors">Date To</label>
+                <input class="form-control" id="grower_name" name="end_date" type="date" >
+              </div>
+              <div class="form-group">
+                <label for="status">Status</label>
+                <select name="status" id="status" class="js-example-basic-single form-control"  style="width:100%;">     
+                    <option value="">--Select Status--</option>       
+                    <option value="2">Approved</option>       
+                    <option value="3">Rejected</option>  
+                    <option value="1">Pending</option>     
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="vendor">Vendor</label>
+                <select name="vendor" id="vendor" class="js-example-basic-single form-control"  style="width:100%;"> 
+                <option value="">--Select Vendor--</option>   
+                @foreach($vendors as $vendor)
+                
+                <option value="{{ $vendor->SupplierName }}"> {{ $vendor->SupplierName }}</option>
+                  @endforeach   
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="service">Service Type</label>
+                <select name="service" id="service" class="js-example-basic-single form-control"  style="width:100%;"> 
+                <option value="">--Select Service--</option> 
+                @foreach($servicetype as $servicetype)  
+        
+        <option value="{{ $servicetype->ServiceTypeDescription }}"> {{ $servicetype->ServiceTypeDescription }}</option>
+          @endforeach     
+                </select>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+              <button class="btn btn-primary" type="submit">Filter Summary</button>
+            </div>
+          </div>
+        </form>
+        <!-- /.modal-content-->
+      </div>
+      <!-- /.modal-dialog-->
     </div>
 
 

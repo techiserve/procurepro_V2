@@ -121,15 +121,16 @@ class ProcurementController extends Controller
      
         $purchaseorders = Purchaseorder::with('histories')->where('userId', Auth::user()->id)->orwhere('approvedby', Auth::user()->userrole)->where('status', '!=', 1)->get();
         $roles = userrole::all();
+        $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
+        $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
 
          // dd($purchaseorders);
-        return view('procurement.indexpurchaseorder', compact('purchaseorders','roles'));
+        return view('procurement.indexpurchaseorder', compact('purchaseorders','roles','vendors','servicetype'));
     }
 
 
     public function mypurchaseorder()
     {
-     
         $purchaseorders = Purchaseorder::with('histories')->where('approvedby', Auth::user()->userrole)->where('status', '=', 1)->get();
         $roles = userrole::all();
 
@@ -248,6 +249,45 @@ class ProcurementController extends Controller
 
 
 
+    public function purchaseorderfilter(Request $request)
+    {
+        $query = Purchaseorder::query();
+         
+       // dd($request->all());
+        if ($request->filled('status')) {
+            $query->where('status', 'like', '%' . $request->input('status') . '%');
+        }
+        if ($request->filled('service')) {
+            $query->where('services', 'like', '%' . $request->input('service') . '%');
+        }
+        if ($request->filled('vendor')) {
+            $query->where('vendor', 'like', '%' . $request->input('vendor') . '%');
+        }
+     
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            // If both start_date and end_date are provided
+            $start_date = $request->input('start_date') . ' 00:00:00'; // Start of the start_date
+            $end_date = $request->input('end_date') . ' 23:59:59';
+            $query->whereBetween('created_at', [$start_date,$end_date]);
+        } elseif ($request->filled('start_date')) {
+            // If only start_date is provided
+            $start_date = $request->input('start_date') . ' 00:00:00';
+            $query->where('created_at', '>=', $start_date);
+        } elseif ($request->filled('end_date')) {
+            // If only end_date is provided
+            $end_date = $request->input('end_date') . ' 23:59:59';
+            $query->where('created_at', '<=', $end_date);
+        }
+
+        $purchaseorders = $query->get();
+
+        $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
+        $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
+        $departments = Department::all();
+        $roles = userrole::all(); 
+
+      return view('procurement.indexpurchaseorder', compact('purchaseorders','vendors','servicetype','departments','roles'));
+    }
 
 
 
