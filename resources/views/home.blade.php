@@ -3,7 +3,7 @@
 @section('content')
 <div class="content-body">
                 <!-- fitness target -->
-                <div class="row">
+                <div class="row" style="margin-top: 120px;">
                     <div class="col-12">
                         <div class="card">
                             <div class="card-content">
@@ -15,17 +15,13 @@
                                                 <h3 class="font-large-2 text-bold-200">326</h3>
                                             </div>
                                             <div class="card-content">
-                                                <input type="text" value="65" class="knob hide-value responsive angle-offset" data-angleOffset="40" data-thickness=".15" data-linecap="round" data-width="130" data-height="130" data-inputColor="#BABFC7" data-readOnly="true" data-fgColor="#00B5B8" data-knob-icon="icon-trophy">
+                                                <input type="text" value="65" class="knob hide-value responsive angle-offset" data-angleOffset="40" data-thickness=".15" data-linecap="round" data-width="130" data-height="130" data-inputColor="#BABFC7" data-readOnly="true" data-fgColor="#00B5B8" data-knob-icon="icon-star">
                                                 <ul class="list-inline clearfix pt-1 mb-0">
                                                     <li class="border-right-grey border-right-lighten-2 pr-2">
-                                                        <h2 class="grey darken-1 text-bold-400">65%</h2>
-                                                        <span class="primary"><span class="feather icon-arrow-up"></span>
-                                                            Completed</span>
+                                                     
                                                     </li>
                                                     <li class="pl-2">
-                                                        <h2 class="grey darken-1 text-bold-400">35%</h2>
-                                                        <span class="danger"><span class="feather icon-arrow-down"></span>
-                                                            Remaining</span>
+                                                   
                                                     </li>
                                                 </ul>
                                             </div>
@@ -41,8 +37,7 @@
                                                 <input type="text" value="70" class="knob hide-value responsive angle-offset" data-angleOffset="0" data-thickness=".15" data-linecap="round" data-width="130" data-height="130" data-inputColor="#BABFC7" data-readOnly="true" data-fgColor="#FF7588" data-knob-icon="icon-pointer">
                                                 <ul class="list-inline clearfix pt-1 mb-0">
                                                     <li>
-                                                        <h2 class="grey darken-1 text-bold-400">10</h2>
-                                                        <span class="danger">Miles Today's Target</span>
+                                                   
                                                     </li>
                                                 </ul>
                                             </div>
@@ -55,11 +50,10 @@
                                                 <h3 class="font-large-2 text-bold-200">40<span class="font-medium-1 grey darken-1 text-bold-400"></span></h3>
                                             </div>
                                             <div class="card-content">
-                                                <input type="text" value="81" class="knob hide-value responsive angle-offset" data-angleOffset="20" data-thickness=".15" data-linecap="round" data-width="130" data-height="130" data-inputColor="#BABFC7" data-readOnly="true" data-fgColor="#FFA87D" data-knob-icon="icon-energy">
+                                                <input type="text" value="81" class="knob hide-value responsive angle-offset" data-angleOffset="20" data-thickness=".15" data-linecap="round" data-width="130" data-height="130" data-inputColor="#BABFC7" data-readOnly="true" data-fgColor="#FFA87D" data-knob-icon="icon-briefcase">
                                                 <ul class="list-inline clearfix pt-1 mb-0">
                                                     <li>
-                                                        <h2 class="grey darken-1 text-bold-400">5000</h2>
-                                                        <span class="warning">kcla Today's Target</span>
+                                                       
                                                     </li>
                                                 </ul>
                                             </div>
@@ -72,11 +66,10 @@
                                                 <h3 class="font-large-2 text-bold-200">12 <span class="font-medium-1 grey darken-1 text-bold-400"></span></h3>
                                             </div>
                                             <div class="card-content">
-                                                <input type="text" value="75" class="knob hide-value responsive angle-offset" data-angleOffset="20" data-thickness=".15" data-linecap="round" data-width="130" data-height="130" data-inputColor="#BABFC7" data-readOnly="true" data-fgColor="#16D39A" data-knob-icon="icon-heart">
+                                                <input type="text" value="75" class="knob hide-value responsive angle-offset" data-angleOffset="20" data-thickness=".15" data-linecap="round" data-width="130" data-height="130" data-inputColor="#BABFC7" data-readOnly="true" data-fgColor="#16D39A" data-knob-icon="icon-user">
                                                 <ul class="list-inline clearfix pt-1 mb-0">
                                                     <li>
-                                                        <h2 class="grey darken-1 text-bold-400">125</h2>
-                                                        <span class="success">BPM Highest</span>
+                                          
                                                     </li>
                                                 </ul>
                                             </div>

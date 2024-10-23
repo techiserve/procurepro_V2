@@ -1,4 +1,4 @@
-@extends('coreui.layouts.admin')
+@extends('stack.layouts.admin')
 
 @section('content')
 <div class="container-fluid">
@@ -18,11 +18,7 @@
                         <div id="toolbar">
                     
                         </div>
-                        <table class="table table-responsive-sm table-bordered table-striped table-sm display nowrap" 
-                        id="table" data-toggle="tables" data-search="true" data-show-columns="true" 
-                        data-key-events="true" data-resizable="true" data-cookie="true" 
-                        data-cookie-id-table="saveId" data-show-export="true" data-click-to-select="true" 
-                        data-toolbar="#toolbar">
+                        <table class="table table-striped table-bordered file-export">
                             <thead>
                                 <tr>
                                     <th data-field="id" class='text-center'>ID</th>

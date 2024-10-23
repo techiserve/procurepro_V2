@@ -15,4 +15,14 @@
 <script src="{{ asset('stack-admin/app-assets/vendors/js/charts/apexcharts/apexcharts.min.js') }}"></script>
 
 <script src="{{ asset('stack-admin/app-assets/js/scripts/pages/dashboard-fitness.js') }}"></script>
-  
+
+<script src="{{ asset('stack-admin/app-assets/vendors/js/tables/buttons.html5.min.js') }}"></script>
+<script src="{{ asset('stack-admin/app-assets/vendors/js/tables/buttons.print.min.js') }}"></script>
+<script src="{{ asset('stack-admin/app-assets/js/scripts/tables/datatables/datatable-advanced.js') }}"></script>
+
+<script src="{{ asset('stack-admin/app-assets/vendors/js/tables/pdfmake.min.js') }}"></script>
+<script src="{{ asset('stack-admin/app-assets/vendors/js/tables/vfs_fonts.js') }}"></script>
+<script src="{{ asset('stack-admin/app-assets/vendors/js/tables/jszip.min.js') }}"></script>
+<script src="{{ asset('stack-admin/app-assets/vendors/js/tables/buttons.flash.min.js') }}"></script>
+
+<script src="{{ asset('stack-admin/app-assets/vendors/js/tables/datatable/dataTables.buttons.min.js') }}"></script>
