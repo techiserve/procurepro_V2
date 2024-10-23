@@ -1,72 +1,170 @@
-@extends('template.guest')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TagPay Login</title>
+    <style>
+        /* Include Gilroy-Bold font from a local source or web font */
+        @font-face {
+            font-family: 'Gilroy-Bold';
+            src: url('{{ asset('fonts/gilroy-bold/Gilroy-Bold.ttf') }}') format('truetype');
+            font-weight: bold;
+            font-style: normal;
+        }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-@section('content')
-<div id="page-container">
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #0D1E3D;
+            font-family: 'Gilroy-Bold', Arial, sans-serif; /* Use Gilroy-Bold */
+        }
 
-<!-- Main Container -->
-<main id="main-container">
-  <!-- Page Content -->
-  <div class="bg-image" style="background-image: url('template/assets/media/photos/loginpage3.png');">
-    <div class="row g-0 ">
-      <!-- Main Section -->
-      <div class="hero-static col-md-6 d-flex align-items-center" style="">
-        <div class="p-3 w-100">
-          <!-- Header -->
-          <div class="mb-3 text-center">
-            <a class="link-fx fs-1" href="#">
-              <span class="text-light" style="font-size: 50px;font-weight: 500;">Procure Pro 360</span>
-            </a></br>
-            <span class="text-light" style="font-size: 15px;font-weight: 100;">Login to continue</span>
-          </div>
-          <!-- END Header -->
+        .container {
+            display: flex;
+            width: 1000px;
+            height: 600px;
+            background-color: #0D1E3D;
+            position: relative;
+            right: -50px; /* Move the container to the right */
+        }
 
-          <!-- Sign In Form -->
-          <!-- jQuery Validation (.js-validation-signin class is initialized in js/pages/op_auth_signin.min.js which was auto compiled from _js/pages/op_auth_signin.js) -->
-          <!-- For more info and examples you can check out https://github.com/jzaefferer/jquery-validation -->
-          <div class="row g-0 justify-content-center">
-            <div class="col-sm-8 col-xl-5">
-              <form class="js-validation-signin" action="{{ route('login') }}" method="POST">
-              @csrf
-                <div class="py-3">
-                  <div class="mb-4">
-                  <label for="company-email" class="col-sm-6 col-form-label col-form-label-sm text-light">Email Address</label>
-                    <input class="form-control form-control-lg form-control-alt" id="email" placeholder="arshadt@grouptag.co.za"  type="email" name="email" :value="old('email')" required autofocus autocomplete="username" >
-                  </div>
-                  <div class="mb-5">
-                  <label for="company-email" class="col-sm-3 col-form-label col-form-label-sm text-light">Password</label>
-                    <input type="password" class="form-control form-control-lg form-control-alt" placeholder="**********"  name="password" required autocomplete="current-password" />
-                  </div>
-                </div>
-                <div class="mb-5">
-                  <button type="submit" class="btn w-100 btn-lg btn-hero" style="background-color: #384559; color: #FEFCFF;border: 2px solid #FEFCFF; border-radius: 5px;">
-                    <i class=" opacity-30 me-1"></i>{{ __('Login') }}
-                  </button>
-                  <p class="" >
-                    <a class="btn btn-sm text-light"  style="float: right;" href="{{ route('password.request') }}">
-                      <i class=""></i> Forgot password?
-                    </a>
-                  </p>
-                </div>
-              </form>
-            </div>
-          </div>
-          <!-- END Sign In Form -->
-        </div>
-      </div>
-      <!-- END Main Section -->
-    
-      <!-- Meta Info Section -->
-      <div class="hero-static col-md-6 d-none d-md-flex align-items-md-center justify-content-md-center text-md-center">
-        <div class="p-3">
-          <p class="fs-lg text-dark_blue-75 mb-0" style="position: fixed; bottom: 0; right: 0; margin: 20px;">
-            Techiserve | Smart Solutions 
-          </p>
-        </div>
-      </div>
-      <!-- END Meta Info Section -->
+        .left {
+            width: 60%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .left img {
+            width: 150%; 
+            margin-left: -490px;/* Increase the logo size by 50% (from 60% to 90%) */
+        }
+
+        .right {
+            width: 43%;
+            background-color: #D9DFE647;
+            border-radius: 28px;
+            border: 2px solid #FFFFFF;
+            padding: 50px;
+            color: white;
+            margin-bottom: 40px;
+            margin-left: -10px;
+            margin-right: -10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        h3 {
+            font-size: 25px;
+            margin-bottom: 70px; /* Adjusted margin to move text up */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Add shadow */
+        }
+
+        .login-title {
+            font-size: 25px;
+            margin-bottom: 30px; /* Space between "Login" and "Email" */
+        }
+
+        .right h3 {
+            text-align: center; /* Center only the h2 element */
+           
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        input {
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border: none;
+            font-size: 14px;
+            width: 100%;
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            background-color: #ffffff;
+        }
+
+        input[type="submit"] {
+            background-color: #0D1E3D;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #072C5B;
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        .forgot-password a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .register {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .register a {
+            color: white;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="left">
+        <img src="{{ asset('template/assets/media/photos/logo1.png') }}" alt="TagPay Logo">
     </div>
-  </div>
-  <!-- END Page Content -->
-</main>
-@endsection
+    <div class="right">
+        <h3 style="font-family: 'Gilroy-Bold', Arial, sans-serif;" >Welcome to TagPay</h3>
+        <div class="login-title">Login</div> 
+        <form action="{{ route('login') }}" method="POST">
+        @csrf
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="username@gmail.com">
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Password">
+
+            <div class="forgot-password">
+                <a href="#">Forgot Password?</a>
+            </div>
+
+            <input type="submit" value="Sign in" style="font-family: 'Gilroy-Bold', Arial, sans-serif;">
+
+     
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
