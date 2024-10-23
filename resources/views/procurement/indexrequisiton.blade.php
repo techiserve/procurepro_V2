@@ -1,5 +1,4 @@
-
-@extends('coreui.layouts.admin')
+@extends('stack.layouts.admin')
 <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.4/tutorials/timelines/timeline-7/assets/css/timeline-7.css">
 @section('content')
@@ -19,7 +18,7 @@
           @csrf
           <button  type="submit" class="btn btn-success btn-sm pull-right" ><i class="fa fa-filter"></i>Download Requisitions</button>&nbsp;
          
-            <table class="table table-responsive-sm table-bordered table-striped table-sm">
+            <table class="table table-striped table-bordered zero-configuration">
               <thead>
                 <tr>
                   <th>#</th>

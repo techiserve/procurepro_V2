@@ -12,9 +12,19 @@
 <!-- <link rel="stylesheet" href="{{ asset('stack-admin/css/sweetalert2.min.css') }}"> -->
 <link href="{{ asset('stack-admin/app-assets/css/core/colors/palette-gradient.css') }}" rel="stylesheet" />
 <link href="{{ asset('stack-admin/assets/css/style.css') }}" rel="stylesheet" />
+<link href="{{ asset('stack-admin/app-assets/vendors/css/tables/datatable/datatables.min.css') }}" rel="stylesheet" />
+
+<link href="{{ asset('stack-admin/app-assets/vendors/css/forms/icheck/icheck.css') }}" rel="stylesheet" />
+<link href="{{ asset('stack-admin/app-assets/vendors/css/forms/icheck/custom.css') }}" rel="stylesheet" />
+<link href="{{ asset('stack-admin/app-assets/vendors/css/charts/morris.css') }}" rel="stylesheet" />
+<link href="{{ asset('stack-admin/app-assets/vendors/css/extensions/unslider.css') }}" rel="stylesheet" />
+<link href="{{ asset('stack-admin/app-assets/vendors/css/charts/leaflet.css') }}" rel="stylesheet" />
+<link href="{{ asset('stack-admin/app-assets/css/core/colors/palette-climacon.css') }}" rel="stylesheet" />
+<link href="{{ asset('stack-admin/app-assets/fonts/simple-line-icons/style.min.css') }}" rel="stylesheet" />
+<link href="{{ asset('stack-admin/app-assets/fonts/meteocons/style.min.css') }}" rel="stylesheet" />
+<link href="{{ asset('stack-admin/app-assets/css/pages/users.css') }}" rel="stylesheet" />
 
 <!-- for bootstrap datables -->
-
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i%7COpen+Sans:300,300i,400,400i,600,600i,700,700i"/>
 
   

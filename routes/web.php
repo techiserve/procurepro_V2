@@ -25,7 +25,11 @@ Route::get('/', function () {
 
 
 Route::get('/req', function () {
-    return view('pdf.requisition');
+    return view('welcome');
+});
+
+Route::get('/stark', function () {
+    return view('stark');
 });
 
 Route::get('/dashboard', function () {

@@ -1,4 +1,4 @@
-@extends('coreui.layouts.admin')
+@extends('stack.layouts.admin')
 
 
 <style>

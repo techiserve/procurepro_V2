@@ -1,42 +1,60 @@
-@extends('coreui.layouts.admin')
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+@extends('stack.layouts.admin')
 
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 @section('content')
-<div class="container-fluid">
-  <div class="animated fadeIn">
-    <div class="row">
-      <div class="col-sm-12">
-        <div class="card">
-          <div class="card-header">
-            <strong>Users</strong>
-            <small>List</small>
-             <a style="color:white;" href = '/users/create' class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="icon-cloud-upload"></i> Add New User</a>
-          </div>
+<div class="content-header row">
+  <div class="content-header-left col-md-6 col-12 mb-2">
+    <h3 class="content-header-title mb-0">Users List</h3>
+    <div class="row breadcrumbs-top">
+      <div class="breadcrumb-wrapper col-12">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"></li>
+          <li class="breadcrumb-item active"></li>
+        </ol>
+      </div>
+    </div>
+  </div>
 
-          <div class="card-body">
-            <table class="table table-responsive-sm table-bordered table-striped table-sm">
-              <thead>
-                <tr>
-               
-                  <th class="text-center">Status</th>
+  <div class="content-header-right col-md-6 col-12 mb-md-0 mb-2">
+    <div class="btn-group float-md-right" role="group" aria-label="Button group with nested dropdown">
+      <a class="btn btn-outline-primary" href="/users/create"><i class="feather icon-pie-chart"></i> Create User</a>
+    </div>
+  </div>
+</div>
+
+<div class="content-body">
+  <section id="configuration">
+    <div class="container-fluid"> <!-- Changed to container-fluid for full width -->
+      <div class="row">
+        <div class="col-12"> <!-- col-12 ensures full width within the container -->
+          <div class="card">
+         
+            <div class="card-content collapse show">
+              <div class="card-body card-dashboard">
+             
+                <table class="table table-striped table-bordered zero-configuration">
+                  <thead>
+                    <tr>
+                  
+              
                   <th>Name</th>
 
-                  <th>Position</th>
-                  <th>Phone Number</th>
+                  <th class="text-center">Position</th>
+                  <th class="text-center">Phone Number</th>
                   <th class="text-center">Email</th>                   
-                 
+                  <th class="text-center">Status</th>
                   <th class="text-center">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                @foreach($users as $user)
-                <tr>
-           
-                <td class="text-center">
+                    </tr>
+                  </thead>
+                  <tbody>
+                  @foreach($users as $user)
+                    <tr>
+                    
+         
+              <td class="text-center">{{$user->name}}</td>
+              <td class="text-center">{{$user->position}}</td>
+                  <td class="text-center">{{$user->phoneNumber}}</td>
+                  <td class="text-center">{{$user->email}}</td>
+                  <td class="text-center">
               
               @if($user->isActive == 1)
               <button type="button" class="btn btn-outline-success"><span class="fa fa-check-circle"></span> Active</button>
@@ -45,55 +63,37 @@
                 @endif
               
               </td>
-                <td>
-                            <div class="text-nowrap">{{$user->name}}</div>
-                            <div class="small text-body-secondary text-nowrap"> @if($user->isActive == null)<span>InActive</span> @else <span>Active</span> @endif | {{ $user->created_at->format('M j, Y')}}</div>
-                          </td>
-             
-                  <td>{{$user->position}}</td>
-                  <td>{{$user->phoneNumber}}</td>
-                  <td>{{$user->email}}</td>
-                 
+                  
+                  <td class="text-center">                        
                
-                  <td class="text-center">                
-                    <a href='/users/{{$user->id}}/edit' class='btn btn-info btn-sm' style='color: white;'>
-                      <span class='fa fa-pencil'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'> Edit</span>
-                    </a>
-                    &nbsp;
-                    <a href='#' class='btn btn-danger btn-sm'   onclick="
-                        event.preventDefault(); // Prevent the default link behavior
-                        Swal.fire({
-                            title: 'Delete User?',
-                            text: 'You won\'t be able to undo this!',
-                            icon: 'info', // Updated property for SweetAlert2
-                            showCancelButton: true,
-                            confirmButtonText: 'Continue',
-                            cancelButtonText: 'Cancel'
-                          }).then((result) => {
-                            if (result.isConfirmed) {
-                              // Redirect to the URL or perform an action
-                              window.location.href = '/users/{{$user->id}}/delete'; // Replace with your actual URL
-                            }
-                          })
-                      "
-                    >
-                      <span class='fa fa-trash'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'>Delete</span>
-                    </a>&nbsp;
+                    <a href="/users/{{$user->id}}/edit" class="btn btn-icon btn-info mr-1"><i class="fa fa-pencil"></i> Edit</a> 
+                    <a href='#'class="btn btn-icon btn-danger mr-1"><i class="fa fa-trash"></i> Delete</a> &nbsp;
                   </td>
                 </tr>
-                @endforeach
-              </tbody>
-            </table>
-          </div>
+                    </tr>
+                    @endforeach
+                    <!-- More rows here -->
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                    
+                    <th class="text-center">Status</th>
+                  <th>Name</th>
 
+                  <th>Position</th>
+                  <th>Phone Number</th>
+                  <th class="text-center">Email</th>                   
+                 
+                  <th class="text-center">Action</th>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-
-
-  </div>
+    </div> <!-- End of container-fluid -->
+  </section>
 </div>
-
 @endsection

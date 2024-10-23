@@ -26,22 +26,7 @@
       }
    });
 
-   var activity = new PerfectScrollbar("#friends-activity", {
-      wheelPropagation: false
-   });
-   var activity_daily = new PerfectScrollbar("#daily-activity", {
-      wheelPropagation: false
-   });
-
-   // fitness-stats
-   $("#fitness-stats").sparkline([5, 6, 7, 8, 9, 10, 13, 15, 13, 12, 10, 9, 10, 12, 15, 18, 16, 14, 12, 10, 8, 5], {
-      type: "bar",
-      width: "100%",
-      height: "30px",
-      barWidth: 6,
-      barSpacing: 4,
-      barColor: "#FF7588"
-   });
+ 
 
    // apex chart in dashboard fitness's activity division
 

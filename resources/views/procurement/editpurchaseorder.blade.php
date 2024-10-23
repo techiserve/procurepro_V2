@@ -1,5 +1,4 @@
-@extends('coreui.layouts.admin')
-
+@extends('stack.layouts.admin')
 @section('content')
 <div class="container-fluid">
   <div class="animated fadeIn">

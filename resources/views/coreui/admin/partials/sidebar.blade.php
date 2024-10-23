@@ -102,7 +102,7 @@
           </li>
           @endif
 
-          @if( auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR$data->contains('View Purchase Orders'))
+          @if( auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR$data->contains('View Requisitions'))
           <li class="nav-item active">
             <a class="nav-link" href="/procurement/myrequisition">
               <i class="nav-icon icon-settings"></i>Pending Requisition Approvals</a>
