@@ -6,6 +6,11 @@ use App\Models\User;
 use App\Models\Rolepermission;
 use App\Models\Company;
 use Alert;
+use App\Models\Requisition;
+use App\Models\Sqlserver;
+use App\Models\Bank;
+use App\Models\Department;
+use App\Models\Purchaseorder;
 use App\Models\CompanyRole;
 use Illuminate\Support\Facades\Auth;
 
@@ -22,6 +27,7 @@ class UserController extends Controller
     {
            $user = Auth::user()->companyId;
         
+       
          $users = User::where('companyId', '=', $user)->where('userrole', '>', 1)->get();
 
         return view('users.index', compact('users'));
@@ -29,6 +35,12 @@ class UserController extends Controller
 
     public function home()
     {
+        
+        $userCount = User::count();
+        $departments = Department::count();
+        $requisitions = Requisition::count();
+        $purchaseorders = Purchaseorder::count();
+
         $user = Auth::user()->userrole;
 
         if($user == 2 OR  Auth::user()->executiveId != null){
@@ -38,7 +50,7 @@ class UserController extends Controller
         
             if($companies == null){
         
-            return view('home');
+            return view('home',compact('userCount','departments','requisitions','purchaseorders') );
 
             }else{
 
@@ -49,7 +61,7 @@ class UserController extends Controller
             }
         }else{
        
-            return view('home');
+            return view('home',compact('userCount','departments','requisitions','purchaseorders') );
         }
 
        
