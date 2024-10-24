@@ -75,10 +75,9 @@
             <label for="national_id">Department</label>
             <select class="js-example-basic-single form-control" id="grower_sizes" name="department">
               <option value="">Select Department</option>
-              <option value="4">Finance</option>
-              <option value="5">IT</option>
-              <option value="6">Procurement</option>
-              <option value="7">HR</option>
+              @foreach($departments as $department)
+              <option value="{{ $department->id }}">{{ $department->name }}</option>
+              @endforeach
             </select>
           </div>
         </div>
