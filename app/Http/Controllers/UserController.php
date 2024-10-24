@@ -36,8 +36,8 @@ class UserController extends Controller
     public function home()
     {
         
-        $userCount = User::count();
-        $departments = Department::count();
+        $departments = Requisition::where('status','=', 1)->count();
+        $userCount  = Purchaseorder::where('status','=', 1)->count();
         $requisitions = Requisition::count();
         $purchaseorders = Purchaseorder::count();
 

@@ -8,7 +8,7 @@
     <meta name="keywords" content="admin template, stack admin template, dashboard template, flat admin template, responsive admin template, web app">
     <meta name="userid" content="{{ Auth::check() ? Auth::user()->id : '' }}">
 
-    <title>Procure Pro 360</title>
+    <title>TagPay</title>
   
     @include('stack.layouts.admin.stylesheets')
     @yield('styles')
@@ -28,7 +28,7 @@
             </div>
 
             @yield('content') 
-            
+
         </div>
         </div>
       

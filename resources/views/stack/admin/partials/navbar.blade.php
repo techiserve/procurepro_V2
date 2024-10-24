@@ -7,7 +7,6 @@
                     <li class="nav-item mr-auto"><a class="navbar-brand" href="../../../html/ltr/vertical-modern-menu-template/index.html">
                             <h2 class="brand-text">TagPay</h2>
                         </a></li>
-                    <li class="nav-item d-none d-lg-block float-right"><a class="nav-link modern-nav-toggle pr-0" data-toggle="collapse"><i class="toggle-icon feather icon-toggle-right font-medium-3 white" data-ticon="feather.icon-toggle-right"></i></a></li>
                     <li class="nav-item d-lg-none"><a class="nav-link open-navbar-container" data-toggle="collapse" data-target="#navbar-mobile"><i class="fa fa-ellipsis-v"></i></a></li>
                 </ul>
             </div>

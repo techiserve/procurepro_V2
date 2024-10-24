@@ -11,7 +11,7 @@
                                     <div class="col-xl-3 col-lg-6 col-md-12 border-right-blue-grey border-right-lighten-5">
                                         <div class="my-1 text-center">
                                             <div class="card-header mb-2 pt-0">
-                                                <h5 class="primary">Total Requisition Requested</h5>
+                                                <h5 class="primary">Requisitions Requested</h5>
                                                 <h3 class="font-large-2 text-bold-200">{{$requisitions}}</h3>
                                             </div>
                                             <div class="card-content">
@@ -30,7 +30,7 @@
                                     <div class="col-xl-3 col-lg-6 col-md-12 border-right-blue-grey border-right-lighten-5">
                                         <div class="my-1 text-center">
                                             <div class="card-header mb-2 pt-0">
-                                                <h5 class="danger">Departments</h5>
+                                                <h5 class="danger">Pending Requisitions</h5>
                                                 <h3 class="font-large-2 text-bold-200">{{$departments}}<span class="font-medium-1 grey darken-1 text-bold-400"></span></h3>
                                             </div>
                                             <div class="card-content">
@@ -62,7 +62,7 @@
                                     <div class="col-xl-3 col-lg-6 col-md-12">
                                         <div class="my-1 text-center">
                                             <div class="card-header mb-2 pt-0">
-                                                <h5 class="success">Users</h5>
+                                                <h5 class="success">Pending Purchase Orders</h5>
                                                 <h3 class="font-large-2 text-bold-200">{{$userCount}} <span class="font-medium-1 grey darken-1 text-bold-400"></span></h3>
                                             </div>
                                             <div class="card-content">
