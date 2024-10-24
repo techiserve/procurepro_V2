@@ -65,35 +65,60 @@
 
                             @if($rolez->approvalId == 1)
                             <option value="1">First Line</option> 
+                            <option value="2">Second Line</option>
+                            <option value="3">Third Line</option>                         
+                            <option value="4">Fourth Line</option>       
+                            <option value="5">Fiveth Line</option>
+                            <option value="6">Sixth Line</option> 
                             @endif                                   
                                       
                             @if($rolez->approvalId == 2)
                             <option value="2">Second Line</option>
+                            <option value="1">First Line</option> 
+                            <option value="3">Third Line</option>                         
+                            <option value="4">Fourth Line</option>       
+                            <option value="5">Fiveth Line</option>
+                            <option value="6">Sixth Line</option>   
                             @endif                                                  
                                            
                             @if($rolez->approvalId == 3)
                             <option value="3">Third Line</option> 
+                            <option value="1">First Line</option> 
+                            <option value="2">Second Line</option>                       
+                            <option value="4">Fourth Line</option>       
+                            <option value="5">Fiveth Line</option>
+                            <option value="6">Sixth Line</option>   
                             @endif                                                                        
                                            
                             @if($rolez->approvalId == 4)
                             <option value="4">Fourth Line</option> 
+                            <option value="1">First Line</option> 
+                            <option value="2">Second Line</option>
+                            <option value="3">Third Line</option>                         
+                               
+                            <option value="5">Fiveth Line</option>
+                            <option value="6">Sixth Line</option>   
                             @endif                                                                           
                                            
                             @if($rolez->approvalId == 5)
                             <option value="5">Fiveth Line</option>
+                            <option value="1">First Line</option> 
+                            <option value="2">Second Line</option>
+                            <option value="3">Third Line</option>                         
+                            <option value="4">Fourth Line</option>       
+                           
+                            <option value="6">Sixth Line</option>   
                             @endif 
                             
                             @if($rolez->approvalId == 6)
                             <option value="6">Sixth Line</option>
-                            @endif                                                                                                  
-
-
                             <option value="1">First Line</option> 
                             <option value="2">Second Line</option>
                             <option value="3">Third Line</option>                         
                             <option value="4">Fourth Line</option>       
                             <option value="5">Fiveth Line</option>
-                            <option value="6">Sixth Line</option>                                          
+                        
+                            @endif                                                                                                                                        
                         </select>
 						</div>
 					</div>
