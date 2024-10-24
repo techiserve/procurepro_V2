@@ -87,7 +87,7 @@
 			<br>
           </div>
     
-            @if($purchaseorder->userId != auth()->user()->id)
+            @if($purchaseorder->userId != auth()->user()->id AND $purchaseorder->approvallevel <= $purchaseorder->totalapprovallevels)
             <div class="card-footer">
             <div class="form-group pull-right">
     				
