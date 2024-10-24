@@ -105,8 +105,8 @@
       <div class="col-sm-12">
         <div class="card">
           <div class="card-header">
-            <strong>Department</strong>
-            <small>List</small>
+            <strong>Department List</strong>
+        
           </div>
 
           <div class="card-body">

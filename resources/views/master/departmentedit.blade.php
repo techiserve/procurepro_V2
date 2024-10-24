@@ -28,9 +28,7 @@
                   <label for="grower_name">Department Name</label>
                   <input class="form-control" id="grower_name" name="departmentname" type="text" value = "{{$department->name}}" placeholder="Enter Department Name...">
                 </div>
-              </div>
-       
-
+              </div>    
               <div class="col-md-1 col-form-label">
                 <div class="form-group">
                 <div class="form-check">
@@ -44,6 +42,16 @@
 
 			<hr style="border-color: black;">
 			<br>
+      <div class="row">
+    
+        <div class="col-md-6">
+        <label>Approval Level</label>
+        </div>
+     
+        <div class="col-md-6">
+        <label>User Role</label>
+        </div>
+      </div>
 
             		<!-- the dynamic field for adding growers is suppped to go here -->
 			<div class="clearfix" id="dynamic_field">
