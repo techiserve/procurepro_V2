@@ -147,8 +147,9 @@ class UserController extends Controller
  {
       $user = User::where('id', $id)->first();
       $roles = userrole::where('id' ,'>',3)->get();
+      $departments = Department::all();
  
-     return view('users.edit',compact('user','roles'));
+     return view('users.edit',compact('user','roles','departments'));
  }
 
 

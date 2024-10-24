@@ -258,6 +258,10 @@ class MasterController extends Controller
     {
          $role = userrole::where('id', $id)->delete();
          $permissions = Rolepermission::where('role_id', $id)->delete();
+         $users = User::where('userrole', $id)->update([
+
+           'isActive' => null
+         ]);
     
 
          if($permissions && $role){

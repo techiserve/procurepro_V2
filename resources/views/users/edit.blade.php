@@ -1,4 +1,4 @@
-@extends('coreui.layouts.admin')
+@extends('stack.layouts.admin')
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
@@ -57,11 +57,16 @@
                 <div class="form-group">
                 <label for="national_id">Department</label>
                 <select class="js-example-basic-single form-control" id="grower_sizes" name="department">
-                          <option value="" >Select Department</option>                       
-                            <option value="4">Finance</option>                          
-                            <option value="5">IT</option>
-                            <option value="6">Procurement</option>                         
-                            <option value="7">HR</option>                         
+
+                         @foreach($departments as $department)
+                         @if($department->id == $user->department)
+                         <option value="{{$department->id }}" >{{$department->name}}</option>  
+                         @endif
+                         @endforeach
+
+                          @foreach($departments as $department)
+              <option value="{{ $department->id }}">{{ $department->name }}</option>
+              @endforeach                      
                         </select>
                 </div>
               </div>
