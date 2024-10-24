@@ -261,6 +261,7 @@ class MasterController extends Controller
          $users = User::where('userrole', $id)->update([
 
            'isActive' => null
+           
          ]);
     
 
