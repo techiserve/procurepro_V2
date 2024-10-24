@@ -94,7 +94,7 @@
 			<br>
           </div>
     
-            @if($purchaseorder->userId != auth()->user()->id)
+            @if($purchaseorder->userId != auth()->user()->id AND $history == NULL)
             <div class="card-footer">
             <div class="form-group pull-right">
     				

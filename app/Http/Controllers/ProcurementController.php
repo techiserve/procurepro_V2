@@ -101,7 +101,9 @@ class ProcurementController extends Controller
         $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
         $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
 
-        return view('procurement.viewrequisition', compact('purchaseorder','files','vendors','servicetype'));
+        $history = RequisitionHistory::where('requisition_id', $id)->where('userId',  Auth::user()->id)->where('action','!=', 'Created Purchase Requisition')->first();
+    
+        return view('procurement.viewrequisition', compact('purchaseorder','files','vendors','servicetype','history'));
     }
 
 
@@ -163,7 +165,9 @@ class ProcurementController extends Controller
      
         $purchaseorder = Purchaseorder::where('id', $id)->first();
 
-        return view('procurement.editpurchaseorder', compact('purchaseorder'));
+        $history = RequisitionHistory::where('requisition_id', $id)->where('userId',  Auth::user()->id)->where('action', '=', 'Purchase Order Approved')->first();
+
+        return view('procurement.editpurchaseorder', compact('purchaseorder','history'));
     }
 
 
@@ -209,7 +213,6 @@ class ProcurementController extends Controller
     {
         $query = Requisition::query();
          
-       // dd($request->all());
         // Check for search inputs
         if ($request->filled('status')) {
             $query->where('status', 'like', '%' . $request->input('status') . '%');
@@ -371,10 +374,12 @@ class ProcurementController extends Controller
 
         }
        // dd($invoicepath,$jobcardpath);
+       $history = RequisitionHistory::where('requisition_id', $id)->where('userId',  Auth::user()->id)->where('action', '=', 'Purchase Order Approved')
+       ->orwhere('action', '=', 'Purchase Order Rejected')->where('requisition_id', $id)->where('userId',  Auth::user()->id)
+       ->orwhere('action', '=', 'Purchase Order Returned')->where('requisition_id', $id)->where('userId',  Auth::user()->id)->first();
 
 
-
-        return view('procurement.viewpurchaseorder', compact('purchaseorder','invoicepath','jobcardpath'));
+        return view('procurement.viewpurchaseorder', compact('purchaseorder','invoicepath','jobcardpath','history'));
     }
 
     /**
