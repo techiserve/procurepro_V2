@@ -20,7 +20,7 @@
 
   <div class="content-header-right col-md-6 col-12 mb-md-0 mb-2">
     <div class="btn-group float-md-right" role="group" aria-label="Button group with nested dropdown">
-      <a class="btn btn-outline-primary" href="/users/create"><i class="feather icon-pie-chart"></i> Create User</a>
+      <a class="btn btn-outline-primary" href="/users/create"><i class="feather icon-user"></i> Create User</a>
     </div>
   </div>
 </div>
