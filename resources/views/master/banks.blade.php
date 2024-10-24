@@ -52,8 +52,8 @@
           </div>
           <div class="card-footer">
             <div class="form-group pull-right">
-    				<input type="submit" class="btn btn-success" value="Save New Bank"/>
-    				<input type="reset" class="btn btn-danger" value="Cancel Registration"/>
+    				<input type="submit" class="btn btn-success" value="Save "  style="padding: 10px 20px; font-size: 16px; min-width: 100px;"/>
+    				<input type="reset" class="btn btn-danger" value="Cancel "  style="padding: 10px 20px; font-size: 16px; min-width: 100px;"/>
     			</div>
           </div>
        </div>
