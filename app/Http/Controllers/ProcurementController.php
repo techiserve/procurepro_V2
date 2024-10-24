@@ -50,7 +50,7 @@ class ProcurementController extends Controller
 
         $tax = DB::connection('sqlsrv')->table('TaxTypes')->select('TaxTypeDescription')->get();
 
-        $departments = Department::where('companyId', Auth::user()->companyId)->get();
+        $departments = Department::where('IsActive', '!=' , null)->get();
 
        // dd($vendors);
 

@@ -88,7 +88,7 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="grower_address">Department</label>
-                  <select class="js-example-basic-single form-control" id="grower_size" name="department">
+                  <select class="js-example-basic-single form-control" id="grower_size" name="department" required>
                           <option value="" >Select Department</option>
                            @foreach($departments as $department)
                             <option value="{{ $department->id }}"> {{ $department->name }}</option>
@@ -119,7 +119,7 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="grower_type">Amount (Rands)</label>
-                  <input class="form-control" id="national_id" name="amount" type="text" placeholder="Amount" required>
+                  <input class="form-control" id="national_id" name="amount" type="number" placeholder="Amount" required>
                 </div>
               </div> 
 
