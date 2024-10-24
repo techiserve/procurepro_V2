@@ -76,15 +76,13 @@
                   </tbody>
                   <tfoot>
                     <tr>
-                    
-                    <th class="text-center">Status</th>
-                  <th>Name</th>
+                    <th>Name</th>
 
-                  <th>Position</th>
-                  <th>Phone Number</th>
-                  <th class="text-center">Email</th>                   
-                 
-                  <th class="text-center">Action</th>
+<th class="text-center">Position</th>
+<th class="text-center">Phone Number</th>
+<th class="text-center">Email</th>                   
+<th class="text-center">Status</th>
+<th class="text-center">Action</th>
                     </tr>
                   </tfoot>
                 </table>
