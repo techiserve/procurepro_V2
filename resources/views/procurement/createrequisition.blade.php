@@ -119,7 +119,7 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="grower_type">Amount (Rands)</label>
-                  <input class="form-control" id="national_id" name="amount" type="number" placeholder="Amount" required>
+                  <input  type="number" step="0.01"  class="form-control"  id="national_id" name="amount"  placeholder="Amount" required>
                 </div>
               </div> 
 
