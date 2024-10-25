@@ -78,7 +78,7 @@
                     </a>&nbsp;
                     <a  href="#" class='btn btn-success btn-sm' data-toggle="modal" data-target="#historyModal{{ $company->id }}" style='color: white;'>
                       <span class='fa fa-pencil'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'> View Logs</span>
+                      <span class='hidden-sm hidden-sm hidden-md'>  Logs</span>
                    </a>&nbsp;
  <!-- Modal Structure -->
                    <div class="modal fade" id="historyModal{{ $company->id }}" tabindex="-1" role="dialog" aria-labelledby="historyModalLabel{{ $company->id }}" aria-hidden="true">
@@ -146,11 +146,11 @@
                     @else
                     <a href='/procurement/{{$company->id}}/viewpurchaseorder' class='btn btn-info btn-sm' style='color: white;'>
                       <span class='fa fa-pencil'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'>View Purchase Order</span>
+                      <span class='hidden-sm hidden-sm hidden-md'>View </span>
                     </a>&nbsp;
                     <a  href="#" class='btn btn-success btn-sm' data-toggle="modal" data-target="#historyModal{{ $company->id }}" style='color: white;'>
                       <span class='fa fa-pencil'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'> View Logs</span>
+                      <span class='hidden-sm hidden-sm hidden-md'>Logs</span>
                    </a>&nbsp;
 
  <!-- Modal Structure -->

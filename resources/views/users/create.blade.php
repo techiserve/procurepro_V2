@@ -3,16 +3,10 @@
 @section('content')
 <div class="content-header row">
                 <div class="content-header-left col-md-6 col-12 mb-2">
-                    <h3 class="content-header-title mb-0">Create User</h3>
+                 
                     <div class="row breadcrumbs-top">
                         <div class="breadcrumb-wrapper col-12">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="index.html">Users</a>
-                                </li>
-                                <li class="breadcrumb-item"><a href="#">Create new User</a>
-                                </li>
-                            
-                            </ol>
+                  
                         </div>
                     </div>
                 </div>
@@ -22,7 +16,7 @@
                     <div class="btn-group float-md-right" role="group" aria-label="Button group with nested dropdown">
                         <div class="btn-group" role="group">
                        
-                        </div><a class="btn btn-outline-primary" href="timeline-center.html"><i class="feather icon-pie-chart"></i> User List</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -38,7 +32,10 @@
                                     <form method="POST" action="/users/store">
   @csrf
   <div class="card">
-  
+  <div class="card-header">
+            <strong>Create Users</strong>
+          
+          </div>
 
     <div class="card-body">
       <div class="row">

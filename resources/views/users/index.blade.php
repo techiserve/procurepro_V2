@@ -7,20 +7,17 @@
 @section('content')
 <div class="content-header row">
   <div class="content-header-left col-md-6 col-12 mb-2">
-    <h3 class="content-header-title mb-0">Users List</h3>
+
     <div class="row breadcrumbs-top">
       <div class="breadcrumb-wrapper col-12">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"></li>
-          <li class="breadcrumb-item active"></li>
-        </ol>
+     
       </div>
     </div>
   </div>
 
   <div class="content-header-right col-md-6 col-12 mb-md-0 mb-2">
     <div class="btn-group float-md-right" role="group" aria-label="Button group with nested dropdown">
-      <a class="btn btn-outline-primary" href="/users/create"><i class="feather icon-user"></i> Create User</a>
+  
     </div>
   </div>
 </div>
@@ -31,7 +28,11 @@
       <div class="row">
         <div class="col-12"> <!-- col-12 ensures full width within the container -->
           <div class="card">
-         
+          <div class="card-header">
+            <strong>Users List</strong>
+          
+          </div>
+
             <div class="card-content collapse show">
               <div class="card-body card-dashboard">
              

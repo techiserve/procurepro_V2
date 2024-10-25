@@ -16,18 +16,18 @@
           <button class="btn btn-primary btn-sm pull-right"  data-toggle="modal" data-target="#filterModal" style="padding: 10px 20px; font-size: 16px; min-width: 100px;"><i class="fa fa-filter"></i> Filter </button>
           <form method="POST" action="{{ route('procurement.downloadrequisitions') }}">
           @csrf
-          <button  type="submit" class="btn btn-success btn-sm pull-right" style="padding: 10px 20px; font-size: 16px; min-width: 100px;"><i class="fa fa-filter"></i>Download </button>&nbsp;
+          <button  type="submit" class="btn btn-success btn-sm pull-right" style="padding: 10px 20px; font-size: 16px; min-width: 100px;"><i class="fa fa-filter"></i> Download </button>&nbsp;
          
             <table class="table table-striped table-bordered zero-configuration">
               <thead>
                 <tr>
                   <th>#</th>
-                  <th class="text-center"> Vendor Name</th>
-                  <th class="text-center"> Services</th>
-                  <th class="text-center">Payment method</th>
-                  <th class="text-center">Expenses</th>
-                  <th class="text-center">Amount</th>              
-                  <th class="text-center">Approved By</th>
+                  <th class="text-center"> Vendor Name</th> 
+                  <th class="text-center"> Services</th> 
+                  <th class="text-center">Payment method</th>  
+                  <th class="text-center">Expenses</th> 
+                  <th class="text-center">Amount</th>             
+                  <th class="text-center">Approved By</th> 
                   <th class="text-center">Status</th>             
                   <th class="text-center">Action</th>   
                 </tr>
