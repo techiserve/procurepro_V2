@@ -75,7 +75,7 @@
               <div class="col-sm-6">
           <div class="form-group">
             <label for="grower_type">Invoice Amount (Rands)</label>
-            <input class="form-control" id="national_id" name="invoiceamount" type="number"  max="{{ $purchaseorder->amount }}" placeholder="Amount" required>
+            <input  type="number" step="0.01"  class="form-control" id="national_id" name="invoiceamount"   max="{{ $purchaseorder->amount }}" placeholder="Amount" required>
           </div>
         </div>
          
