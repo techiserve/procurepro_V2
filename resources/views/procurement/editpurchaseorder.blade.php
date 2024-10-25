@@ -88,8 +88,7 @@
                   <input type="file" class="form-control" id="inputGroupFile04" name="invoice" aria-describedby="inputGroupFileAddon04" aria-label="Upload" required>
                 </div>
               </div>    
-          
-
+        
 
         <div class="col-sm-6">
           <div class="form-group">
