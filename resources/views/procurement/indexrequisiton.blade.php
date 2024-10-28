@@ -8,15 +8,14 @@
       <div class="col-sm-12">
         <div class="card">
           <div class="card-header">
-            <strong>Requisition</strong>
-            <small>List</small>
+            <strong>Requisitions</strong>
           </div>
     
           <div class="card-body">
-          <button class="btn btn-primary btn-sm pull-right"  data-toggle="modal" data-target="#filterModal" style="padding: 10px 20px; font-size: 16px; min-width: 100px;"><i class="fa fa-filter"></i> Filter </button>
+          <button class="btn btn-primary btn-sm pull-right"  data-toggle="modal" data-target="#filterModal" style="padding: 10px 20px; font-size: 16px; min-width: 100px;margin-top:-60px"><i class="fa fa-filter"></i> Filter </button>
           <form method="POST" action="{{ route('procurement.downloadrequisitions') }}">
           @csrf
-          <button  type="submit" class="btn btn-success btn-sm pull-right" style="padding: 10px 20px; font-size: 16px; min-width: 100px;margin-bottom:40px"><i class="fa fa-filter"></i> Download </button>&nbsp;
+          <button  type="submit" class="btn btn-success btn-sm pull-right" style="padding: 10px 20px; font-size: 16px; min-width: 100px;margin-top:-60px;margin-right: 110px;"><i class="fa fa-filter"></i> Download </button>&nbsp;
          
             <table class="table table-striped table-bordered zero-configuration">
               <thead>

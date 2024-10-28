@@ -15,7 +15,7 @@
         <div class="card">
           <div class="card-header">
             <strong>Add Purchase Requisition</strong>
-            <a href="/procurement/indexrequisition" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="fa fa-align-justify"></i> Requisition List</a>
+            <a href="/procurement/indexrequisition" class="btn btn-primary btn-sm pull-right" style="padding: 10px 20px; font-size: 16px; min-width: 100px;"><i style="color:white;" class="fa fa-align-justify"></i> Requisition List</a>
            </div>
 
            <div class="card-body">
