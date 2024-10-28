@@ -11,20 +11,20 @@
         <!-- main menu content-->
         <div class="main-menu-content">
             <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
-                <li class=" nav-item"><a href="/home"><i class="feather icon-home"></i><span class="menu-title" data-i18n="">Dashboard</span></a>
+                <li class=" nav-item"><a href="/home"><i class="feather icon-grid"></i><span class="menu-title" data-i18n="">Dashboard</span></a>
                 </li>
                 @if(auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('Master Pages'))
                 <li class="nav-item">
-                    <a href="#"><i class="feather icon-zap"></i><span class="menu-title" data-i18n="">Master Pages</span></a>
+                    <a href="#"><i class="feather icon-layers"></i><span class="menu-title" data-i18n="">Master Pages</span></a>
                     <ul class="menu-content">
                         <li>
                             <a class="menu-item" href="/master/manageRole" data-i18n="nav.starter_kit.1_column">
-                                <i class="nav-icon icon-user-following"></i> Manage Roles
+                                <i class="nav-icon icon-user-"></i> Manage Roles
                             </a>
                         </li>
                         <li>
                             <a class="menu-item" href="/master/departments" data-i18n="nav.starter_kit.2_columns">
-                                <i class="nav-icon icon-user-follow"></i> Departments
+                                <i class="nav-icon icon-user-"></i> Departments
                             </a>
                         </li>
                         <!-- Uncomment if needed
@@ -46,12 +46,12 @@
 
             @if(auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('Add New User') OR $data->contains('Manage Users'))
                 <li class="nav-item">
-                    <a href="#"><i class="feather icon-airplay"></i><span class="menu-title" data-i18n="">Users</span></a>
+                    <a href="#"><i class="feather icon-users"></i><span class="menu-title" data-i18n="">Users</span></a>
                     <ul class="menu-content">
                         @if(auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('Add New User'))
                             <li>
                                 <a class="menu-item" href="/users/create" data-i18n="nav.starter_kit.1_column">
-                                    <i class="nav-icon icon-check"></i> Add New User
+                                    <i class="nav-icon icon-"></i> Add New User
                                 </a>
                             </li>
                         @endif
@@ -59,7 +59,7 @@
                         @if(auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('Manage Users'))
                             <li>
                                 <a class="menu-item" href="/users/index" data-i18n="nav.starter_kit.2_columns">
-                                    <i class="nav-icon icon-cloud-upload"></i> Manage Users
+                                    <i class="nav-icon icon-cloud-"></i> Manage Users
                                 </a>
                             </li>
                         @endif
@@ -69,7 +69,7 @@
 
 
                 @if(auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('Create Purchase Requistion') OR $data->contains('View Requisitions') OR $data->contains('View Purchase Orders') OR $data->contains('Manage Purchase Orders'))
-                <li class=" nav-item"><a href="#"><i class="feather icon-image"></i><span class="menu-title" data-i18n="">Procurement</span></a>
+                <li class=" nav-item"><a href="#"><i class="feather icon-package"></i><span class="menu-title" data-i18n="">Procurement</span></a>
                     <ul class="menu-content">
                     @if( auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('Create Purchase Requistion'))
                         <li><a class="menu-item" href="/procurement/createrequisition" data-i18n="nav.starter_kit.1_column">New Requisition</a>
@@ -108,7 +108,7 @@
 
                 @if(auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('Reports'))
                 <li class="nav-item">
-                    <a href="#"><i class="feather icon-briefcase"></i><span class="menu-title" data-i18n="">Reports</span></a>
+                    <a href="#"><i class="feather icon-file"></i><span class="menu-title" data-i18n="">Reports</span></a>
                     <ul class="menu-content">
                         <li>
                             <a class="menu-item" href="/reports/requisitionreport" data-i18n="nav.starter_kit.1_column">
@@ -136,7 +136,7 @@
             @if(auth()->user()->userrole == 1)
                 <!-- COMPANY -->
                 <li class="nav-item">
-                    <a href="#"><i class="feather icon-plus-square"></i><span class="menu-title" data-i18n="">Company</span></a>
+                    <a href="#"><i class="feather icon-building"></i><span class="menu-title" data-i18n="">Company</span></a>
                     <ul class="menu-content">
                         <li>
                             <a class="menu-item" href="/companies/create" data-i18n="nav.starter_kit.1_column">
@@ -153,24 +153,23 @@
 
                 <!-- EXECUTIVE -->
                 <li class="nav-item">
-                    <a href="#"><i class="feather icon-image"></i><span class="menu-title" data-i18n="">Executive</span></a>
+                    <a href="#"><i class="feather icon-shield"></i><span class="menu-title" data-i18n="">Executive</span></a>
                     <ul class="menu-content">
                         <li>
                             <a class="menu-item" href="/executives/create" data-i18n="nav.starter_kit.1_column">
-                                <i class="nav-icon icon-check"></i> Add New Executive
+                                <i class="nav-icon icon-"></i> Add New Executive
                             </a>
                         </li>
                         <li>
                             <a class="menu-item" href="/executives/index" data-i18n="nav.starter_kit.2_columns">
-                                <i class="nav-icon icon-cloud-upload"></i> Manage Executives
+                                <i class="nav-icon icon-"></i> Manage Executives
                             </a>
                         </li>
                     </ul>
                 </li>
             @endif
 
-                <li class=" nav-item"><a href="#" target="_blank"><span class="menu-title" data-i18n=""><bold>TAGPAY - SIGNOUT</bold></span></a>
-                </li>
+             
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('logout') }}"
                         onclick="event.preventDefault();
