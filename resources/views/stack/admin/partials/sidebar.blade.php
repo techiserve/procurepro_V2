@@ -132,7 +132,6 @@
             @endif
 
 
-
             @if(auth()->user()->userrole == 1)
                 <!-- COMPANY -->
                 <li class="nav-item">
