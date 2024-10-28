@@ -6,8 +6,7 @@
       <div class="col-sm-12">
         <div class="card">
           <div class="card-header">
-            <strong>Purchase Order</strong>
-            <small>List</small>
+            <strong>Manage Purchase Order</strong>
            <!-- <a style="color:white;" href="#" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="icon-cloud-upload"></i></a> -->
           </div>
 
@@ -24,7 +23,7 @@
 
                   <th class="text-center">Vendor Name</th>
                   <th class="text-center">Services</th>
-                  <th class="text-center">Payment method</th>
+           
                   <th class="text-center">Expenses</th>
                   <th class="text-center">Amount</th>
                  
@@ -43,7 +42,7 @@
                 </td>
                   <td>{{$company->vendor}}</td>
                   <td>{{$company->services}}</td>
-                  <td>{{$company->paymentmethod}}</td>
+      
                   <td>{{$company->expenses}}</td>
                   <td>{{$company->amount}}</td>
                   <td class="text-center">
@@ -80,14 +79,14 @@
                 
                    <a  href="/procurement/{{$company->requisitionId}}/logs" class='btn btn-success btn-sm' style='color: white;'>
                       <span class='fa fa-pencil'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'> View Logs</span>
+                      <span class='hidden-sm hidden-sm hidden-md'>  Logs</span>
                    </a>&nbsp;
 
                     @else
                   
                    <a  href="/procurement/{{$company->requisitionId}}/logs" class='btn btn-success btn-sm' style='color: white;'>
                       <span class='fa fa-pencil'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'> View Logs</span>
+                      <span class='hidden-sm hidden-sm hidden-md'>  Logs</span>
                    </a>&nbsp;
 
 
