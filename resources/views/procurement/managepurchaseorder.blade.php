@@ -1,4 +1,6 @@
 @extends('stack.layouts.admin')
+<link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.4/tutorials/timelines/timeline-7/assets/css/timeline-7.css">
 @section('content')
 <div class="container-fluid">
   <div class="animated fadeIn">
