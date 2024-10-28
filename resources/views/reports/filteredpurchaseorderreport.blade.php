@@ -8,7 +8,7 @@
             <div class="card">
                 <div class="card-header">
                     <strong> Purchase Order Summary</strong>
-                    <button class="btn btn-primary btn-sm pull-right"  data-toggle="modal" data-target="#filterModal" ><i class="fa fa-filter"></i> Filter Purchase Orders List</button>
+                    <button class="btn btn-primary btn-sm pull-right"  data-toggle="modal" data-target="#filterModal" style="padding: 10px 20px; font-size: 16px; min-width: 100px;"><i class="fa fa-filter"></i> Filter Purchase Orders List</button>
                     <!-- <a href="/growers/" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="fa fa-align-justify"></i> Filter Requisitions</a> -->
                
                 </div>

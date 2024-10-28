@@ -11,10 +11,10 @@
             <strong>Purchase Order</strong>
             <small>List</small>
              <!-- <a style="color:white;" href="#" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="icon-cloud-upload"></i></a> -->
+             <button class="btn btn-primary btn-sm pull-right"  data-toggle="modal" data-target="#filterModal" style="padding: 10px 20px; font-size: 16px; min-width: 100px;"><i class="fa fa-filter"></i> Filter </button>
           </div>
-
           <div class="card-body">
-          <button class="btn btn-primary btn-sm pull-right"  data-toggle="modal" data-target="#filterModal" ><i class="fa fa-filter"></i> Filter Purchase Order List</button>
+        
             <table class="table table-striped table-bordered zero-configuration">
               <thead>
                 <tr>

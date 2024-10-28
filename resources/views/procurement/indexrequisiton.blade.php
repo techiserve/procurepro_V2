@@ -16,7 +16,7 @@
           <button class="btn btn-primary btn-sm pull-right"  data-toggle="modal" data-target="#filterModal" style="padding: 10px 20px; font-size: 16px; min-width: 100px;"><i class="fa fa-filter"></i> Filter </button>
           <form method="POST" action="{{ route('procurement.downloadrequisitions') }}">
           @csrf
-          <button  type="submit" class="btn btn-success btn-sm pull-right" style="padding: 10px 20px; font-size: 16px; min-width: 100px;"><i class="fa fa-filter"></i> Download </button>&nbsp;
+          <button  type="submit" class="btn btn-success btn-sm pull-right" style="padding: 10px 20px; font-size: 16px; min-width: 100px;margin-bottom:40px"><i class="fa fa-filter"></i> Download </button>&nbsp;
          
             <table class="table table-striped table-bordered zero-configuration">
               <thead>
@@ -76,11 +76,11 @@
                     @if($company->status == 4)
                     <a  href="/procurement/{{$company->id}}/editrequisition"  class='btn btn-info btn-sm' style='color: white;'>
                       <span class='fa fa-desktop'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'> Update Requisition</span>
+                      <span class='hidden-sm hidden-sm hidden-md'> Update </span>
                     </a>&nbsp;
                     <a  href="#" class='btn btn-success btn-sm' data-toggle="modal" data-target="#historyModal{{ $company->id }}" style='color: white;'>
                       <span class='fa fa-pencil'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'> View Logs</span>
+                      <span class='hidden-sm hidden-sm hidden-md'> Logs</span>
                    </a>&nbsp;
                    <a  href="/procurement/{{$company->id}}/download" class='btn btn-primary btn-sm'  style='color: white;'>
                       <span class='fa fa-download'></span>
@@ -154,11 +154,11 @@
                     @else
                       <a  href="/procurement/{{$company->id}}/viewrequisition"  class='btn btn-info btn-sm' style='color: white;'>
                       <span class='fa fa-desktop'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'> View Requisition</span>
+                      <span class='hidden-sm hidden-sm hidden-md'>View</span>
                     </a>&nbsp;
                     <a  href="#" class='btn btn-success btn-sm' data-toggle="modal" data-target="#historyModal{{ $company->id }}" style='color: white;'>
                       <span class='fa fa-pencil'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'> View Logs</span>
+                      <span class='hidden-sm hidden-sm hidden-md'>Logs</span>
                    </a>&nbsp;
                    <a  href="/procurement/{{$company->id}}/download" class='btn btn-primary btn-sm'  style='color: white;'>
                       <span class='fa fa-download'></span>
@@ -244,11 +244,11 @@
                    @else
                    <a  href="/procurement/{{$company->id}}/viewrequisition" class='btn btn-info btn-sm' style='color: white;'>
                       <span class='fa fa-desktop'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'> View Requisition</span>
+                      <span class='hidden-sm hidden-sm hidden-md'> View </span>
                    </a>&nbsp;
                    <a  href="#" class='btn btn-success btn-sm' data-toggle="modal" data-target="#historyModal{{ $company->id }}" style='color: white;'>
                       <span class='fa fa-pencil'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'> View Logs</span>
+                      <span class='hidden-sm hidden-sm hidden-md'>  Logs</span>
                    </a>&nbsp;
                    <a  href="/procurement/{{$company->id}}/download" class='btn btn-primary btn-sm'  style='color: white;'>
                       <span class='fa fa-download'></span>
