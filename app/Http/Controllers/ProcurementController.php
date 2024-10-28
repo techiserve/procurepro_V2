@@ -73,7 +73,7 @@ class ProcurementController extends Controller
         // Queue the email for background processing
        // Mail::to('v.mhokore@techiserve.com')->queue(new SendSampleEmail($emailData));
 
-        $requisitions = Requisition::with('histories')->where('userId', Auth::user()->id)->orwhere('approvedby', Auth::user()->userrole)->where('status', '!=', 1)->orderby('id','desc')->get();
+        $requisitions = Requisition::with('histories')->where('userId', Auth::user()->id)->orwhere('isActive', '=', 1)->orderby('id','desc')->get();
         $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
         $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
         $roles = userrole::all(); 
@@ -182,6 +182,7 @@ class ProcurementController extends Controller
         if($request->input('action') == 'Complete_Selected_Orders'){
         
       if ($selectedPurchaseOrders) {
+       
 
         foreach ($selectedPurchaseOrders as $orderId) {
 
@@ -194,10 +195,16 @@ class ProcurementController extends Controller
         }
         }
 
+        return back()->with('success', 'Purchase Orders Completed!'); 
+
+    }else{
+
+        return back()->with('warning', 'Please select purchase orders!');
+
     }
 
 
-    return back()->with('success', 'Purchase Orders Completed!');
+  
 
 }else{
 
@@ -301,9 +308,13 @@ class ProcurementController extends Controller
 
     public function updaterequisition(Request $request, $id)
     {
-        $level = Departmentapproval::where('departmentId', $request->department)->min('approvalId');
-        $totalapprovallevels = Departmentapproval::where('departmentId', $request->department)->count();
-        $approver = Departmentapproval::where('departmentId', $request->department)->where('approvalId', $level)->first();
+
+
+        $departmentName = Department::where('name', $request->department)->first();
+        $level = Departmentapproval::where('departmentId', $departmentName->id)->min('approvalId');
+        $totalapprovallevels = Departmentapproval::where('departmentId', $departmentName->id)->count();
+        $approver = Departmentapproval::where('departmentId', $departmentName->id)->where('approvalId', $level)->first();
+
 
       $updaterequisition = Requisition::where('id', $id)->update([
 
@@ -326,7 +337,7 @@ class ProcurementController extends Controller
     private function exportToCsv()
     {
         // Fetch all purchase orders where status is 2
-        $purchaseOrders = PurchaseOrder::where('status', 2)->get();
+        $purchaseOrders = PurchaseOrder::where('status', 2)->where('releaseStatus', '=' , null)->get();
 
         $response = new StreamedResponse(function () use ($purchaseOrders) {
             $handle = fopen('php://output', 'w');  
@@ -390,9 +401,11 @@ class ProcurementController extends Controller
     {
 
 
-        $level = Departmentapproval::where('departmentId', $request->department)->min('approvalId');
-        $totalapprovallevels = Departmentapproval::where('departmentId', $request->department)->count();
-        $approver = Departmentapproval::where('departmentId', $request->department)->where('approvalId', $level)->first();
+        $departmentName = Department::where('name', $request->department)->first();
+        $level = Departmentapproval::where('departmentId', $departmentName->id)->min('approvalId');
+        $totalapprovallevels = Departmentapproval::where('departmentId', $departmentName->id)->count();
+        $approver = Departmentapproval::where('departmentId', $departmentName->id)->where('approvalId', $level)->first();
+
 
         $supplierCode = DB::connection('sqlsrv')->table('Suppliers')->where('SupplierName', $request->vendor)->select('SupplierCode')->first();
         $Properties = DB::connection('sqlsrv')->table('Properties')->where('PropertyName', $request->property)->select('PropertyCode')->first();
@@ -488,9 +501,11 @@ class ProcurementController extends Controller
     {
 
 
-        $level = Departmentapproval::where('departmentId', $request->department)->min('approvalId');
-        $totalapprovallevels = Departmentapproval::where('departmentId', $request->department)->count();
-        $approver = Departmentapproval::where('departmentId', $request->department)->where('approvalId', $level)->first();
+        $departmentName = Department::where('name', $request->department)->first();
+        $level = Departmentapproval::where('departmentId', $departmentName->id)->min('approvalId');
+        $totalapprovallevels = Departmentapproval::where('departmentId', $departmentName->id)->count();
+        $approver = Departmentapproval::where('departmentId', $departmentName->id)->where('approvalId', $level)->first();
+      //  dd($request->department);
        
         $request->validate([
             'invoice' => 'required|mimes:pdf,doc,docx,txt|max:9048',
@@ -793,7 +808,7 @@ class ProcurementController extends Controller
 
         if($updatereq){
    
-         return redirect()->route('procurement.indexpurchaseorder')->with('success', 'Purchase order approved successfully!');
+         return redirect()->route('procurement.mypurchaseorder')->with('success', 'Purchase order approved successfully!');
 
         }
     }
@@ -833,7 +848,7 @@ class ProcurementController extends Controller
 
         if($updatereq){
    
-         return redirect()->route('procurement.indexpurchaseorder')->with('success', 'Purchase order rejected!');
+         return redirect()->route('procurement.mypurchaseorder')->with('success', 'Purchase order rejected!');
 
         }
     }
@@ -875,7 +890,7 @@ class ProcurementController extends Controller
 
       if($updatereq){
 
-      return redirect()->route('procurement.indexpurchaseorder')->with('success', 'Purchase order sent back!');
+      return redirect()->route('procurement.mypurchaseorder')->with('success', 'Purchase order sent back!');
 
       }
 
