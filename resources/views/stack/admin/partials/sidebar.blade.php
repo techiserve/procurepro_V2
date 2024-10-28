@@ -3,6 +3,7 @@
   $data = App\Models\Rolepermission::where('role_id', '=', $user )->pluck('permission')->unique();
  // dd($user,$data);
 @endphp
+
     <!-- BEGIN: Main Menu-->
     <!-- main menu-->
     <div class="main-menu menu-fixed menu-dark menu-accordion menu-shadow" data-scroll-to-active="true">
@@ -16,7 +17,7 @@
                 @if(auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('Master Pages'))
                 <li class="nav-item">
                     <a href="#"><i class="feather icon-layers"></i><span class="menu-title" data-i18n="">Master Pages</span></a>
-                    <ul class="menu-content">
+                    <ul class="menu-content" style="margin-left:-30px;">
                         <li>
                             <a class="menu-item" href="/master/manageRole" data-i18n="nav.starter_kit.1_column">
                                 <i class="nav-icon icon-user-"></i> Manage Roles
@@ -47,7 +48,7 @@
             @if(auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('Add New User') OR $data->contains('Manage Users'))
                 <li class="nav-item">
                     <a href="#"><i class="feather icon-users"></i><span class="menu-title" data-i18n="">Users</span></a>
-                    <ul class="menu-content">
+                    <ul class="menu-content" style="margin-left:-30px;">
                         @if(auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('Add New User'))
                             <li>
                                 <a class="menu-item" href="/users/create" data-i18n="nav.starter_kit.1_column">
@@ -70,7 +71,7 @@
 
                 @if(auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('Create Purchase Requistion') OR $data->contains('View Requisitions') OR $data->contains('View Purchase Orders') OR $data->contains('Manage Purchase Orders'))
                 <li class=" nav-item"><a href="#"><i class="feather icon-package"></i><span class="menu-title" data-i18n="">Procurement</span></a>
-                    <ul class="menu-content">
+                    <ul class="menu-content move-left" style="margin-left:-30px;">
                     @if( auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('Create Purchase Requistion'))
                         <li><a class="menu-item" href="/procurement/createrequisition" data-i18n="nav.starter_kit.1_column">New Requisition</a>
                         </li>
@@ -82,7 +83,7 @@
                        @endif
 
                         @if( auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('View Requisitions'))
-                        <li><a class="menu-item" href="/procurement/myrequisition" data-i18n="nav.starter_kit.2_columns">Pending Requisition Approvals</a>
+                        <li><a class="menu-item" href="/procurement/myrequisition" data-i18n="nav.starter_kit.2_columns">Pending Requistions</a>
                         </li> 
                         @endif
 
@@ -92,7 +93,7 @@
                         @endif
 
                         @if( auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('View Purchase Orders'))
-                        <li><a class="menu-item" href="/procurement/mypurchaseorder" data-i18n="nav.starter_kit.2_columns">Pending Purchase Order Approvals</a>
+                        <li><a class="menu-item" href="/procurement/mypurchaseorder" data-i18n="nav.starter_kit.2_columns">Pending Purchase Orders</a>
                         </li> 
                         @endif
 
@@ -109,10 +110,10 @@
                 @if(auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('Reports'))
                 <li class="nav-item">
                     <a href="#"><i class="feather icon-file"></i><span class="menu-title" data-i18n="">Reports</span></a>
-                    <ul class="menu-content">
+                    <ul class="menu-content"style="margin-left:-30px;">
                         <li>
                             <a class="menu-item" href="/reports/requisitionreport" data-i18n="nav.starter_kit.1_column">
-                                 Purchase Requisition Summary
+                                 Purchase Req Summary
                             </a>
                         </li>
                         <li>
