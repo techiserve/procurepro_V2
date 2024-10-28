@@ -74,7 +74,7 @@
                   @if($company->status == 0 OR $company->status == 4)
                     <a href='/procurement/{{$company->id}}/purchaseorder' class='btn btn-info btn-sm' style='color: white;'>
                       <span class='fa fa-pencil'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'>Upload Documents</span>
+                      <span class='hidden-sm hidden-sm hidden-md'>Upload </span>
                     </a>&nbsp;
                     <a  href="#" class='btn btn-success btn-sm' data-toggle="modal" data-target="#historyModal{{ $company->id }}" style='color: white;'>
                       <span class='fa fa-pencil'></span>
