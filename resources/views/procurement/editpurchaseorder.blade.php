@@ -42,7 +42,7 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="grower_address">Department</label>
-                  <input class="form-control" id="grower_address" name="department" type="text"  value="{{$purchaseorder->department}}" placeholder="Description of Expense" readonly>
+                  <input class="form-control" id="grower_address" name="department" type="text"  value="{{$departments->name}}" placeholder="Description of Expense" readonly>
                 </div>
               </div>
             </div>

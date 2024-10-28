@@ -100,10 +100,11 @@ class ProcurementController extends Controller
         $files = Requisitionfile::where('requisitionId', $id)->get();
         $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
         $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
+        $departments = Department::where('id', $purchaseorder->department)->first();
 
         $history = RequisitionHistory::where('requisition_id', $id)->where('userId',  Auth::user()->id)->where('action','!=', 'Created Purchase Requisition')->first();
     
-        return view('procurement.viewrequisition', compact('purchaseorder','files','vendors','servicetype','history'));
+        return view('procurement.viewrequisition', compact('purchaseorder','files','vendors','servicetype','history','departments'));
     }
 
 
@@ -112,8 +113,9 @@ class ProcurementController extends Controller
      
         $purchaseorder = Requisition::where('id', $id)->first();
         $files = Requisitionfile::where('requisitionId', $id)->get();
+        $departments = Department::where('id', $purchaseorder->department)->first();
 
-        return view('procurement.editrequisition', compact('purchaseorder','files'));
+        return view('procurement.editrequisition', compact('purchaseorder','files','departments'));
     }
 
 
@@ -166,8 +168,9 @@ class ProcurementController extends Controller
         $purchaseorder = Purchaseorder::where('id', $id)->first();
 
         $history = RequisitionHistory::where('requisition_id', $id)->where('userId',  Auth::user()->id)->where('action', '=', 'Purchase Order Approved')->first();
+        $departments = Department::where('id', $purchaseorder->department)->first();
 
-        return view('procurement.editpurchaseorder', compact('purchaseorder','history'));
+        return view('procurement.editpurchaseorder', compact('purchaseorder','history','departments'));
     }
 
 
@@ -204,7 +207,6 @@ class ProcurementController extends Controller
 
 
     }
-
 
 
 
@@ -348,16 +350,15 @@ class ProcurementController extends Controller
     
     public function viewpurchaseorder(string $id)
     {
-     
+  
         $purchaseorder = Purchaseorder::where('id', $id)->first();
-
+        $departments = Department::where('id', $purchaseorder->department)->first();
         $invoice = 'uploads/' . $purchaseorder->invoice;
         $jobcard = 'uploads/' . $purchaseorder->jobcard;
 
        // dd($invoice);
         if  (Storage::disk('public')->exists($invoice)) {
             
-           // $invoicepath = Storage::get($invoice);
             $invoicepath = Storage::disk('public')->url($invoice);
         }else{
             $invoicepath = null;
@@ -379,7 +380,7 @@ class ProcurementController extends Controller
        ->orwhere('action', '=', 'Purchase Order Returned')->where('requisition_id', $id)->where('userId',  Auth::user()->id)->first();
 
 
-        return view('procurement.viewpurchaseorder', compact('purchaseorder','invoicepath','jobcardpath','history'));
+        return view('procurement.viewpurchaseorder', compact('purchaseorder','invoicepath','jobcardpath','history','departments'));
     }
 
     /**
