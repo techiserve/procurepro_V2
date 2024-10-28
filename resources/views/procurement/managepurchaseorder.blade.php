@@ -16,7 +16,7 @@
           @csrf <!-- Always include CSRF token for security -->
           <button  type="submit"  name="action" value="Complete_Selected_Orders" class="btn btn-primary btn-sm pull-right" style="padding: 10px 20px; font-size: 16px; min-width: 100px;margin-top:-60px"><i class="fa fa-filter" ></i> Complete Selected Orders</button>
           <button  type="submit"  name="action" value="Release_Selected_Orders" class="btn btn-success btn-sm pull-right" style="padding: 10px 20px; font-size: 16px; min-width: 100px;margin-top:-60px;margin-right: 260px;"><i class="fa fa-filter"></i> Release Purchase Orders</button>
-            <table class="table table-responsive-sm table-bordered table-striped table-sm">
+            <table class="table table-striped table-bordered zero-configuration">
               <thead>
                 <tr>
                 <th><input type="checkbox"  id="selectAll"></th> <!-- Select All Checkbox -->
