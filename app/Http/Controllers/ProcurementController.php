@@ -123,7 +123,7 @@ class ProcurementController extends Controller
     public function indexpurchaseorder()
     {
      
-        $purchaseorders = Purchaseorder::with('histories')->where('userId', Auth::user()->id)->orwhere('approvedby', Auth::user()->userrole)->where('status', '!=', 1)->orderby('id','desc')->get();
+        $purchaseorders = Purchaseorder::with('histories')->where('userId', Auth::user()->id)->orwhere('isActive', '=', 1)->orderby('id','desc')->get();
         $roles = userrole::all();
         $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
         $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
@@ -399,9 +399,8 @@ class ProcurementController extends Controller
      */
     public function requisitionstore(Request $request)
     {
-
-
-        $departmentName = Department::where('name', $request->department)->first();
+        //dd($request->department);
+        $departmentName = Department::where('id', $request->department)->first();
         $level = Departmentapproval::where('departmentId', $departmentName->id)->min('approvalId');
         $totalapprovallevels = Departmentapproval::where('departmentId', $departmentName->id)->count();
         $approver = Departmentapproval::where('departmentId', $departmentName->id)->where('approvalId', $level)->first();
