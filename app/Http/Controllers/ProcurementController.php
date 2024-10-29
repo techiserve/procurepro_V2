@@ -654,7 +654,7 @@ class ProcurementController extends Controller
         if($updatereq){
 
             
-        return redirect()->route('procurement.indexrequisition')->with('success', 'Requisition approved successfully!');
+        return redirect()->route('procurement.myrequisition')->with('success', 'Requisition approved successfully!');
 
         }
     }
@@ -694,7 +694,7 @@ class ProcurementController extends Controller
 
         if($updatereq){
    
-         return redirect()->route('procurement.indexrequisition')->with('success', 'Requisition order rejected!');
+         return redirect()->route('procurement.myrequisition')->with('success', 'Requisition order rejected!');
 
         }
     }
@@ -734,7 +734,7 @@ class ProcurementController extends Controller
 
         if($updatereq){
    
-         return redirect()->route('procurement.indexrequisition')->with('success', 'Requisition returned!');
+         return redirect()->route('procurement.myrequisition')->with('success', 'Requisition returned!');
 
         }
     }
