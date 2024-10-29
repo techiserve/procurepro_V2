@@ -102,6 +102,11 @@ class ProcurementController extends Controller
         $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
         $departments = Department::where('id', $purchaseorder->department)->first();
 
+        if(!$departments){
+             
+            return redirect()->route('procurement.myrequisition')->with('warning', 'The department was removed from Tagpay!');
+        }
+
         $history = RequisitionHistory::where('requisition_id', $id)->where('userId',  Auth::user()->id)->where('action','!=', 'Created Purchase Requisition')->first();
     
         return view('procurement.viewrequisition', compact('purchaseorder','files','vendors','servicetype','history','departments'));
