@@ -4,6 +4,8 @@
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.4/tutorials/timelines/timeline-7/assets/css/timeline-7.css">
 @section('content')
 <div class="content-header row">
   <div class="content-header-left col-md-6 col-12 mb-2">
@@ -41,7 +43,7 @@
                     <tr>
                   
               
-                  <th>Name</th>
+                  <th class="text-center">Name</th>
 
                   <th class="text-center">Position</th>
                   <th class="text-center">Phone Number</th>
@@ -95,15 +97,7 @@
                     <!-- More rows here -->
                   </tbody>
                   <tfoot>
-                    <tr>
-                    <th>Name</th>
-
-<th class="text-center">Position</th>
-<th class="text-center">Phone Number</th>
-<th class="text-center">Email</th>                   
-<th class="text-center">Status</th>
-<th class="text-center">Action</th>
-                    </tr>
+         
                   </tfoot>
                 </table>
               </div>
