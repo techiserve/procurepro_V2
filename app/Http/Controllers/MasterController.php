@@ -207,7 +207,7 @@ class MasterController extends Controller
     public function departmentUpdate(Request $request,$id)
     {  
       
-        //dd($request->all(),$id);
+       // dd($request->all(),$id);
         $userId = Auth::user()->id;
         $companyId = Auth::user()->companyId;
         $approval = $request->input('approval');
@@ -217,7 +217,7 @@ class MasterController extends Controller
         $updatedepartment = Department::where('id', $id)->update([
 
            'name' => $request->departmentname,
-           'IsActive' => $request->isActive
+           'IsActive' => $request->IsActive
         ]);
 
         $department = Department::where('id', $id)->first();

@@ -16,7 +16,7 @@
                         <li class="dropdown dropdown-user nav-item"><a class="dropdown-toggle nav-link dropdown-user-link" href="#" data-toggle="dropdown">
                                 <div class="avatar avatar-online"><img src="{{ asset('/coreui/img/avatars/6.jpg') }}" alt="avatar"><i></i></div><span class="user-name"> {{ Auth::user()->name }}</span>
                             </a>
-                            <div class="dropdown-menu dropdown-menu-right"><a class="dropdown-item" href="{{ route('logout') }}"    onclick="event.preventDefault();
+                            <div class="dropdown-menu dropdown-menu-right"><a class="dropdown-item" href="/profile/{{Auth::user()->id}}"><i class="feather icon-user"></i> Edit Profile</a><a class="dropdown-item" href="{{ route('logout') }}"    onclick="event.preventDefault();
               document.getElementById('logout-form').submit();">
                    <i class="feather icon-power"></i> Logout</a>  
                             </div>
