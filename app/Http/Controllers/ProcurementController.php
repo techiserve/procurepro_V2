@@ -74,12 +74,12 @@ class ProcurementController extends Controller
        // Mail::to('v.mhokore@techiserve.com')->queue(new SendSampleEmail($emailData));
 
         $requisitions = Requisition::with('histories')->where('userId', Auth::user()->id)->orwhere('isActive', '=', 1)->orderby('id','desc')->get();
-        $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
-        $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
+       // $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
+       // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
         $roles = userrole::all(); 
        // dd($requisitions);
 
-        return view('procurement.indexrequisiton', compact('requisitions','roles','vendors','servicetype'));
+        return view('procurement.indexrequisiton', compact('requisitions','roles'));
     }
 
     
@@ -903,43 +903,87 @@ class ProcurementController extends Controller
 
     public function generateAndMergePDFs(string $id)
     {
-
-        //dd('here');
-
-        $company = Requisition::where('id' ,'=', $id)->first();
+        // Fetch company, user, history, and department data
+        $company = Requisition::where('id', '=', $id)->first();
         $user = User::where('id', $company->userId)->first();
         $history = Requisitionhistory::where('requisition_id', $company->id)->get();
         $department = Department::where('id', $company->department)->first();
+    
         // Step 2: Generate a PDF from the fetched data
-        $pdf = Pdf::loadView('pdf.requisition', compact('company','user','history','department'));
-      
-
+        $pdf = Pdf::loadView('pdf.requisition', compact('company', 'user', 'history', 'department'));
+    
         // Save the newly generated PDF
         $newPDFPath = storage_path('app/public/new_report.pdf');
         $pdf->save($newPDFPath);
-
+    
         // Step 3: Retrieve existing PDF paths from the database (e.g., pdf_files table)
-        $existingPDFs = Requisitionfile::where('requisitionId','=', $id)->pluck('file')->toArray();
-       // dd($existingPDFs);
+        $existingPDFs = Requisitionfile::where('requisitionId', '=', $id)->pluck('file')->toArray();
+    
+        // Create a merger instance
         $merger = new Merger();
-
-        // Add PDFs to merge
-        $merger->addFile(storage_path('app/public/new_report.pdf'));
+    
+        // Convert and add the newly created PDF
+       // $convertedNewPDF = $this->convertPdfToVersion($newPDFPath);
+        $merger->addFile($newPDFPath);
+    
+        // Convert and add existing PDFs
         foreach ($existingPDFs as $existingPDFPath) {
-            $merger->addFile(storage_path('app/public/uploads/' . $existingPDFPath));
+            $fullPath = storage_path('app/public/uploads/' . $existingPDFPath);
+            $convertedExistingPDF = $this->convertPdfToVersion($fullPath);
+            $merger->addFile($convertedExistingPDF);
         }
-        
+    
         // Merge and output
         $mergedPdf = $merger->merge();
-        
-        // Save or output the merged PDF
-        file_put_contents(storage_path('app/public/consolidated_report.pdf'), $mergedPdf);
-        
+    
+        // Save the consolidated PDF
+        $consolidatedPath = storage_path('app/public/consolidated_report.pdf');
+        file_put_contents($consolidatedPath, $mergedPdf);
+    
         // Return the merged PDF to the user
-        return response()->download(storage_path('app/public/consolidated_report.pdf'));
-        
+        return response()->download($consolidatedPath);
     }
-   
+    
+    /**
+     * Convert PDF to version 1.4 using Ghostscript.
+     *
+     * @param string $pdfPath
+     * @return string Path to the converted PDF.
+     */
+    private function convertPdfToVersion(string $pdfPath): string
+    {
+        // Define the path for the converted PDF
+        $convertedPdfPath = pathinfo($pdfPath, PATHINFO_DIRNAME) . '/' . pathinfo($pdfPath, PATHINFO_FILENAME) . '_converted.pdf';
+    
+        // Ghostscript command
+        $command = "gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dNOPAUSE -dBATCH -sOutputFile={$convertedPdfPath} {$pdfPath}";
+    
+        // Execute the command
+        $output = [];
+        $returnVar = 0;
+        exec($command, $output, $returnVar);
+
+       // dd($returnVar);
+    
+        if ($returnVar !== 0) {
+            // Handle the error (you may want to log this or throw an exception)
+            throw new \Exception('PDF conversion failed for ' . $pdfPath);
+        }
+    
+        return $convertedPdfPath;
+    }
+
+    
+
+
+
+
+
+
+
+
+
+
     public function downloadrequisitions(Request $request)
     {
         $requisitionIds = $request->input('requisition_ids');
