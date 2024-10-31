@@ -973,15 +973,6 @@ class ProcurementController extends Controller
         return $convertedPdfPath;
     }
 
-    
-
-
-
-
-
-
-
-
 
 
     public function downloadrequisitions(Request $request)
@@ -1005,7 +996,11 @@ class ProcurementController extends Controller
             $merger = new Merger();
             $merger->addFile($newPDFPath);
             foreach ($existingPDFs as $existingPDFPath) {
-                $merger->addFile(storage_path('app/public/uploads/' . $existingPDFPath));
+
+                $fullPath = storage_path('app/public/uploads/' . $existingPDFPath);
+                $convertedExistingPDF = $this->convertPdfToVersion($fullPath);
+                $merger->addFile($convertedExistingPDF);
+
             }
             $mergedPdf = $merger->merge();
             $consolidatedPDFPath = storage_path("app/public/consolidated_report_{$id}.pdf");
