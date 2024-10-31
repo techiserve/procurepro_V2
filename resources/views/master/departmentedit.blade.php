@@ -3,10 +3,9 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script> 
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 
 @section('content')
 <div class="container-fluid">
@@ -20,178 +19,132 @@
         <div class="card">
           <div class="card-header">
             <strong>Update Department</strong>
-           
-           </div>
+          </div>
 
-           <div class="card-body">
+          <div class="card-body">
             <div class="row">
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="grower_name">Department Name</label>
-                  <input class="form-control" id="grower_name" name="departmentname" type="text" value = "{{$department->name}}" placeholder="Enter Department Name...">
+                  <input class="form-control" id="grower_name" name="departmentname" type="text" value="{{$department->name}}" placeholder="Enter Department Name...">
                 </div>
               </div> 
 
               @php  $active = $department->IsActive; @endphp  
               <div class="col-md-1 col-form-label">
                 <div class="form-group">
-                <div class="form-check">
-              
-                <label for="province" style="visibility: hidden;">Email Address</label>  
-                <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" name="IsActive"  value="1"  id="flexSwitchCheckDefault"  @if($active) checked @endif>
-              
-                <label class="form-check-label" for="defaultCheck1">
-               Active
-               </label>
-                </div>
-
-               </div>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" name="IsActive" value="1" id="flexSwitchCheckDefault" @if($active) checked @endif>
+                    <label class="form-check-label" for="defaultCheck1">Active</label>
+                  </div>
                 </div>
               </div>
             </div>
-      
 
-			<hr style="border-color: black;">
-			<br>
-      <div class="row">
-    
-        <div class="col-md-6">
-        <label>Approval Level</label>
-        </div>
-     
-        <div class="col-md-6">
-        <label>User Role</label>
-        </div>
-      </div>
+            <hr style="border-color: black;">
+            <br>
+            <div class="row">
+              <div class="col-md-6"><label>Approval Level</label></div>
+              <div class="col-md-6"><label>User Role</label></div>
+            </div>
 
-            		<!-- the dynamic field for adding growers is suppped to go here -->
-			<div class="clearfix" id="dynamic_field">
-      @foreach($da as $rolez)
-				<div class="row">
-				
-					<div class="col-md-6">
-						<div class="form-group">
-                        <!-- <input type="email" placeholder="Email Address" id="email" required name="email[]" spellcheck="false" class="form-control" value=""/> -->
-                        <select class="js-example-basic-single form-control" id="{{$rolez->created_at}}" name="approval[]">
+            <!-- Dynamic Fields for Approval and Role -->
+            <div class="clearfix" id="dynamic_field">
+              @foreach($da as $index => $rolez)
+                <div class="row" id="row{{ $index }}">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <select class="form-control" name="approval[]">
+                        <option value="1" @if($rolez->approvalId == 1) selected @endif>First Line</option>
+                        <option value="2" @if($rolez->approvalId == 2) selected @endif>Second Line</option>
+                        <option value="3" @if($rolez->approvalId == 3) selected @endif>Third Line</option>
+                        <option value="4" @if($rolez->approvalId == 4) selected @endif>Fourth Line</option>
+                        <option value="5" @if($rolez->approvalId == 5) selected @endif>Fifth Line</option>
+                        <option value="6" @if($rolez->approvalId == 6) selected @endif>Sixth Line</option>
+                      </select>
+                    </div>
+                  </div>
 
-                            @if($rolez->approvalId == 1)
-                            <option value="1">First Line</option> 
-                            <option value="2">Second Line</option>
-                            <option value="3">Third Line</option>                         
-                            <option value="4">Fourth Line</option>       
-                            <option value="5">Fiveth Line</option>
-                            <option value="6">Sixth Line</option> 
-                            @endif                                   
-                                      
-                            @if($rolez->approvalId == 2)
-                            <option value="2">Second Line</option>
-                            <option value="1">First Line</option> 
-                            <option value="3">Third Line</option>                         
-                            <option value="4">Fourth Line</option>       
-                            <option value="5">Fiveth Line</option>
-                            <option value="6">Sixth Line</option>   
-                            @endif                                                  
-                                           
-                            @if($rolez->approvalId == 3)
-                            <option value="3">Third Line</option> 
-                            <option value="1">First Line</option> 
-                            <option value="2">Second Line</option>                       
-                            <option value="4">Fourth Line</option>       
-                            <option value="5">Fiveth Line</option>
-                            <option value="6">Sixth Line</option>   
-                            @endif                                                                        
-                                           
-                            @if($rolez->approvalId == 4)
-                            <option value="4">Fourth Line</option> 
-                            <option value="1">First Line</option> 
-                            <option value="2">Second Line</option>
-                            <option value="3">Third Line</option>                         
-                               
-                            <option value="5">Fiveth Line</option>
-                            <option value="6">Sixth Line</option>   
-                            @endif                                                                           
-                                           
-                            @if($rolez->approvalId == 5)
-                            <option value="5">Fiveth Line</option>
-                            <option value="1">First Line</option> 
-                            <option value="2">Second Line</option>
-                            <option value="3">Third Line</option>                         
-                            <option value="4">Fourth Line</option>       
-                           
-                            <option value="6">Sixth Line</option>   
-                            @endif 
-                            
-                            @if($rolez->approvalId == 6)
-                            <option value="6">Sixth Line</option>
-                            <option value="1">First Line</option> 
-                            <option value="2">Second Line</option>
-                            <option value="3">Third Line</option>                         
-                            <option value="4">Fourth Line</option>       
-                            <option value="5">Fiveth Line</option>
-                        
-                            @endif                                                                                                                                        
-                        </select>
-						</div>
-					</div>
+                  <div class="col-md-5">
+                    <div class="form-group">
+                      <select class="form-control" name="role[]">
+                        @foreach($roles as $role)
+                          <option value="{{ $role->id }}" @if($role->id == $rolez->roleId) selected @endif>{{ $role->name }}</option>
+                        @endforeach
+                      </select>
+                    </div>
+                  </div>
 
-                    <div class="col-md-5">
-						<div class="form-group">
-                         <!-- <input type="text" placeholder="Phone Number" required id="phone_number" name="phone_number[]" spellcheck="false" class="form-control" value=""/> -->
-                         <select class="js-example-basic-single form-control" id="{{$rolez->id}}" name="role[]">
-                    
-                           @foreach($roles as $role)
-                           @if ($role->id == $rolez->roleId)
-                           <option value="{{ $role->id }}"> {{ $role->name }}</option> 
-                           @endif                           
-                            @endforeach
+                  <div class="col-md-1">
+                    <button type="button" class="btn btn-danger btn_remove" data-row="row{{ $index }}">x</button>
+                  </div>
+                </div>
+              @endforeach  
+            </div>
+            <!-- End of Dynamic Fields -->
 
-                            @foreach($roles as $role)
-                            <option value="{{ $role->id }}"> {{ $role->name }}</option>
-                            @endforeach
-                        </select>
-						</div>
-					</div>
-
-			
-				</div>
-        @endforeach  
-			</div>
-   
-			<!-- end of dynamic field -->
+            <button type="button" name="add" id="add" class="btn btn-primary mt-3">Add More</button>
           </div>
+
           <div class="card-footer">
             <div class="form-group pull-right">
-    				<input type="submit" class="btn btn-success" value="Update"  style="padding: 10px 20px; font-size: 16px; min-width: 100px;"/>
-    				<input type="reset" class="btn btn-danger" value="Cancel"  style="padding: 10px 20px; font-size: 16px; min-width: 100px;"/>
-    			</div>
+              <input type="submit" class="btn btn-success" value="Update" style="padding: 10px 20px; font-size: 16px; min-width: 100px;">
+              <input type="reset" class="btn btn-danger" value="Cancel" style="padding: 10px 20px; font-size: 16px; min-width: 100px;">
+            </div>
           </div>
-       </div>
+        </div>
       </form>
      </div>
     </div>
-
-
-
-
-    
-   </div>
+  </div>
 </div>
 @endsection
+
 <script type="text/javascript">
     $(document).ready(function(){      
-      var i=1;  
+      var i = {{ count($da) }};  // Initialize based on existing count of dynamic fields
 
-      //method for adding a dynamic field for the 
+      // Add dynamic field
       $('#add').click(function(){  
            i++;  
-$('#dynamic_field').append('<div id="row'+i+'" class="row dynamic-added"><hr><div class="col-md-6"><div class="form-group"><select class="js-example-basic-single form-control" id="grower_sizes" name="approval[]"><option value="" >Select Approval Level</option><option value="1">First Line</option><option value="2">Second Line</option><option value="3">Third Line</option><option value="4">Fourth Line</option><option value="5">Fiveth Line</option><option value="6">Sixth Line</option></select></div></div><div class="col-md-5"><div class="form-group"><select class="js-example-basic-single form-control" id="grower_size" name="role[]"><option value="" >Select Role</option>@foreach($roles as $role)<option value="{{ $role->id }}"> {{ $role->name }}</option>@endforeach</select></div></div><div class="col-md-1"><button type="button" name="remove" id="'+i+'" class="btn btn_remove btn-danger"> &nbsp;x&nbsp; </button></div></div>');
-});  
+           $('#dynamic_field').append(`
+             <div class="row" id="row${i}">
+               <div class="col-md-6">
+                 <div class="form-group">
+                   <select class="form-control" name="approval[]">
+                     <option value="" selected>Select Approval Level</option>
+                     <option value="1">First Line</option>
+                     <option value="2">Second Line</option>
+                     <option value="3">Third Line</option>
+                     <option value="4">Fourth Line</option>
+                     <option value="5">Fifth Line</option>
+                     <option value="6">Sixth Line</option>
+                   </select>
+                 </div>
+               </div>
 
-      //method for row removal using button
+               <div class="col-md-5">
+                 <div class="form-group">
+                   <select class="form-control" name="role[]">
+                     <option value="" selected>Select Role</option>
+                     @foreach($roles as $role)
+                       <option value="{{ $role->id }}">{{ $role->name }}</option>
+                     @endforeach
+                   </select>
+                 </div>
+               </div>
+
+               <div class="col-md-1">
+                 <button type="button" class="btn btn-danger btn_remove" data-row="row${i}">x</button>
+               </div>
+             </div>
+           `);
+      });  
+
+      // Remove dynamic field
       $(document).on('click', '.btn_remove', function(){  
-           var button_id = $(this).attr("id");   
-           $('#row'+button_id+'').remove();  
+           var button_id = $(this).data("row");   
+           $('#' + button_id).remove();  
       });  
 
     });  
