@@ -63,16 +63,16 @@ class ProcurementController extends Controller
     public function indexrequisition()
     {
 
-        $emailData = [
+        // $emailData = [
 
-               'title' => 'Test from Procure Pro',
-               'body'  => 'This is a test email.'
+        //        'title' => 'Test from Procure Pro',
+        //        'body'  => 'This is a test email.'
 
-        ];
+        // ];
 
-        // Queue the email for background processing
-       // Mail::to('v.mhokore@techiserve.com')->queue(new SendSampleEmail($emailData));
-
+        // // Queue the email for background processing
+        // Mail::to('itaivincent321@gmail.com')->queue(new SendSampleEmail($emailData));
+        // dd('send mail');
         $requisitions = Requisition::with('histories')->where('userId', Auth::user()->id)->orwhere('isActive', '=', 1)->orderby('id','desc')->get();
        // $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
        // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
@@ -491,6 +491,14 @@ class ProcurementController extends Controller
         
        ]);
 
+
+
+       //email send
+    
+       $emailData = $requisition->toArray();
+      
+        Mail::to('b.essop@techiserve.com')->queue(new SendSampleEmail($emailData));
+
        if($requisition && $savefile){
 
         return back()->with('success', 'Requisition created successfully!');
@@ -502,15 +510,13 @@ class ProcurementController extends Controller
 
 
     public function updatepurchaseorder(Request $request,$id)
-    {
-
+    {   
 
         $departmentName = Department::where('name', $request->department)->first();
         $level = Departmentapproval::where('departmentId', $departmentName->id)->min('approvalId');
         $totalapprovallevels = Departmentapproval::where('departmentId', $departmentName->id)->count();
         $approver = Departmentapproval::where('departmentId', $departmentName->id)->where('approvalId', $level)->first();
-      //  dd($request->department);
-       
+  
         $request->validate([
             'invoice' => 'required|mimes:pdf,doc,docx,txt|max:9048',
         ]);

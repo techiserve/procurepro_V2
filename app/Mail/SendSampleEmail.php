@@ -37,8 +37,9 @@ class SendSampleEmail extends Mailable
      * Get the message content definition.
      */
     public function content(): Content
-    {
-        return new Content(
+    { 
+
+       return new Content(
             view: 'procurement.email',  // The blade template for the email
             with: ['emailData' => $this->emailData]  // Pass data to the view
         );
