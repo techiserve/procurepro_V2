@@ -88,7 +88,7 @@
                   <textarea class="form-control" id="exampleFormControlTextarea1" name="reason" rows="3" readonly>{{$purchaseorder->reason}}</textarea>
                 </div>
               </div>
-            </div>
+         </div>
 
 			<hr style="border-color: black;">
 			<br>
