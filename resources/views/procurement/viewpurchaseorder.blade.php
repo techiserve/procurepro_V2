@@ -76,7 +76,7 @@
               <div class="col-sm-6">
           <div class="form-group">
             <label for="grower_type">Invoice Amount (Rands)</label>
-            <input class="form-control" id="national_id" name="invoiceamount" type="text" value="{{$purchaseorder->amount}}" placeholder="Amount" readonly>
+            <input class="form-control" id="national_id" name="invoiceamount" type="text" value="{{$purchaseorder->invoiceamount}}" placeholder="Amount" readonly>
           </div>
         </div>
         </div>
