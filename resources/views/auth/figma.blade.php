@@ -66,7 +66,7 @@
 
         h3 {
             font-size: 35px;
-            margin-bottom: 70px; /* Adjusted margin to move text up */
+            margin-bottom: 30px; /* Adjusted margin to move text up */
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Add shadow */
         }
 
@@ -81,13 +81,14 @@
         }
 
         form {
+            margin-bottom: 35px;
             display: flex;
             flex-direction: column;
         }
 
         label {
             font-size: 14px;
-            margin-bottom: 5px;
+            margin-bottom: 15px;
         }
 
         input {
