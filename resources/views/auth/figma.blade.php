@@ -151,13 +151,13 @@
         <form action="{{ route('login') }}" method="POST">
         @csrf
             <label for="email">Email</label>
-            <input type="email" id="email" name="email" placeholder="username@gmail.com">
+            <input type="email" id="email" name="email" placeholder="Username@gmail.com">
 
             <label for="password">Password</label>
             <input type="password" id="password" name="password" placeholder="Password">
 
             <div class="forgot-password">
-            
+             <a href="/forgot-password">Forgot Password?</a>
             </div>
 
             <input type="submit" value="Sign in" style="font-family: 'Gilroy-Bold', Arial, sans-serif;">

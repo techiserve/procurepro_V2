@@ -1,25 +1,164 @@
-<x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forgot Password</title>
+    <style>
+        /* Include Gilroy-Bold font from a local source or web font */
+        @font-face {
+            font-family: 'Gilroy-Bold';
+            src: url('{{ asset('fonts/gilroy-bold/Gilroy-Bold.ttf') }}') format('truetype');
+            font-weight: bold;
+            font-style: normal;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #0D1E3D;
+            font-family: 'Gilroy-Bold', Arial, sans-serif; /* Use Gilroy-Bold */
+        }
+
+        .container {
+            display: flex;
+            width: 1000px;
+            height: 600px;
+            background-color: #0D1E3D;
+            position: relative;
+            right: -50px; /* Move the container to the right */
+        }
+
+        .left {
+            width: 60%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .left img {
+            width: 150%; 
+            margin-left: -490px;/* Increase the logo size by 50% (from 60% to 90%) */
+        }
+
+        .right {
+            width: 43%;
+            background-color: #D9DFE647;
+            border-radius: 28px;
+            border: 2px solid #FFFFFF;
+            padding: 50px;
+            color: white;
+            margin-bottom: 40px;
+            margin-left: -10px;
+            margin-right: -10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        h3 {
+            font-size: 35px;
+            margin-bottom: 30px; /* Adjusted margin to move text up */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Add shadow */
+        }
+
+        .login-title {
+            font-size: 25px;
+            margin-bottom: 30px; /* Space between "Login" and "Email" */
+        }
+
+        .right h3 {
+            text-align: center; /* Center only the h2 element */
+           
+        }
+
+        form {
+            margin-bottom: 35px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        input {
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border: none;
+            font-size: 14px;
+            width: 100%;
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            background-color: #ffffff;
+        }
+
+        input[type="submit"] {
+            background-color: #0D1E3D;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #072C5B;
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        .forgot-password a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .register {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .register a {
+            color: white;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="left">
+        <img src="{{ asset('template/assets/media/photos/logo1.png') }}" alt="TagPay Logo">
     </div>
-
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
-
-    <form method="POST" action="{{ route('password.email') }}">
+    <div class="right">
+        <h3 style="font-family: 'Gilroy-Bold', Arial, sans-serif;" > Forgot Password</h3>
+        <div class="login-title"></div> 
+        <form action="{{ route('password.email') }}" method="POST">
         @csrf
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Username@gmail.com">
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+            <input type="submit" value="Save" style="font-family: 'Gilroy-Bold', Arial, sans-serif;">
 
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Email Password Reset Link') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+     
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

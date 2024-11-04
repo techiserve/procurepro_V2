@@ -7,6 +7,7 @@ use App\Http\Controllers\ProcurementController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\PasswordResetLinkController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,6 +19,18 @@ use App\Http\Controllers\ReportController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+use App\Http\Controllers\Auth\PasswordResetController;
+
+//Route::get('forgot-password', [PasswordResetLinkController::class, 'request'])->name('password.request');
+//Route::post('forgot-password', [PasswordResetController::class, 'email'])->name('password.email');
+Route::get('reset-password/{token}', [PasswordResetController::class, 'resetForm'])->name('password.reset');
+Route::post('reset-password', [PasswordResetController::class, 'reset'])->name('password.update');
+
+
+Route::get('/forgot-password', function () {
+    return view('auth.forgotpassword');
+});
 
 Route::get('/', function () {
     return view('auth.figma');
