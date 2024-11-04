@@ -153,7 +153,7 @@
             <label for="email">Email</label>
             <input type="email" id="email" name="email" placeholder="Username@gmail.com">
 
-            <input type="submit" value="Save" style="font-family: 'Gilroy-Bold', Arial, sans-serif;">
+            <input type="submit" value="Submit" style="font-family: 'Gilroy-Bold', Arial, sans-serif;">
 
      
         </form>
