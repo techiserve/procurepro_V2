@@ -65,7 +65,7 @@
         }
 
         h3 {
-            font-size: 25px;
+            font-size: 35px;
             margin-bottom: 70px; /* Adjusted margin to move text up */
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Add shadow */
         }
@@ -145,8 +145,8 @@
         <img src="{{ asset('template/assets/media/photos/logo1.png') }}" alt="TagPay Logo">
     </div>
     <div class="right">
-        <h3 style="font-family: 'Gilroy-Bold', Arial, sans-serif;" >Welcome to TagPay</h3>
-        <div class="login-title">Login</div> 
+        <h3 style="font-family: 'Gilroy-Bold', Arial, sans-serif;" >Login to TagPay</h3>
+        <div class="login-title"></div> 
         <form action="{{ route('login') }}" method="POST">
         @csrf
             <label for="email">Email</label>
@@ -156,7 +156,7 @@
             <input type="password" id="password" name="password" placeholder="Password">
 
             <div class="forgot-password">
-              
+            
             </div>
 
             <input type="submit" value="Sign in" style="font-family: 'Gilroy-Bold', Arial, sans-serif;">
