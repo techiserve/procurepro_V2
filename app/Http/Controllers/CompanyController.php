@@ -116,6 +116,7 @@ class CompanyController extends Controller
       //  $company->password = Hash::make($request->password);
        // $company->companyname =  $request->companyname;
         $company->domain = $request->companydomain;
+        $company->username =  $request->username;
         $company->contactPerson = $request->contactPerson;
         $company->address = $request->address;
         $company->isActive = $request->IsActive;
@@ -145,6 +146,35 @@ class CompanyController extends Controller
  
     }
 
+
+
+    public function companyedit(string $id)
+    {
+        $company = Company::where('id', $id)->first();
+
+        return view('companies.edit', compact('company'));
+    }
+
+
+
+    public function companydelete($id)
+    {
+        
+         $delete = Company::where('id', $id)->delete();
+
+         if($delete){
+      
+            return back()->with('success', 'Company deleted successfully!');
+
+        }else{
+
+           return back()->with('error', 'Failed to delete Company!');
+        }
+
+        
+    }
+
+
     /**
      * Display the specified resource.
      */
@@ -164,9 +194,23 @@ class CompanyController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function companyUpdate(Request $request, string $id)
     {
-        //
+
+        $updaterequisition = Company::where('id', $id)->update([
+
+            'name'  => $request->companyname,
+            'domain'  => $request->companydomain,
+            'username'  => $request->username,
+            'contactPerson'  => $request->contactPerson,
+            'address'  => $request->address,
+            'email' => $request->email, 
+            'IsActive'  =>  $request->IsActive,
+    
+          ]);
+
+
+          return back()->with('success', 'Company Updated successfully!');
     }
 
     /**
