@@ -133,7 +133,8 @@ class CompanyController extends Controller
         $user->username =  $request->username;
        // $user->phonenumber = $request->phonenumber;
         $user->companyId = $company->id;
-        $user->userrole = 3;      
+        $user->userrole = 3;
+        $user->isActive = 1;      
         $user->save();
 
          }
@@ -209,8 +210,25 @@ class CompanyController extends Controller
     
           ]);
 
+         if($request->new_password){
 
-          return back()->with('success', 'Company Updated successfully!');
+            $users = User::where('companyId', $id)->update([
+
+                'password'  => Hash::make($request->new_password),
+                'email' => $request->email, 
+    
+              ]);
+    
+         }
+
+   
+      if($updaterequisition){
+
+        return back()->with('success', 'Company Updated successfully!');
+
+      }
+
+         
     }
 
     /**

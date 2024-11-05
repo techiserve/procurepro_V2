@@ -9,7 +9,7 @@
     <div class="row">
       <div class="col-sm-12">
         
-       <form method="POST" action="/company/{{ $company->id }}/update">
+       <form method="POST" action="/company/{{ $company->id }}/update"  id="passwordForm" novalidate>
        @csrf
        @method('put')
         <div class="card">
@@ -47,6 +47,23 @@
                 <div class="form-group">
                   <label for="grower_address">Contact Person</label>
                   <input class="form-control" id="grower_address" name="contactPerson" value="{{$company->contactPerson}}"  type="text" placeholder="Contact Person">
+                </div>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="national_id">Password</label>
+                  <input class="form-control" id="new_password" name="new_password" type="password" placeholder="Password">
+                </div>
+              </div>
+
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="grower_type">Confirm Password</label>
+                  <input class="form-control" id="confirm_password" name="confirm_password" type="password" placeholder="Confirm Password">
+                  <div class="invalid-feedback">Passwords do not match.</div>
                 </div>
               </div>
             </div>
@@ -98,3 +115,18 @@
    </div>
 </div>
 @endsection
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("passwordForm").addEventListener("submit", function (event) {       
+        const newPassword = document.getElementById("new_password").value;
+        const confirmPassword = document.getElementById("confirm_password").value;
+
+        if (newPassword !== confirmPassword) {
+            event.preventDefault(); // Prevent form submission
+            document.getElementById("confirm_password").classList.add("is-invalid");
+        } else {
+            document.getElementById("confirm_password").classList.remove("is-invalid");
+        }
+    });
+});
+</script>
