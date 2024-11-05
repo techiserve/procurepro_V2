@@ -163,7 +163,9 @@ class CompanyController extends Controller
         
          $delete = Company::where('id', $id)->delete();
 
-         if($delete){
+         $deleteUser = User::where('companyId', $id)->delete();
+
+         if($delete && $deleteUser){
       
             return back()->with('success', 'Company deleted successfully!');
 
