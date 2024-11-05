@@ -151,7 +151,7 @@
         <form action="{{ route('login') }}" method="POST">
         @csrf
             <label for="email">Email</label>
-            <input type="email" id="email" name="email" placeholder="Username@gmail.com">
+            <input type="email" id="email" name="email" placeholder="Username@tagpay.digital">
 
             <label for="password">Password</label>
             <input type="password" id="password" name="password" placeholder="Password">
