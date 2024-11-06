@@ -31,12 +31,13 @@ class ReportController extends Controller
     public function requisitionreport()
     {
 
-        $requisitions = Requisition::all();
+        $requisitions = Requisition::where('companyId', Auth::user()->companyId)->get();
         $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
         $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
-        $departments = Department::all();
+        $departments = Department::where('companyId', Auth::user()->companyId)->get();
 
-      return view('reports.requisitionreport', compact('requisitions','vendors','servicetype','departments'));
+       return view('reports.requisitionreport', compact('requisitions','vendors','servicetype','departments'));
+
     }
 
 
@@ -72,11 +73,11 @@ class ReportController extends Controller
             $query->where('created_at', '<=', $end_date);
         }
 
-        $requisitions = $query->get();
+        $requisitions = $query->where('companyId', Auth::user()->companyId)->get();
 
         $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
         $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
-        $departments = Department::all();
+        $departments = Department::where('companyId', Auth::user()->companyId)->get();
 
       return view('reports.filteredrequisitionreport', compact('requisitions','vendors','servicetype','departments'));
     }
@@ -115,11 +116,11 @@ class ReportController extends Controller
             $query->where('created_at', '<=', $end_date);
         }
 
-        $requisitions = $query->get();
+        $requisitions = $query->where('companyId', Auth::user()->companyId)->get();
 
         $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
         $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
-        $departments = Department::all();
+        $departments = Department::where('companyId', Auth::user()->companyId)->get();
 
       return view('reports.filteredpurchaseorderreport', compact('requisitions','vendors','servicetype','departments'));
     }
@@ -130,10 +131,10 @@ class ReportController extends Controller
     public function purchaseorderreport()
     {
 
-        $requisitions = Purchaseorder::all();
+        $requisitions = Purchaseorder::where('companyId', Auth::user()->companyId)->get();
         $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
         $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
-        $departments = Department::all();
+        $departments = Department::where('companyId', Auth::user()->companyId)->get();
 
 
         return view('reports.purchaseorderreport' , compact('requisitions','vendors','servicetype','departments'));
@@ -145,10 +146,10 @@ class ReportController extends Controller
     public function waitingpurchaseorder()
     {
 
-        $requisitions = Purchaseorder::all();
+        $requisitions = Purchaseorder::where('companyId', Auth::user()->companyId)->get();
         $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
         $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
-        $departments = Department::all();
+        $departments = Department::where('companyId', Auth::user()->companyId)->get();
 
         return view('reports.waitingpurchaseorder', compact('requisitions','vendors','servicetype','departments'));
     }

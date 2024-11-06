@@ -18,7 +18,7 @@ class MasterController extends Controller
 {
     public function manageRole()
     {
-         $users = userrole::where('id' ,'>',3)->get();
+         $users = userrole::where('id' ,'>',3)->where('companyId', Auth::user()->companyId)->get();
     
         return view('master.manageRole', compact('users'));
     }
@@ -26,9 +26,9 @@ class MasterController extends Controller
 
     public function department()
     {
-         $roles = userrole::where('id' ,'>',3)->get();
-         $departments = Department::all();
-         $users = User::all();
+         $roles = userrole::where('id' ,'>',3)->where('companyId', Auth::user()->companyId)->get();
+         $departments = Department::where('companyId', Auth::user()->companyId)->get();
+         $users = User::where('companyId', Auth::user()->companyId)->get();
     
         return view('master.department',compact('roles','departments','users'));
     }
@@ -334,10 +334,8 @@ class MasterController extends Controller
     {
          $department = Department::where('id', $id)->first();
          $da = Departmentapproval::where('departmentId', $id)->get();
-         $roles = Userrole::all();
-
-        // dd($department,$da);
-    
+         $roles = Userrole::where('companyId', Auth::user()->companyId)->get();
+   
          return view('master.departmentedit',compact('department','da','roles'));
         
     }

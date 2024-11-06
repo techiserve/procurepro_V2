@@ -18,7 +18,7 @@ class CompanyController extends Controller
      */
     public function companyindex()
     {
-        $companies = Company::all();
+        $companies = Company::where('companyId', Auth::user()->companyId)->get();
 
         return view('companies.index', compact('companies'));
     }
@@ -26,7 +26,7 @@ class CompanyController extends Controller
 
     public function executivesindex()
     {
-        $executives = Executive::all();
+        $executives = Executive::where('companyId', Auth::user()->companyId)->get();
 
         return view('executives.index', compact('executives'));
     }

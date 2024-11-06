@@ -73,7 +73,7 @@ class ProcurementController extends Controller
         // // Queue the email for background processing
         // Mail::to('itaivincent321@gmail.com')->queue(new SendSampleEmail($emailData));
         // dd('send mail');
-        $requisitions = Requisition::with('histories')->where('userId', Auth::user()->id)->orwhere('isActive', '=', 1)->orderby('id','desc')->get();
+        $requisitions = Requisition::with('histories')->where('userId', Auth::user()->id)->where('companyId', Auth::user()->companyId)->orwhere('isActive', '=', 1)->where('companyId', Auth::user()->companyId)->orderby('id','desc')->get();
        // $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
        // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
         $roles = userrole::all(); 
@@ -87,8 +87,8 @@ class ProcurementController extends Controller
     public function myrequisition()
     {
 
-        $requisitions = Requisition::with('histories')->where('approvedby', Auth::user()->userrole)->where('status', '=', 1)->get();
-        $roles = userrole::all(); 
+        $requisitions = Requisition::with('histories')->where('approvedby', Auth::user()->userrole)->where('status', '=', 1)->where('companyId', Auth::user()->companyId)->get();
+        $roles = userrole::where('companyId', Auth::user()->companyId)->get(); 
      
         return view('procurement.myrequisiton', compact('requisitions','roles'));
     }
@@ -128,8 +128,8 @@ class ProcurementController extends Controller
     public function indexpurchaseorder()
     {
      
-        $purchaseorders = Purchaseorder::with('histories')->where('userId', Auth::user()->id)->orwhere('isActive', '=', 1)->orderby('id','desc')->get();
-        $roles = userrole::all();
+        $purchaseorders = Purchaseorder::with('histories')->where('userId', Auth::user()->id)->orwhere('isActive', '=', 1)->where('companyId', Auth::user()->companyId)->orderby('id','desc')->get();
+        $roles = userrole::where('companyId', Auth::user()->companyId)->get();
         $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
         $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
 
@@ -140,19 +140,18 @@ class ProcurementController extends Controller
 
     public function mypurchaseorder()
     {
-        $purchaseorders = Purchaseorder::with('histories')->where('approvedby', Auth::user()->userrole)->where('status', '=', 1)->get();
-        $roles = userrole::all();
+        $purchaseorders = Purchaseorder::with('histories')->where('approvedby', Auth::user()->userrole)->where('status', '=', 1)->where('companyId', Auth::user()->companyId)->get();
+        $roles = userrole::where('companyId', Auth::user()->companyId)->get();
 
-         // dd($purchaseorders);
         return view('procurement.mypurchaseorder', compact('purchaseorders','roles'));
     }
 
 
     public function managepurchaseorder()
     {
-     
-        $purchaseorders = Purchaseorder::where('releaseStatus', '=', null)->get();
-        $roles = userrole::all();
+    
+        $purchaseorders = Purchaseorder::where('releaseStatus', '=', null)->where('companyId', Auth::user()->companyId)->get();
+        $roles = userrole::where('companyId', Auth::user()->companyId)->get();
 
         return view('procurement.managepurchaseorder', compact('purchaseorders','roles'));
     }
@@ -161,7 +160,7 @@ class ProcurementController extends Controller
     public function logs(string $id)
     { 
 
-        $histories = RequisitionHistory::where('requisition_id', '=', $id)->get();
+        $histories = RequisitionHistory::where('requisition_id', '=', $id)->where('companyId', Auth::user()->companyId)->get();
         return view('procurement.logs', compact('histories'));
 
     }
@@ -176,6 +175,7 @@ class ProcurementController extends Controller
         $departments = Department::where('id', $purchaseorder->department)->first();
 
         return view('procurement.editpurchaseorder', compact('purchaseorder','history','departments'));
+
     }
 
 
@@ -253,12 +253,12 @@ class ProcurementController extends Controller
             $query->where('created_at', '<=', $end_date);
         }
 
-        $requisitions = $query->get();
+        $requisitions = $query->where('companyId', Auth::user()->companyId)->get();
 
         $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
         $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
-        $departments = Department::all();
-        $roles = userrole::all(); 
+        $departments = Department::where('companyId', Auth::user()->companyId)->get();
+        $roles = userrole::where('companyId', Auth::user()->companyId)->get(); 
 
       return view('procurement.indexrequisiton', compact('requisitions','vendors','servicetype','departments','roles'));
 
@@ -296,12 +296,12 @@ class ProcurementController extends Controller
             $query->where('created_at', '<=', $end_date);
         }
 
-        $purchaseorders = $query->get();
+        $purchaseorders = $query->where('companyId', Auth::user()->companyId)->get();
 
         $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
         $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
-        $departments = Department::all();
-        $roles = userrole::all(); 
+        $departments = Department::where('companyId', Auth::user()->companyId)->get();
+        $roles = userrole::where('companyId', Auth::user()->companyId)->get(); 
 
       return view('procurement.indexpurchaseorder', compact('purchaseorders','vendors','servicetype','departments','roles'));
     }
@@ -437,6 +437,8 @@ class ProcurementController extends Controller
         'TaxTypeCode'  => $Tax->TaxTypeCode,
 
         'userId'  =>Auth::user()->id,
+        'companyId'  =>Auth::user()->companyId,
+        
         'status'  => 1,
         'approvallevel'  => $level,
         'totalapprovallevels'  => $totalapprovallevels,
@@ -458,6 +460,7 @@ class ProcurementController extends Controller
             $savefile = Requisitionfile::create([
 
                 'requisitionId' => $requisition->id,
+                'companyId'  =>Auth::user()->companyId,
                 'file'  =>  $quotation,
                 'userId'  =>Auth::user()->id,
                 'path'  => 1,
@@ -473,6 +476,7 @@ class ProcurementController extends Controller
 
         'requisition_id' => $requisition->id,
         'vendor' => $request->vendor,
+        'companyId'  =>Auth::user()->companyId,
         'services' => $request->service,
         'paymentmethod'  => $request->paymentmethod,
         //'department'  => $request->department,
@@ -588,6 +592,7 @@ class ProcurementController extends Controller
             'paymentmethod'  => $requisition->paymentmethod,
             'department'  => $requisition->department,
             'expenses'  => $requisition->expenses,
+            'companyId'  =>Auth::user()->companyId,
 
             'PropertyName'  => $requisition->PropertyName,
             'TransactionDescription'  => $requisition->TransactionDescription,
@@ -614,7 +619,7 @@ class ProcurementController extends Controller
 
             'requisition_id' => $id,
             'amount'  => $requisition->amount,
-         //   'file'  => $quotation,
+            'companyId'  =>Auth::user()->companyId,
             'userId'  =>Auth::user()->id,
             'status'  => 1,
             'approvallevel' =>  $updatedapprovallevel,
@@ -642,6 +647,7 @@ class ProcurementController extends Controller
 
                  $requisition = RequisitionHistory::create([
 
+                    'companyId'  =>Auth::user()->companyId,
                     'requisition_id' => $requisition->id,
                     'amount'  => $requisition->amount,
                     'userId'  =>Auth::user()->id,
@@ -688,6 +694,7 @@ class ProcurementController extends Controller
 
                     'requisition_id' => $requisition->id,
                     'amount'  => $requisition->amount,
+                    'companyId'  =>Auth::user()->companyId,
                     'userId'  =>Auth::user()->id,
                     'status'  => 1,
                     'approvedby' => Auth::user()->userrole, 
@@ -727,6 +734,7 @@ class ProcurementController extends Controller
 
                     'requisition_id' => $requisition->id,
                     'amount'  => $requisition->amount,
+                    'companyId'  =>Auth::user()->companyId,
                     'userId'  =>Auth::user()->id,
                     'status'  => 1,
                     'approvallevel' =>  $requisition->approvallevel,
@@ -771,6 +779,7 @@ class ProcurementController extends Controller
 
                     'requisition_id' => $requisition->requisition_id,
                     'amount'  => $requisition->amount,
+                    'companyId'  =>Auth::user()->companyId,
                  //   'file'  => $quotation,
                     'userId'  =>Auth::user()->id,
                     'status'  => 1,
@@ -802,6 +811,7 @@ class ProcurementController extends Controller
 
                     'requisition_id' => $requisition->requisition_id,
                     'amount'  => $requisition->amount,
+                    'companyId'  =>Auth::user()->companyId,
                     'userId'  =>Auth::user()->id,
                     'status'  => 1,
                     'approvallevel' =>  $updatedapprovallevel,
@@ -846,6 +856,7 @@ class ProcurementController extends Controller
                     'amount'  => $requisition->amount,
                  //   'file'  => $quotation,
                     'userId'  =>Auth::user()->id,
+                    'companyId'  =>Auth::user()->companyId,
                     'status'  => 1,
                    // 'approvallevel' =>  $updatedapprovallevel,
                     'approvedby' => Auth::user()->userrole, 
@@ -889,6 +900,7 @@ class ProcurementController extends Controller
             'requisition_id' => $requisition->requisition_id,
             'amount'  => $requisition->amount,
             'userId'  =>Auth::user()->id,
+            'companyId'  =>Auth::user()->companyId,
             'status'  => 1,
             'approvallevel' =>  0,
             'approvedby' => Auth::user()->userrole, 

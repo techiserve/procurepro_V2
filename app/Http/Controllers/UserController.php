@@ -25,10 +25,9 @@ class UserController extends Controller
      */
     public function index()
     {
-           $user = Auth::user()->companyId;
-        
+           $user = Auth::user()->companyId;    
        
-         $users = User::where('userrole', '>', 1)->get();
+         $users = User::where('userrole', '>', 1)->where('companyId', Auth::user()->companyId)->get();
 
         return view('users.index', compact('users'));
     }
@@ -36,17 +35,17 @@ class UserController extends Controller
     public function home()
     {
         
-        $departments = Requisition::where('status','=', 1)->count();
-        $userCount  = Purchaseorder::where('status','=', 1)->count();
-        $requisitions = Requisition::count();
-        $purchaseorders = Purchaseorder::count();
+        $departments = Requisition::where('status','=', 1)->where('companyId', Auth::user()->companyId)->count();
+        $userCount  = Purchaseorder::where('status','=', 1)->where('companyId', Auth::user()->companyId)->count();
+        $requisitions = Requisition::where('companyId', Auth::user()->companyId)->count();
+        $purchaseorders = Purchaseorder::where('companyId', Auth::user()->companyId)->count();
 
         $user = Auth::user()->userrole;
 
         if($user == 2 OR  Auth::user()->executiveId != null){
             $userId = Auth::user()->id;
             $companies = CompanyRole::where('userId','=',$userId)->first();
-            $allcompanies = Company::all();
+            $allcompanies = Company::where('companyId', Auth::user()->companyId)->get();
         
             if($companies == null){
         
@@ -54,11 +53,12 @@ class UserController extends Controller
 
             }else{
 
-                $companies = CompanyRole::where('userId','=',$userId)->get();
+                $companies = CompanyRole::where('userId','=',$userId)->where('companyId', Auth::user()->companyId)->get();
      
               return view('executivehome',compact('companies','allcompanies'));
 
             }
+
         }else{
        
             return view('home',compact('userCount','departments','requisitions','purchaseorders') );
@@ -73,8 +73,8 @@ class UserController extends Controller
      */
     public function create()
     {
-         $roles = userrole::where('id' ,'>',3)->get();
-         $departments  =  Department::all();
+         $roles = userrole::where('id' ,'>',3)->where('companyId', Auth::user()->companyId)->get();
+         $departments  = Department::where('companyId', Auth::user()->companyId)->get();
     
         return view('users.create', compact('roles','departments'));
     }
@@ -146,8 +146,8 @@ class UserController extends Controller
  public function useredit($id)
  {
       $user = User::where('id', $id)->first();
-      $roles = userrole::where('id' ,'>',3)->get();
-      $departments = Department::all();
+      $roles = userrole::where('id' ,'>',3)->where('companyId', Auth::user()->companyId)->get();
+      $departments = Department::where('companyId', Auth::user()->companyId)->get();
  
      return view('users.edit',compact('user','roles','departments'));
  }
@@ -213,6 +213,7 @@ class UserController extends Controller
          
         $user = new userrole();
         $user->name = $request->roleName;
+        $user->companyId = Auth::user()->companyId;
         $user->description = $request->description; 
         $user->save();
 
@@ -226,6 +227,7 @@ class UserController extends Controller
             
              $role = new Rolepermission();
              $role->role_id = $user->id;
+             $role->companyId = Auth::user()->companyId;
              $role->permission = $value; 
              $role->save();
       
