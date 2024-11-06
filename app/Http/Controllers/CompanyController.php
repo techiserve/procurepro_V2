@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Company;
 use App\Models\CompanyRole;
 use App\Models\Executive;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Alert;
 
@@ -18,7 +19,7 @@ class CompanyController extends Controller
      */
     public function companyindex()
     {
-        $companies = Company::where('companyId', Auth::user()->companyId)->get();
+        $companies = Company::all();
 
         return view('companies.index', compact('companies'));
     }

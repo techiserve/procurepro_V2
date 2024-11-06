@@ -13,7 +13,7 @@ class Requisition extends Model
 
         'vendor',
         'services',
-
+        'companyId',
         'PropertyName',
         'TransactionDescription',
         'TaxTypeDescription',

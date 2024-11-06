@@ -12,6 +12,7 @@ class Requisitionfile extends Model
     protected $fillable = [
 
         'requisitionId',
+        'companyId',
         'file',
         'userId',
         'path',

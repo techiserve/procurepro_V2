@@ -12,6 +12,7 @@ class RequisitionHistory extends Model
     protected $fillable = [
 
         'requisition_id',
+        'companyId',
         'vendor',
         'services',
         'paymentmethod',

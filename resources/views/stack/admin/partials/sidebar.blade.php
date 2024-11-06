@@ -162,7 +162,7 @@
                 </li>
 
                 <!-- EXECUTIVE -->
-                <li class="nav-item main-sibebar">
+                <!-- <li class="nav-item main-sibebar">
                     <a href="#"><i class="feather icon-shield"></i><span class="menu-title" data-i18n="">Executive</span></a>
                     <ul class="menu-content main-sibebar">
                         <li>
@@ -176,7 +176,7 @@
                             </a>
                         </li>
                     </ul>
-                </li>
+                </li> -->
             @endif
 
              

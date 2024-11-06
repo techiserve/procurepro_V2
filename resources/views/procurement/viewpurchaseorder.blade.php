@@ -95,6 +95,7 @@
           </div>
     
             @if($purchaseorder->userId != auth()->user()->id AND $history == NULL)
+            @if($purchaseorder->approvedby == auth()->user()->userrole AND $purchaseorder->approvallevel <= $purchaseorder->totalapprovallevels)
             <div class="card-footer">
             <div class="form-group pull-right">
     				
@@ -114,6 +115,7 @@
                     </a>
     			</div> 
           </div>
+          @endif
           @else
   
 

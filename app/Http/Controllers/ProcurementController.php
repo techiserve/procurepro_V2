@@ -50,7 +50,7 @@ class ProcurementController extends Controller
 
         $tax = DB::connection('sqlsrv')->table('TaxTypes')->select('TaxTypeDescription')->get();
 
-        $departments = Department::where('IsActive', '!=' , null)->get();
+        $departments = Department::where('IsActive', '!=' , null)->where('companyId', Auth::user()->companyId)->get();
 
        // dd($vendors);
 
@@ -410,12 +410,10 @@ class ProcurementController extends Controller
         $totalapprovallevels = Departmentapproval::where('departmentId', $departmentName->id)->count();
         $approver = Departmentapproval::where('departmentId', $departmentName->id)->where('approvalId', $level)->first();
 
-
         $supplierCode = DB::connection('sqlsrv')->table('Suppliers')->where('SupplierName', $request->vendor)->select('SupplierCode')->first();
         $Properties = DB::connection('sqlsrv')->table('Properties')->where('PropertyName', $request->property)->select('PropertyCode')->first();
         $Transaction = DB::connection('sqlsrv')->table('TransactionCodes')->where('TransactionDescription', $request->transaction)->select('TransactionCode')->first();
         $Tax = DB::connection('sqlsrv')->table('TaxTypes')->where('TaxTypeDescription', $request->tax)->select('TaxTypeCode')->first();
-        //dd($supplierCode->SupplierCode,$Properties,$Transaction,$Tax);
 
        $requisition = Requisition::create([
 
