@@ -146,7 +146,8 @@
             @if(auth()->user()->userrole == 1)
                 <!-- COMPANY -->
                 <li class="nav-item main-sibebar">
-                    <a href="#"><i class="feather icon-building"></i><span class="menu-title" data-i18n="">Company</span></a>
+                    <a href="#"><i class="feather icon-box"></i><span class="menu-title" data-i18n="">Company</span></a>
+                    <!-- <a href="#"><i class="feather icon-shield"></i><span class="menu-title" data-i18n="">Executive</span></a> -->
                     <ul class="menu-content main-sibebar">
                         <li>
                             <a class="menu-item " href="/companies/create" data-i18n="nav.starter_kit.1_column">
@@ -177,7 +178,7 @@
                         </li>
                     </ul>
                 </li> -->
-            @endif
+            @endif  
 
              
                 <li class="nav-item">
