@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('vendor')->nullable();
             $table->string('services')->nullable();
-            $table->integer('company_id')->nullable();
+            $table->integer('companyId')->nullable();
             $table->string('paymentmethod')->nullable();
             $table->string('expenses')->nullable();
             $table->string('projectcode')->nullable();

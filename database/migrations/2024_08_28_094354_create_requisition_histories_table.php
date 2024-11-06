@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('requisition_histories', function (Blueprint $table) {
             $table->id();
             $table->integer('requisition_id')->nullable();
-            $table->integer('company_id')->nullable();
+            $table->integer('companyId')->nullable();
             $table->string('vendor')->nullable();
             $table->string('services')->nullable();
             $table->string('paymentmethod')->nullable();
