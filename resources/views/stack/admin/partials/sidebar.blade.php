@@ -24,7 +24,7 @@
             <ul class="navigation navigation-main main-sibebar" id="main-menu-navigation" data-menu="menu-navigation">
             <li class="nav-item main-sibebar">
                 <a href="/home">
-                    <i data-feather="grid"></i>
+                    <i class="feather icon-grid"></i>
                     <span class="menu-title" data-i18n="">Dashboard</span>
                 </a>
             </li>
