@@ -22,8 +22,13 @@
    
         <!-- main menu content-->
             <ul class="navigation navigation-main main-sibebar" id="main-menu-navigation" data-menu="menu-navigation">
-                <li class="nav-item main-sibebar"><a href="/home"><i class="feather icon-grid"></i><span class="menu-title" data-i18n="">Dashboard</span></a>
-                </li>
+            <li class="nav-item main-sibebar">
+                <a href="/home">
+                    <i data-feather="grid"></i>
+                    <span class="menu-title" data-i18n="">Dashboard</span>
+                </a>
+            </li>
+            
                 @if(auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('Master Pages'))
                 <li class="nav-item main-sibebar">
                     <a href="#"><i class="feather icon-layers"></i><span class="menu-title" data-i18n="">Master Pages</span></a>

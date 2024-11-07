@@ -33,11 +33,9 @@
             </h2>
         </a>
     </li>
-    <li class="nav-item d-lg-none">
-        <a class="nav-link open-navbar-container" data-toggle="collapse" data-target="#navbar-mobile"><i class="fa fa-ellipsis-v"></i></a>
-    </li>
+
 </ul>
-<img src="{{ asset('/coreui/img/avatars/blue.png') }}" alt="Logo" class="brand-logo">
+
             </div>
             <div class="navbar-container content">
                 <div class="collapse navbar-collapse" id="navbar-mobile">
