@@ -393,7 +393,7 @@ class ProcurementController extends Controller
        // dd($invoicepath,$jobcardpath);
        $history = RequisitionHistory::where('requisition_id', $id)->where('userId',  Auth::user()->id)->where('action', '=', 'Purchase Order Approved')
        ->orwhere('action', '=', 'Purchase Order Rejected')->where('requisition_id', $id)->where('userId',  Auth::user()->id)
-       ->orwhere('action', '=', 'Purchase Order Returned')->where('requisition_id', $id)->where('userId',  Auth::user()->id)->first();
+       ->orwhere('action', '!=', 'Purchase Order Returned')->where('requisition_id', $id)->where('userId',  Auth::user()->id)->first();
 
 
         return view('procurement.viewpurchaseorder', compact('purchaseorder','invoicepath','jobcardpath','history','departments'));
