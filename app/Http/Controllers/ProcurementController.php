@@ -107,7 +107,7 @@ class ProcurementController extends Controller
             return redirect()->route('procurement.myrequisition')->with('warning', 'The department was removed from Tagpay!');
         }
 
-        $history = RequisitionHistory::where('requisition_id', $id)->where('userId',  Auth::user()->id)->where('action','!=', 'Created Purchase Requisition')->first();
+        $history = RequisitionHistory::where('requisition_id', $id)->where('userId',  Auth::user()->id)->where('action','!=', 'Created Purchase Requisition')->where('action', '!=', 'Purchase Requisition Returned')->first();
     
         return view('procurement.viewrequisition', compact('purchaseorder','files','vendors','servicetype','history','departments'));
     }
