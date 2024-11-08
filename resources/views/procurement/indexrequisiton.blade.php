@@ -1,6 +1,8 @@
 @extends('stack.layouts.admin')
 <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.4/tutorials/timelines/timeline-7/assets/css/timeline-7.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 @section('content')
 <div class="container-fluid">
   <div class="animated fadeIn">
@@ -338,30 +340,25 @@
 </div>
 
 @endsection
-
 <script>
-    function downloadConsolidatedPDFs() {
-        fetch('{{ route('procurement.downloadrequisitions') }}', {  // Use route() helper to generate the URL
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'  // Ensure CSRF token is sent with the request
-            },
-            body: JSON.stringify({
-                requisition_ids: [/* Array of Requisition IDs */]
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Trigger download for each PDF URL
-            data.forEach(url => {
-                let link = document.createElement('a');
-                link.href = url;
-                link.download = url.substring(url.lastIndexOf('/') + 1);
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            });
+    document.addEventListener('DOMContentLoaded', function() {
+        const downloadButton = document.querySelector('button[type="submit"]');
+        const form = document.querySelector('form');
+
+        downloadButton.addEventListener('click', function(event) {
+            // Check if any checkboxes are checked
+            const checkboxes = document.querySelectorAll('input[name="requisition_ids[]"]:checked');
+            if (checkboxes.length === 0) {
+                event.preventDefault(); // Prevent form submission
+
+                // Display SweetAlert2 alert
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No Selection',
+                    text: 'Please select at least one checkbox before downloading.',
+                    confirmButtonText: 'Okay'
+                });
+            }
         });
-    }
+    });
 </script>
