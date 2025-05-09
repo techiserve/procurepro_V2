@@ -43,18 +43,22 @@
                                 <i class="nav-icon icon-user-"></i> Departments
                             </a>
                         </li>
-                        <!-- Uncomment if needed
+                        <li>
+                            <a class="menu-item" href="/classifications/create" data-i18n="nav.starter_kit.2_columns">
+                                <i class="nav-icon icon-user-"></i>Classification of Expense
+                            </a>
+                        </li>
                         <li>
                             <a class="menu-item" href="/master/banks" data-i18n="nav.starter_kit.3_columns">
-                                <i class="nav-icon icon-user-following"></i> Manage Banks
+                                <i class="nav-icon icon-user-"></i> Manage Banks
                             </a>
                         </li>
                         <li>
                             <a class="menu-item" href="/master/bankAccount" data-i18n="nav.starter_kit.4_columns">
-                                <i class="nav-icon icon-user-follow"></i> Bank Accounts
+                                <i class="nav-icon icon-user-"></i> Bank Accounts
                             </a>
                         </li>
-                        -->
+                       
                     </ul>
                 </li>
             @endif
@@ -83,6 +87,40 @@
                 </li>
             @endif
 
+           
+                <li class="nav-item main-sibebar">
+                    <a href="#"><i class="feather icon-file"></i><span class="menu-title" data-i18n="">Vendor Management</span></a>
+                    <ul class="menu-content main-sibebar"style="margin-left:-30px;">
+                        <li>
+                            <a class="menu-item" href="/procurement/createVendor" data-i18n="nav.starter_kit.1_column">
+                                Request a Vendor 
+                            </a>
+                        </li>
+                        <li>
+                            <a class="menu-item" href="/vendor-types/" data-i18n="nav.starter_kit.2_columns">
+                                Vendor Type 
+                            </a>
+                        </li>
+                        <li>
+                            <a class="menu-item" href="/vendors/index" data-i18n="nav.starter_kit.2_columns">
+                                All Vendors
+                            </a>
+                        </li>
+                        <li>
+                            <a class="menu-item" href="/vendors/approval" data-i18n="nav.starter_kit.2_columns">
+                                Pending Requests 
+                            </a>
+                        </li>
+                        <li>
+                            <a class="menu-item" href="/vendors/index" data-i18n="nav.starter_kit.2_columns">
+                                My Requests
+                            </a>
+                        </li>
+                  
+                  
+                    </ul>
+                </li>
+      
 
                 @if(auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('Create Purchase Requistion') OR $data->contains('View Requisitions') OR $data->contains('View Purchase Orders') OR $data->contains('Manage Purchase Orders'))
                 <li class=" nav-item main-sibebar"><a href="#"><i class="feather icon-package"></i><span class="menu-title" data-i18n="">Procurement</span></a>

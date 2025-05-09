@@ -74,8 +74,7 @@
                 @endif
               
               </td>
-
-            
+          
                   <td class="text-center">
                   @if($company->status == 0 OR $company->status == 4)
                 

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\PasswordResetLinkController;
+use App\Http\Controllers\VendorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -132,6 +133,7 @@ Route::middleware('auth')->group(function () {
      Route::put('/procurement/{id}/reject', [ProcurementController::class, 'rejectpurchaseorder'])->name('procurement.rejectpurchaseorder');
      Route::put('/procurement/{id}/sendback', [ProcurementController::class, 'sendbackpurchaseorder'])->name('procurement.updatepurchaseorder');
      Route::get('download-pdf/{filename}', [YourController::class, 'downloadPDF'])->name('download.pdf');
+     Route::get('/procurement/createVendor', [ProcurementController::class, 'createVendor'])->name('procurement.createVendor');
 
 
 
@@ -144,6 +146,41 @@ Route::middleware('auth')->group(function () {
      Route::get('/reports/purchaseorderreport', [ReportController::class, 'purchaseorderreport'])->name('reports.purchaseorderreport');
      Route::get('/reports/waitingpurchaseorder', [ReportController::class, 'waitingpurchaseorder'])->name('reports.waitingpurchaseorder');
 
+
+     Route::prefix('vendors')->group(function () {
+        Route::get('/create', [VendorController::class, 'create']);
+        Route::post('/store', [VendorController::class, 'store']);
+        Route::get('/banking', [VendorController::class, 'bankingForm']);
+        Route::post('/store-banking', [VendorController::class, 'storeBanking']);
+        Route::get('/index', [VendorController::class, 'index']);
+    });
+    
+    Route::get('/vendors/view/{id}', [VendorController::class, 'show']);
+    Route::get('/vendors/edit/{id}', [VendorController::class, 'edit']);
+    Route::put('/vendors/update/{id}', [VendorController::class, 'update']);
+
+    Route::get('/vendors/approval', [VendorController::class, 'showApprovalPage'])->name('vendors.approval');
+    Route::post('/vendors/approval/{id}', [VendorController::class, 'handleApprovalAction'])->name('vendors.approvalAction');
+    Route::get('/vendors/approval/details/{id}', [VendorController::class, 'showApprovalDetails'])->name('vendors.approval.details');
+    Route::get('/vendors/approval/view/{id}', [VendorController::class, 'viewApprovalDetails'])->name('vendors.approval.view');
+    Route::post('/vendors/approval/{id}', [VendorController::class, 'handleApprovalAction'])->name('vendors.approvalAction');
+
+
+
+// Vendor Types
+Route::prefix('vendor-types')->name('vendor-types.')->group(function () {
+    Route::get('/', [VendorController::class, 'vendorTypeIndex'])->name('index');
+    Route::post('/store', [VendorController::class, 'vendorTypeStore'])->name('store');
+    Route::get('/{id}/edit', [VendorController::class, 'vendorTypeEdit'])->name('edit');
+    Route::post('/{id}/update', [VendorController::class, 'vendorTypeUpdate'])->name('update');
+    Route::delete('/{id}', [VendorController::class, 'vendorTypeDestroy'])->name('destroy');
+});
+
+
+Route::prefix('classifications')->name('classifications.')->group(function () {
+    Route::get('/create', [VendorController::class, 'createClassification'])->name('create');
+    Route::post('/store', [VendorController::class, 'storeClassification'])->name('store');
+});
 
 });
 

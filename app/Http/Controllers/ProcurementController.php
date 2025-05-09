@@ -12,6 +12,7 @@ use App\Models\Requisition;
 use App\Models\RequisitionHistory;
 use App\Models\Requisitionfile;
 use App\Models\Bankaccount;
+use App\Models\VendorType;
 use App\Models\Company;
 use Barryvdh\DomPDF\Facade\Pdf;
 use setasign\Fpdi\Fpdi;
@@ -52,10 +53,20 @@ class ProcurementController extends Controller
 
         $departments = Department::where('IsActive', '!=' , null)->where('companyId', Auth::user()->companyId)->get();
 
-       // dd($vendors);
 
      return view('procurement.createrequisition', compact('departments','vendors','servicetype','properties','transcations','tax'));
     }
+
+
+
+
+    public function createVendor()
+    {
+        $vendorTypes = VendorType::all();
+
+        return view('procurement.createVendor', compact('vendorTypes'));
+    }
+
 
     /**
      * Show the form for creating a new resource.
