@@ -86,11 +86,8 @@
               </div>
        
               <div class="col-md-1">
-                <div class="form-group">
+                <div class="form-group" style="margin-top: 37px;">
                 <div class="form-check">
-                <label style="visibility: hidden;" for="defaultCheck1">
-                Active
-               </label>
                 <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" role="switch" name="IsActive"  value="1"  id="flexSwitchCheckDefault" />
                 <label class="form-check-label" for="defaultCheck1">

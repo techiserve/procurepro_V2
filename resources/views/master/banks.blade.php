@@ -30,18 +30,14 @@
               </div>
        
 
-              <div class="col-md-1 col-form-label">
-                <div class="form-group">
-                <div class="form-check">
-                <label for="province" style="visibility: hidden;">Email Address</label>  
-                <div class="form-check form-switch">
+              <div class="col-md-1 col-form-label">   
+              <div class="form-group" style="margin-top: 25px;">  
+                <div class="form-check form-switch" >
                 <input class="form-check-input" type="checkbox" role="switch" name="IsActive"  value="1"  id="flexSwitchCheckDefault" />
                 <label class="form-check-label" for="defaultCheck1">
                Active
                </label>
                 </div>
-             
-               </div>
                 </div>
               </div>
             </div>

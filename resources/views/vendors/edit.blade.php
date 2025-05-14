@@ -46,12 +46,18 @@
                   </div>
                 </div>
                 <div class="col-sm-6">
-                  <div class="form-group">
-                    <label>VAT Registered</label><br>
-                    <label class="radio-inline"><input type="radio" name="vat_registered" value="Yes" {{ $vendor->vat_registered == 'Yes' ? 'checked' : '' }}> Yes</label>
-                    <label class="radio-inline"><input type="radio" name="vat_registered" value="No" {{ $vendor->vat_registered == 'No' ? 'checked' : '' }}> No</label>
-                  </div>
-                </div>
+  <div class="form-group">
+    <label>VAT Registered</label><br>
+    <div class="mt-1"> <!-- Added margin top -->
+      <label class="radio-inline">
+        <input type="radio" name="vat_registered" value="Yes" {{ $vendor->vat_registered == 'Yes' ? 'checked' : '' }}> Yes
+      </label>
+      <label class="radio-inline ml-3">
+        <input type="radio" name="vat_registered" value="No" {{ $vendor->vat_registered == 'No' ? 'checked' : '' }}> No
+      </label>
+    </div>
+  </div>
+</div>
               </div>
 
               <div class="row">

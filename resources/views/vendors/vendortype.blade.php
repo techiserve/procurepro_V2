@@ -25,11 +25,13 @@
                   </div>
                 </div>
                 <div class="col-sm-6">
-                  <div class="form-group" style="margin-top: 25px;">
+                  <div class="form-group" style="margin-top: 40px;">
                     <div class="checkbox">
+                    <div class="mt-2"> <!-- Added margin top -->
                       <label>
-                        <input type="checkbox" id="active" name="active" value="1"> Active
+                        <input type="checkbox" id="active" name="active" value="1">  Active
                       </label>
+                      </div>
                     </div>
                   </div>
                 </div>

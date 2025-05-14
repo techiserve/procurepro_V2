@@ -1,0 +1,19 @@
+string name = "ferarri";
+int left = 0;
+int right = name.Length - 1;
+bool isPalindrome = true;
+
+while(left < right){
+
+    if(name[left] != name[right]){
+
+        isPalindrome = false;
+        break;
+
+    }
+
+    left++;
+    right--;
+}
+
+Console.WriteLine(isPalindrome);

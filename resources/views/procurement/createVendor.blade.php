@@ -46,7 +46,7 @@
                   </div>
                 </div>
                 <div class="col-sm-6">
-                  <div class="form-group">
+                  <div class="form-group" style="margin-top: 20px;">
                     <label>VAT Registered</label><br>
                     <label class="radio-inline"><input type="radio" name="vat_registered" value="Yes"> Yes</label>
                     <label class="radio-inline"><input type="radio" name="vat_registered" value="No"> No</label>

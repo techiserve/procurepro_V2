@@ -25,7 +25,7 @@
                   </div>
                 </div>
                 <div class="col-sm-6">
-                  <div class="form-group" style="margin-top: 28px;">
+                  <div class="form-group" style="margin-top: 40px;">
                     <div class="checkbox">
                       <label><input type="checkbox" name="active" checked> Active</label>
                     </div>
