@@ -25,6 +25,7 @@ class User extends Authenticatable
         'confirmPassword',
         'address',
         'userrole',
+        'vendor_source',
         'companyId',
         'isActive',
         'phoneNumber',

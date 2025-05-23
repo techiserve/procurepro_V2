@@ -2,7 +2,18 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script> 
+<style>
+    .field-row {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
 
+    .field-row input,
+    .field-row select {
+        flex: 1;
+    }
+</style>
 @section('content')
 <div class="container-fluid">
   <div class="animated fadeIn">
@@ -15,9 +26,9 @@
           <div class="card-header">
             <strong>Add New Company</strong>
             <a href="/companies/index" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="fa fa-align-justify"></i> Companies List</a>
-           </div>
+          </div>
 
-           <div class="card-body">
+          <div class="card-body">
             <div class="row">
               <div class="col-sm-6">
                 <div class="form-group">
@@ -67,7 +78,7 @@
             </div>
 
             <div class="row">
-            <div class="col-sm-6">
+              <div class="col-sm-6">
                 <div class="form-group">
                   <label for="grower_number">Company Address</label>
                   <textarea class="form-control" id="exampleFormControlTextarea1" name="address" rows="3"></textarea>
@@ -83,27 +94,47 @@
             
               <div class="col-md-1 col-form-label">
                 <div class="form-group">
-                <div class="form-check">
-                <label for="province" style="visibility: hidden;">Email Address</label>  
-                <input class="form-check-input" type="checkbox" name="IsActive" value="1" id="defaultCheck1">
-               <label class="form-check-label" for="defaultCheck1">
-               Active
-               </label>
-               </div>
+                  <div class="form-check">
+                    <label for="province" style="visibility: hidden;">Email Address</label>  
+                    <input class="form-check-input" type="checkbox" name="IsActive" value="1" id="defaultCheck1">
+                    <label class="form-check-label" for="defaultCheck1">
+                      Active
+                    </label>
+                  </div>
                 </div>
               </div>
-          
             </div>
 
+            <!-- New Vendor Source Dropdown -->
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="vendor_source">Vendor Source</label>
+                  <select class="form-control" id="vendor_source" name="vendor_source">
+                    <option value="">-- Select Vendor Source --</option>
+                    <option value="Vendor Management">Vendor Management</option>
+                    <option value="Sage">Sage</option>
+                    <option value="SAP">SAP</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          <hr style="border-color: black;">
+            <div id="fields">
+            <!-- Dynamic fields will be added here -->
+        </div>
+        <button type="button"  class="btn btn-info" onclick="addField()">Add Field</button>
+        <br><br>
 
-			<hr style="border-color: black;">
-			<br>
+         
+            <br>
           </div>
+
           <div class="card-footer">
             <div class="form-group pull-right">
-    				<input type="submit" class="btn btn-success" value="Save"/>
-    				<input type="reset" class="btn btn-danger" value="Cancel"/>
-    			</div>
+              <input type="submit" class="btn btn-success" value="Save"/>
+              <input type="reset" class="btn btn-danger" value="Cancel"/>
+            </div>
           </div>
        </div>
       </form>
@@ -112,3 +143,36 @@
    </div>
 </div>
 @endsection
+<script>
+        function addField() {
+            const container = document.getElementById('fields');
+            const index = container.children.length;
+            const div = document.createElement('div');
+            div.innerHTML = `
+              <div class="row">
+                    <div class="col-sm-4">
+                <div class="form-group">
+                <input type="text" class="form-control" name="fields[${index}][name]" placeholder="Field Name" required>
+       </div>
+          </div>
+                      <div class="col-sm-4">
+                <div class="form-group">
+                <input type="text" class="form-control" name="fields[${index}][label]" placeholder="Label" required>
+       </div>
+          </div>
+                      <div class="col-sm-4">
+                <div class="form-group">
+                <select class="form-control" name="fields[${index}][type]" required>
+                   <option value="">-- Select type --</option>
+                    <option value="string">String</option>
+                    <option value="integer">Integer</option>
+                    <option value="text">Text</option>
+                </select>
+                <br><br>
+        </div>
+          </div>
+                <div>
+            `;
+            container.appendChild(div);
+        }
+    </script>

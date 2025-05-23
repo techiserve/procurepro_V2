@@ -1,45 +1,71 @@
+//reverse a string 
 
-	  <!-- /.modal for provinces modal -->
-    <div class="modal fade" id="addProvince" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-primary modal-md" role="document">
-            	<form method="post" action="">
-            		 @csrf
-	              <div class="modal-content">
-	                <div class="modal-header">
-	                  <h4 class="modal-title">Select Company</h4>
-	                
-	                </div>
-	                <div class="modal-body">
-                  <div class="form-group">
-                                <label for="province_id">Companies</label>
-                                <select name="province_id" class="js-example-basic-single form-control" required>
-                                    @foreach($companies as $company)
-                                    <option value="{{ $company->id }}" selected>{{ $company->id }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-	                </div>
-	                <div class="modal-footer">
-	                  <button class="btn btn-primary" type="submit">Select Company</button>
-	                </div>
-	              </div>
-	            </form>
-              <!-- /.modal-content-->
-            </div>
-            <!-- /.modal-dialog-->
-          </div>
+string name = "XYZ";
+string reversedName = "";
+
+for(int i = name.Length - 1; i >= 0; i--){
+
+  reversedName += name[i]; 
+
+}
+
+Console.WriteLine(reversedName);
 
 
 
+//palindrome check 
+string S = "Is this a palindrome: or not";
+string Sa = S.ToLower();
+string Sa = Regex.Replace(Sa,@"[^a-zA-Z0-9]","");
+int left = 0;
+int right = Sa.Length - 1;
+bool palindrome = true;
+
+while(left < right){
+
+  if(Sa[left] != Sa[right]){
+
+    palindrome = false;
+    break;
+
+  }
+
+  left++;
+  right--;
+
+}
 
 
-               <select name="company" class="js-example-basic-single form-control" required>
-                                    @foreach($companies as $company)
-                                    <option value="{{ $company->companyId }}" selected> @foreach($allcompanies as $comp) @if($comp->id == $company->companyId)
-                                    {{ $comp->name }}
-                                    @endif  @endforeach</option>
-                                    @endforeach
-                                </select>
+// remove duplicates 
+
+string cleanName= "";
+
+for(int i = 0;i < name.Length; i++){
+
+  if(!name.Contains(name[i])){
+     
+     cleanName += name[i];
+  }
+
+}
 
 
-                                {{ asset('/storage/uploads/'.$company->file) }}
+// occurances in a string 
+
+string name = "Ferrari";
+
+Dictionary<char, int> charCount = new Dictionary<char, int>(); 
+
+foreach(char c in name){
+
+   if(charCount.ContainsKey(c))
+      charCount[c]++;
+   else
+      charCount[c] = 1;
+}
+
+foreach(var pair in charCount){
+
+  Console.WriteLine($"'{pair.Key}': {pair.Value}");
+
+}

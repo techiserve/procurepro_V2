@@ -83,11 +83,38 @@
                                 </a>
                             </li>
                         @endif
+
+                        
                     </ul>
                 </li>
             @endif
 
-           
+
+                <li class="nav-item main-sibebar">
+                    <a href="#"><i class="feather icon-users"></i><span class="menu-title" data-i18n="">Flexible Forms</span></a>
+                    <ul class="menu-content main-sibebar" style="margin-left:-30px;">
+                 
+                            <li>
+                                <a class="menu-item" href="/form/configure" data-i18n="nav.starter_kit.1_column">
+                                    <i class="nav-icon icon-"></i>Configure
+                                </a>
+                            </li>
+                     
+
+                 
+                            <li>
+                                <a class="menu-item" href="/requisition/create" data-i18n="nav.starter_kit.2_columns">
+                                    <i class="nav-icon icon-cloud-"></i> Reqs
+                                </a>
+                            </li>
+                   
+
+                        
+                    </ul>
+                </li>
+         
+
+            @if(auth()->user()->vendor_source == 'Vendor Management')
                 <li class="nav-item main-sibebar">
                     <a href="#"><i class="feather icon-file"></i><span class="menu-title" data-i18n="">Vendor Management</span></a>
                     <ul class="menu-content main-sibebar"style="margin-left:-30px;">
@@ -120,7 +147,7 @@
                   
                     </ul>
                 </li>
-      
+              @endif
 
                 @if(auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('Create Purchase Requistion') OR $data->contains('View Requisitions') OR $data->contains('View Purchase Orders') OR $data->contains('Manage Purchase Orders'))
                 <li class=" nav-item main-sibebar"><a href="#"><i class="feather icon-package"></i><span class="menu-title" data-i18n="">Procurement</span></a>

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('departmentapprovals', function (Blueprint $table) {
             $table->id();
             $table->string('department')->nullable();
+            $table->string('mode')->nullable();
             $table->integer('userId')->nullable();
             $table->integer('companyId')->nullable();
             $table->integer('departmentId')->nullable();

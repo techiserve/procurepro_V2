@@ -9,6 +9,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\PasswordResetLinkController;
 use App\Http\Controllers\VendorController;
+use App\Http\Controllers\RequisitionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -181,6 +182,17 @@ Route::prefix('classifications')->name('classifications.')->group(function () {
     Route::get('/create', [VendorController::class, 'createClassification'])->name('create');
     Route::post('/store', [VendorController::class, 'storeClassification'])->name('store');
 });
+
+
+
+
+
+
+Route::get('/form/configure', [RequisitionController::class, 'configureForm'])->name('form.configure');
+Route::post('/form/configure', [RequisitionController::class, 'storeFormConfiguration'])->name('form.configure.store');
+
+//Route::get('/requisition/create', [RequisitionController::class, 'createRequisition'])->name('requisition.create');
+//Route::post('/requisition/store', [RequisitionController::class, 'storeRequisition'])->name('requisition.store');
 
 });
 

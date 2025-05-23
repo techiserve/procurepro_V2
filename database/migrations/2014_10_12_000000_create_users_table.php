@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('executiveId')->nullable();
             $table->integer('selectedCompanyId')->nullable();
             $table->string('companyName')->nullable();
+            $table->string('vendor_source')->nullable();
             $table->integer('department')->nullable();
             $table->string('address')->nullable();
             $table->string('position')->nullable();

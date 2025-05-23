@@ -19,125 +19,103 @@
            </div>
 
            <div class="card-body">
-            <div class="row">
-              <div class="col-sm-6">
-                <div class="form-group">
-                  <label for="grower_name">Vendor</label>
-                  <select class="js-example-basic-single form-control" id="grower_sizesss" name="vendor">
-                           <option value="" >Select Vendor</option>
-                           @foreach($vendors as $vendor)
-                           <option value="{{ $vendor->SupplierName }}"> {{ $vendor->SupplierName }}</option>
-                           @endforeach
-                  </select>
-                </div>
-              </div>
-
-              <div class="col-sm-6">
-                <div class="form-group">
-                  <label for="grower_rep">Service Types</label>
-                  <select class="js-example-basic-single form-control" id="servicetype" name="service">
-                          <option value="" >Select Services</option>
-                           @foreach($servicetype as $servicetype)
-                            <option value="{{ $servicetype->ServiceTypeDescription }}"> {{ $servicetype->ServiceTypeDescription }}</option>
-                            @endforeach
-                        </select>
-                </div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-sm-6">
-                <div class="form-group">
-                  <label for="grower_address">Property</label>
-                  <select class="js-example-basic-single form-control" id="property" name="property">
-                            <option value="" >Select Property</option>                       
-                            @foreach($properties as $propertie)
-                            <option value="{{ $propertie->PropertyName }}"> {{ $propertie->PropertyName }}</option>
-                            @endforeach
-                  </select>                                                     
-                  </select>
-                </div>
-              </div>
-
-              <div class="col-sm-6">
-                <div class="form-group">
-                  <label for="grower_address">Transaction</label>
-                  <select class="js-example-basic-single form-control" id="transaction" name="transaction">
-                          <option value="" >Select Transaction</option>
-                           @foreach($transcations as $transcation)
-                            <option value="{{ $transcation->TransactionDescription }}"> {{ $transcation->TransactionDescription }}</option>
-                            @endforeach
-                        </select>
-                </div>
-              </div>
-            </div>
-     
-
-            <div class="row">
-              <div class="col-sm-6">
-                <div class="form-group">
-                  <label for="grower_address">Payment Method</label>
-                  <select class="js-example-basic-single form-control" id="grower_sizes" name="paymentmethod">
-                            <option value="" >Select Payment Method</option>                       
-                            <option value="EFT">EFT</option>                          
-                            <option value="Credit Card">Credit Card</option>                                                         
-                  </select>
-                </div>
-              </div>
-
-              <div class="col-sm-6">
-                <div class="form-group">
-                  <label for="grower_address">Department</label>
-                  <select class="js-example-basic-single form-control" id="grower_size" name="department" required>
-                          <option value="" >Select Department</option>
-                           @foreach($departments as $department)
-                            <option value="{{ $department->id }}"> {{ $department->name }}</option>
-                            @endforeach
-                        </select>
-                </div>
-              </div>
-            </div>
-     
-            <div class="row">
-              <div class="col-sm-6">
-                <div class="form-group">
-                  <label for="grower_address">Description of Expense</label>
-                  <input class="form-control" id="grower_address" name="expenses" type="text" placeholder="Description of Expense">
-                </div>
-              </div>
-
-              <div class="col-sm-6">
-                <div class="form-group">
-                  <label for="grower_address">Project Code</label>
-                  <input class="form-control" id="grower_address" name="projectcode" type="text" placeholder="Project Code">
-                </div>
-              </div>
-            </div>
-
-            <div class="row">
-
-              <div class="col-sm-6">
-                <div class="form-group">
-                  <label for="grower_type">Amount (Rands)</label>
-                  <input  type="number" step="0.01"  class="form-control"  id="national_id" name="amount"  placeholder="Amount" required>
-                </div>
-              </div> 
-
-              <div class="col-sm-6">
-                <div class="form-group">
-                  <label for="grower_address">Tax</label>
-                  <select class="js-example-basic-single form-control" id="tax" name="tax">
-                          <option value="" >Select Tax Type</option>
-                           @foreach($tax as $tax)
-                            <option value="{{ $tax->TaxTypeDescription }}"> {{ $tax->TaxTypeDescription }}</option>
-                            @endforeach
-                        </select>
-                </div>
-              </div>
           
+ <hr style="border-color: black;">
+@php
+      $vendorNames = ['vendor', 'vendor list', 'vendors', 'Vendor', 'Vendor List'];
+      $propertyNames = ['property', 'properties','Property List', 'property list'];
+      $serviceNames = ['service', 'service list', 'services', 'Service List'];
+      $taxtypeNames = ['Tax', 'Tax Type', 'taxtype', 'tax list', 'Tax List'];
+      $paymentmethodNames = ['payment method', 'Payment Method', 'payment', 'paymentmethod'];
+      $transactionNames = ['transaction', 'transaction list', 'transactions','transaction description'];
+       $departmentNames = ['department', 'department list', 'departments','department description'];
+@endphp
+
+@foreach($formFields->chunk(2) as $fieldPair)
+    <div class="row">
+        @foreach($fieldPair as $field)
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>{{ $field->label }}</label>
+
+                    @php
+                        $fieldNameLower = strtolower($field->name);
+                    @endphp
+
+                    @if($field->type === 'text')
+                        <textarea class="form-control" name="{{ $field->name }}"></textarea>
+
+                    @else
+
+                        @if(in_array($fieldNameLower, array_map('strtolower', $vendorNames)))
+                            <select class="js-example-basic-single form-control" name="{{ $field->name }}">
+                                <option value="">Select Vendor</option>
+                                @foreach($vendors as $vendor)
+                                    <option value="{{ $vendor->SupplierName }}">{{ $vendor->SupplierName }}</option>
+                                @endforeach
+                            </select>
+
+                        @elseif(in_array($fieldNameLower, array_map('strtolower', $departmentNames)))
+                            <select class="js-example-basic-single form-control" name="{{ $field->name }}" required>
+                                <option value="">Select Department</option>
+                                @foreach($departments as $department)
+                                    <option value="{{ $department->id }}">{{ $department->name }}</option>
+                                @endforeach
+                            </select>
+
+                        @elseif(in_array($fieldNameLower, array_map('strtolower', $propertyNames)))
+                            <select class="js-example-basic-single form-control" name="{{ $field->name }}">
+                                <option value="">Select Property</option>
+                                @foreach($properties as $property)
+                                    <option value="{{ $property->PropertyName }}">{{ $property->PropertyName }}</option>
+                                @endforeach
+                            </select>
+
+                        @elseif(in_array($fieldNameLower, array_map('strtolower', $transactionNames)))
+                            <select class="js-example-basic-single form-control" name="{{ $field->name }}">
+                                <option value="">Select Transaction</option>
+                                @foreach($transactions as $transaction)
+                                    <option value="{{ $transaction->TransactionDescription }}">{{ $transaction->TransactionDescription }}</option>
+                                @endforeach
+                            </select>
+
+                        @elseif(in_array($fieldNameLower, array_map('strtolower', $serviceNames)))
+                            <select class="js-example-basic-single form-control" name="{{ $field->name }}">
+                                <option value="">Select Service</option>
+                                @foreach($servicetypes as $servicetype)
+                                    <option value="{{ $servicetype->ServiceTypeDescription }}">{{ $servicetype->ServiceTypeDescription }}</option>
+                                @endforeach
+                            </select>
+
+                        @elseif(in_array($fieldNameLower, array_map('strtolower', $paymentmethodNames)))
+                            <select class="js-example-basic-single form-control" name="{{ $field->name }}">
+                                <option value="">Select Payment Method</option>
+                                <option value="EFT">EFT</option>
+                                <option value="Credit Card">Credit Card</option>
+                            </select>
+
+                        @elseif(in_array($fieldNameLower, array_map('strtolower', $taxtypeNames)))
+                            <select class="js-example-basic-single form-control" name="{{ $field->name }}">
+                                <option value="">Select Tax Type</option>
+                                @foreach($taxes as $tax)
+                                    <option value="{{ $tax->TaxTypeDescription }}">{{ $tax->TaxTypeDescription }}</option>
+                                @endforeach
+                            </select>
+
+                        @else
+                            <input type="{{ $field->type === 'integer' ? 'number' : 'text' }}" class="form-control" name="{{ $field->name }}">
+                        @endif
+
+                      
+                    @endif
+                </div>
             </div>
+        @endforeach
+    </div>
+@endforeach
 
 
+              
 			<hr style="border-color: black;">
       <!-- document upload -->
       <div class="clearfix" id="dynamic_field">

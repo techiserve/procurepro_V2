@@ -20,6 +20,7 @@ class Company extends Authenticatable
         'confirmPassword',
         'contactPerson',
         'email',
+        'vendor_source',
         'address',
         'phoneNumber',
         'isActive',

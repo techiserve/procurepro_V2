@@ -7,6 +7,7 @@ use App\Models\Sqlserver;
 use App\Models\Bank;
 use App\Models\Department;
 use App\Models\Purchaseorder;
+use App\Models\Vendor;
 use App\Models\Departmentapproval;
 use App\Models\Requisition;
 use App\Models\RequisitionHistory;
@@ -14,6 +15,10 @@ use App\Models\Requisitionfile;
 use App\Models\Bankaccount;
 use App\Models\VendorType;
 use App\Models\Company;
+use App\Models\FormField;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use App\Models\Frequisition;
 use Barryvdh\DomPDF\Facade\Pdf;
 use setasign\Fpdi\Fpdi;
 use setasign\Fpdf\Fpdf;
@@ -39,24 +44,46 @@ class ProcurementController extends Controller
      */
     
     public function createrequisition()
-    {
+    {  
 
         $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();
 
-        $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->select('ServiceTypeDescription')->get();
+        $servicetypes = DB::connection('sqlsrv')->table('ServiceTypes')->select('ServiceTypeDescription')->get();
 
         $properties = DB::connection('sqlsrv')->table('Properties')->select('PropertyName')->get();
 
         $transcations = DB::connection('sqlsrv')->table('TransactionCodes')->select('TransactionDescription')->get();
 
-        $tax = DB::connection('sqlsrv')->table('TaxTypes')->select('TaxTypeDescription')->get();
+        $taxes = DB::connection('sqlsrv')->table('TaxTypes')->select('TaxTypeDescription')->get();
 
         $departments = Department::where('IsActive', '!=' , null)->where('companyId', Auth::user()->companyId)->get();
 
+         $company = Company::where('id', Auth::user()->companyId)->first();
 
-     return view('procurement.createrequisition', compact('departments','vendors','servicetype','properties','transcations','tax'));
+         //   dd($vendors,$vendorz);
+
+        if($company->vendor_source == "Vendor Management"){
+           $vendors = Vendor::select(
+                'id as SupplierID', 
+                'name as SupplierName'
+            )->get();
+        }
+
+       // dd($vendors);
+        
+        $formFields = FormField::where('companyId', Auth::user()->id)->get();
+
+       $formFields->push((object)[
+    'name' => 'department',
+    'label' => 'Department',
+    'type' => 'select',
+    'options' => $departments, // Ensure $departments is passed to the view
+]);
+
+
+        return view('procurement.createrequisition', compact('departments','vendors','formFields','servicetypes','properties','transcations','taxes','company'));
+
     }
-
 
 
 
@@ -84,13 +111,17 @@ class ProcurementController extends Controller
         // // Queue the email for background processing
         // Mail::to('itaivincent321@gmail.com')->queue(new SendSampleEmail($emailData));
         // dd('send mail');
-        $requisitions = Requisition::with('histories')->where('userId', Auth::user()->id)->where('companyId', Auth::user()->companyId)->orwhere('isActive', '=', 1)->where('companyId', Auth::user()->companyId)->orderby('id','desc')->get();
+        // $requisitions = Requisition::with('histories')->where('userId', Auth::user()->id)->where('companyId', Auth::user()->companyId)->orwhere('isActive', '=', 1)->where('companyId', Auth::user()->companyId)->orderby('id','desc')->get();
        // $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
        // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
         $roles = userrole::all(); 
-       // dd($requisitions);
 
-        return view('procurement.indexrequisiton', compact('requisitions','roles'));
+        $formFields = FormField::where('companyId', Auth::user()->id)->get();
+        //dd($formFields);
+ 
+        $frequisitions = Frequisition::with('histories')->where('userId', Auth::user()->id)->where('companyId', Auth::user()->companyId)->orwhere('isActive', '=', 1)->where('companyId', Auth::user()->companyId)->orderby('id','desc')->get();
+
+        return view('procurement.indexfrequisiton', compact('formFields', 'frequisitions','roles'));
     }
 
     
@@ -415,46 +446,54 @@ class ProcurementController extends Controller
      */
     public function requisitionstore(Request $request)
     {
-        //dd($request->department);
-        $departmentName = Department::where('id', $request->department)->first();
-        $level = Departmentapproval::where('departmentId', $departmentName->id)->min('approvalId');
-        $totalapprovallevels = Departmentapproval::where('departmentId', $departmentName->id)->count();
-        $approver = Departmentapproval::where('departmentId', $departmentName->id)->where('approvalId', $level)->first();
+       // dd($request->all());
 
-        $supplierCode = DB::connection('sqlsrv')->table('Suppliers')->where('SupplierName', $request->vendor)->select('SupplierCode')->first();
-        $Properties = DB::connection('sqlsrv')->table('Properties')->where('PropertyName', $request->property)->select('PropertyCode')->first();
-        $Transaction = DB::connection('sqlsrv')->table('TransactionCodes')->where('TransactionDescription', $request->transaction)->select('TransactionCode')->first();
-        $Tax = DB::connection('sqlsrv')->table('TaxTypes')->where('TaxTypeDescription', $request->tax)->select('TaxTypeCode')->first();
+         $formFields = FormField::all();
+       $data = [];
 
-       $requisition = Requisition::create([
+    // Collect dynamic form field data
+    foreach ($formFields as $field) {
+        if ($request->has($field->name)) {
+            $data[$field->name] = $request->input($field->name);
+        }
+    }
 
-        'vendor' => $request->vendor,
-        'services' => $request->service,
-        'paymentmethod'  => $request->paymentmethod,
-        'department'  => $request->department,
-        'expenses'  => $request->expenses,
-        'projectcode'  => $request->projectcode,
-        'amount'  => $request->amount,
+   // dd($data);
 
-        'PropertyName'  => $request->property,
-        'TransactionDescription'  => $request->transaction,
-        'TaxTypeDescription'  => $request->tax,
+    // Add additional static fields
+    $data['userId'] = Auth::id();
+    $data['companyId'] = Auth::user()->companyId;
+    $data['status'] = 1;
+    $data['isActive'] = 1;
+   
 
-        'SupplierCode' => $supplierCode->SupplierCode,
-        'PropertyCode'  => $Properties->PropertyCode,
-        'TransactionCode'  => $Transaction->TransactionCode,
-        'TaxTypeCode'  => $Tax->TaxTypeCode,
+    if ($request->has('department')) {
+        $department = Department::find($request->input('department'));
+        if ($department) {
+            $level = Departmentapproval::where('departmentId', $department->id)->min('approvalId');
+            $totalApprovalLevels = Departmentapproval::where('departmentId', $department->id)->count();
+            $approver = Departmentapproval::where('departmentId', $department->id)
+                ->where('approvalId', $level)
+                ->first();
 
-        'userId'  =>Auth::user()->id,
-        'companyId'  =>Auth::user()->companyId,
-        
-        'status'  => 1,
-        'approvallevel'  => $level,
-        'totalapprovallevels'  => $totalapprovallevels,
-        'approvedby' => $approver->roleId, 
-        'isActive'  => 1,
-        
-       ]);
+            $data['approvallevel'] = $level;
+            $data['totalapprovallevels'] = $totalApprovalLevels;
+            if ($approver) {
+                $data['approvedby'] = $approver->roleId;
+            }
+        }
+    }
+
+    // Filter out null values
+    $filteredData = array_filter($data, function ($value) {
+        return !is_null($value);
+    });
+
+    
+   // dd($filteredData);
+
+    // Create the requisition
+       $requisition = Frequisition::forceCreate($filteredData);
  
 
        if ($request->hasFile('file')) {
@@ -479,40 +518,12 @@ class ProcurementController extends Controller
 
     } 
 
-   // dd( $requisition->id);
 
-    $requisitionhistory = RequisitionHistory::create([
-
-        'requisition_id' => $requisition->id,
-        'vendor' => $request->vendor,
-        'companyId'  =>Auth::user()->companyId,
-        'services' => $request->service,
-        'paymentmethod'  => $request->paymentmethod,
-        //'department'  => $request->department,
-        'expenses'  => $request->expenses,
-        'projectcode'  => $request->projectcode,
-        'amount'  => $request->amount,
-     //   'file'  => $quotation,
-        'userId'  =>Auth::user()->id,
-        'status'  => 1,
-        'approvallevel'  => $level,
-        'totalapprovallevels'  => $totalapprovallevels,
-        'approvedby' => $approver->roleId, 
-        'isActive'  => 1,
-        'action'  => "Created Purchase Requisition",
-        'doneby' => Auth::user()->name
-        
-       ]);
-
-
-
-       //email send
-    
-       $emailData = $requisition->toArray();
+    //    $emailData = $requisition->toArray();
       
-        Mail::to('b.essop@techiserve.com')->queue(new SendSampleEmail($emailData));
+    //     Mail::to('b.essop@techiserve.com')->queue(new SendSampleEmail($emailData));
 
-       if($requisition && $savefile){
+       if($savefile){
 
         return back()->with('success', 'Requisition created successfully!');
     }

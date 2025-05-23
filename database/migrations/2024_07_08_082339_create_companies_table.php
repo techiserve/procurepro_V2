@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('contactPerson')->nullable();
             $table->string('email')->nullable();
             $table->string('address')->nullable();
+            $table->string('vendor_source')->nullable();
             $table->string('user')->nullable();
             $table->boolean('IsActive')->nullable();
             $table->integer('phoneNumber')->nullable();

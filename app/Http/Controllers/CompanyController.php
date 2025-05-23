@@ -5,6 +5,10 @@ use App\Models\userrole;
 use App\Models\User;
 use App\Models\Company;
 use App\Models\CompanyRole;
+use App\Models\FormField;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use App\Models\Frequisition;
 use App\Models\Executive;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -120,6 +124,7 @@ class CompanyController extends Controller
         $company->username =  $request->username;
         $company->contactPerson = $request->contactPerson;
         $company->address = $request->address;
+        $company->vendor_source = $request->vendor_source;
         $company->isActive = $request->IsActive;
         $company->email =  $request->email;      
         $company->save();
@@ -132,6 +137,7 @@ class CompanyController extends Controller
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
         $user->username =  $request->username;
+        $company->vendor_source = $request->vendor_source;
        // $user->phonenumber = $request->phonenumber;
         $user->companyId = $company->id;
         $user->userrole = 3;
@@ -140,13 +146,46 @@ class CompanyController extends Controller
 
          }
 
-        if($user && $company){
+         //
+          $fields = $request->input('fields');
+
+        foreach ($fields as $field) {
+            // Save form field configuration
+            FormField::create([
+                'companyId' => $user->id,
+                'name' => $field['name'],
+                'label' => $field['label'],
+                'type' => $field['type'],
+            ]);
+
+            // Dynamically add column to requisitions table
+            if (!Schema::hasColumn('frequisitions', $field['name'])) {
+                Schema::table('frequisitions', function (Blueprint $table) use ($field) {
+                    switch ($field['type']) {
+                        case 'string':
+                            $table->string($field['name'])->nullable();
+                            break;
+                        case 'integer':
+                            $table->integer($field['name'])->nullable();
+                            break;
+                        case 'text':
+                            $table->text($field['name'])->nullable();
+                            break;
+                        // Add more cases as needed
+                        default:
+                            $table->string($field['name'])->nullable();
+                    }
+                });
+            }
+    }
+
+    if($user && $company){
 
             return redirect()->route('companies.create')->with('success', 'Company created successfully!');
         }
           return redirect()->route('companies.create')->with('error', 'Failed to create Company!');
- 
-    }
+
+  }
 
 
 
@@ -209,7 +248,14 @@ class CompanyController extends Controller
             'contactPerson'  => $request->contactPerson,
             'address'  => $request->address,
             'email' => $request->email, 
+            'vendor_source' => $request->vendor_source,
             'IsActive'  =>  $request->IsActive,
+    
+          ]);
+
+          $users = User::where('companyId', $id)->update([
+
+            'vendor_source' => $request->vendor_source,
     
           ]);
 
@@ -218,6 +264,7 @@ class CompanyController extends Controller
             $users = User::where('companyId', $id)->update([
 
                 'password'  => Hash::make($request->new_password),
+                'vendor_source' => $request->vendor_source,
                 'email' => $request->email, 
     
               ]);

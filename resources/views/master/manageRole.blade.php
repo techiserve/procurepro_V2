@@ -60,7 +60,7 @@
                 Add New User
                 <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" role="switch" name="addnewuser" value="Add New User"  id="flexSwitchCheckDefault" />          
-                </div> 
+                </div>  
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                 Manage Users

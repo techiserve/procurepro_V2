@@ -12,6 +12,7 @@ class Departmentapproval extends Model
     protected $fillable = [
 
         'department',
+        'mode',
         'userId',
         'companyId',
         'departmentId',

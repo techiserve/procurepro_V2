@@ -32,9 +32,9 @@ class RequisitionHistory extends Model
     ];
 
 
-    public function requisition()
+    public function frequisition()
     {
-        return $this->belongsTo(Requisition::class);
+        return $this->belongsTo(Frequisition::class);
     }
 
     public function purchaseorder()

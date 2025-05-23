@@ -156,6 +156,8 @@ class MasterController extends Controller
     public function departmentStore(Request $request)
     {  
 
+      //  dd($request->all());
+
         $userId = Auth::user()->id;
         $companyId = Auth::user()->companyId;
 
@@ -163,12 +165,18 @@ class MasterController extends Controller
         $executive->name = $request->departmentname;
         $executive->userId = $userId;
         $executive->companyId = $companyId;
-        $executive->IsActive = $request->IsActive;     
+        $executive->IsActive = $request->IsActive;   
+        $executive->po = $request->po;     
         $executive->save();
     
 
         $approval = $request->input('approval');
         $userrole = $request->input('role');
+
+        $second_approval = $request->input('secondary_approval');
+        $second_userrole = $request->input('secondary_role');
+
+       
 
         if($executive){
 
@@ -179,6 +187,7 @@ class MasterController extends Controller
                 $companyrole = Departmentapproval::create([
 
                     'department' => $executive->name,
+                    'mode' => 'PR',
                     'userId' => $userId,
                     'approvalId' =>$approval[$key],
                     'companyId' => $companyId,
@@ -188,7 +197,38 @@ class MasterController extends Controller
                 ])
             );
 
+        }  
+
+        if($second_approval ){
+
+          
+
+          foreach($second_approval as $key => $n ) {
+
+              if($second_approval[$key] != null){
+
+            $arrData[] = array(
+
+                $companyrole = Departmentapproval::create([
+
+                    'department' => $executive->name,
+                    'mode' => 'PO',
+                    'userId' => $userId,
+                    'approvalId' =>$second_approval[$key],
+                    'companyId' => $companyId,
+                    'departmentId'  => $executive->id,
+                    'roleId'  => $second_userrole[$key]
+                    
+                ])
+            );
         }
+
+        }
+
+        }
+
+
+
 
         }
 
