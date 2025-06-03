@@ -166,7 +166,7 @@
                    <option value="">-- Select type --</option>
                     <option value="string">String</option>
                     <option value="integer">Integer</option>
-                    <option value="text">Text</option>
+                    <option value="checkbox">Checkbox</option>
                 </select>
                 <br><br>
         </div>

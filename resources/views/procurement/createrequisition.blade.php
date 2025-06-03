@@ -42,8 +42,16 @@
                         $fieldNameLower = strtolower($field->name);
                     @endphp
 
-                    @if($field->type === 'text')
-                        <textarea class="form-control" name="{{ $field->name }}"></textarea>
+                    @if($field->type === 'checkbox')
+</br>   <!-- <input type="text" class="form-control" name="{{ $field->name }}"> -->
+                          <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="{{ $field->name }}" value="Yes" {{ old($field->name) == 'Yes' ? 'checked' : '' }}>
+                            <label class="form-check-label">Yes</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="{{ $field->name }}" value="No" {{ old($field->name) == 'No' ? 'checked' : '' }}>
+                            <label class="form-check-label">No</label>
+                        </div>
 
                     @else
 

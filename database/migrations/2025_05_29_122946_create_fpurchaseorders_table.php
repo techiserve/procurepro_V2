@@ -11,24 +11,25 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('requisition_histories', function (Blueprint $table) {
+        Schema::create('fpurchaseorders', function (Blueprint $table) {
             $table->id();
             $table->integer('frequisition_id')->nullable();
             $table->integer('companyId')->nullable();
-            $table->string('vendor')->nullable();
-            $table->string('services')->nullable();
-            $table->string('paymentmethod')->nullable();
-            $table->string('expenses')->nullable();
-            $table->string('projectcode')->nullable();
-            $table->integer('amount')->nullable();
-            $table->string('action')->nullable();
-            $table->string('file')->nullable();
+            $table->integer('invoiceamount')->nullable();
+            $table->integer('department')->nullable();
+            $table->string('jobcardfile')->nullable();
+            $table->string('invoice')->nullable();
             $table->integer('userId')->nullable();
             $table->integer('status')->nullable();
+            $table->integer('purchaseorderstatus')->nullable();
+            $table->integer('balance')->nullable();
             $table->integer('isActive')->nullable();
             $table->string('approvallevel')->nullable();
+            $table->integer('totalapprovallevels')->nullable();
             $table->string('reason')->nullable();
-            $table->string('doneby')->nullable();
+            $table->string('approvedby')->nullable();
+            $table->string('releaseStatus')->nullable();
+            $table->string('uploadStatus')->nullable();
             $table->timestamps();
         });
     }
@@ -38,6 +39,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('requisition_histories');
+        Schema::dropIfExists('fpurchaseorders');
     }
 };

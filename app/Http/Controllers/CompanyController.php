@@ -9,6 +9,7 @@ use App\Models\FormField;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use App\Models\Frequisition;
+use App\Models\Fpurchaseorder;
 use App\Models\Executive;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -150,9 +151,11 @@ class CompanyController extends Controller
           $fields = $request->input('fields');
 
         foreach ($fields as $field) {
+
             // Save form field configuration
+
             FormField::create([
-                'companyId' => $user->id,
+                'companyId' => $company->id,
                 'name' => $field['name'],
                 'label' => $field['label'],
                 'type' => $field['type'],
@@ -161,6 +164,26 @@ class CompanyController extends Controller
             // Dynamically add column to requisitions table
             if (!Schema::hasColumn('frequisitions', $field['name'])) {
                 Schema::table('frequisitions', function (Blueprint $table) use ($field) {
+                    switch ($field['type']) {
+                        case 'string':
+                            $table->string($field['name'])->nullable();
+                            break;
+                        case 'integer':
+                            $table->integer($field['name'])->nullable();
+                            break;
+                        case 'text':
+                            $table->text($field['name'])->nullable();
+                            break;
+                        // Add more cases as needed
+                        default:
+                            $table->string($field['name'])->nullable();
+                    }
+                });
+            }
+
+            // Dynamically add column to purchaseorder table
+                   if (!Schema::hasColumn('fpurchaseorders', $field['name'])) {
+                Schema::table('fpurchaseorders', function (Blueprint $table) use ($field) {
                     switch ($field['type']) {
                         case 'string':
                             $table->string($field['name'])->nullable();

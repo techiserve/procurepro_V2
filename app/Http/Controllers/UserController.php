@@ -7,10 +7,12 @@ use App\Models\Rolepermission;
 use App\Models\Company;
 use Alert;
 use App\Models\Requisition;
+use App\Models\Frequisition;
 use App\Models\Sqlserver;
 use App\Models\Bank;
 use App\Models\Department;
 use App\Models\Purchaseorder;
+use App\Models\Fpurchaseorder;
 use App\Models\CompanyRole;
 use Illuminate\Support\Facades\Auth;
 
@@ -33,12 +35,12 @@ class UserController extends Controller
     }
 
     public function home()
-    {
+    { 
         
-        $departments = Requisition::where('status','=', 1)->where('companyId', Auth::user()->companyId)->count();
-        $userCount  = Purchaseorder::where('status','=', 1)->where('companyId', Auth::user()->companyId)->count();
-        $requisitions = Requisition::where('companyId', Auth::user()->companyId)->count();
-        $purchaseorders = Purchaseorder::where('companyId', Auth::user()->companyId)->count();
+        $departments = Frequisition::where('status','=', 1)->where('companyId', Auth::user()->companyId)->count();
+        $userCount  = Fpurchaseorder::where('status','=', 1)->where('companyId', Auth::user()->companyId)->count();
+        $requisitions = Frequisition::where('companyId', Auth::user()->companyId)->count();
+        $purchaseorders = Fpurchaseorder::where('companyId', Auth::user()->companyId)->count();
 
         $user = Auth::user()->userrole;
 

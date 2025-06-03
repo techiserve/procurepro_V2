@@ -90,7 +90,7 @@
             @endif
 
 
-                <li class="nav-item main-sibebar">
+                <!-- <li class="nav-item main-sibebar">
                     <a href="#"><i class="feather icon-users"></i><span class="menu-title" data-i18n="">Flexible Forms</span></a>
                     <ul class="menu-content main-sibebar" style="margin-left:-30px;">
                  
@@ -111,7 +111,7 @@
 
                         
                     </ul>
-                </li>
+                </li> -->
          
 
             @if(auth()->user()->vendor_source == 'Vendor Management')
@@ -142,8 +142,7 @@
                             <a class="menu-item" href="/vendors/index" data-i18n="nav.starter_kit.2_columns">
                                 My Requests
                             </a>
-                        </li>
-                  
+                        </li>                 
                   
                     </ul>
                 </li>

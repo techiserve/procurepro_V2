@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Frequisition extends Model
 {
     use HasFactory;
+    
     protected $guarded = [];
 
         protected $fillable = [

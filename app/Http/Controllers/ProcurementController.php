@@ -7,6 +7,7 @@ use App\Models\Sqlserver;
 use App\Models\Bank;
 use App\Models\Department;
 use App\Models\Purchaseorder;
+use App\Models\Fpurchaseorder;
 use App\Models\Vendor;
 use App\Models\Departmentapproval;
 use App\Models\Requisition;
@@ -71,7 +72,7 @@ class ProcurementController extends Controller
 
        // dd($vendors);
         
-        $formFields = FormField::where('companyId', Auth::user()->id)->get();
+        $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
 
        $formFields->push((object)[
     'name' => 'department',
@@ -79,9 +80,10 @@ class ProcurementController extends Controller
     'type' => 'select',
     'options' => $departments, // Ensure $departments is passed to the view
 ]);
+// dd($formFields);
 
-
-        return view('procurement.createrequisition', compact('departments','vendors','formFields','servicetypes','properties','transcations','taxes','company'));
+        return view('procurement.createrequisition', compact('departments','vendors','servicetypes','properties','transcations','taxes','formFields','company'));
+        //return view('procurement.createrequisition', compact('departments','vendors','formFields','company'));
 
     }
 
@@ -116,7 +118,7 @@ class ProcurementController extends Controller
        // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
         $roles = userrole::all(); 
 
-        $formFields = FormField::where('companyId', Auth::user()->id)->get();
+        $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
         //dd($formFields);
  
         $frequisitions = Frequisition::with('histories')->where('userId', Auth::user()->id)->where('companyId', Auth::user()->companyId)->orwhere('isActive', '=', 1)->where('companyId', Auth::user()->companyId)->orderby('id','desc')->get();
@@ -135,34 +137,39 @@ class ProcurementController extends Controller
         return view('procurement.myrequisiton', compact('requisitions','roles'));
     }
 
-    public function viewrequisition(string $id)
+        public function viewrequisition(string $id)
     {
-     
-        $purchaseorder = Requisition::where('id', $id)->first();
+      
+        $frequisition = Frequisition::where('id', $id)->first();
+        $formFields = FormField::where('companyId', $frequisition->companyId)->get();
         $files = Requisitionfile::where('requisitionId', $id)->get();
-        $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
-        $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
-        $departments = Department::where('id', $purchaseorder->department)->first();
-
+        //$vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
+       // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
+        $departments = Department::where('id', $frequisition->department)->first();
+       // dd($frequisition);
         if(!$departments){
              
             return redirect()->route('procurement.myrequisition')->with('warning', 'The department was removed from Tagpay!');
         }
 
-        $history = RequisitionHistory::where('requisition_id', $id)->where('userId',  Auth::user()->id)->where('action','!=', 'Created Purchase Requisition')->where('action', '!=', 'Purchase Requisition Returned')->first();
+        $history = RequisitionHistory::where('frequisition_id', $id)->where('userId',  Auth::user()->id)->where('action','!=', 'Created Purchase Requisition')->where('action', '!=', 'Purchase Requisition Returned')->first();
     
-        return view('procurement.viewrequisition', compact('purchaseorder','files','vendors','servicetype','history','departments'));
+        // return view('procurement.fviewrequisition', compact('frequisition','files','vendors','servicetype','formFields','history','departments'));
+            
+        return view('procurement.fviewrequisition', compact('frequisition','files','formFields','history','departments'));
     }
+
 
 
     public function editrequisition(string $id)
     {
      
-        $purchaseorder = Requisition::where('id', $id)->first();
+        $frequisition = Frequisition::where('id', $id)->first();
+        $formFields = FormField::where('companyId', $frequisition->companyId)->get();
         $files = Requisitionfile::where('requisitionId', $id)->get();
-        $departments = Department::where('id', $purchaseorder->department)->first();
+        $departments = Department::where('id', $frequisition->department)->first();
 
-        return view('procurement.editrequisition', compact('purchaseorder','files','departments'));
+        return view('procurement.editfrequisition', compact('frequisition','formFields','files','departments'));
     }
 
 
@@ -170,13 +177,14 @@ class ProcurementController extends Controller
     public function indexpurchaseorder()
     {
      
-        $purchaseorders = Purchaseorder::with('histories')->where('userId', Auth::user()->id)->orwhere('isActive', '=', 1)->where('companyId', Auth::user()->companyId)->orderby('id','desc')->get();
+        $fpurchaseorders = Fpurchaseorder::with('histories')->where('userId', Auth::user()->id)->orwhere('isActive', '=', 1)->where('companyId', Auth::user()->companyId)->orderby('id','desc')->get();
         $roles = userrole::where('companyId', Auth::user()->companyId)->get();
-        $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
-        $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
+       // $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
+       // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
+        $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
 
          // dd($purchaseorders);
-        return view('procurement.indexpurchaseorder', compact('purchaseorders','roles','vendors','servicetype'));
+        return view('procurement.indexfpurchaseorder', compact('fpurchaseorders','roles','formFields'));
     }
 
 
@@ -202,7 +210,7 @@ class ProcurementController extends Controller
     public function logs(string $id)
     { 
 
-        $histories = RequisitionHistory::where('requisition_id', '=', $id)->where('companyId', Auth::user()->companyId)->get();
+        $histories = RequisitionHistory::where('frequisition_id', '=', $id)->where('companyId', Auth::user()->companyId)->get();
         return view('procurement.logs', compact('histories'));
 
     }
@@ -211,12 +219,12 @@ class ProcurementController extends Controller
     public function purchaseorder(string $id)
     {
      
-        $purchaseorder = Purchaseorder::where('id', $id)->first();
-
-        $history = RequisitionHistory::where('requisition_id', $id)->where('userId',  Auth::user()->id)->where('action', '=', 'Purchase Order Approved')->first();
+        $purchaseorder = Fpurchaseorder::where('id', $id)->first();
+        $formFields = FormField::where('companyId', $purchaseorder->companyId)->get();
+        $history = RequisitionHistory::where('frequisition_id', $id)->where('userId',  Auth::user()->id)->where('action', '=', 'Purchase Order Approved')->first();
         $departments = Department::where('id', $purchaseorder->department)->first();
 
-        return view('procurement.editpurchaseorder', compact('purchaseorder','history','departments'));
+        return view('procurement.editfpurchaseorder', compact('purchaseorder','history','departments','formFields'));
 
     }
 
@@ -356,27 +364,51 @@ class ProcurementController extends Controller
     public function updaterequisition(Request $request, $id)
     {
 
+      
+         $frequisition = Frequisition::findOrFail($id);
+       // dd($frequisition);
+        $departmentName = Department::where('id', $frequisition->department)->first();
+        $level = Departmentapproval::where('mode','=','PR')->where('departmentId', $departmentName->id)->min('approvalId');
+        $totalapprovallevels = Departmentapproval::where('mode','=','PR')->where('departmentId', $departmentName->id)->count();
+        $approver = Departmentapproval::where('mode','=','PR')->where('departmentId', $departmentName->id)->where('approvalId', $level)->first();
+  
+        $frequisition = Frequisition::findOrFail($id);
 
-        $departmentName = Department::where('name', $request->department)->first();
-        $level = Departmentapproval::where('departmentId', $departmentName->id)->min('approvalId');
-        $totalapprovallevels = Departmentapproval::where('departmentId', $departmentName->id)->count();
-        $approver = Departmentapproval::where('departmentId', $departmentName->id)->where('approvalId', $level)->first();
+            // Fetch dynamic form fields for this companyId or global fields (null)
+            $formFields = FormField::where(function($query) use ($frequisition) {
+                $query->where('companyId', $frequisition->companyId);
+            })->pluck('name')->unique();
 
+            // Update each field dynamically from the request
+            foreach ($formFields as $fieldName) {
+                if ($request->has($fieldName)) {
+                    $frequisition->$fieldName = $request->input($fieldName);
+                }
+            }
 
-      $updaterequisition = Requisition::where('id', $id)->update([
+            $frequisition->approvallevel = $level;
+            $frequisition->totalapprovallevels = $totalapprovallevels;
+            $frequisition->approvedby = $approver->roleId ?? null;
+            $frequisition->isActive = 1;
+            $frequisition->status = 1;
 
-        'expenses'  => $request->expenses,
-        'projectcode'  => $request->projectcode,
-        'amount'  => $request->amount,
-        'approvallevel'  => $level,
-        'totalapprovallevels'  => $totalapprovallevels,
-        'approvedby' => $approver->roleId, 
-        'isActive'  => 1,
-        'status'  => 1,
+            $frequisition->save();
 
-      ]);
+    //   $updaterequisition = Frequisition::where('id', $id)->update([
+
+    //     'expenses'  => $request->expenses,
+    //     'projectcode'  => $request->projectcode,
+    //     'amount'  => $request->amount,
+    //     'approvallevel'  => $level,
+    //     'totalapprovallevels'  => $totalapprovallevels,
+    //     'approvedby' => $approver->roleId, 
+    //     'isActive'  => 1,
+    //     'status'  => 1,
+
+    //   ]);
 
       return redirect()->route('procurement.indexrequisition')->with('success', 'Requisition Updated successfully!');
+
     }
 
 
@@ -409,10 +441,12 @@ class ProcurementController extends Controller
     public function viewpurchaseorder(string $id)
     {
   
-        $purchaseorder = Purchaseorder::where('id', $id)->first();
-        $departments = Department::where('id', $purchaseorder->department)->first();
-        $invoice = 'uploads/' . $purchaseorder->invoice;
-        $jobcard = 'uploads/' . $purchaseorder->jobcard;
+        $fpurchaseorder = Fpurchaseorder::where('id', $id)->first();
+        $departments = Department::where('id', $fpurchaseorder->department)->first();
+        $invoice = 'uploads/' . $fpurchaseorder->invoice;
+        $jobcard = 'uploads/' . $fpurchaseorder->jobcard;
+
+         $formFields = FormField::where('companyId', $fpurchaseorder->companyId)->get();
 
        // dd($invoice);
         if  (Storage::disk('public')->exists($invoice)) {
@@ -423,7 +457,7 @@ class ProcurementController extends Controller
 
         }
 
-
+   
         if  (Storage::disk('public')->exists($jobcard)) {
             
           //  $jobcardpath = Storage::get($jobcard);
@@ -433,12 +467,12 @@ class ProcurementController extends Controller
 
         }
        // dd($invoicepath,$jobcardpath);
-       $history = RequisitionHistory::where('requisition_id', $id)->where('userId',  Auth::user()->id)->where('action', '=', 'Purchase Order Approved')
-       ->orwhere('action', '=', 'Purchase Order Rejected')->where('requisition_id', $id)->where('userId',  Auth::user()->id)
-       ->orwhere('action', '!=', 'Purchase Order Returned')->where('requisition_id', $id)->where('userId',  Auth::user()->id)->first();
+       $history = RequisitionHistory::where('frequisition_id', $id)->where('userId',  Auth::user()->id)->where('action', '=', 'Purchase Order Approved')
+       ->orwhere('action', '=', 'Purchase Order Rejected')->where('frequisition_id', $id)->where('userId',  Auth::user()->id)
+       ->orwhere('action', '!=', 'Purchase Order Returned')->where('frequisition_id', $id)->where('userId',  Auth::user()->id)->first();
 
 
-        return view('procurement.viewpurchaseorder', compact('purchaseorder','invoicepath','jobcardpath','history','departments'));
+        return view('procurement.viewfpurchaseorder', compact('fpurchaseorder','formFields','invoicepath','jobcardpath','history','departments'));
     }
 
     /**
@@ -447,8 +481,7 @@ class ProcurementController extends Controller
     public function requisitionstore(Request $request)
     {
        // dd($request->all());
-
-         $formFields = FormField::all();
+       $formFields = FormField::all();
        $data = [];
 
     // Collect dynamic form field data
@@ -470,9 +503,9 @@ class ProcurementController extends Controller
     if ($request->has('department')) {
         $department = Department::find($request->input('department'));
         if ($department) {
-            $level = Departmentapproval::where('departmentId', $department->id)->min('approvalId');
-            $totalApprovalLevels = Departmentapproval::where('departmentId', $department->id)->count();
-            $approver = Departmentapproval::where('departmentId', $department->id)
+            $level = Departmentapproval::where('mode','=','PR')->where('departmentId', $department->id)->min('approvalId');
+            $totalApprovalLevels = Departmentapproval::where('mode','=','PR')->where('departmentId', $department->id)->count();
+            $approver = Departmentapproval::where('mode','=','PR')->where('departmentId', $department->id)
                 ->where('approvalId', $level)
                 ->first();
 
@@ -535,11 +568,16 @@ class ProcurementController extends Controller
 
     public function updatepurchaseorder(Request $request,$id)
     {   
-
-        $departmentName = Department::where('name', $request->department)->first();
-        $level = Departmentapproval::where('departmentId', $departmentName->id)->min('approvalId');
-        $totalapprovallevels = Departmentapproval::where('departmentId', $departmentName->id)->count();
-        $approver = Departmentapproval::where('departmentId', $departmentName->id)->where('approvalId', $level)->first();
+        
+       //dd($request->all());
+        $fpur = Fpurchaseorder::where('id', $id)->first();
+        $freq = Frequisition::where('id', $fpur->frequisition_id)->first();
+        $departmentName = Department::where('id', $freq->department)->first();
+       // dd($freq);
+        $level = Departmentapproval::where('mode','=','PO')->where('departmentId', $departmentName->id)->min('approvalId');
+        //dd($level);
+        $totalapprovallevels = Departmentapproval::where('mode','=','PO')->where('departmentId', $departmentName->id)->count();
+        $approver = Departmentapproval::where('mode','=','PO')->where('departmentId', $departmentName->id)->where('approvalId', $level)->first();
   
         $request->validate([
             'invoice' => 'required|mimes:pdf,doc,docx,txt|max:9048',
@@ -558,7 +596,7 @@ class ProcurementController extends Controller
             $jobfilePath = null;
         }
 
-       $requisition = Purchaseorder::where('id',$id)->update([
+       $requisition = Fpurchaseorder::where('id',$id)->update([
 
         'invoiceamount'  =>$request->invoiceamount,
         'invoice'  => $invoicefilePath,
@@ -587,13 +625,13 @@ class ProcurementController extends Controller
     public function requisitionapproval(string $id)
     {
 
-        $requisition = Requisition::where('id', $id)->first();
+        $frequisition = Frequisition::where('id', $id)->first();
 
-        if($requisition->approvallevel+1 > $requisition->totalapprovallevels){
+        if($frequisition->approvallevel+1 > $frequisition->totalapprovallevels){
          
            // dd('zvapera');
-            $updatedapprovallevel = $requisition->approvallevel+1;
-                 $updatereq = Requisition::where('id', $id)->update([
+            $updatedapprovallevel = $frequisition->approvallevel+1;
+                 $updatereq = Frequisition::where('id', $id)->update([
 
                 'approvallevel' =>  $updatedapprovallevel,
                 'approvedby' => Auth::user()->userrole,
@@ -602,43 +640,44 @@ class ProcurementController extends Controller
 
                  ]);   
 
-          // gadzira purchase order then add upload file too
+   // gadzira purchase order then add upload file too
 
-          $requisition = Purchaseorder::create([
+    $formFields = FormField::where(function ($query) use ($frequisition) {
+        $query->Where('companyId', $frequisition->companyId);
+    })->pluck('name')->unique();
 
-            'requisition_id' => $requisition->id,
-            'vendor' => $requisition->vendor,
-            'services' => $requisition->services,
-            'paymentmethod'  => $requisition->paymentmethod,
-            'department'  => $requisition->department,
-            'expenses'  => $requisition->expenses,
-            'companyId'  =>Auth::user()->companyId,
+   // dd( $formFields, $frequisition);
 
-            'PropertyName'  => $requisition->PropertyName,
-            'TransactionDescription'  => $requisition->TransactionDescription,
-            'TaxTypeDescription'  => $requisition->TaxTypeDescription,
-    
-            'SupplierCode' => $requisition->SupplierCode,
-            'PropertyCode'  => $requisition->PropertyCode,
-            'TransactionCode'  => $requisition->TransactionCode,
-            'TaxTypeCode'  => $requisition->TaxTypeCode,
+    // 3. Initialize data array to copy values from frequisition to fpurchaseorder
+    $purchaseOrderData = [];
 
-            'projectcode'  => $requisition->projectcode,
-            'amount'  => $requisition->amount,
-            'userId'  => $requisition->userId,
-            'status'  => 0,
-            'approvallevel'  => 0,
-            'totalapprovallevels'  => 0,
-            'purchaseorderstatus' => 1, 
-            'isActive'  => 0,
-            
-           ]);
+    foreach ($formFields as $fieldName) {
+        // Check if the field exists on frequisition
+        if (isset($frequisition->$fieldName)) {
+            $purchaseOrderData[$fieldName] = $frequisition->$fieldName;
+        }
+    }
+
+    // 4. Add other static or required fields if needed
+    $purchaseOrderData['companyId'] = $frequisition->companyId;
+    $purchaseOrderData['frequisition_id'] = $frequisition->id;
+    $purchaseOrderData['userId'] = $frequisition->userId;
+    $purchaseOrderData['department'] = $frequisition->department;
+    $purchaseOrderData['status'] = 0; 
+    $purchaseOrderData['approvallevel'] = 0;
+    $purchaseOrderData['totalapprovallevels'] = 0;
+    $purchaseOrderData['purchaseorderstatus'] = 1;
+    $purchaseOrderData['isActive'] = 0;
+
+   // dd($purchaseOrderData);
+    // 5. Create the purchase order
+    $fpurchaseorder = Fpurchaseorder::forceCreate($purchaseOrderData);
 
 
            $requisitiond = RequisitionHistory::create([
 
-            'requisition_id' => $id,
-            'amount'  => $requisition->amount,
+            'frequisition_id' => $frequisition->id,
+            'amount'  => $frequisition->amount,
             'companyId'  =>Auth::user()->companyId,
             'userId'  =>Auth::user()->id,
             'status'  => 1,
@@ -654,10 +693,10 @@ class ProcurementController extends Controller
 
         }else{
  
-            $updatedapprovallevel = $requisition->approvallevel+1;
-            $approver = Departmentapproval::where('departmentId', $requisition->department)->where('approvalId', $updatedapprovallevel)->first();
+            $updatedapprovallevel = $frequisition->approvallevel+1;
+            $approver = Departmentapproval::where('mode','=','PR')->where('departmentId', $frequisition->department)->where('approvalId', $updatedapprovallevel)->first();
 
-            $updatereq = Requisition::where('id', $id)->update([
+            $updatereq = Frequisition::where('id', $id)->update([
 
                 'approvallevel' =>  $updatedapprovallevel,
                 'approvedby' => $approver->roleId,              
@@ -665,11 +704,11 @@ class ProcurementController extends Controller
                  ]);   
                
 
-                 $requisition = RequisitionHistory::create([
+                 $frequisitions = RequisitionHistory::create([
 
                     'companyId'  =>Auth::user()->companyId,
-                    'requisition_id' => $requisition->id,
-                    'amount'  => $requisition->amount,
+                    'frequisition_id' => $frequisition->id,
+                    'amount'  => $frequisition->amount,
                     'userId'  =>Auth::user()->id,
                     'status'  => 1,
                     'approvallevel' =>  $updatedapprovallevel,
@@ -695,9 +734,9 @@ class ProcurementController extends Controller
     public function requisitionrejection(Request $request, string $id)
     {
 
-        $requisition = Requisition::where('id', $id)->first();
+        $requisition = Frequisition::where('id', $id)->first();
 
-                 $updatereq = Requisition::where('id', $id)->update([
+                 $updatereq = Frequisition::where('id', $id)->update([
 
                 'approvedby' => Auth::user()->userrole,
                 'approvallevel' => $requisition->approvallevel,
@@ -705,14 +744,13 @@ class ProcurementController extends Controller
                 'isActive' => 0, 
                 'status'  => 3,
            
-
                  ]);   
 
 
 
                  $requisition = RequisitionHistory::create([
 
-                    'requisition_id' => $requisition->id,
+                    'frequisition_id' => $requisition->id,
                     'amount'  => $requisition->amount,
                     'companyId'  =>Auth::user()->companyId,
                     'userId'  =>Auth::user()->id,
@@ -737,9 +775,9 @@ class ProcurementController extends Controller
     public function sendbackrequistion(Request $request, string $id)
     {
 
-        $requisition = Requisition::where('id', $id)->first();
+        $requisition = Frequisition::where('id', $id)->first();
 
-                 $updatereq = Requisition::where('id', $id)->update([
+                 $updatereq = Frequisition::where('id', $id)->update([
 
                 'approvedby' => Auth::user()->userrole,
                 'approvallevel' => $requisition->approvallevel,
@@ -752,7 +790,7 @@ class ProcurementController extends Controller
                  
                  $requisition = RequisitionHistory::create([
 
-                    'requisition_id' => $requisition->id,
+                    'frequisition_id' => $requisition->id,
                     'amount'  => $requisition->amount,
                     'companyId'  =>Auth::user()->companyId,
                     'userId'  =>Auth::user()->id,
@@ -778,13 +816,13 @@ class ProcurementController extends Controller
      */
     public function approvepurchaseorder(string $id)
     {
-       // dd($id);
-        $requisition = Purchaseorder::where('id', $id)->first();
+ 
+        $requisition = Fpurchaseorder::where('id', $id)->first();
 
         if($requisition->approvallevel+1 > $requisition->totalapprovallevels){
          
             $updatedapprovallevel = $requisition->approvallevel;
-                 $updatereq = Purchaseorder::where('id', $id)->update([
+                 $updatereq = Fpurchaseorder::where('id', $id)->update([
 
                 'approvallevel' =>  $updatedapprovallevel,
                 'approvedby' => Auth::user()->userrole,
@@ -797,7 +835,7 @@ class ProcurementController extends Controller
 
                  $requisitiond = RequisitionHistory::create([
 
-                    'requisition_id' => $requisition->requisition_id,
+                    'frequisition_id' => $requisition->requisition_id,
                     'amount'  => $requisition->amount,
                     'companyId'  =>Auth::user()->companyId,
                  //   'file'  => $quotation,
@@ -816,9 +854,9 @@ class ProcurementController extends Controller
         }else{
   
             $updatedapprovallevel = $requisition->approvallevel+1;
-            $approver = Departmentapproval::where('departmentId', $requisition->department)->where('approvalId', $updatedapprovallevel)->first();
+            $approver = Departmentapproval::where('mode','=','PO')->where('departmentId', $requisition->department)->where('approvalId', $updatedapprovallevel)->first();
 
-            $updatereq = Purchaseorder::where('id', $id)->update([
+            $updatereq = Fpurchaseorder::where('id', $id)->update([
 
                 'approvallevel' =>  $updatedapprovallevel,
                 'approvedby' => $approver->roleId,              
@@ -829,7 +867,7 @@ class ProcurementController extends Controller
 
                  $requisitiond = RequisitionHistory::create([
 
-                    'requisition_id' => $requisition->requisition_id,
+                    'frequisition_id' => $requisition->requisition_id,
                     'amount'  => $requisition->amount,
                     'companyId'  =>Auth::user()->companyId,
                     'userId'  =>Auth::user()->id,
@@ -856,9 +894,9 @@ class ProcurementController extends Controller
     public function rejectpurchaseorder(Request $request, string $id)
     {
 
-        $requisition = Purchaseorder::where('id', $id)->first();
+        $requisition = Fpurchaseorder::where('id', $id)->first();
 
-                 $updatereq = Purchaseorder::where('id', $id)->update([
+                 $updatereq = Fpurchaseorder::where('id', $id)->update([
 
                 'approvedby' => Auth::user()->userrole,
                 'approvallevel' => $requisition->approvallevel,
@@ -872,7 +910,7 @@ class ProcurementController extends Controller
                  
                  $requisitiond = RequisitionHistory::create([
 
-                    'requisition_id' => $requisition->requisition_id,
+                    'frequisition_id' => $requisition->requisition_id,
                     'amount'  => $requisition->amount,
                  //   'file'  => $quotation,
                     'userId'  =>Auth::user()->id,
@@ -900,7 +938,7 @@ class ProcurementController extends Controller
     public function sendbackpurchaseorder(Request $request, string $id)
     {
 
-        $updatereq = Purchaseorder::where('id', $id)->update([
+        $updatereq = Fpurchaseorder::where('id', $id)->update([
 
        'approvedby' => Auth::user()->userrole,
        'status'  => 4,
@@ -913,11 +951,11 @@ class ProcurementController extends Controller
         ]);   
 
 
-        $requisition = Purchaseorder::where('id', $id)->first();
+        $requisition = Fpurchaseorder::where('id', $id)->first();
         
         $requisitiond = RequisitionHistory::create([
 
-            'requisition_id' => $requisition->requisition_id,
+            'frequisition_id' => $requisition->requisition_id,
             'amount'  => $requisition->amount,
             'userId'  =>Auth::user()->id,
             'companyId'  =>Auth::user()->companyId,

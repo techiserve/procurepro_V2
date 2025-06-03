@@ -41,15 +41,14 @@
 
               <hr style="border-color: black;">
               <br>
+            
+            <div class="form-group">
+              <div class="form-check form-switch" style="margin-left: 2%;">
+                <input class="form-check-input" type="checkbox" role="switch" name="po" id="enable_secondary" />
+                <label for="enable_secondary">Enable Purchase Order Flow</label>
+              </div>
+            </div>
 
-              <!-- Show secondary dropdowns if checkbox is checked -->
-<div class="form-group">
-  <div class="form-check form-switch" style="margin-left: 2%;">
-    <input class="form-check-input" type="checkbox" role="switch" name="po" id="enable_secondary" />
-    <label for="enable_secondary">Enable Purchase Order Flow</label>
-  </div>
-</div>
-              <!-- First Group (approval[] + role[]) -->
               <div class="clearfix" id="dynamic_field_primary">
                 <div class="row">
                   <div class="col-md-6">

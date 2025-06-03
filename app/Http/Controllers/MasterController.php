@@ -199,10 +199,9 @@ class MasterController extends Controller
 
         }  
 
-        if($second_approval ){
+        if($second_approval){
 
           
-
           foreach($second_approval as $key => $n ) {
 
               if($second_approval[$key] != null){
@@ -224,6 +223,27 @@ class MasterController extends Controller
         }
 
         }
+
+        }else{
+
+                    foreach($approval as $key => $n ) {
+
+            $arrData[] = array(
+
+                $companyrole = Departmentapproval::create([
+
+                    'department' => $executive->name,
+                    'mode' => 'PO',
+                    'userId' => $userId,
+                    'approvalId' =>$approval[$key],
+                    'companyId' => $companyId,
+                    'departmentId'  => $executive->id,
+                    'roleId'  => $userrole[$key]
+                    
+                ])
+            );
+
+        }  
 
         }
 

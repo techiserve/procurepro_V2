@@ -11,7 +11,7 @@ class RequisitionHistory extends Model
 
     protected $fillable = [
 
-        'requisition_id',
+        'frequisition_id',
         'companyId',
         'vendor',
         'services',
