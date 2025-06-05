@@ -320,3 +320,28 @@
 </div>
 
 @endsection
+@if(session('approved'))
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            // Wait 500ms so alert shows first
+            Swal.fire({
+                title: 'Approved!',
+                text: 'Your request was successfully approved.',
+                icon: 'success',
+                timer: 1000,
+                showConfirmButton: false
+            });
+
+            // Fire confetti slightly after the alert starts
+            setTimeout(() => {
+                confetti({
+                    particleCount: 300,
+                    spread: 250,
+                    origin: { y: 0.6 }
+                });
+            }, 1100);
+        });
+    </script>
+@endif

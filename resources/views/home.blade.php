@@ -16,6 +16,19 @@
 @section('content')
 <div class="content-body">
                 <!-- fitness target -->
+                <p id="trivia-box">💡 Did you know? Companies lose 5% of revenue to procurement fraud annually.</p>
+<script>
+    const facts = [
+        "🧠 Fun Fact: The word 'procurement' comes from Latin *procurare*, meaning 'to care for'.",
+        "💡 Tip: Approving before Friday? Enjoy your weekend guilt-free!",
+        "📦 Procurement truth: You don’t need more paperclips. Ever.",
+    ];
+    setInterval(() => {
+        document.getElementById('trivia-box').innerText = facts[Math.floor(Math.random() * facts.length)];
+    }, 8000);
+</script>
+
+
                 <div class="row" style="margin-top: 120px;">
                     <div class="col-12">
                         <div class="card">
@@ -101,5 +114,17 @@
                 </div>
 </div>
 @endsection
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 
+<script>
+    function celebrate() {
+        setTimeout(function() {
+            confetti({
+                particleCount: 200,
+                spread: 100,
+                origin: { y: 0.6 }
+            });
+        }, 2000); // Delay in milliseconds (2000ms = 2 seconds)
+    }
+</script>

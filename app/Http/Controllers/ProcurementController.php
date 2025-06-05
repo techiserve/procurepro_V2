@@ -9,6 +9,7 @@ use App\Models\Department;
 use App\Models\Purchaseorder;
 use App\Models\Fpurchaseorder;
 use App\Models\Vendor;
+use App\Services\WhatsAppService;
 use App\Models\Departmentapproval;
 use App\Models\Requisition;
 use App\Models\RequisitionHistory;
@@ -478,7 +479,7 @@ class ProcurementController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function requisitionstore(Request $request)
+    public function requisitionstore(Request $request,WhatsAppService $whatsapp)
     {
        // dd($request->all());
        $formFields = FormField::all();
@@ -556,7 +557,12 @@ class ProcurementController extends Controller
       
     //     Mail::to('b.essop@techiserve.com')->queue(new SendSampleEmail($emailData));
 
-       if($savefile){
+       if($requisition){
+
+        $to = "whatsapp:+263778440481";
+        $message = "🔔 New requisition pending your approval. Login to your dashboard to view it.";
+        // dd($to);
+       $whatsapp->send($to, $message);
 
         return back()->with('success', 'Requisition created successfully!');
     }
@@ -725,7 +731,7 @@ class ProcurementController extends Controller
         if($updatereq){
 
             
-        return redirect()->route('procurement.myrequisition')->with('success', 'Requisition approved successfully!');
+        return redirect()->route('procurement.myrequisition')->with('approved', true);
 
         }
     }
@@ -980,7 +986,7 @@ class ProcurementController extends Controller
     public function generateAndMergePDFs(string $id)
     {
         // Fetch company, user, history, and department data
-        $company = Requisition::where('id', '=', $id)->first();
+        $company = Requisition::where('id', '=', $id)->first(); 
         $user = User::where('id', $company->userId)->first();
         $history = Requisitionhistory::where('requisition_id', $company->id)->get();
         $department = Department::where('id', $company->department)->first();
