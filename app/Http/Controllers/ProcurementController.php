@@ -565,10 +565,6 @@ class ProcurementController extends Controller
 
        if($requisition){
 
-        $to = "whatsapp:+263778440481";
-        $message = "🔔 New requisition pending your approval. Login to your dashboard to view it.";
-        // dd($to);
-       $whatsapp->send($to, $message);
 
         return back()->with('success', 'Requisition created successfully!');
     }
