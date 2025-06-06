@@ -21,7 +21,7 @@
                     $fieldName = $field->name;
                     $value = $frequisition->$fieldName ?? '';
                 @endphp
-
+                
                 <div class="col-md-6 mb-3">
                     <label class="form-label">{{ $field->label }}</label>
                     <input type="text" class="form-control" value="{{ $value }}" readonly>

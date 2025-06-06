@@ -35,7 +35,7 @@
                 @foreach($frequisitions as $frequisition)
                 <tr>
                 <td> <input type="checkbox" id="select" name="requisition_ids[]" value="{{ $frequisition->id }}"></td>
-                  @foreach($formFields as $field)
+                  @foreach($formFields as $field) 
                         <td>{{ $frequisition->{$field->name} ?? '' }}</td>
                     @endforeach
                 

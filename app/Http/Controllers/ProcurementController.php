@@ -67,7 +67,7 @@ class ProcurementController extends Controller
 
         $expenses = ClassificationOfExpense::all();
 
-         //   dd($vendors,$vendorz);
+          //  dd($expenses);
 
         if($company->vendor_source == "Vendor Management"){
            $vendors = Vendor::select(

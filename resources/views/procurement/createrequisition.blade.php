@@ -28,9 +28,10 @@
       $taxtypeNames = ['Tax', 'Tax Type', 'taxtype', 'tax list', 'Tax List'];
       $paymentmethodNames = ['payment method', 'Payment Method', 'payment', 'paymentmethod'];
       $transactionNames = ['transaction', 'transaction list', 'transactions','transaction description'];
-       $departmentNames = ['department', 'department list', 'departments','department description'];
-        $bankNames = ['bank', 'bank list', 'banks','Bank','BANKS','BANK'];
-        $expenses = ['expenses', 'Expenses','Classification Of Expenses','coe','classification of expenses','clasification of expenses'];
+      $departmentNames = ['department', 'department list', 'departments','department description'];
+      $invoiceNames = ['invoiceamount', 'invoice amount', 'invoices','Invoice'];
+      $bankNames = ['bank', 'bank list', 'banks','Bank','BANKS','BANK'];
+      $expensesNames = ['expenses', 'expense','Expenses','Classification Of Expenses','coe','classification of expenses','clasification of expenses'];
 @endphp
 
 @foreach($formFields->chunk(2) as $fieldPair)
@@ -38,8 +39,11 @@
         @foreach($fieldPair as $field)
             <div class="col-md-6">
                 <div class="form-group">
-                    <label>{{ $field->label }}</label>
-
+                  @if(in_array($field->name, array_map('strtolower', $invoiceNames)))
+                
+                  @else
+                   <label>{{ $field->label }}</label>
+                  @endif
                     @php
                         $fieldNameLower = strtolower($field->name);
                     @endphp
@@ -120,7 +124,10 @@
                                 @endforeach
                             </select>
 
-                        @elseif(in_array($fieldNameLower, array_map('strtolower', $expenses)))
+                           @elseif(in_array($fieldNameLower, array_map('strtolower', $invoiceNames)))
+                         
+
+                        @elseif(in_array($fieldNameLower, array_map('strtolower', $expensesNames)))
                             <select class="js-example-basic-single form-control" name="{{ $field->name }}">
                                 <option value="">Select Expense</option>
                                 @foreach($expenses as $expense)
