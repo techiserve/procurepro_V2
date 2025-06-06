@@ -114,7 +114,7 @@
                 </li> -->
          
 
-            @if(auth()->user()->vendor_source == 'Vendor Management' OR auth()->user()->vendor_source == 'Vendor'  OR auth()->user()->vendor_source == 'Vendors' OR auth()->user()->vendor_source == 'vendors')
+           
                 <li class="nav-item main-sibebar">
                     <a href="#"><i class="feather icon-file"></i><span class="menu-title" data-i18n="">Vendor Management</span></a>
                     <ul class="menu-content main-sibebar"style="margin-left:-30px;">
@@ -146,7 +146,7 @@
                   
                     </ul>
                 </li>
-              @endif
+            
 
                 @if(auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('Create Purchase Requistion') OR $data->contains('View Requisitions') OR $data->contains('View Purchase Orders') OR $data->contains('Manage Purchase Orders'))
                 <li class=" nav-item main-sibebar"><a href="#"><i class="feather icon-package"></i><span class="menu-title" data-i18n="">Procurement</span></a>
