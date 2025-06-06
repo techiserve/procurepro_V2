@@ -29,6 +29,8 @@
       $paymentmethodNames = ['payment method', 'Payment Method', 'payment', 'paymentmethod'];
       $transactionNames = ['transaction', 'transaction list', 'transactions','transaction description'];
        $departmentNames = ['department', 'department list', 'departments','department description'];
+        $bankNames = ['bank', 'bank list', 'banks','Bank','BANKS','BANK'];
+        $expenses = ['expenses', 'Expenses','Classification Of Expenses','coe','classification of expenses','clasification of expenses'];
 @endphp
 
 @foreach($formFields->chunk(2) as $fieldPair)
@@ -43,7 +45,7 @@
                     @endphp
 
                     @if($field->type === 'checkbox')
-</br>   <!-- <input type="text" class="form-control" name="{{ $field->name }}"> -->
+                  </br>   <!-- <input type="text" class="form-control" name="{{ $field->name }}"> -->
                           <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" name="{{ $field->name }}" value="Yes" {{ old($field->name) == 'Yes' ? 'checked' : '' }}>
                             <label class="form-check-label">Yes</label>
@@ -107,6 +109,22 @@
                                 <option value="">Select Tax Type</option>
                                 @foreach($taxes as $tax)
                                     <option value="{{ $tax->TaxTypeDescription }}">{{ $tax->TaxTypeDescription }}</option>
+                                @endforeach
+                            </select>
+
+                          @elseif(in_array($fieldNameLower, array_map('strtolower', $bankNames)))
+                            <select class="js-example-basic-single form-control" name="{{ $field->name }}">
+                                <option value="">Select Bank</option>
+                              @foreach($banks as $bank)
+                                    <option value="{{ $bank->name }}">{{ $bank->name }}</option>
+                                @endforeach
+                            </select>
+
+                        @elseif(in_array($fieldNameLower, array_map('strtolower', $expenses)))
+                            <select class="js-example-basic-single form-control" name="{{ $field->name }}">
+                                <option value="">Select Expense</option>
+                                @foreach($expenses as $expense)
+                                    <option value="{{ $expense->name }}">{{ $expense->name }}</option>
                                 @endforeach
                             </select>
 

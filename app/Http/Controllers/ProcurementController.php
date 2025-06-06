@@ -9,6 +9,7 @@ use App\Models\Department;
 use App\Models\Purchaseorder;
 use App\Models\Fpurchaseorder;
 use App\Models\Vendor;
+use App\Models\ClassificationOfExpense;
 use App\Services\WhatsAppService;
 use App\Models\Departmentapproval;
 use App\Models\Requisition;
@@ -60,7 +61,11 @@ class ProcurementController extends Controller
 
         $departments = Department::where('IsActive', '!=' , null)->where('companyId', Auth::user()->companyId)->get();
 
-         $company = Company::where('id', Auth::user()->companyId)->first();
+        $company = Company::where('id', Auth::user()->companyId)->first();
+
+        $banks = Bank::all();
+
+        $expenses = ClassificationOfExpense::all();
 
          //   dd($vendors,$vendorz);
 
@@ -83,7 +88,8 @@ class ProcurementController extends Controller
 ]);
 // dd($formFields);
 
-        return view('procurement.createrequisition', compact('departments','vendors','servicetypes','properties','transcations','taxes','formFields','company'));
+        $expenses = ClassificationOfExpense::all();
+        return view('procurement.createrequisition', compact('departments','vendors','banks','expenses','servicetypes','properties','transcations','taxes','formFields','company'));
         //return view('procurement.createrequisition', compact('departments','vendors','formFields','company'));
 
     }
