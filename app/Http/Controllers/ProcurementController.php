@@ -192,7 +192,7 @@ class ProcurementController extends Controller
        // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
         $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
 
-         // dd($fpurchaseorders);
+        //  dd($fpurchaseorders);
         return view('procurement.indexfpurchaseorder', compact('fpurchaseorders','roles','formFields'));
     }
 
@@ -686,7 +686,7 @@ class ProcurementController extends Controller
     // 4. Add other static or required fields if needed
     $purchaseOrderData['companyId'] = $frequisition->companyId;
     $purchaseOrderData['frequisition_id'] = $frequisition->id;
-    $purchaseOrderData['requisitionNumber'] = $requisitionNumber;
+    $purchaseOrderData['requisitionNumber'] = $frequisition->requisitionNumber;
     $purchaseOrderData['userId'] = $frequisition->userId;
     $purchaseOrderData['department'] = $frequisition->department;
     $purchaseOrderData['status'] = 0; 
