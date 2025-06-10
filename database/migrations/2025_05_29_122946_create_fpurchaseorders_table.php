@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('frequisition_id')->nullable();
             $table->integer('companyId')->nullable();
             $table->integer('invoiceamount')->nullable();
+            $table->string('requisitionNumber');
             $table->integer('department')->nullable();
             $table->string('jobcardfile')->nullable();
             $table->string('invoice')->nullable();

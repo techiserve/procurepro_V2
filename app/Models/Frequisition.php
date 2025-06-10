@@ -8,12 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Frequisition extends Model
 {
     use HasFactory;
-    
+
     protected $guarded = [];
 
         protected $fillable = [
   
         'companyId',
+        'requisitionNumber',
         'userId',
         'status',
         'approvallevel',
@@ -23,7 +24,6 @@ class Frequisition extends Model
         'approvedby'
        
     ];
-
 
 
     public function histories()

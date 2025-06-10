@@ -23,6 +23,7 @@
               <thead>
                 <tr>
                 <th>#</th>
+                <th>Requisition #</th>   
                @foreach($formFields as $field)
                 <th>{{ ucfirst($field->name) }}</th>
                 @endforeach
@@ -35,6 +36,7 @@
                 @foreach($fpurchaseorders as $fpurchaseorder)
                 <tr>
                 <td> <input type="checkbox" id="select" name="requisition_ids[]" value="{{ $fpurchaseorder->id }}"></td>
+                    <td>{{ $fpurchaseorder->requisitionNumber }}</td>
                   @foreach($formFields as $field)
                         <td>{{ $fpurchaseorder->{$field->name} ?? '' }}</td>
                     @endforeach

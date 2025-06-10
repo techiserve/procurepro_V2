@@ -144,35 +144,53 @@
 </div>
 @endsection
 <script>
-        function addField() {
-            const container = document.getElementById('fields');
-            const index = container.children.length;
-            const div = document.createElement('div');
-            div.innerHTML = `
-              <div class="row">
-                    <div class="col-sm-4">
-                <div class="form-group">
-                <input type="text" class="form-control" name="fields[${index}][name]" placeholder="Field Name" required>
-       </div>
-          </div>
-                      <div class="col-sm-4">
-                <div class="form-group">
-                <input type="text" class="form-control" name="fields[${index}][label]" placeholder="Label" required>
-       </div>
-          </div>
-                      <div class="col-sm-4">
-                <div class="form-group">
-                <select class="form-control" name="fields[${index}][type]" required>
-                   <option value="">-- Select type --</option>
-                    <option value="string">String</option>
-                    <option value="integer">Integer</option>
-                    <option value="checkbox">Checkbox</option>
-                </select>
-                <br><br>
-        </div>
-          </div>
-                <div>
-            `;
-            container.appendChild(div);
+    let fieldIndex = 0;
+
+    function createField(index, name = '', label = '', type = '') {
+        return `
+            <div class="form-group" id="field-${index}">
+                <div class="row">
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" name="fields[${index}][name]" value="${name}" placeholder="Field Name" required>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" name="fields[${index}][label]" value="${label}" placeholder="Label" required>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-control" name="fields[${index}][type]" required>
+                            <option value="">-- Select type --</option>
+                            <option value="string" ${type === 'string' ? 'selected' : ''}>String</option>
+                            <option value="integer" ${type === 'integer' ? 'selected' : ''}>Integer</option>
+                            <option value="checkbox" ${type === 'checkbox' ? 'selected' : ''}>Checkbox</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1 text-right">
+                        <button type="button" class="btn btn-danger btn-md" onclick="removeField(${index})">&times;</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function addField(name = '', label = '', type = '') {
+        const container = document.getElementById('fields');
+        const fieldHTML = createField(fieldIndex, name, label, type);
+        container.insertAdjacentHTML('beforeend', fieldHTML);
+        fieldIndex++;
+    }
+
+    function removeField(index) {
+        const field = document.getElementById(`field-${index}`);
+        if (field) {
+            field.remove();
         }
-    </script>
+    }
+
+    // Add 4 default prefilled fields on page load
+    window.onload = function () {
+        addField('amount', 'Amount', 'integer');
+        addField('invoiceamount', 'Invoice Amount', 'integer');
+        addField('department', 'Department', 'string');
+        addField('paymentmethod', 'Payment Method', 'string');
+    };
+</script>

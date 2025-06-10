@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Vendor;
 use App\Models\VendorType;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\ClassificationOfExpense;
 use App\Models\VendorDocument;
@@ -136,8 +138,9 @@ class VendorController extends Controller
 {
     $vendor = Vendor::with('documents')->findOrFail($id);
     $vendorTypes = VendorType::all(); // assuming VendorType is your list source
+       $users = User::where('companyId','=',Auth::user()->companyId)->get();
 
-    return view('vendors.edit', compact('vendor', 'vendorTypes'));
+    return view('vendors.edit', compact('vendor', 'users','vendorTypes'));
 }
 
 public function update(Request $request, $id)

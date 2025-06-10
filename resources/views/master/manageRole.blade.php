@@ -45,11 +45,12 @@
             <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
                 <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-1" role="tab" aria-controls="nav-1" aria-selected="true">Users</a>
-                <!-- <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-2" role="tab" aria-controls="nav-2" aria-selected="false">Vendor Management</a> -->
+                <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-2" role="tab" aria-controls="nav-2" aria-selected="false">Vendor Management</a>
                 <!-- <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-3" role="tab" aria-controls="nav-3" aria-selected="false">Approval Level</a> -->
                 <a class="nav-item nav-link" id="nav-home-tab" data-toggle="tab" href="#nav-4" role="tab" aria-controls="nav-4" aria-selected="false ">Configuration</a>
                 <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-5" role="tab" aria-controls="nav-5" aria-selected="false">Reports</a>
                 <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-6" role="tab" aria-controls="nav-6" aria-selected="false">Procurement</a>
+                {{-- <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-7" role="tab" aria-controls="nav-7" aria-selected="false">Vendor Management</a> --}}
             </div>
             </nav>
             <div class="tab-content" id="nav-tabContent">
@@ -77,9 +78,9 @@
             <div class="tab-pane fade" id="nav-2" role="tabpanel" aria-labelledby="nav-profile-tab">
                 <ul class="list-group">
                 <li class="list-group-item d-flex justify-content-between align-items-center" style="background-color:#edf2f4;">
-                Request New Vendor
+                   Request a Vendor
                     <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" name="requestnewvendor"  value="Request New Vendor" id="flexSwitchCheckDefault" />
+                <input class="form-check-input" type="checkbox" role="switch" name="requestnewvendor"  value="Request a Vendor" id="flexSwitchCheckDefault" />
                 
                 </div> 
                 </li>
@@ -92,9 +93,9 @@
                 </li>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center" style="background-color:#edf2f4;">
-                    Manage Vendors
+                    All Vendors
                     <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch"  name="managevendors" value="Manage Vendors" id="flexSwitchCheckDefault" />
+                <input class="form-check-input" type="checkbox" role="switch"  name="managevendors" value="All Vendors" id="flexSwitchCheckDefault" />
 
                 </div>
                 </li>
@@ -108,9 +109,9 @@
                 </li>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center" style="background-color:#edf2f4;">
-                    Vendor Request Approval
+                    Vendor Type
                     <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" name="vendorrequestapproval" value="Vendor Request Approval"  id="flexSwitchCheckDefault" />
+                <input class="form-check-input" type="checkbox" role="switch" name="vendorrequestapproval" value="Vendor Type"  id="flexSwitchCheckDefault" />
 
                 </div>
                 </li>

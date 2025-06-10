@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('companyId');
             $table->integer('userId');
+            $table->string('requisitionNumber');
             $table->integer('status');
             $table->integer('isActive');
             $table->string('approvallevel');

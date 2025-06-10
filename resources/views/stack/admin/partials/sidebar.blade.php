@@ -114,38 +114,53 @@
                 </li> -->
          
 
-           
+                @if(auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('Request a Vendor') OR $data->contains('Pending Requests') OR $data->contains('All Vendors') OR $data->contains('My Requests')OR $data->contains('Vendor Type'))
                 <li class="nav-item main-sibebar">
                     <a href="#"><i class="feather icon-file"></i><span class="menu-title" data-i18n="">Vendor Management</span></a>
                     <ul class="menu-content main-sibebar"style="margin-left:-30px;">
+                          @if(auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('Request a Vendor'))
                         <li>
                             <a class="menu-item" href="/procurement/createVendor" data-i18n="nav.starter_kit.1_column">
                                 Request a Vendor 
                             </a>
                         </li>
+                            @endif
+
+                          @if(auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('Vendor Type'))
                         <li>
                             <a class="menu-item" href="/vendor-types/" data-i18n="nav.starter_kit.2_columns">
                                 Vendor Type 
                             </a>
                         </li>
+                            @endif
+
+                          @if(auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('All Vendors'))
                         <li>
                             <a class="menu-item" href="/vendors/index" data-i18n="nav.starter_kit.2_columns">
                                 All Vendors
                             </a>
                         </li>
+                            @endif
+
+                          @if(auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('Pending Requests'))
                         <li>
                             <a class="menu-item" href="/vendors/approval" data-i18n="nav.starter_kit.2_columns">
                                 Pending Requests 
                             </a>
                         </li>
+                            @endif
+
+                          @if(auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('My Requests'))
                         <li>
                             <a class="menu-item" href="/vendors/index" data-i18n="nav.starter_kit.2_columns">
                                 My Requests
                             </a>
-                        </li>                 
+                        </li>  
+                            @endif               
                   
                     </ul>
                 </li>
+                @endif
             
 
                 @if(auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('Create Purchase Requistion') OR $data->contains('View Requisitions') OR $data->contains('View Purchase Orders') OR $data->contains('Manage Purchase Orders'))

@@ -267,12 +267,14 @@ class MasterController extends Controller
     public function departmentUpdate(Request $request,$id)
     {  
       
-       // dd($request->all(),$id);
+        
         $userId = Auth::user()->id;
         $companyId = Auth::user()->companyId;
-        $approval = $request->input('approval');
-        $userrole = $request->input('role');
-
+        $approval_a = $request->input('approval_a');
+        $userrole_a = $request->input('role_a');
+        $approval_b = $request->input('approval_b');
+        $userrole_b = $request->input('role_b');
+    
         
         $updatedepartment = Department::where('id', $id)->update([
 
@@ -285,7 +287,7 @@ class MasterController extends Controller
 
         if($deleteroles){
 
-            foreach($approval as $key => $n ) {
+            foreach($approval_a as $key => $n ) {
     
                 $arrData[] = array(
     
@@ -293,15 +295,43 @@ class MasterController extends Controller
     
                         'department' => $department->name,
                         'userId' => $userId,
-                        'approvalId' =>$approval[$key],
+                        'mode' => 'PR',
+                        'approvalId' =>$approval_a[$key],
                         'companyId' => $companyId,
                         'departmentId'  => $department->id,
-                        'roleId'  => $userrole[$key]
+                        'roleId'  => $userrole_a[$key]
                         
                     ])
                 );
     
             }
+
+
+            if($approval_b){
+
+            foreach($approval_b as $key => $n ) {
+    
+                $arrData[] = array(
+    
+                    $companyrole_b = Departmentapproval::create([
+    
+                        'department' => $department->name,
+                        'userId' => $userId,
+                        'mode' => 'PO',
+                        'approvalId' =>$approval_b[$key],
+                        'companyId' => $companyId,
+                        'departmentId'  => $department->id,
+                        'roleId'  => $userrole_b[$key]
+                        
+                    ])
+                );
+    
+            }
+
+
+            }
+
+
     
             }
         
@@ -393,10 +423,11 @@ class MasterController extends Controller
     public function departmentedit($id)
     {
          $department = Department::where('id', $id)->first();
-         $da = Departmentapproval::where('departmentId', $id)->get();
+         $da = Departmentapproval::where('departmentId', $id)->where('mode','=','PR')->get();
+         $da_b= Departmentapproval::where('departmentId', $id)->where('mode','=','PO')->get();
          $roles = Userrole::where('companyId', Auth::user()->companyId)->get();
    
-         return view('master.departmentedit',compact('department','da','roles'));
+         return view('master.departmentedit',compact('department','da','da_b','roles'));
         
     }
 

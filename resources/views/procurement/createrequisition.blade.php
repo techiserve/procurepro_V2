@@ -61,13 +61,94 @@
 
                     @else
 
-                        @if(in_array($fieldNameLower, array_map('strtolower', $vendorNames)))
-                            <select class="js-example-basic-single form-control" name="{{ $field->name }}">
-                                <option value="">Select Vendor</option>
-                                @foreach($vendors as $vendor)
-                                    <option value="{{ $vendor->SupplierName }}">{{ $vendor->SupplierName }}</option>
-                                @endforeach
-                            </select>
+  @if(in_array($fieldNameLower, array_map('strtolower', $vendorNames)))
+<div class="form-group">
+    <label>Is Vendor One-Time?</label><br>
+    <label class="radio-inline">
+        <input type="radio" name="is_one_time_vendor_{{ $field->name }}" value="yes" onchange="toggleVendorType('{{ $field->name }}', this.value)"> Yes
+    </label>
+    <label class="radio-inline">
+        <input type="radio" name="is_one_time_vendor_{{ $field->name }}" value="no" onchange="toggleVendorType('{{ $field->name }}', this.value)"> No
+    </label>
+</div>
+
+<!-- Container that will show either dropdown or readonly input -->
+<div class="form-group" id="vendorInputWrapper_{{ $field->name }}">
+    <!-- Default is hidden -->
+    <label>Select Vendor</label>
+    <select class="js-example-basic-single form-control" name="{{ $field->name }}" id="vendorDropdown_{{ $field->name }}">
+        <option value="">Select Vendor</option>
+        @foreach($vendors as $vendor)
+            <option value="{{ $vendor->SupplierName }}">{{ $vendor->SupplierName }}</option>
+        @endforeach
+    </select>
+
+    <!-- This will appear when one-time vendor is selected -->
+    <input type="text" class="form-control" name="{{ $field->name }}" id="oneTimeVendorInput_{{ $field->name }}" style="display: none;" placeholder="One-Time Vendor Name" >
+</div>
+
+<!-- Modal for one-time vendor -->
+<div class="modal fade" id="oneTimeVendorModal_{{ $field->name }}" tabindex="-1" role="dialog" aria-labelledby="oneTimeVendorModalLabel_{{ $field->name }}" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">One-Time Vendor Details</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+            <label>Vendor Name</label>
+            <input type="text" class="form-control" id="modalVendorName_{{ $field->name }}" placeholder="Vendor Name">
+        </div>
+        <div class="form-group">
+            <label>Type</label>
+            <select class="form-control" name="type">
+                <option value="">--Select--</option>
+                @foreach($vendorTypes as $type)
+                    <option value="{{ $type->name }}">{{ $type->name }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Vat Allocation</label>
+            <input type="text" class="form-control" name="Vatallocation">
+        </div>
+        <div class="form-group">
+            <label>Supplier Code</label>
+            <input type="text" class="form-control" name="supplierCode">
+        </div>
+        <div class="form-group">
+            <label>Bank</label>
+            <input type="text" class="form-control" name="bank">
+        </div>
+         <div class="form-group">
+            <label>Account Number</label>
+            <input type="text" class="form-control" name="accountNumber">
+        </div>
+        <div class="form-group">
+            <label>Account Type</label>
+            <input type="text" class="form-control" name="accountType">
+        </div>
+        <div class="form-group">
+            <label>Upload Document</label>
+            <input type="file" class="form-control" name="doc">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="saveOneTimeVendor('{{ $field->name }}')">Done</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
 
                         @elseif(in_array($fieldNameLower, array_map('strtolower', $departmentNames)))
                             <select class="js-example-basic-single form-control" name="{{ $field->name }}" required>
@@ -199,4 +280,36 @@ $('#dynamic_field').append('<div id="row'+i+'" <div class="row dynamic-added"><d
       });  
 
     });  
+
+
+function toggleVendorType(fieldName, value) {
+    const dropdown = document.getElementById(`vendorDropdown_${fieldName}`);
+    const oneTimeInput = document.getElementById(`oneTimeVendorInput_${fieldName}`);
+    const modal = $(`#oneTimeVendorModal_${fieldName}`);
+
+    if (value === 'yes') {
+        dropdown.style.display = 'none';
+        oneTimeInput.style.display = 'block';
+        oneTimeInput.value = ''; // clear any previous
+        modal.modal('show');
+    } else if (value === 'no') {
+        dropdown.style.display = 'block';
+        oneTimeInput.style.display = 'none';
+        oneTimeInput.value = '';
+    }
+}
+
+function saveOneTimeVendor(fieldName) {
+    const vendorName = document.getElementById(`modalVendorName_${fieldName}`).value;
+    const input = document.getElementById(`oneTimeVendorInput_${fieldName}`);
+
+    if (!vendorName) {
+        Swal.fire('Error', 'Please enter the Vendor Name', 'error');
+        return;
+    }
+
+    input.value = vendorName;
+    $(`#oneTimeVendorModal_${fieldName}`).modal('hide');
+}
+
 </script>

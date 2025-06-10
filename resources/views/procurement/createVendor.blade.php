@@ -96,13 +96,10 @@
                     <label for="finance_manager">Finance Manager</label>
                     <select class="form-control" id="finance_manager" name="finance_manager">
                       <option value="0">--Select--</option>
-                      <option value="55">Bilal_Finance Manager</option>
-                      <option value="60">Bilal_finance2</option>
-                      <option value="119">Owftest001_11</option>
-                      <option value="122">M.Kajee Test</option>
-                      <option value="133">Mr Laher 2_20</option>
-                      <option value="134">Mr Laher 3</option>
-                      <option value="136">Mr Laher 3_22</option>
+                     @foreach($users as $user)
+                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                     @endforeach
+                      
                     </select>
                   </div>
                 </div>

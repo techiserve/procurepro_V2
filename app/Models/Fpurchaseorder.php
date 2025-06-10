@@ -14,6 +14,7 @@ class Fpurchaseorder extends Model
         protected $fillable = [
   
         'frequisition_id',
+         'requisitionNumber',
         'companyId',
         'invoiceamount',
         'jobcardfile',

@@ -51,7 +51,8 @@
 
               <div class="clearfix" id="dynamic_field_primary">
                 <div class="row">
-                  <div class="col-md-6">
+                 <label for="PR">Purchase Requisition Flow</label>
+                  <div class="col-md-6">    
                     <div class="form-group">
                       <select class="form-control" name="approval[]">
                         <option value="">Select Approval Level</option>                       
@@ -84,6 +85,7 @@
               <div class="clearfix" id="dynamic_field_secondary" style="display: none;">
                 <hr>
                 <div class="row">
+                      <label for="PR">Purchase Order Flow</label>
                   <div class="col-md-6">
                     <div class="form-group">
                       <select class="form-control" name="secondary_approval[]">
@@ -126,6 +128,87 @@
     </div>
 
     <!-- Department list code remains unchanged -->
+      
+
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="card">
+          <div class="card-header">
+            <strong>Department List</strong>
+
+          </div>
+
+          <div class="card-body">
+            <table class="table table-responsive-sm table-bordered table-striped table-sm">
+              <thead>
+                <tr>
+
+
+                  <th class="text-center">Department Name</th>
+                  <th class="text-center">Added by</th>
+                  <th class="text-center">Status</th>
+                  <th class="text-center">Action</th>
+
+                </tr>
+              </thead>
+              <tbody>
+                @foreach($departments as $user)
+                <tr>
+                  <td class="text-center">{{$user->name}}</td>
+                  <td class="text-center">
+                  @foreach($users as $us)
+                   @if($user->userId ==  $us->id)
+                   {{ $us->name }}
+
+                   @endif
+
+                    @endforeach
+
+                      </td>
+                  <td class="text-center">
+                  @if($user->IsActive == null)
+                    <span class='badge badge-secondary'>Inactive</span>
+                    @else
+                    <span class='badge badge-success'>Active</span>
+                    @endif
+                    </td>           
+                  <td class="text-center">
+                  <a href='/department/{{$user->id}}/edit' class='btn btn-info btn-sm' style='color: white;'>
+                      <span class='fa fa-pencil'></span>
+                      <span class='hidden-sm hidden-sm hidden-md'> Edit</span>
+                    </a>
+                    &nbsp;
+                  <a href='#' class='btn btn-danger btn-sm'   onclick="
+                        event.preventDefault(); // Prevent the default link behavior
+                        Swal.fire({
+                            title: 'Delete Department?',
+                            text: 'You won\'t be able to undo this!',
+                            icon: 'info', // Updated property for SweetAlert2
+                            showCancelButton: true,
+                            confirmButtonText: 'Continue',
+                            cancelButtonText: 'Cancel'
+                          }).then((result) => {
+                            if (result.isConfirmed) {
+                              // Redirect to the URL or perform an action
+                              window.location.href = '/department/{{$user->id}}/delete'; // Replace with your actual URL
+                            }
+                          })
+                      "
+                    >
+                      <span class='fa fa-trash'></span>
+                      <span class='hidden-sm hidden-sm hidden-md'>Delete</span>
+                    </a>&nbsp;
+
+                  </td>
+                </tr>
+                @endforeach
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </div>
 
   </div>
 </div>

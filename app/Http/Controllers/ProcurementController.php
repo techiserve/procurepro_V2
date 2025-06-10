@@ -63,6 +63,8 @@ class ProcurementController extends Controller
 
         $company = Company::where('id', Auth::user()->companyId)->first();
 
+        $vendorTypes = VendorType::all();
+
         $banks = Bank::all();
 
         $expenses = ClassificationOfExpense::all();
@@ -89,7 +91,7 @@ class ProcurementController extends Controller
 // dd($formFields);
 
         $expenses = ClassificationOfExpense::all();
-        return view('procurement.createrequisition', compact('departments','vendors','banks','expenses','servicetypes','properties','transcations','taxes','formFields','company'));
+        return view('procurement.createrequisition', compact('departments','vendors','banks','vendorTypes','expenses','servicetypes','properties','transcations','taxes','formFields','company'));
         //return view('procurement.createrequisition', compact('departments','vendors','formFields','company'));
 
     }
@@ -99,8 +101,8 @@ class ProcurementController extends Controller
     public function createVendor()
     {
         $vendorTypes = VendorType::all();
-
-        return view('procurement.createVendor', compact('vendorTypes'));
+        $users = User::where('companyId','=',Auth::user()->companyId)->get();
+        return view('procurement.createVendor', compact('vendorTypes','users'));
     }
 
 
@@ -129,7 +131,7 @@ class ProcurementController extends Controller
         //dd($formFields);
  
         $frequisitions = Frequisition::with('histories')->where('userId', Auth::user()->id)->where('companyId', Auth::user()->companyId)->orwhere('isActive', '=', 1)->where('companyId', Auth::user()->companyId)->orderby('id','desc')->get();
-
+           dd($frequisitions);
         return view('procurement.indexfrequisiton', compact('formFields', 'frequisitions','roles'));
     }
 
@@ -190,7 +192,7 @@ class ProcurementController extends Controller
        // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
         $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
 
-         // dd($purchaseorders);
+          dd($fpurchaseorders);
         return view('procurement.indexfpurchaseorder', compact('fpurchaseorders','roles','formFields'));
     }
 
@@ -487,7 +489,22 @@ class ProcurementController extends Controller
      */
     public function requisitionstore(Request $request,WhatsAppService $whatsapp)
     {
-       // dd($request->all());
+
+        $company = Company::where('id', Auth::user()->companyId)->first();
+        $latest = Frequisition::where('requisitionNumber', 'LIKE', $company->name . '-%')
+        ->orderBy('id', 'desc')
+        ->first();
+
+          if ($latest) {
+        // Extract number part
+        $lastNumber = (int) Str::after($latest->requisitionNumber, $company->name . '-');
+        $newNumber = $lastNumber + 1;
+    } else {
+        $newNumber = 1;
+    }
+
+     $requisitionNumber = $company->name . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+       //dd($requisitionNumber);
        $formFields = FormField::all();
        $data = [];
 
@@ -498,10 +515,9 @@ class ProcurementController extends Controller
         }
     }
 
-   // dd($data);
-
     // Add additional static fields
     $data['userId'] = Auth::id();
+    $data['requisitionNumber'] = $requisitionNumber;
     $data['companyId'] = Auth::user()->companyId;
     $data['status'] = 1;
     $data['isActive'] = 1;
@@ -530,8 +546,6 @@ class ProcurementController extends Controller
     });
 
     
-   // dd($filteredData);
-
     // Create the requisition
        $requisition = Frequisition::forceCreate($filteredData);
  
@@ -558,13 +572,16 @@ class ProcurementController extends Controller
 
     } 
 
-
     //    $emailData = $requisition->toArray();
       
     //     Mail::to('b.essop@techiserve.com')->queue(new SendSampleEmail($emailData));
 
        if($requisition){
 
+    //     $to = "whatsapp:+263778440481";
+    //     $message = "🔔 New requisition pending your approval. Login to your dashboard to view it.";
+    //     // dd($to);
+    //    $whatsapp->send($to, $message);
 
         return back()->with('success', 'Requisition created successfully!');
     }
@@ -669,6 +686,7 @@ class ProcurementController extends Controller
     // 4. Add other static or required fields if needed
     $purchaseOrderData['companyId'] = $frequisition->companyId;
     $purchaseOrderData['frequisition_id'] = $frequisition->id;
+    $purchaseOrderData['requisitionNumber'] = $requisitionNumber;
     $purchaseOrderData['userId'] = $frequisition->userId;
     $purchaseOrderData['department'] = $frequisition->department;
     $purchaseOrderData['status'] = 0; 

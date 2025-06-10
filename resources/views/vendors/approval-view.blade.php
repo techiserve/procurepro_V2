@@ -134,12 +134,13 @@
                   <p>No documents uploaded.</p>
                 @endif
               </div>
-
+                @if($vendor->finance_manager == auth()->user()->id)
               <div class="text-center mt-4">
                 <button type="submit" onclick="submitApproval('approve')" class="btn btn-success">Approve</button>
                 <button type="button" class="btn btn-info" data-toggle="modal" data-target="#returnModal">Return</button>
                 <button type="submit" onclick="submitApproval('reject')" class="btn btn-danger">Reject</button>
               </div>
+                @endif
             </form>
           </div>
         </div>
