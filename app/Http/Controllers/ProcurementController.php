@@ -131,7 +131,7 @@ class ProcurementController extends Controller
         //dd($formFields);
  
         $frequisitions = Frequisition::with('histories')->where('userId', Auth::user()->id)->where('companyId', Auth::user()->companyId)->orwhere('isActive', '=', 1)->where('companyId', Auth::user()->companyId)->orderby('id','desc')->get();
-           dd($frequisitions);
+         //  dd($frequisitions);
         return view('procurement.indexfrequisiton', compact('formFields', 'frequisitions','roles'));
     }
 
@@ -192,7 +192,7 @@ class ProcurementController extends Controller
        // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
         $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
 
-          dd($fpurchaseorders);
+         // dd($fpurchaseorders);
         return view('procurement.indexfpurchaseorder', compact('fpurchaseorders','roles','formFields'));
     }
 
