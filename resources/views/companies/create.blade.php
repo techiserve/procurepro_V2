@@ -192,5 +192,7 @@
         addField('invoiceamount', 'Invoice Amount', 'integer');
         addField('department', 'Department', 'string');
         addField('paymentmethod', 'Payment Method', 'string');
+        addField('vendor', 'Vendor', 'string');
     };
+
 </script>
