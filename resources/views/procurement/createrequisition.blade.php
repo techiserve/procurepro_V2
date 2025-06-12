@@ -70,21 +70,20 @@
     <label class="radio-inline">
         <input type="radio" name="is_one_time_vendor_{{ $field->name }}" value="no" onchange="toggleVendorType('{{ $field->name }}', this.value)"> No
     </label>
-</div>
+{{-- </div> --}}
+<input type="hidden" name="{{ $field->name }}" id="finalVendorInput_{{ $field->name }}">
 
-<!-- Container that will show either dropdown or readonly input -->
-<div class="form-group" id="vendorInputWrapper_{{ $field->name }}">
-    <!-- Default is hidden -->
-    <label>Select Vendor</label>
-    <select class="js-example-basic-single form-control" name="{{ $field->name }}" id="vendorDropdown_{{ $field->name }}">
-        <option value="">Select Vendor</option>
-        @foreach($vendors as $vendor)
-            <option value="{{ $vendor->SupplierName }}">{{ $vendor->SupplierName }}</option>
-        @endforeach
-    </select>
+<!-- Vendor Dropdown (for regular vendors) -->
+<label>Select Vendor</label>
+<select class="js-example-basic-single form-control" id="vendorDropdown_{{ $field->name }}" onchange="updateFinalVendorValue('{{ $field->name }}', this.value)">
+    <option value="">Select Vendor</option>
+    @foreach($vendors as $vendor)
+        <option value="{{ $vendor->SupplierName }}">{{ $vendor->SupplierName }}</option>
+    @endforeach
+</select>
 
-    <!-- This will appear when one-time vendor is selected -->
-    <input type="text" class="form-control" name="{{ $field->name }}" id="oneTimeVendorInput_{{ $field->name }}" style="display: none;" placeholder="One-Time Vendor Name" >
+<!-- One-time vendor input -->
+<input type="text" class="form-control" id="oneTimeVendorInput_{{ $field->name }}" style="display: none;" placeholder="One-Time Vendor Name" oninput="updateFinalVendorValue('{{ $field->name }}', this.value)">
 </div>
 
 <!-- Modal for one-time vendor -->
@@ -290,26 +289,34 @@ function toggleVendorType(fieldName, value) {
     if (value === 'yes') {
         dropdown.style.display = 'none';
         oneTimeInput.style.display = 'block';
-        oneTimeInput.value = ''; // clear any previous
+        oneTimeInput.value = '';
+        updateFinalVendorValue(fieldName, '');
         modal.modal('show');
     } else if (value === 'no') {
         dropdown.style.display = 'block';
         oneTimeInput.style.display = 'none';
         oneTimeInput.value = '';
+        updateFinalVendorValue(fieldName, dropdown.value);
     }
 }
 
 function saveOneTimeVendor(fieldName) {
     const vendorName = document.getElementById(`modalVendorName_${fieldName}`).value;
-    const input = document.getElementById(`oneTimeVendorInput_${fieldName}`);
+    const oneTimeInput = document.getElementById(`oneTimeVendorInput_${fieldName}`);
 
     if (!vendorName) {
         Swal.fire('Error', 'Please enter the Vendor Name', 'error');
         return;
     }
 
-    input.value = vendorName;
+    oneTimeInput.value = vendorName;
+    updateFinalVendorValue(fieldName, vendorName); // sync to hidden input
     $(`#oneTimeVendorModal_${fieldName}`).modal('hide');
+}
+
+
+function updateFinalVendorValue(fieldName, value) {
+    document.getElementById(`finalVendorInput_${fieldName}`).value = value;
 }
 
 </script>

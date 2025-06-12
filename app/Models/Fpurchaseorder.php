@@ -14,7 +14,7 @@ class Fpurchaseorder extends Model
         protected $fillable = [
   
         'frequisition_id',
-         'requisitionNumber',
+        'requisitionNumber',
         'companyId',
         'invoiceamount',
         'jobcardfile',
@@ -37,7 +37,7 @@ class Fpurchaseorder extends Model
 
         public function histories()
     {
-        return $this->hasMany(RequisitionHistory::class, 'frequisition_id', 'requisition_id');
+        return $this->hasMany(RequisitionHistory::class, 'frequisition_id', 'frequisition_id');
 
     }
 }

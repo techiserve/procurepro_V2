@@ -37,9 +37,9 @@ class RequisitionHistory extends Model
         return $this->belongsTo(Frequisition::class);
     }
 
-    public function purchaseorder()
+    public function fpurchaseorder()
     {
-        return $this->belongsTo(Purchaseorder::class);
+        return $this->belongsTo(fpurchaseorder::class);
     }
 }
 

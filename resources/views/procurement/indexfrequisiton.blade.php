@@ -34,6 +34,8 @@
               </thead>
               <tbody>
                 @foreach($frequisitions as $frequisition)
+                {{--  --}}
+                @if(auth()->user()->id == $frequisition->userId OR auth()->user()->userrole  == $frequisition->approvedby )
                 <tr>
                 <td> <input type="checkbox" id="select" name="requisition_ids[]" value="{{ $frequisition->id }}"></td>
                  <td>{{ $frequisition->requisitionNumber }}</td>
@@ -318,6 +320,8 @@
                    @endif
                   </td>
                 </tr>
+                @endif
+                {{--  --}}
                 @endforeach
               </tbody>
             </table>        

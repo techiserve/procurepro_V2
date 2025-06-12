@@ -82,12 +82,7 @@ class ProcurementController extends Controller
         
         $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
 
-       $formFields->push((object)[
-    'name' => 'department',
-    'label' => 'Department',
-    'type' => 'select',
-    'options' => $departments, // Ensure $departments is passed to the view
-]);
+       
 // dd($formFields);
 
         $expenses = ClassificationOfExpense::all();
@@ -489,6 +484,7 @@ class ProcurementController extends Controller
      */
     public function requisitionstore(Request $request,WhatsAppService $whatsapp)
     {
+       // dd($request->all());
 
         $company = Company::where('id', Auth::user()->companyId)->first();
         $latest = Frequisition::where('requisitionNumber', 'LIKE', $company->name . '-%')
@@ -588,7 +584,6 @@ class ProcurementController extends Controller
       return back()->with('error', 'Failed to create Requiisition!');
 
     }
-
 
 
     public function updatepurchaseorder(Request $request,$id)

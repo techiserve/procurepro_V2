@@ -35,6 +35,7 @@
               <tbody>
                 @foreach($purchaseorders as $company)
                 <tr>
+                    @if(auth()->user()->id == $company->userId OR auth()->user()->userrole  == $company->approvedby )
                 <td></td>
                   <td>{{$company->vendor}}</td>
                   <td>{{$company->services}}</td>
@@ -222,6 +223,7 @@
                     @endif
                   </td>
                 </tr>
+                  @endif
                 @endforeach
               </tbody>
             </table>
