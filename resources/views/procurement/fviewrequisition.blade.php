@@ -1,5 +1,12 @@
 @extends('stack.layouts.admin')
+<!-- iCheck CSS -->
+<link href="https://cdn.jsdelivr.net/npm/icheck/skins/square/blue.css" rel="stylesheet">
 
+<!-- jQuery (required) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- iCheck JS -->
+<script src="https://cdn.jsdelivr.net/npm/icheck/icheck.min.js"></script>
 @section('content')
 <div class="container-fluid">
   <div class="animated fadeIn">
@@ -27,6 +34,7 @@
                     <input type="text" class="form-control" value="{{ $value }}" readonly>
                 </div>
             @endforeach
+          
         </div>
 
          <div class="row">
@@ -44,15 +52,71 @@
 			<br>
          
     
-            @if($frequisition->userId != auth()->user()->id AND $history == NULL )
+
+          
+       </div>
+    </div>
+      
+</div>
+</div>
+
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="card">
+          <div class="card-header">
+            <strong>Vendors</strong>
+            <small>List</small>
+          </div>
+
+          <div class="card-body">
+            <table class="table table-responsive-sm table-bordered table-striped table-sm">
+          <thead>
+            <tr>
+           
+             <th class="text-center">Select</th>
+        
+              <th class="text-center">Vendor Name</th>
+              <th class="text-center">Amount</th>
+              <th class="text-center">Document</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach ($frequisitionvendors as $faira)
+              <tr>
+                <td class="text-center">
+                  <input type="checkbox" name="selected_vendor" value="{{ $faira->id }}" class="exclusive-checkbox"{{ $faira->status == 1 ? 'checked' : '' }}>
+                </td>
+                <td class="text-center">{{ $faira->vendor_final }}</td>
+                <td class="text-center">R {{ number_format($faira->amount, 2) }}</td>
+                <td class="text-center">
+                 @if (!empty($faira->file_path))
+                <a href="{{ asset('/storage/uploads/' . $faira->file_path) }}" target="_blank" class="btn btn-info btn-sm" style="color: white;">
+                <span class="fa fa-eye"></span> View Document
+                </a>
+               @else
+                    <p>No document available.</p>
+                  @endif
+                </td>
+              </tr>
+            @endforeach
+          </tbody>
+        </table>
+
+         
+            {{-- <div class="form-group pull-right mt-3">
+                <button type="submit" class="btn btn-success" onclick="celebrate()">
+                  <span class='fa fa-check-circle'></span> Approve
+                </button>
+              </div> --}}
+
+             @if($frequisition->userId != auth()->user()->id AND $history == NULL )
             @if($frequisition->approvedby == auth()->user()->userrole AND $frequisition->approvallevel <= $frequisition->totalapprovallevels)
             <div class="card-footer">
             <div class="form-group pull-right">
     				
-            <a href='/procurement/{{$frequisition->id}}/approve' onclick="celebrate()" class='btn btn-success' style='color: white;'>
-                      <span class='fa fa-check-circle'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'>Approve</span>
-                    </a> 
+           <button type="submit" class="btn btn-success" onclick="celebrate()">
+                  <span class='fa fa-check-circle'></span> Approve
+                </button> 
         
                     <a href=''  data-target="#returnback" data-toggle="modal"  class='btn btn-info' style='color: white;'>
                       <span class='fa fa-arrow-left'></span>
@@ -70,58 +134,14 @@
   
 
           @endif
-          
-       </div>
-    </div>
-      
-    </form>
-</div>
-</div>
 
-    <div class="row">
-      <div class="col-sm-12">
-        <div class="card">
-          <div class="card-header">
-            <strong>Documents</strong>
-            <small>List</small>
-          </div>
-
-          <div class="card-body">
-            <table class="table table-responsive-sm table-bordered table-striped table-sm">
-              <thead>
-                <tr>              
-                  <th class="text-center">Name</th>              
-                  <th class="text-center">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                 
-               @foreach ($files as $faira)
-                
-                <tr>          
-                  <td class="text-center">Quotation </td> 
-                  <td class="text-center"> 
-                  @if (isset($faira))
-               
-                  <a href="{{ asset('/storage/uploads/'.$faira->file) }}" target="_blank"class='btn btn-info btn-sm' style='color: white;'>
-                      <span class='fa fa-pencil'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'>View Quotation</span>
-                    </a> 
-                    @else
-                  <p>No document available.</p>
-                  @endif                          
-                  </td>
-                </tr>
-                @endforeach
-              
-              </tbody>
-            </table>
           </div>
 
         </div>
       </div>
     </div>
-
+ 
+    </form>
 </div>
 
 	<!-- modal for sending copy of cashflow to grower -->
@@ -213,4 +233,26 @@
             }, 500);
         });
     </script>
+
+
+
 @endif
+
+<script>
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const checkboxes = document.querySelectorAll('.exclusive-checkbox');
+
+    checkboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', function () {
+        if (this.checked) {
+          checkboxes.forEach(cb => {
+            if (cb !== this) cb.disabled = true;
+          });
+        } else {
+          checkboxes.forEach(cb => cb.disabled = false);
+        }
+      });
+    });
+  });
+</script>

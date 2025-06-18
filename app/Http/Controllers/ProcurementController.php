@@ -17,6 +17,7 @@ use App\Models\RequisitionHistory;
 use App\Models\Requisitionfile;
 use App\Models\Bankaccount;
 use App\Models\VendorType;
+use App\Models\FrequisitionVendor;
 use App\Models\Company;
 use App\Models\FormField;
 use Illuminate\Support\Facades\Schema;
@@ -69,7 +70,6 @@ class ProcurementController extends Controller
 
         $expenses = ClassificationOfExpense::all();
 
-          //  dd($expenses);
 
         if($company->vendor_source == "Vendor Management"){
            $vendors = Vendor::select(
@@ -78,16 +78,11 @@ class ProcurementController extends Controller
             )->get();
         }
 
-       // dd($vendors);
         
         $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
 
-       
-// dd($formFields);
-
         $expenses = ClassificationOfExpense::all();
         return view('procurement.createrequisition', compact('departments','vendors','banks','vendorTypes','expenses','servicetypes','properties','transcations','taxes','formFields','company'));
-        //return view('procurement.createrequisition', compact('departments','vendors','formFields','company'));
 
     }
 
@@ -146,11 +141,13 @@ class ProcurementController extends Controller
       
         $frequisition = Frequisition::where('id', $id)->first();
         $formFields = FormField::where('companyId', $frequisition->companyId)->get();
+        $frequisitionvendors = FrequisitionVendor::where('frequisition_id', $frequisition->id)->get();
         $files = Requisitionfile::where('requisitionId', $id)->get();
         //$vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
        // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
         $departments = Department::where('id', $frequisition->department)->first();
-       // dd($frequisition);
+
+       // dd($frequisitionvendors);
         if(!$departments){
              
             return redirect()->route('procurement.myrequisition')->with('warning', 'The department was removed from Tagpay!');
@@ -160,7 +157,7 @@ class ProcurementController extends Controller
     
         // return view('procurement.fviewrequisition', compact('frequisition','files','vendors','servicetype','formFields','history','departments'));
             
-        return view('procurement.fviewrequisition', compact('frequisition','files','formFields','history','departments'));
+        return view('procurement.fviewrequisition', compact('frequisition','frequisitionvendors','files','formFields','history','departments'));
     }
 
 
@@ -484,7 +481,7 @@ class ProcurementController extends Controller
      */
     public function requisitionstore(Request $request,WhatsAppService $whatsapp)
     {
-       // dd($request->all());
+      //  dd($request->all());
 
         $company = Company::where('id', Auth::user()->companyId)->first();
         $latest = Frequisition::where('requisitionNumber', 'LIKE', $company->name . '-%')
@@ -540,37 +537,85 @@ class ProcurementController extends Controller
     $filteredData = array_filter($data, function ($value) {
         return !is_null($value);
     });
+       
 
+   // dd($filteredData);
     
     // Create the requisition
        $requisition = Frequisition::forceCreate($filteredData);
  
 
-       if ($request->hasFile('file')) {
-        // Loop through each file
-        foreach ($request->file('file') as $file) {
-            // Generate a unique name for the file
-            $quotationfile = $file->store('uploads', 'public');
+    //    if ($request->hasFile('file')) {
+    //     // Loop through each file
+    //     foreach ($request->file('file') as $file) {
+    //         // Generate a unique name for the file
+    //         $quotationfile = $file->store('uploads', 'public');
 
-            $quotation =  Str::afterLast($quotationfile, '/');
+    //         $quotation =  Str::afterLast($quotationfile, '/');
 
-            // Save the filename in the database
-            $savefile = Requisitionfile::create([
+    //         // Save the filename in the database
+    //         // $savefile = Requisitionfile::create([
 
-                'requisitionId' => $requisition->id,
-                'companyId'  =>Auth::user()->companyId,
-                'file'  =>  $quotation,
-                'userId'  =>Auth::user()->id,
-                'path'  => 1,
+    //         //     'requisitionId' => $requisition->id,
+    //         //     'companyId'  =>Auth::user()->companyId,
+    //         //     'file'  =>  $quotation,
+    //         //     'userId'  =>Auth::user()->id,
+    //         //     'path'  => 1,
                 
-               ]);
-        }
+    //         //    ]);
+    //     }
 
-    } 
+    // } 
 
     //    $emailData = $requisition->toArray();
       
     //     Mail::to('b.essop@techiserve.com')->queue(new SendSampleEmail($emailData));
+
+    $vendorFinal = $request->input('vendor_final');
+    $amounts = $request->input('damount');
+    $modalVendorNames = $request->input('modal_vendor_name');
+    $types = $request->input('type');
+    $vatAllocations = $request->input('Vatallocation');
+    $supplierCodes = $request->input('supplierCode');
+    $banks = $request->input('bank');
+    $accountNumbers = $request->input('accountNumber');
+    $accountTypes = $request->input('accountType');
+
+    $files = $request->file('dfile');
+    $docs = $request->file('doc');
+
+    foreach ($vendorFinal as $index => $vendorName) {
+        $frequisition = new FrequisitionVendor();
+        $frequisition->vendor_final = $vendorName;
+        $frequisition->amount = $amounts[$index];
+        $frequisition->frequisition_id = $requisition->id;
+
+        if (isset($files[$index])) {
+             
+             $faira = $files[$index]->store('uploads', 'public');
+             $fieldquote =  Str::afterLast($faira, '/');
+             $frequisition->file_path = $fieldquote;
+        }
+
+        // If modal data exists (for one-time vendors)
+        if (isset($modalVendorNames[$index])) {
+            $frequisition->modal_vendor_name = $modalVendorNames[$index];
+            $frequisition->type = $types[$index] ?? null;
+            $frequisition->vat_allocation = $vatAllocations[$index] ?? null;
+            $frequisition->supplier_code = $supplierCodes[$index] ?? null;
+            $frequisition->bank = $banks[$index] ?? null;
+            $frequisition->account_number = $accountNumbers[$index] ?? null;
+            $frequisition->account_type = $accountTypes[$index] ?? null;
+
+            if (isset($docs[$index])) {
+                $frequisitionfile = $docs[$index]->store('uploads', 'public');
+                $fieldquote1 =  Str::afterLast($frequisitionfile, '/');
+                $frequisition->doc_path = $fieldquote1; 
+            }
+        }
+
+        $frequisition->save();
+    }
 
        if($requisition){
 
@@ -642,9 +687,17 @@ class ProcurementController extends Controller
     /**
      * Display the specified resource.
      */
-    public function requisitionapproval(string $id)
+    public function requisitionapproval(string $id, Request $request)
     {
 
+       // dd($request->all(),$id);
+
+        FrequisitionVendor::where('frequisition_id', $id)->update(['status' => null]);
+        $selectedvendor = FrequisitionVendor::where('id', $request->selected_vendor)->update([
+            'status' => 1
+        ]);
+
+         $vendor = FrequisitionVendor::where('id', $request->selected_vendor)->first();
         $frequisition = Frequisition::where('id', $id)->first();
 
         if($frequisition->approvallevel+1 > $frequisition->totalapprovallevels){
@@ -652,15 +705,28 @@ class ProcurementController extends Controller
            // dd('zvapera');
             $updatedapprovallevel = $frequisition->approvallevel+1;
                  $updatereq = Frequisition::where('id', $id)->update([
-
+                
+                'vendor' => $vendor->vendor_final,
+                'amount' => $vendor->amount,
                 'approvallevel' =>  $updatedapprovallevel,
                 'approvedby' => Auth::user()->userrole,
                 'isActive'  => 1,
                 'status'  => 2,
 
-                 ]);   
+                 ]); 
+                 
+                 
+             $savefile = Requisitionfile::create([
 
-   // gadzira purchase order then add upload file too
+                'requisitionId' => $frequisition->id,
+                'companyId'  =>Auth::user()->companyId,
+                'file'  =>  $vendor->file_path,
+                'userId'  =>Auth::user()->id,
+                'path'  => 1,
+                
+               ]);
+
+      $frequisition = Frequisition::where('id', $id)->first();
 
     $formFields = FormField::where(function ($query) use ($frequisition) {
         $query->Where('companyId', $frequisition->companyId);
@@ -685,6 +751,7 @@ class ProcurementController extends Controller
     $purchaseOrderData['userId'] = $frequisition->userId;
     $purchaseOrderData['department'] = $frequisition->department;
     $purchaseOrderData['status'] = 0; 
+    // $purchaseOrderData['vendor'] = $vendor->vendor_final   ; 
     $purchaseOrderData['approvallevel'] = 0;
     $purchaseOrderData['totalapprovallevels'] = 0;
     $purchaseOrderData['purchaseorderstatus'] = 1;
@@ -729,7 +796,7 @@ class ProcurementController extends Controller
 
                     'companyId'  =>Auth::user()->companyId,
                     'frequisition_id' => $frequisition->id,
-                    'amount'  => $frequisition->amount,
+                    'amount'  => $vendor->amount,
                     'userId'  =>Auth::user()->id,
                     'status'  => 1,
                     'approvallevel' =>  $updatedapprovallevel,

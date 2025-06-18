@@ -125,40 +125,44 @@
       <div class="col-sm-12">
         <div class="card">
           <div class="card-header">
-            <strong>Documents</strong>
+            <strong>Vendors</strong>
             <small>List</small>
           </div>
 
           <div class="card-body">
-            <table class="table table-responsive-sm table-bordered table-striped table-sm">
-              <thead>
-                <tr>              
-                  <th class="text-center">Name</th>              
-                  <th class="text-center">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                 
-               @foreach ($files as $faira)
-                
-                <tr>          
-                  <td class="text-center">Quotation</td> 
-                  <td class="text-center"> 
-                  @if (isset($faira))
-               
-                  <a href="{{ asset('/storage/uploads/'.$faira->file) }}" target="_blank"class='btn btn-info btn-sm' style='color: white;'>
-                      <span class='fa fa-pencil'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'>View Quotation</span>
-                    </a> 
-                    @else
-                  <p>No document available.</p>
-                  @endif                          
-                  </td>
-                </tr>
-                @endforeach
-              
-              </tbody>
-            </table>
+      <table class="table table-responsive-sm table-bordered table-striped table-sm">
+          <thead>
+            <tr>
+              <th class="text-center">
+                <input type="checkbox" id="select_all">
+              </th>
+              <th class="text-center">Vendor Name</th>
+              <th class="text-center">Amount</th>
+              <th class="text-center">Document</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach ($frequisitionvendors as $faira)
+              <tr>
+                <td class="text-center">
+                  <input type="checkbox" name="selected_files[]" value="{{ $faira->id }}">
+                </td>
+                <td class="text-center">{{ $faira->vendor_final }}</td>
+                <td class="text-center">R {{ number_format($faira->amount, 2) }}</td>
+                <td class="text-center">
+                  @if (!empty($faira->file_path))
+                    <a href="{{ asset($faira->file_path) }}" target="_blank" class="btn btn-info btn-sm" style="color: white;">
+                      <span class="fa fa-eye"></span> View Document
+                    </a>
+                  @else
+                    <p>No document available.</p>
+                  @endif
+                </td>
+              </tr>
+            @endforeach
+          </tbody>
+        </table>
+
           </div>
 
         </div>
