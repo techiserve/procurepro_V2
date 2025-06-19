@@ -63,10 +63,14 @@
                   <td class="text-center">{{$user->email}}</td>
                   <td class="text-center">
               
-              @if($user->isActive == 1)
+              @if($user->isActive == 1 && $user->is_locked != 1)
               <button type="button" class="btn btn-outline-success"><span class="fa fa-check-circle"></span> Active</button>
-                @else
+                @elseif($user->isActive != 1 && $user->is_locked != 1)
                 <button type="button" class="btn btn-outline-danger"><span class="fa fa-check-circle"></span> InActive</button>
+                @elseif($user->is_locked == 1)
+                <button type="button" class="btn btn-outline-danger"><span class="fa fa-check-circle"></span> Locked</button>
+                @else
+                 <button type="button" class="btn btn-outline-info"><span class="fa fa-check-circle"></span> Unsigned</button>
                 @endif
               
               </td>
@@ -90,7 +94,12 @@
                             }
                           })
                       "><i class="fa fa-trash"></i> Delete</a> &nbsp;
-                  </td>
+                  
+                @if($user->is_locked == 1)
+         
+                     <a href="/users/{{$user->id}}/unlock" class="btn btn-icon btn-success mr-1"><i class="fa fa-check-circle"></i> Unlock</a> 
+                @endif
+                </td>
                 </tr>
                     </tr>
                     @endforeach

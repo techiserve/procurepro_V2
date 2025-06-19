@@ -136,6 +136,10 @@
             color: white;
             text-decoration: none;
         }
+
+        input.is-invalid {
+    border: 2px solid #ff7276;
+}
     </style>
 </head>
 <body>
@@ -150,10 +154,16 @@
         <form action="{{ route('login') }}" method="POST">
         @csrf
             <label for="email">Email</label>
-            <input type="email" id="email" name="email" placeholder="Username@tagpay.digital">
+         <input type="email" id="email" name="email"  class="{{ $errors->has('email') ? 'is-invalid' : '' }}" placeholder="username@tagpay.digital" value="{{ old('email') }}">
+        @error('email')
+            <span style="color: #ff7276; font-size: 13px;">{{ $message }}</span>
+        @enderror
 
             <label for="password">Password</label>
-            <input type="password" id="password" name="password" placeholder="Password">
+         <input type="password" id="password"  class="{{ $errors->has('password') ? 'is-invalid' : '' }}" name="password" placeholder="Password">
+@error('password')
+    <span style="color: #ff7276; font-size: 13px;">{{ $message }}</span>
+@enderror
 
             <div class="forgot-password">
             <a href="/forgot-password">Forgot Password?</a>

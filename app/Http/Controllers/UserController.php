@@ -155,6 +155,18 @@ class UserController extends Controller
  }
 
 
+  public function userunlock($id)
+ {
+       $user = User::where('id', $id)->update([
+        'is_locked' => false,
+        'login_attempts' => 0,
+    ]);
+
+    return back()->with('success', 'User account unlocked.');
+
+ }
+
+
     public function companyindex()
     {
 

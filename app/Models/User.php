@@ -26,6 +26,8 @@ class User extends Authenticatable
         'address',
         'userrole',
         'vendor_source',
+        'login_attempts',
+        'is_locked',
         'companyId',
         'isActive',
         'phoneNumber',

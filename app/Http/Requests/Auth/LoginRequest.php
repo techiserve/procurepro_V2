@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use App\Models\User;
 
 class LoginRequest extends FormRequest
 {
@@ -37,20 +38,59 @@ class LoginRequest extends FormRequest
      *
      * @throws \Illuminate\Validation\ValidationException
      */
+    // public function authenticate()
+    // {
+    //     $credentials = $this->only('email', 'password');
+
+    //     // Attempt to authenticate user
+    //     if (Auth::guard('web')->attempt($credentials)) {
+    //         return true;
+    //     }
+
+    //     // If neither authentication attempt was successful, throw an exception
+    //     throw \Illuminate\Validation\ValidationException::withMessages([
+    //         'email' => [trans('auth.failed')],
+    //     ]);
+    // }
+
     public function authenticate()
-    {
-        $credentials = $this->only('email', 'password');
+{
+    $credentials = $this->only('email', 'password');
+    $user = User::where('email', $this->email)->first();
 
-        // Attempt to authenticate user
-        if (Auth::guard('web')->attempt($credentials)) {
-            return true;
-        }
-
-        // If neither authentication attempt was successful, throw an exception
-        throw \Illuminate\Validation\ValidationException::withMessages([
-            'email' => [trans('auth.failed')],
+    // If user exists and is locked, deny login
+    if ($user && $user->is_locked) {
+        throw ValidationException::withMessages([
+            'email' => ['This account is locked. Please contact an administrator.'],
         ]);
     }
+
+    // Attempt authentication
+    if (Auth::guard('web')->attempt($credentials)) {
+        // Reset attempts on success
+        if ($user) {
+            $user->update([
+                'login_attempts' => 0,
+                'is_locked' => false,
+            ]);
+        }
+
+        return true;
+    }
+
+    // If authentication fails
+    if ($user) {
+        $user->increment('login_attempts');
+
+        if ($user->login_attempts >= 3) {
+            $user->update(['is_locked' => true]);
+        }
+    }
+
+    throw ValidationException::withMessages([
+        'email' => [trans('auth.failed')],
+    ]);
+}
 
     /**
      * Ensure the login request is not rate limited.

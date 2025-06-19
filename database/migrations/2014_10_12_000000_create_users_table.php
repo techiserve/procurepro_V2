@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('companyName')->nullable();
             $table->string('vendor_source')->nullable();
             $table->integer('department')->nullable();
+             $table->integer('login_attempts')->default(0);
+            $table->boolean('is_locked')->default(false);
             $table->string('address')->nullable();
             $table->string('position')->nullable();
             $table->string('userrole')->nullable();

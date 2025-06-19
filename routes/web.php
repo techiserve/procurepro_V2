@@ -69,6 +69,7 @@ Route::middleware('auth')->group(function () {
      Route::post('/users/userRole', [UserController::class, 'userRole'])->name('users.userRole');
      Route::get('/users/{id}/delete', [UserController::class, 'userdelete'])->name('user.delete');
      Route::get('/users/{id}/edit', [UserController::class, 'useredit'])->name('edit.delete');
+       Route::get('/users/{id}/unlock', [UserController::class, 'userunlock'])->name('edit.unlock');
      Route::put('/users/{id}/update', [UserController::class, 'update'])->name('user.update');
 
      //Company
