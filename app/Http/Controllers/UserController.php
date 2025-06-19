@@ -29,7 +29,7 @@ class UserController extends Controller
     {
            $user = Auth::user()->companyId;    
        
-         $users = User::where('userrole', '>', 1)->where('companyId', Auth::user()->companyId)->get();
+         $users = User::where('userrole', '!=', 1)->where('companyId', Auth::user()->companyId)->get();
 
         return view('users.index', compact('users'));
     }
