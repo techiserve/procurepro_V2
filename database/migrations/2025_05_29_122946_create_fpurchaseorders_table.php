@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('invoice')->nullable();
             $table->integer('userId')->nullable();
             $table->integer('status')->nullable();
+            $table->integer('amount')->nullable();
+            $table->integer('vendor')->nullable();
             $table->integer('purchaseorderstatus')->nullable();
             $table->integer('balance')->nullable();
             $table->integer('isActive')->nullable();
