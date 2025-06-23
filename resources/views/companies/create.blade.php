@@ -146,31 +146,35 @@
 <script>
     let fieldIndex = 0;
 
-    function createField(index, name = '', label = '', type = '') {
-        return `
-            <div class="form-group" id="field-${index}">
-                <div class="row">
-                    <div class="col-md-4">
-                        <input type="text" class="form-control" name="fields[${index}][name]" value="${name}" placeholder="Field Name" required>
-                    </div>
-                    <div class="col-md-4">
-                        <input type="text" class="form-control" name="fields[${index}][label]" value="${label}" placeholder="Label" required>
-                    </div>
-                    <div class="col-md-3">
-                        <select class="form-control" name="fields[${index}][type]" required>
-                            <option value="">-- Select type --</option>
-                            <option value="string" ${type === 'string' ? 'selected' : ''}>String</option>
-                            <option value="integer" ${type === 'integer' ? 'selected' : ''}>Integer</option>
-                            <option value="checkbox" ${type === 'checkbox' ? 'selected' : ''}>Checkbox</option>
-                        </select>
-                    </div>
-                    <div class="col-md-1 text-right">
-                        <button type="button" class="btn btn-danger btn-md" onclick="removeField(${index})">&times;</button>
-                    </div>
+function createField(index, name = '', label = '', type = '') {
+    const requiredFields = ['department', 'amount', 'vendor'];
+    const isRemovable = !requiredFields.includes(name.toLowerCase());
+
+    return `
+        <div class="form-group" id="field-${index}">
+            <div class="row">
+                <div class="col-md-4">
+                    <input type="text" class="form-control" name="fields[${index}][name]" value="${name}" placeholder="Field Name" required ${isRemovable ? '' : 'readonly'}>
+                </div>
+                <div class="col-md-4">
+                    <input type="text" class="form-control" name="fields[${index}][label]" value="${label}" placeholder="Label" required ${isRemovable ? '' : 'readonly'}>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-control" name="fields[${index}][type]" required ${isRemovable ? '' : 'disabled'}>
+                        <option value="">-- Select type --</option>
+                        <option value="string" ${type === 'string' ? 'selected' : ''}>String</option>
+                        <option value="integer" ${type === 'integer' ? 'selected' : ''}>Integer</option>
+                        <option value="checkbox" ${type === 'checkbox' ? 'selected' : ''}>Checkbox</option>
+                    </select>
+                </div>
+                <div class="col-md-1 text-right">
+                    ${isRemovable ? `<button type="button" class="btn btn-danger btn-md" onclick="removeField(${index})">&times;</button>` : ''}
                 </div>
             </div>
-        `;
-    }
+        </div>
+    `;
+}
+
 
     function addField(name = '', label = '', type = '') {
         const container = document.getElementById('fields');
@@ -186,13 +190,14 @@
         }
     }
 
-    // Add 4 default prefilled fields on page load
     window.onload = function () {
-        addField('amount', 'Amount', 'integer');
-        addField('invoiceamount', 'Invoice Amount', 'integer');
-        addField('department', 'Department', 'string');
-        addField('paymentmethod', 'Payment Method', 'string');
+
         addField('vendor', 'Vendor', 'string');
+        addField('amount', 'Amount', 'integer');
+        addField('department', 'Department', 'string');
+        addField('invoiceamount', 'Invoice Amount', 'integer');
+        addField('paymentmethod', 'Payment Method', 'string');
+        
     };
 
 </script>
