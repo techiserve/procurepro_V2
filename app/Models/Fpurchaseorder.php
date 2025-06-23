@@ -29,7 +29,10 @@ class Fpurchaseorder extends Model
         'reason',
         'approvedby',
         'releaseStatus',
-        'uploadStatus'
+        'uploadStatus',
+        'bankAccountName',
+        'bankAccountNumber',
+        'bankAccountType'
        
     ];
 

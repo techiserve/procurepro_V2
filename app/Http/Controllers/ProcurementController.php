@@ -467,13 +467,16 @@ class ProcurementController extends Controller
             $jobcardpath = null;
 
         }
-       // dd($invoicepath,$jobcardpath);
+          $accounts = Bankaccount::all();
+          $departmentapproval = Departmentapproval::where('departmentId', $departments->id)->where('IsBankAccount' ,'!=', null)->first();
+      //  dd($departmentapproval);
+
        $history = RequisitionHistory::where('frequisition_id', $id)->where('userId',  Auth::user()->id)->where('action', '=', 'Purchase Order Approved')
        ->orwhere('action', '=', 'Purchase Order Rejected')->where('frequisition_id', $id)->where('userId',  Auth::user()->id)
        ->orwhere('action', '!=', 'Purchase Order Returned')->where('frequisition_id', $id)->where('userId',  Auth::user()->id)->first();
 
 
-        return view('procurement.viewfpurchaseorder', compact('fpurchaseorder','formFields','invoicepath','jobcardpath','history','departments'));
+        return view('procurement.viewfpurchaseorder', compact('fpurchaseorder','formFields','invoicepath','jobcardpath','history','departments','departmentapproval','accounts'));
     }
 
     /**
@@ -905,6 +908,7 @@ class ProcurementController extends Controller
     public function approvepurchaseorder(string $id)
     {
  
+      // dd($request->account_id());
         $requisition = Fpurchaseorder::where('id', $id)->first();
 
         if($requisition->approvallevel+1 > $requisition->totalapprovallevels){
@@ -946,6 +950,93 @@ class ProcurementController extends Controller
 
             $updatereq = Fpurchaseorder::where('id', $id)->update([
 
+                'approvallevel' =>  $updatedapprovallevel,
+                'approvedby' => $approver->roleId,              
+
+                 ]);   
+
+
+
+                 $requisitiond = RequisitionHistory::create([
+
+                    'frequisition_id' => $requisition->requisition_id,
+                    'amount'  => $requisition->amount,
+                    'companyId'  =>Auth::user()->companyId,
+                    'userId'  =>Auth::user()->id,
+                    'status'  => 1,
+                    'approvallevel' =>  $updatedapprovallevel,
+                    'approvedby' => Auth::user()->userrole, 
+                    'isActive'  => 1,
+                    'action'  => "Purchase Order Approved",
+                    'doneby' => Auth::user()->name
+                    
+                   ]);
+            
+
+        }
+
+
+        if($updatereq){
+   
+         return redirect()->route('procurement.mypurchaseorder')->with('success', 'Purchase order approved successfully!');
+
+        }
+    }
+
+
+    public function approvepurchaseorderbankAccount(string $id,Request $request)
+    {
+           
+       $bank = Bankaccount::where('id',$request->account_id)->first();
+    //   dd($bank);
+        $requisition = Fpurchaseorder::where('id', $id)->first();
+
+        if($requisition->approvallevel+1 > $requisition->totalapprovallevels){
+         
+            $updatedapprovallevel = $requisition->approvallevel;
+                 $updatereq = Fpurchaseorder::where('id', $id)->update([
+
+                 'bankAccountName' =>  $bank->bankName,
+                 'bankAccountNumber' =>  $bank->accountNumber,
+                 'bankAccountType' =>  $bank->accountType,
+
+                'approvallevel' =>  $updatedapprovallevel,
+                'approvedby' => Auth::user()->userrole,
+                'isActive'  => 1,
+                'status'  => 2,
+
+                 ]);  
+                 
+                 
+
+                 $requisitiond = RequisitionHistory::create([
+
+                    'frequisition_id' => $requisition->requisition_id,
+                    'amount'  => $requisition->amount,
+                    'companyId'  =>Auth::user()->companyId,
+                 //   'file'  => $quotation,
+                    'userId'  =>Auth::user()->id,
+                    'status'  => 1,
+                    'approvallevel' =>  $updatedapprovallevel,
+                    'approvedby' => Auth::user()->userrole, 
+                    'isActive'  => 1,
+                    'action'  => "Purchase Order Approved and Sent to Upload File",
+                    'doneby' => Auth::user()->name
+                    
+                   ]);
+            
+
+
+        }else{
+  
+            $updatedapprovallevel = $requisition->approvallevel+1;
+            $approver = Departmentapproval::where('mode','=','PO')->where('departmentId', $requisition->department)->where('approvalId', $updatedapprovallevel)->first();
+
+            $updatereq = Fpurchaseorder::where('id', $id)->update([
+
+                'bankAccountName' =>  $bank->bankName,
+                'bankAccountNumber' =>  $bank->accountNumber,
+                'bankAccountType' =>  $bank->accountType,
                 'approvallevel' =>  $updatedapprovallevel,
                 'approvedby' => $approver->roleId,              
 

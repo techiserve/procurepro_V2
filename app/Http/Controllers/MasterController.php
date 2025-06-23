@@ -204,8 +204,8 @@ class MasterController extends Controller
           
           foreach($second_approval as $key => $n ) {
 
-              if($second_approval[$key] != null){
-
+              if($second_approval[$key] != null){        
+        
             $arrData[] = array(
 
                 $companyrole = Departmentapproval::create([
@@ -216,6 +216,7 @@ class MasterController extends Controller
                     'approvalId' =>$second_approval[$key],
                     'companyId' => $companyId,
                     'departmentId'  => $executive->id,
+                    'IsBankAccount' => $request->input('is_default_secondary') ==  $second_userrole[$key] ? $request->input('is_default_secondary') : null,
                     'roleId'  => $second_userrole[$key]
                     
                 ])

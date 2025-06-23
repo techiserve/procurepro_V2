@@ -99,14 +99,21 @@
                       </select>
                     </div>
                   </div>
-                  <div class="col-md-5">
+                  
+                  <div class="col-md-3">
                     <div class="form-group">
-                      <select class="form-control" name="secondary_role[]">
+                      <select class="form-control secondary-role-select" name="secondary_role[]" onchange="updateDefaultValue(this)">
                         <option value="">Select Role</option>
                         @foreach($roles as $role)
                           <option value="{{ $role->id }}">{{ $role->name }}</option>
                         @endforeach
                       </select>
+                    </div>
+                  </div>
+                         <div class="col-md-2 d-flex align-items-center">
+                    <div class="form-check">
+                      <input class="form-check-input secondary-default-checkbox" type="checkbox" name="is_default_secondary" value="">
+                      <label class="form-check-label">Assign Bank Account</label>
                     </div>
                   </div>
                   <div class="col-md-1">
@@ -256,42 +263,60 @@ $(document).ready(function(){
     $('#primary_row'+id).remove();  
   });
 
-  $('#add_secondary').click(function(){  
-    j++;  
-    $('#dynamic_field_secondary').append(
-      '<div id="secondary_row'+j+'" class="row dynamic-added">' +
-        '<div class="col-md-6">' +
-          '<div class="form-group">' +
-            '<select class="form-control" name="secondary_approval[]">' +
-              '<option value="">Select Approval Level</option>' +
-              '<option value="1">First Line</option>' +
-              '<option value="2">Second Line</option>' +
-              '<option value="3">Third Line</option>' +
-              '<option value="4">Fourth Line</option>' +
-              '<option value="5">Fiveth Line</option>' +
-              '<option value="6">Sixth Line</option>' +
-            '</select>' +
-          '</div>' +
-        '</div>' +
-        '<div class="col-md-5">' +
-          '<div class="form-group">' +
-            '<select class="form-control" name="secondary_role[]">' +
-              '<option value="">Select Role</option>' +
-              @json($roles).map(role => `<option value="${role.id}">${role.name}</option>`).join('') +
-            '</select>' +
-          '</div>' +
-        '</div>' +
-        '<div class="col-md-1">' +
-          '<button type="button" name="remove_secondary" id="'+j+'" class="btn btn-danger btn_remove_secondary">x</button>' +
-        '</div>' +
-      '</div>'
-    );
-  });
+$('#add_secondary').click(function(){  
+  j++;  
+  $('#dynamic_field_secondary').append(
+    `<div id="secondary_row${j}" class="row dynamic-added">
+      <div class="col-md-6">
+        <div class="form-group">
+          <select class="form-control" name="secondary_approval[]">
+            <option value="">Select Approval Level</option>
+            <option value="1">First Line</option>
+            <option value="2">Second Line</option>
+            <option value="3">Third Line</option>
+            <option value="4">Fourth Line</option>
+            <option value="5">Fiveth Line</option>
+            <option value="6">Sixth Line</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="form-group">
+          <select class="form-control secondary-role-select" name="secondary_role[]" onchange="updateDefaultValue(this)">
+            <option value="">Select Role</option>
+            ${@json($roles).map(role => `<option value="${role.id}" data-name="${role.name}">${role.name}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="col-md-2 d-flex align-items-center">
+        <div class="form-check">
+          <input class="form-check-input secondary-default-checkbox" type="checkbox" name="is_default_secondary" value="">
+          <label class="form-check-label">Assign Bank Account</label>
+        </div>
+      </div>
+      <div class="col-md-1">
+        <button type="button" name="remove_secondary" id="${j}" class="btn btn-danger btn_remove_secondary">x</button>
+      </div>
+    </div>`
+  );
+});
 
   $(document).on('click', '.btn_remove_secondary', function(){  
     const id = $(this).attr("id");   
     $('#secondary_row'+id).remove();  
   });
+
+  
+  $(document).on('change', '.secondary-default-checkbox', function(){
+    $('.secondary-default-checkbox').not(this).prop('checked', false);
+  });
+
+   window.updateDefaultValue = function(selectElement) {
+    const checkbox = $(selectElement).closest('.row').find('.secondary-default-checkbox');
+    const selectedOption = selectElement.options[selectElement.selectedIndex];
+   const selectedId = selectedOption.value;
+    checkbox.val(selectedId);
+  }
 
   $('#enable_secondary').change(function(){
     if ($(this).is(':checked')) {

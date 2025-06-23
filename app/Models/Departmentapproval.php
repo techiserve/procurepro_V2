@@ -18,6 +18,7 @@ class Departmentapproval extends Model
         'departmentId',
         'approvalId',
         'roleId',
+        'IsBankAccount',
        
     ];
 }

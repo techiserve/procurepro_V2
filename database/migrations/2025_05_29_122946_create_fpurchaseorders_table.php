@@ -31,6 +31,11 @@ return new class extends Migration
             $table->string('approvedby')->nullable();
             $table->string('releaseStatus')->nullable();
             $table->string('uploadStatus')->nullable();
+
+            $table->string('bankAccountName')->nullable();
+            $table->string('bankAccountNumber')->nullable();
+            $table->string('bankAccountType')->nullable();
+
             $table->timestamps();
         });
     }

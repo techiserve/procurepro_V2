@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('departmentId')->nullable();
             $table->integer('approvalId')->nullable();
             $table->integer('roleId')->nullable();
+           $table->integer('IsBankAccount')->nullable();
             $table->timestamps();
         });
     }

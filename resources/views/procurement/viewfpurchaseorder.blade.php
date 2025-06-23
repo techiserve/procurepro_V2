@@ -89,11 +89,18 @@
             @if($fpurchaseorder->approvedby == auth()->user()->userrole AND $fpurchaseorder->approvallevel <= $fpurchaseorder->totalapprovallevels)
             <div class="card-footer">
             <div class="form-group pull-right">
-    				
-            <a href='/procurement/{{$fpurchaseorder->id}}/accept' class='btn btn-success' style='color: white;'>
+
+    				   @if($departmentapproval->IsBankAccount == auth()->user()->userrole)
+                    <a href=''   data-target="#bankAccount" data-toggle="modal"  class='btn btn-success' style='color: white;'>
                       <span class='fa fa-check-circle'></span>
                       <span class='hidden-sm hidden-sm hidden-md'>Approve</span>
                     </a> 
+               @else
+                    {{-- <a href='/procurement/{{$fpurchaseorder->id}}/accept' class='btn btn-success' style='color: white;'>
+                      <span class='fa fa-check-circle'></span>
+                      <span class='hidden-sm hidden-sm hidden-md'>Approve</span>
+                    </a>  --}}
+               @endif
         
                     <a href=''  data-target="#returnback" data-toggle="modal"  class='btn btn-info' style='color: white;'>
                       <span class='fa fa-arrow-left'></span>
@@ -208,8 +215,61 @@
               <!-- /.modal-content-->
             </div>
             <!-- /.modal-dialog-->
-
    </div>
+
+<!-- modal for sending copy of cashflow to grower -->
+<div class="modal fade" id="bankAccount" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-primary modal-md" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><i style="color:white;" class="fa fa-envelope"></i> Bank Account</h4>
+        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+
+      <form method="POST" action="/procurement/{{$fpurchaseorder->id}}/bankAccount">
+        @csrf
+        @method('put')
+        <div class="modal-body" style="font-size: 14px;">							
+
+          <div class="form-group">
+            <label for="account_id">Pick Bank Account</label>
+            <select name="account_id" id="account_id" class="form-control" required>
+              <option value="" disabled selected>-- Select Account --</option>
+              @foreach($accounts as $account)
+                <option value="{{ $account->id }}" 
+                        data-name="{{ $account->bankName }}" 
+                        data-number="{{ $account->accountNumber }}">
+                  {{ $account->bankName }} ({{ $account->accountNumber }})
+                </option>
+              @endforeach
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="account_name">Account Name</label>
+            <input type="text" id="account_name" class="form-control" readonly>
+          </div>
+
+          <div class="form-group">
+            <label for="account_number">Account Number</label>
+            <input type="text" id="account_number" class="form-control" readonly>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+          <button class="btn btn-success" type="submit"><span class='fa fa-times-circle'></span> Save</button>
+        </div>
+      </form>
+    </div>
+    <!-- /.modal-content-->
+  </div>
+  <!-- /.modal-dialog-->
+</div>
+
 
    <div class="modal fade" id="returnback" tabindex="-1"  role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             	<div class="modal-dialog modal-primary modal-md" role="document">
@@ -249,3 +309,12 @@
 
 
 @endsection
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("account_id").addEventListener("change", function () {
+      var selected = this.options[this.selectedIndex];
+      document.getElementById("account_name").value = selected.getAttribute("data-name") || '';
+      document.getElementById("account_number").value = selected.getAttribute("data-number") || '';
+    });
+  });
+</script>
