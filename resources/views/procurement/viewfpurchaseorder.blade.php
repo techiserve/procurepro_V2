@@ -96,10 +96,10 @@
                       <span class='hidden-sm hidden-sm hidden-md'>Approve</span>
                     </a> 
                @else
-                    {{-- <a href='/procurement/{{$fpurchaseorder->id}}/accept' class='btn btn-success' style='color: white;'>
+                    <a href='/procurement/{{$fpurchaseorder->id}}/accept' class='btn btn-success' style='color: white;'>
                       <span class='fa fa-check-circle'></span>
                       <span class='hidden-sm hidden-sm hidden-md'>Approve</span>
-                    </a>  --}}
+                    </a> 
                @endif
         
                     <a href=''  data-target="#returnback" data-toggle="modal"  class='btn btn-info' style='color: white;'>
