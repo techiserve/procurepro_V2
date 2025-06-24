@@ -16,16 +16,17 @@ class VendorController extends Controller
 {
     public function index()
     {    
-        $vendors = Vendor::all();
-        $vendorTypes = VendorType::all();
+        $vendors = Vendor::where('companyId', Auth::user()->companyId)->get();
+        $vendorTypes = VendorType::where('companyId', Auth::user()->companyId)->get();
         return view('vendors.index', compact('vendors','vendorTypes'));
     }
 
     public function store(Request $request)
     {
+         $company = Auth::user()->companyId;
         $vendor = Vendor::create(array_merge(
             $request->only([
-                'name', 'type', 'description', 'vat_registered',
+                'name', 'type', 'companyId','description', 'vat_registered',
                 'contact_no_1', 'contact_no_2', 'supplier_code', 'vat_allocation',
                 'finance_manager', 'address'
             ]),
@@ -79,14 +80,16 @@ class VendorController extends Controller
 
     public function vendorTypeIndex()
     {
-        $vendorTypes = VendorType::all();
+        $vendorTypes = VendorType::where('companyId', Auth::user()->companyId)->get();
         return view('vendors.vendortype', compact('vendorTypes'));
     }
 
     public function vendorTypeStore(Request $request)
     {
+         $company = Auth::user()->companyId;
         VendorType::create([
             'name' => $request->name,
+            'companyId' => $company,
             'active' => $request->has('active'),
         ]);
         return redirect()->route('vendor-types.index')->with('success', 'Vendor type added.');
@@ -116,18 +119,20 @@ class VendorController extends Controller
 
     public function createClassification()
     {
-        $classifications = ClassificationOfExpense::all();
+        $classifications = ClassificationOfExpense::where('companyId', Auth::user()->companyId)->get();
         return view('classifications.create', compact('classifications'));
     }
     
     public function storeClassification(Request $request)
     {
+        $company = Auth::user()->companyId;
         $request->validate([
             'name' => 'required|string|max:255',
         ]);
     
         ClassificationOfExpense::create([
             'name' => $request->name,
+            'companyId' => $company, 
             'active' => $request->has('active'),
         ]);
     
@@ -174,7 +179,7 @@ public function update(Request $request, $id)
 
 public function showApprovalPage()
 {
-    $vendors = Vendor::where('status', 2)->get(); // status = Pending
+    $vendors = Vendor::where('status', 2)->where('companyId', Auth::user()->companyId)->get();// status = Pending
     return view('vendors.approval', compact('vendors'));
 }
 

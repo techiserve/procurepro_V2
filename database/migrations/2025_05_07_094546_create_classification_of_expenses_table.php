@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('classification_of_expenses', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->integer('companyId');
             $table->boolean('active')->default(true);
             $table->timestamps();
         });

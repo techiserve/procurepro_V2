@@ -177,17 +177,21 @@ function createField(index, name = '', label = '', type = '') {
 
 
     function addField(name = '', label = '', type = '') {
+
         const container = document.getElementById('fields');
         const fieldHTML = createField(fieldIndex, name, label, type);
         container.insertAdjacentHTML('beforeend', fieldHTML);
         fieldIndex++;
+        
     }
 
     function removeField(index) {
+
         const field = document.getElementById(`field-${index}`);
         if (field) {
             field.remove();
         }
+
     }
 
     window.onload = function () {

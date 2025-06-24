@@ -13,6 +13,7 @@ class Vendor extends Model
         'name',
         'type',
         'description',
+        'companyId',
         'vat_registered',
         'local_international',
         'contact_no_1',

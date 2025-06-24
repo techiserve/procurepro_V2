@@ -12,6 +12,7 @@ class CreateVendorsTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('type')->nullable();
+            $table->integer('companyId');
             $table->string('description')->nullable();
             $table->string('vat_registered')->nullable();
             $table->string('local_international')->nullable();
