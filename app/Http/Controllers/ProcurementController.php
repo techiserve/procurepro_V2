@@ -711,8 +711,6 @@ class ProcurementController extends Controller
     public function requisitionapproval(string $id, Request $request)
     {
 
-       // dd($request->all(),$id);
-
         FrequisitionVendor::where('frequisition_id', $id)->update(['status' => null]);
         $selectedvendor = FrequisitionVendor::where('id', $request->selected_vendor)->update([
             'status' => 1
