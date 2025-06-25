@@ -114,7 +114,13 @@ class CompanyController extends Controller
 
     public function store(Request $request)
     {
+      
+        $user = User::where('email', $request->email)->first();
 
+        if($user){
+           
+              return redirect()->route('companies.create')->with('warning', 'Sorry buddy, this email has already been used!');
+        }
  
         $company = new Company();
         $company->name = $request->companyname;
