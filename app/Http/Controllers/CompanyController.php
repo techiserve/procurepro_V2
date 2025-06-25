@@ -149,7 +149,7 @@ class CompanyController extends Controller
 
          //
           $fields = $request->input('fields');
-
+         /// dd($fields);
         foreach ($fields as $field) {
 
             // Save form field configuration

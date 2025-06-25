@@ -160,7 +160,7 @@ function createField(index, name = '', label = '', type = '') {
                     <input type="text" class="form-control" name="fields[${index}][label]" value="${label}" placeholder="Label" required ${isRemovable ? '' : 'readonly'}>
                 </div>
                 <div class="col-md-3">
-                    <select class="form-control" name="fields[${index}][type]" required ${isRemovable ? '' : 'disabled'}>
+                    <select class="form-control" name="fields[${index}][type]" required ${isRemovable ? '' : 'readonly'}>
                         <option value="">-- Select type --</option>
                         <option value="string" ${type === 'string' ? 'selected' : ''}>String</option>
                         <option value="integer" ${type === 'integer' ? 'selected' : ''}>Integer</option>
@@ -182,7 +182,7 @@ function createField(index, name = '', label = '', type = '') {
         const fieldHTML = createField(fieldIndex, name, label, type);
         container.insertAdjacentHTML('beforeend', fieldHTML);
         fieldIndex++;
-        
+
     }
 
     function removeField(index) {

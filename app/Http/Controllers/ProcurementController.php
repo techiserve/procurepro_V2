@@ -477,9 +477,9 @@ class ProcurementController extends Controller
             $jobcardpath = null;
 
         }
-          $accounts = Bankaccount::all();
-          $departmentapproval = Departmentapproval::where('departmentId', $departments->id)->where('IsBankAccount' ,'!=', null)->first();
-      //  dd($departmentapproval);
+          
+       $accounts = Bankaccount::all();
+       $departmentapproval = Departmentapproval::where('departmentId', $departments->id)->where('IsBankAccount' ,'!=', null)->first();
 
        $history = RequisitionHistory::where('frequisition_id', $id)->where('userId',  Auth::user()->id)->where('action', '=', 'Purchase Order Approved')
        ->orwhere('action', '=', 'Purchase Order Rejected')->where('frequisition_id', $id)->where('userId',  Auth::user()->id)
