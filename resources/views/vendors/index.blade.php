@@ -51,7 +51,11 @@
                       <td>{{ $vendor->name }}</td>
                       <td>{{ $vendor->type }}</td>
                       <td>{{ $vendor->contact_no_1 }}</td>
-                      <td>{{ $vendor->finance_manager }}</td>
+                        @foreach ($users as $user)   
+                      @if ($user->id == $vendor->finance_manager )
+                     <td>{{ $user->name }}</td>
+                      @endif   
+                      @endforeach
                       <td>{{ $vendor->bank_name }}</td>
                       <td>{{ $vendor->account_number }}</td>
                       <td>

@@ -17,8 +17,9 @@ class VendorController extends Controller
     public function index()
     {    
         $vendors = Vendor::where('companyId', Auth::user()->companyId)->get();
+        $users = User::where('companyId', Auth::user()->companyId)->get();
         $vendorTypes = VendorType::where('companyId', Auth::user()->companyId)->get();
-        return view('vendors.index', compact('vendors','vendorTypes'));
+        return view('vendors.index', compact('vendors','vendorTypes','users'));
     }
 
     public function store(Request $request)
@@ -180,7 +181,8 @@ public function update(Request $request, $id)
 public function showApprovalPage()
 {
     $vendors = Vendor::where('status', 2)->where('companyId', Auth::user()->companyId)->get();// status = Pending
-    return view('vendors.approval', compact('vendors'));
+    $users = User::where('companyId', Auth::user()->companyId)->get();
+    return view('vendors.approval', compact('vendors','users'));
 }
 
 public function viewApprovalDetails($id)

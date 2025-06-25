@@ -75,16 +75,19 @@ class ProcurementController extends Controller
            $vendors = Vendor::select(
                 'id as SupplierID', 
                 'name as SupplierName'
-            )->get();
+            )->where('companyId', Auth::user()->companyId)->where('status','=', '3')->get();
         }
 
         
         $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
 
         $expenses = ClassificationOfExpense::all();
+
+       // dd($vendors);
         return view('procurement.createrequisition', compact('departments','vendors','banks','vendorTypes','expenses','servicetypes','properties','transcations','taxes','formFields','company'));
 
     }
+    
 
 
 
@@ -116,6 +119,7 @@ class ProcurementController extends Controller
        // $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
        // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
         $roles = userrole::all(); 
+        $departments = Department::all();
 
         $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
         //dd($formFields);
@@ -133,6 +137,7 @@ class ProcurementController extends Controller
         //dd($formFields);
  
        // $frequisitions = Frequisition::with('histories')->where('userId', Auth::user()->id)->where('companyId', Auth::user()->companyId)->orwhere('isActive', '=', 1)->where('companyId', Auth::user()->companyId)->orderby('id','desc')->get();
+        $departments = Department::all();
 
         $frequisitions = Frequisition::with('histories')->where('approvedby', Auth::user()->userrole)->where('status', '=', 1)->where('companyId', Auth::user()->companyId)->orderby('id','desc')->get();
         $roles = userrole::where('companyId', Auth::user()->companyId)->get(); 
@@ -187,6 +192,7 @@ class ProcurementController extends Controller
        // $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
        // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
         $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
+        $departments = Department::all();
 
         //  dd($fpurchaseorders);
         return view('procurement.indexfpurchaseorder', compact('fpurchaseorders','roles','formFields'));
@@ -197,6 +203,7 @@ class ProcurementController extends Controller
     { 
 
         $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
+        $departments = Department::all();
 
         $fpurchaseorders = Fpurchaseorder::with('histories')->where('approvedby', Auth::user()->userrole)->where('status', '=', 1)->where('companyId', Auth::user()->companyId)->get();
         $roles = userrole::where('companyId', Auth::user()->companyId)->get();
@@ -208,6 +215,7 @@ class ProcurementController extends Controller
     public function managepurchaseorder()
     {
         $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
+        $departments = Department::all();
 
         $fpurchaseorders = Fpurchaseorder::where('releaseStatus', '=', null)->where('companyId', Auth::user()->companyId)->get();
         $roles = userrole::where('companyId', Auth::user()->companyId)->get();
