@@ -26,11 +26,11 @@ class VendorController extends Controller
          $company = Auth::user()->companyId;
         $vendor = Vendor::create(array_merge(
             $request->only([
-                'name', 'type', 'companyId','description', 'vat_registered',
+                'name', 'type','description', 'vat_registered',
                 'contact_no_1', 'contact_no_2', 'supplier_code', 'vat_allocation',
                 'finance_manager', 'address'
             ]),
-            ['status' => 1]
+            ['status' => 1,'companyId' => $company]
         ));
         session(['vendor_id' => $vendor->id]);
     //dd($request->vendor_documents);
