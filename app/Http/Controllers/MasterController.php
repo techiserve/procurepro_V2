@@ -132,6 +132,7 @@ class MasterController extends Controller
             
              $role = new Rolepermission();
              $role->role_id = $id;
+             $role->companyId = Auth::user()->companyId;
              $role->permission = $value; 
              $role->save();
       

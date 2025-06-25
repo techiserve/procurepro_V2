@@ -81,9 +81,9 @@
                 <li class="list-group-item d-flex justify-content-between align-items-center" style="background-color:#edf2f4;">
                 Request New Vendor
 
-                @php  $newuser = 'Request New Vendor'; @endphp
+                @php  $newuser = 'Request a Vendor'; @endphp
                     <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" name="requestnewvendor"  value="Request New Vendor" id="flexSwitchCheckDefault" 
+                <input class="form-check-input" type="checkbox" role="switch" name="requestnewvendor"  value="Request a Vendor" id="flexSwitchCheckDefault" 
                 @if(in_array($newuser , $permissions)) checked @endif />   
                 
                 </div> 
@@ -102,9 +102,9 @@
                 <li class="list-group-item d-flex justify-content-between align-items-center" style="background-color:#edf2f4;">
                     Manage Vendors
 
-                    @php  $newuser = 'Manage Vendors'; @endphp
+                    @php  $newuser = 'All Vendors'; @endphp
                     <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch"  name="managevendors" value="Manage Vendors" id="flexSwitchCheckDefault" 
+                <input class="form-check-input" type="checkbox" role="switch"  name="managevendors" value="All Vendors" id="flexSwitchCheckDefault" 
                 @if(in_array($newuser , $permissions)) checked @endif />   
 
                 </div>
@@ -122,11 +122,11 @@
                 </li>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center" style="background-color:#edf2f4;">
-                    Vendor Request Approval
+                    Vendor Type
 
-                    @php  $newuser = 'Vendor Request Approval'; @endphp
+                    @php  $newuser = 'Vendor Type'; @endphp
                     <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" name="vendorrequestapproval" value="Vendor Request Approval"  id="flexSwitchCheckDefault" 
+                <input class="form-check-input" type="checkbox" role="switch" name="vendorrequestapproval" value="Vendor Type"  id="flexSwitchCheckDefault" 
                 @if(in_array($newuser , $permissions)) checked @endif />   
 
                 </div>
