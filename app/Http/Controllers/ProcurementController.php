@@ -64,11 +64,11 @@ class ProcurementController extends Controller
 
         $company = Company::where('id', Auth::user()->companyId)->first();
 
-        $vendorTypes = VendorType::all();
+        $vendorTypes = VendorType::where('companyId', Auth::user()->companyId)->get();
 
         $banks = Bank::all();
 
-        $expenses = ClassificationOfExpense::all();
+        $expenses = ClassificationOfExpense::where('companyId', Auth::user()->companyId)->get();
 
 
         if($company->vendor_source == "Vendor Management"){
