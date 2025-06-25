@@ -83,8 +83,7 @@
       
 			<hr style="border-color: black;">
 			<br>
-         
-         
+                
        @if($fpurchaseorder->userId != auth()->user()->id AND $history == NULL)
             @if($fpurchaseorder->approvedby == auth()->user()->userrole AND $fpurchaseorder->approvallevel <= $fpurchaseorder->totalapprovallevels)
             <div class="card-footer">
