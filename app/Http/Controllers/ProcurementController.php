@@ -129,11 +129,15 @@ class ProcurementController extends Controller
 
     public function myrequisition()
     {
+        $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
+        //dd($formFields);
+ 
+       // $frequisitions = Frequisition::with('histories')->where('userId', Auth::user()->id)->where('companyId', Auth::user()->companyId)->orwhere('isActive', '=', 1)->where('companyId', Auth::user()->companyId)->orderby('id','desc')->get();
 
-        $requisitions = Requisition::with('histories')->where('approvedby', Auth::user()->userrole)->where('status', '=', 1)->where('companyId', Auth::user()->companyId)->get();
+        $frequisitions = Frequisition::with('histories')->where('approvedby', Auth::user()->userrole)->where('status', '=', 1)->where('companyId', Auth::user()->companyId)->orderby('id','desc')->get();
         $roles = userrole::where('companyId', Auth::user()->companyId)->get(); 
      
-        return view('procurement.myrequisiton', compact('requisitions','roles'));
+        return view('procurement.myrequisiton', compact('frequisitions','roles','formFields'));
     }
 
         public function viewrequisition(string $id)
@@ -190,21 +194,27 @@ class ProcurementController extends Controller
 
 
     public function mypurchaseorder()
-    {
-        $purchaseorders = Purchaseorder::with('histories')->where('approvedby', Auth::user()->userrole)->where('status', '=', 1)->where('companyId', Auth::user()->companyId)->get();
+    { 
+
+        $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
+
+        $fpurchaseorders = Fpurchaseorder::with('histories')->where('approvedby', Auth::user()->userrole)->where('status', '=', 1)->where('companyId', Auth::user()->companyId)->get();
         $roles = userrole::where('companyId', Auth::user()->companyId)->get();
 
-        return view('procurement.mypurchaseorder', compact('purchaseorders','roles'));
+        return view('procurement.mypurchaseorder', compact('fpurchaseorders','roles','formFields'));
     }
 
 
     public function managepurchaseorder()
     {
-    
-        $purchaseorders = Purchaseorder::where('releaseStatus', '=', null)->where('companyId', Auth::user()->companyId)->get();
-        $roles = userrole::where('companyId', Auth::user()->companyId)->get();
+        $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
 
-        return view('procurement.managepurchaseorder', compact('purchaseorders','roles'));
+        $fpurchaseorders = Fpurchaseorder::where('releaseStatus', '=', null)->where('companyId', Auth::user()->companyId)->get();
+        $roles = userrole::where('companyId', Auth::user()->companyId)->get();
+        // $purchaseorders = Purchaseorder::where('releaseStatus', '=', null)->where('companyId', Auth::user()->companyId)->get();
+        // $roles = userrole::where('companyId', Auth::user()->companyId)->get();
+
+        return view('procurement.managepurchaseorder', compact('fpurchaseorders','formFields','roles'));
     }
 
 
@@ -641,7 +651,7 @@ class ProcurementController extends Controller
         $fpur = Fpurchaseorder::where('id', $id)->first();
         $freq = Frequisition::where('id', $fpur->frequisition_id)->first();
         $departmentName = Department::where('id', $freq->department)->first();
-       // dd($freq);
+       // dd($departmentName);
         $level = Departmentapproval::where('mode','=','PO')->where('departmentId', $departmentName->id)->min('approvalId');
         //dd($level);
         $totalapprovallevels = Departmentapproval::where('mode','=','PO')->where('departmentId', $departmentName->id)->count();

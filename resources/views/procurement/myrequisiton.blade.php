@@ -1,6 +1,8 @@
 @extends('stack.layouts.admin')
 <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.4/tutorials/timelines/timeline-7/assets/css/timeline-7.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 @section('content')
 <div class="container-fluid">
   <div class="animated fadeIn">
@@ -8,57 +10,67 @@
       <div class="col-sm-12">
         <div class="card">
           <div class="card-header">
-            <strong>Requisition</strong>
-            <small>List</small>
+            <strong>Requisitions</strong>
           </div>
-
+    
           <div class="card-body">
+         <button class="btn btn-primary btn-sm pull-right"  data-toggle="modal" data-target="#filterModal" style="padding: 10px 20px; font-size: 16px; min-width: 100px;margin-top:-60px"><i class="fa fa-filter"></i> Filter </button>
+          <form method="POST" action="{{ route('procurement.downloadrequisitions') }}">
+          @csrf
+          <button  type="submit" class="btn btn-success btn-sm pull-right" style="padding: 10px 20px; font-size: 16px; min-width: 100px;margin-top:-60px;margin-right: 110px;"><i class="fa fa-filter"></i> Download </button>&nbsp;
+         
             <table class="table table-striped table-bordered zero-configuration">
               <thead>
                 <tr>
-                  <th>#</th>
-                  <th class="text-center"> Vendor Name</th>
-                  <th class="text-center"> Services</th>
-                  <th class="text-center">Payment method</th>
-                  <th class="text-center">Expenses</th>
-                  <th class="text-center">Amount</th>
-                 
-                  <th class="text-center">Approved By</th>
-                  <th class="text-center">Status</th>
-                
-                  <th class="text-center">Action</th>   
+                <th>#</th>
+                <th>Requusition #</th>   
+               @foreach($formFields as $field)
+                <th>{{ ucfirst($field->name) }}</th>
+                @endforeach
+                <th>Approved By</th>   
+                <th>Status</th>         
+                <th class="text-center">Action</th>   
                 </tr>
               </thead>
               <tbody>
-                @foreach($requisitions as $company)
+                @foreach($frequisitions as $frequisition)
+                {{--  --}}
+                @if(auth()->user()->id == $frequisition->userId OR auth()->user()->userrole  == $frequisition->approvedby )
                 <tr>
-                <td></td>
-                  <td class="text-center">{{$company->vendor}}</td>
-                  <td class="text-center">{{$company->services}}</td>
-                  <td class="text-center">{{$company->paymentmethod}}</td>
-                  <td class="text-center">{{$company->expenses}}</td>
-                  <td class="text-center">{{$company->amount}}</td>
+                <td> <input type="checkbox" id="select" name="requisition_ids[]" value="{{ $frequisition->id }}"></td>
+                 <td>{{ $frequisition->requisitionNumber }}</td>
+                  @foreach($formFields as $field) 
+                        <td>{{ $frequisition->{$field->name} ?? '' }}</td>
+                    @endforeach
+                
+                    <!-- <td>{{ $frequisition->userId }}</td>
+                    <td>{{ $frequisition->companyId }}</td>
+                    <td>{{ $frequisition->status }}</td>
+                    <td>{{ $frequisition->isActive }}</td>
+                    <td>{{ $frequisition->approvallevel }}</td>
+                    <td>{{ $frequisition->totalapprovallevels }}</td>
+                    <td>{{ $frequisition->approvedby }}</td> -->
                   <td class="text-center">
 
                   @foreach($roles as $role)
-                  @if($company->approvedby == $role->id)
-                     {{$role->name}}
+                  @if($frequisition->approvedby == $role->id)
+                  {{$role->name}}
                   @endif
-                   @endforeach
+                  @endforeach
              
                   </td>
 
                   <td class="text-center">
               
-              @if($company->status == 0)
+              @if($frequisition->status == 0)
               <button type="button" class="btn btn-outline-primary"><span class="fa fa-spinner"></span> Pending</button>
-                @elseif($company->status == 1)
+                @elseif($frequisition->status == 1)
                 <button type="button" class="btn btn-outline-primary"><span class="fa fa-spinner"></span> Pending</button>
-                @elseif($company->status == 2)
+                @elseif($frequisition->status == 2)
                 <button type="button" class="btn btn-outline-success"><span class="fa fa-check-circle"></span> Approved</button>
-                @elseif($company->status == 3)
+                @elseif($frequisition->status == 3)
                 <button type="button" class="btn btn-outline-danger"><span class="fa fa-times-circle"></span> Rejected</button>
-                @elseif($company->status == 4)
+                @elseif($frequisition->status == 4)
                 <button type="button" class="btn btn-outline-info"><span class="fa fa-arrow-left"></span> Returned</button>
                 @else
                 <button type="button" class="btn btn-outline-primary"><span class="fa fa-spinner"></span> Processing</button>
@@ -68,20 +80,24 @@
             
                   <td class="text-center">
 
-                    @if($company->userId == auth()->user()->id)
+                    @if($frequisition->userId == auth()->user()->id)
 
-                    @if($company->status == 4)
-                    <a  href="/procurement/{{$company->id}}/editrequisition"  class='btn btn-info btn-sm' style='color: white;'>
+                    @if($frequisition->status == 4)
+                    <a  href="/procurement/{{$frequisition->id}}/editrequisition"  class='btn btn-info btn-sm' style='color: white;'>
                       <span class='fa fa-desktop'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'> Update Requisition</span>
+                      <span class='hidden-sm hidden-sm hidden-md'> Update </span>
                     </a>&nbsp;
-                    <a  href="#" class='btn btn-success btn-sm' data-toggle="modal" data-target="#historyModal{{ $company->id }}" style='color: white;'>
+                    <a  href="#" class='btn btn-success btn-sm' data-toggle="modal" data-target="#historyModal{{ $frequisition->id }}" style='color: white;'>
                       <span class='fa fa-pencil'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'> View Logs</span>
+                      <span class='hidden-sm hidden-sm hidden-md'> Logs</span>
+                   </a>&nbsp;
+                   <a  href="/procurement/{{$frequisition->id}}/download" class='btn btn-primary btn-sm'  style='color: white;'>
+                      <span class='fa fa-download'></span>
+                      <span class='hidden-sm hidden-sm hidden-md'>Download</span>
                    </a>&nbsp;
                    
                 <!-- Modal Structure -->
-                <div class="modal fade" id="historyModal{{ $company->id }}" tabindex="-1" role="dialog" aria-labelledby="historyModalLabel{{ $company->id }}" aria-hidden="true">
+                <div class="modal fade" id="historyModal{{ $frequisition->id }}" tabindex="-1" role="dialog" aria-labelledby="historyModalLabel{{ $frequisition->id }}" aria-hidden="true">
 <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -96,11 +112,11 @@
                     <div class="container">
                         <div class="row justify-content-center">
                             <div class="col-12">
-                            @if($company->histories->isEmpty())
+                            @if($frequisition->histories->isEmpty())
                                         <p>No history found for this requisition.</p>
                                     @else
                                 <ul class="timeline">
-                                @foreach($company->histories as $history)
+                                @foreach($frequisition->histories as $history)
 
                                 @php
                                     $date = \Carbon\Carbon::parse($history->created_at);
@@ -145,18 +161,22 @@
 
 
                     @else
-                      <a  href="/procurement/{{$company->id}}/viewrequisition"  class='btn btn-info btn-sm' style='color: white;'>
+                      <a  href="/procurement/{{$frequisition->id}}/viewrequisition"  class='btn btn-info btn-sm' style='color: white;'>
                       <span class='fa fa-desktop'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'> View Requisition</span>
+                      <span class='hidden-sm hidden-sm hidden-md'>View</span>
                     </a>&nbsp;
-                    <a  href="#" class='btn btn-success btn-sm' data-toggle="modal" data-target="#historyModal{{ $company->id }}" style='color: white;'>
+                    <a  href="#" class='btn btn-success btn-sm' data-toggle="modal" data-target="#historyModal{{ $frequisition->id }}" style='color: white;'>
                       <span class='fa fa-pencil'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'> View Logs</span>
+                      <span class='hidden-sm hidden-sm hidden-md'>Logs</span>
+                   </a>&nbsp;
+                   <a  href="/procurement/{{$frequisition->id}}/download" class='btn btn-primary btn-sm'  style='color: white;'>
+                      <span class='fa fa-download'></span>
+                      <span class='hidden-sm hidden-sm hidden-md'>Download</span>
                    </a>&nbsp;
 
-                <!-- Modal Structure -->
-                <div class="modal fade" id="historyModal{{ $company->id }}" tabindex="-1" role="dialog" aria-labelledby="historyModalLabel{{ $company->id }}" aria-hidden="true">
-<div class="modal-dialog modal-lg" role="document">
+
+                <div class="modal fade" id="historyModal{{ $frequisition->id }}" tabindex="-1" role="dialog" aria-labelledby="historyModalLabel{{ $frequisition->id }}" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="timelineModalLabel">Requisition Logs</h5>
@@ -164,17 +184,17 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+       <div class="modal-body">
                 <!-- Timeline 7 - Bootstrap Brain Component -->
                 <section class="bsb-timeline-7 py-3">
                     <div class="container">
                         <div class="row justify-content-center">
                             <div class="col-12">
-                            @if($company->histories->isEmpty())
+                            @if($frequisition->histories->isEmpty())
                                         <p>No history found for this requisition.</p>
                                     @else
                                 <ul class="timeline">
-                                @foreach($company->histories as $history)
+                                @foreach($frequisition->histories as $history)
 
                                 @php
                                     $date = \Carbon\Carbon::parse($history->created_at);
@@ -218,49 +238,43 @@
 </div>
 
 
-                   @endif
+                   @endif                              
 
-                    
-                
-                    <!-- <a href='/procurement/{{$company->id}}/approve' class='btn btn-success btn-sm' style='color: white;'>
-                      <span class='fa fa-pencil'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'> Approve</span>
-                    </a>&nbsp;
-                    <a href='/procurement/{{$company->id}}/rejection' class='btn btn-danger btn-sm' style='color: white;'>
-                      <span class='fa fa-pencil'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'> Reject</span>
-                    </a> -->
                    @else
-                   <a  href="/procurement/{{$company->id}}/viewrequisition" class='btn btn-info btn-sm' style='color: white;'>
+                   <a  href="/procurement/{{$frequisition->id}}/viewrequisition" class='btn btn-info btn-sm' style='color: white;'>
                       <span class='fa fa-desktop'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'> View Requisition</span>
+                      <span class='hidden-sm hidden-sm hidden-md'> View </span>
                    </a>&nbsp;
-                   <a  href="#" class='btn btn-success btn-sm' data-toggle="modal" data-target="#historyModal{{ $company->id }}" style='color: white;'>
+                   <a  href="#" class='btn btn-success btn-sm' data-toggle="modal" data-target="#historyModal{{ $frequisition->id }}" style='color: white;'>
                       <span class='fa fa-pencil'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'> View Logs</span>
+                      <span class='hidden-sm hidden-sm hidden-md'>  Logs</span>
+                   </a>&nbsp;
+                   <a  href="/procurement/{{$frequisition->id}}/download" class='btn btn-primary btn-sm'  style='color: white;'>
+                      <span class='fa fa-download'></span>
+                      <span class='hidden-sm hidden-sm hidden-md'>Download</span>
                    </a>&nbsp;
 
-                                       <!-- Modal Structure -->
-                <div class="modal fade" id="historyModal{{ $company->id }}" tabindex="-1" role="dialog" aria-labelledby="historyModalLabel{{ $company->id }}" aria-hidden="true">
-<div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
+                <!-- Modal Structure -->
+                <div class="modal fade" id="historyModal{{ $frequisition->id }}" tabindex="-1" role="dialog" aria-labelledby="historyModalLabel{{ $frequisition->id }}" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
                 <h5 class="modal-title" id="timelineModalLabel">Requisition Logs</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-            </div>
-            <div class="modal-body">
+               </div>
+               <div class="modal-body">
                 <!-- Timeline 7 - Bootstrap Brain Component -->
                 <section class="bsb-timeline-7 py-3">
                     <div class="container">
                         <div class="row justify-content-center">
                             <div class="col-12">
-                            @if($company->histories->isEmpty())
+                            @if($frequisition->histories->isEmpty())
                                         <p>No history found for this requisition.</p>
                                     @else
                                 <ul class="timeline">
-                                @foreach($company->histories as $history)
+                                @foreach($frequisition->histories as $history)
 
                                 @php
                                     $date = \Carbon\Carbon::parse($history->created_at);
@@ -306,9 +320,12 @@
                    @endif
                   </td>
                 </tr>
+                @endif
+                {{--  --}}
                 @endforeach
               </tbody>
-            </table>
+            </table>        
+          </form>
           </div>
 
         </div>
@@ -316,10 +333,36 @@
     </div>
 
 
+       
+
+
   </div>
 </div>
 
 @endsection
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const downloadButton = document.querySelector('button[type="submit"]');
+        const form = document.querySelector('form');
+
+        downloadButton.addEventListener('click', function(event) {
+            // Check if any checkboxes are checked
+            const checkboxes = document.querySelectorAll('input[name="requisition_ids[]"]:checked');
+            if (checkboxes.length === 0) {
+                event.preventDefault(); // Prevent form submission
+
+                // Display SweetAlert2 alert
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No Selection',
+                    text: 'Please select at least one checkbox before downloading.',
+                    confirmButtonText: 'Okay'
+                });
+            }
+        });
+    });
+</script>
+
 @if(session('approved'))
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
