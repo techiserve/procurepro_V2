@@ -90,7 +90,7 @@ class ProcurementController extends Controller
 
     public function createVendor()
     {
-        $vendorTypes = VendorType::all();
+        $vendorTypes = VendorType::where('companyId', Auth::user()->companyId)->get();
         $users = User::where('companyId','=',Auth::user()->companyId)->get();
         return view('procurement.createVendor', compact('vendorTypes','users'));
     }
