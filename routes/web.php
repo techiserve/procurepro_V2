@@ -134,6 +134,8 @@ Route::middleware('auth')->group(function () {
      Route::get('/procurement/{id}/accept', [ProcurementController::class, 'approvepurchaseorder'])->name('procurement.approvepurchaseorder');
      Route::put('/procurement/{id}/bankAccount', [ProcurementController::class, 'approvepurchaseorderbankAccount'])->name('procurement.bankAccount');
      Route::put('/procurement/{id}/reject', [ProcurementController::class, 'rejectpurchaseorder'])->name('procurement.rejectpurchaseorder');
+     Route::put('/procurement/{id}/pop', [ProcurementController::class, 'pop'])->name('procurement.pop');
+     Route::get('/procurement/{id}/paymentRelease', [ProcurementController::class, 'paymentRelease'])->name('procurement.paymentRelease');
      Route::put('/procurement/{id}/sendback', [ProcurementController::class, 'sendbackpurchaseorder'])->name('procurement.updatepurchaseorder');
      Route::get('download-pdf/{filename}', [YourController::class, 'downloadPDF'])->name('download.pdf');
      Route::get('/procurement/createVendor', [ProcurementController::class, 'createVendor'])->name('procurement.createVendor');

@@ -28,7 +28,7 @@
                 @endforeach
                 <th>Approved By</th>   
                 <th>Status</th>         
-                <th class="text-center">Action</th>    
+                <th class="text-center" style="width: 180px;">Action</th>    
                 </tr>
               </thead>
               <tbody>
@@ -69,23 +69,145 @@
               
               </td>
           
-                  <td class="text-center">
+                  <td class="text-center" style="width: 180px;">
                   @if($fpurchaseorder->status == 0 OR $fpurchaseorder->status == 4)
                 
-                   <a  href="/procurement/{{$fpurchaseorder->requisitionId}}/logs" class='btn btn-success btn-sm' style='color: white;'>
+                    <a  href="#" class='btn btn-success btn-sm' data-toggle="modal" data-target="#historyModal{{ $fpurchaseorder->id }}" style='color: white;'>
                       <span class='fa fa-pencil'></span>
                       <span class='hidden-sm hidden-sm hidden-md'>  Logs</span>
                    </a>&nbsp;
 
                     @else
                   
-                   <a  href="/procurement/{{$fpurchaseorder->requisitionId}}/logs" class='btn btn-success btn-sm' style='color: white;'>
+                    <a  href="#" class='btn btn-success btn-sm' data-toggle="modal" data-target="#historyModal{{ $fpurchaseorder->id }}" style='color: white;'>
                       <span class='fa fa-pencil'></span>
                       <span class='hidden-sm hidden-sm hidden-md'>  Logs</span>
-                   </a>&nbsp;
-
+                   </a>&nbsp;               
 
                     @endif
+                        
+                     <a  href="#" class='btn btn-info btn-sm' data-toggle="modal" data-target="#pop{{ $fpurchaseorder->id }}" style='color: white;'>
+                      <span class='fa fa-download'></span>
+                      <span class='hidden-sm hidden-sm hidden-md'> Upload POP</span>
+                     </a>&nbsp;
+
+                     <a  href="/procurement/{{$fpurchaseorder->id}}/paymentRelease" class='btn btn-secondary btn-sm' style='color: white;'>
+                      <span class='fa fa-pencil'></span>
+                      <span class='hidden-sm hidden-sm hidden-md'>  Payment Release</span>
+                     </a>&nbsp;  
+
+                     <a  href="/procurement/{{$fpurchaseorder->requisitionId}}/logs" class='btn btn-info btn-sm' style='color: white;'>
+                      <span class='fa fa-desktop'></span>
+                      <span class='hidden-sm hidden-sm hidden-md'>View</span>
+                     </a>&nbsp;  
+
+                     <a  href="/procurement/{{$fpurchaseorder->requisitionId}}/logs" class='btn btn-success btn-sm' style='color: white;'>
+                      <span class='fa fa-download'></span>
+                      <span class='hidden-sm hidden-sm hidden-md'>View Documents</span>
+                     </a>&nbsp;  
+                     
+                     
+               {{-- modal --}}
+              <div class="modal fade" id="pop{{ $fpurchaseorder->id }}" tabindex="-1"  role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            	<div class="modal-dialog modal-primary modal-md" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h4 class="modal-title"><i style="color:white;" class="fa fa-envelope"></i> Upload Proof of Payment</h4>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">×</span>
+                    </button>
+                  </div>
+                  <div class="modal-body"  style="font-size: 14px;">							
+  
+                  <form method="POST" action="/procurement/{{$fpurchaseorder->id}}/pop"   enctype="multipart/form-data">
+                   @csrf
+                  @method('put')
+										<div class="form-group">
+											<label for="message">Upload document</label>
+											<input type="file" name="pop" class="form-control" maxlength="150"  />
+										</div>
+                  </div>
+
+                  <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+										<button class="btn btn-primary" type="submit" ><span class='fa fa-arrow-left'></span> Upload</button>
+                  </div>
+                </div> 
+              </form>
+              <!-- /.modal-content-->
+            </div>
+            <!-- /.modal-dialog-->
+            </div>
+
+
+
+
+{{--  --}}
+
+             <!-- Modal Structure -->
+                   <div class="modal fade" id="historyModal{{ $fpurchaseorder->id }}" tabindex="-1" role="dialog" aria-labelledby="historyModalLabel{{ $fpurchaseorder->id }}" aria-hidden="true">
+          <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="timelineModalLabel">Requisition Logs</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Timeline 7 - Bootstrap Brain Component -->
+                <section class="bsb-timeline-7 py-3">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-12">
+                            @if($fpurchaseorder->histories->isEmpty())
+                                        <p>No history found for this requisition.</p>
+                                    @else
+                                <ul class="timeline">
+                                @foreach($fpurchaseorder->histories as $history)
+
+                                @php
+                                    $date = \Carbon\Carbon::parse($history->created_at);
+                                    @endphp
+
+                                    <li class="timeline-item">
+                                        <div class="timeline-body">
+                                            <div class="timeline-meta">
+                                                <div class="d-inline-flex flex-column px-2 py-1 text-success-emphasis bg-success-subtle border border-success-subtle rounded-2 text-md-end">
+                                                    <span class="fw-bold">{{$date->format('d F Y')}}</span>
+                                                    <span>{{$date->format('g:ia')}}</span>
+                                                </div>
+                                            </div>
+                                            <div class="timeline-content timeline-indicator">
+                                                <div class="card border-0 shadow">
+                                                    <div class="card-body p-xl-4"  style="position: relative;">
+                                                    <h6 class="card-subtitle text-secondary mb-3" style="position: absolute; top: 10; right: 10;">{{ $loop->iteration }}</h6>
+                                                        <h2 class="card-title mb-2">{{$history->doneby}}</h2>
+                                                      
+                                                        <p class="card-text m-0">{{$history->action}}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>             
+                                 @endforeach
+                                </ul>
+
+                                @endif
+
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{{--  --}}
+                   
                   </td>
                 </tr>
                 @endforeach

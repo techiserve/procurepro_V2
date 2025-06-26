@@ -217,7 +217,7 @@ class ProcurementController extends Controller
         $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
         $departments = Department::all();
 
-        $fpurchaseorders = Fpurchaseorder::where('releaseStatus', '=', null)->where('companyId', Auth::user()->companyId)->get();
+        $fpurchaseorders = Fpurchaseorder::with('histories')->where('releaseStatus', '=', null)->where('status', '=', '2')->where('companyId', Auth::user()->companyId)->get();
         $roles = userrole::where('companyId', Auth::user()->companyId)->get();
         // $purchaseorders = Purchaseorder::where('releaseStatus', '=', null)->where('companyId', Auth::user()->companyId)->get();
         // $roles = userrole::where('companyId', Auth::user()->companyId)->get();
@@ -288,6 +288,24 @@ class ProcurementController extends Controller
 
 
     }
+
+
+
+
+     public function paymentRelease(string $id)
+     { 
+
+            $purchaseOrder = FpurchaseOrder::find($id);
+            if($purchaseOrder->status == 2 ){
+            if ($purchaseOrder) {
+                $purchaseOrder->releaseStatus = 1; // Set status to 1 (or any status you want)
+                $purchaseOrder->save();
+             }
+            }
+        
+        return back()->with('success', 'Payment Release Completed!'); 
+
+     }
 
 
 
@@ -1171,6 +1189,33 @@ class ProcurementController extends Controller
       }
 
     }
+
+
+
+     public function pop(Request $request, string $id)
+    {
+
+
+        // Store the file
+        $invoicefilePath = $request->file('pop')->store('uploads', 'public');
+
+        $invoicefilePath =  Str::afterLast($invoicefilePath, '/');
+
+        $updatereq = Fpurchaseorder::where('id', $id)->update([
+
+        'pop'  => $invoicefilePath,
+  
+        ]);   
+
+      if($updatereq){
+
+       return redirect()->route('procurement.managepurchaseorder')->with('success', 'Pop uploaded, well done buddy!');
+
+      }
+
+    }
+
+
 
 
     public function generateAndMergePDFs(string $id)

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('department')->nullable();
             $table->string('jobcardfile')->nullable();
             $table->string('invoice')->nullable();
+            $table->string('pop')->nullable();
             $table->integer('userId')->nullable();
             $table->integer('status')->nullable();
             $table->integer('amount')->nullable();

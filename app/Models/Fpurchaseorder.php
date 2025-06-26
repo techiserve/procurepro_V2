@@ -24,10 +24,9 @@ class Fpurchaseorder extends Model
         'purchaseorderstatus',
         'balance',
         'approvallevel',
-
         'vendor',
         'amount',
-
+        'pop',
         'totalapprovallevels',
         'isActive',
         'reason',
