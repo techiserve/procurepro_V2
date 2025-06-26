@@ -22,46 +22,52 @@
               <thead>
                 <tr>
                 <th><input type="checkbox"  id="selectAll"></th> <!-- Select All Checkbox -->
-                <th>Requisition #</th>   
-                @foreach($formFields as $field)
-                <th>{{ ucfirst($field->name) }}</th>
-                @endforeach
-                <th>Approved By</th>   
-                <th>Status</th>         
-                <th class="text-center">Action</th>    
+
+                  <th class="text-center">Vendor Name</th>
+                  <th class="text-center">Services</th>
+           
+                  <th class="text-center">Expenses</th>
+                  <th class="text-center">Amount</th>
+                 
+                  <th class="text-center">Approved By</th>
+
+                  <th class="text-center">Status</th>
+
+                  <th class="text-center">Action</th>   
                 </tr>
               </thead>
               <tbody>
-                 @foreach($fpurchaseorders as $fpurchaseorder)
+                @foreach($purchaseorders as $company)
                 <tr>
-                  @php  $active = $fpurchaseorder->status; @endphp
-                <td><input type="checkbox" name="selected_items[]" value="{{ $fpurchaseorder->id }}"   @if($active != '2') disabled @endif>
-                    <td>{{ $fpurchaseorder->requisitionNumber }}</td>
-                  @foreach($formFields as $field)
-                        <td>{{ $fpurchaseorder->{$field->name} ?? '' }}</td>
-                    @endforeach
-                
+                @php  $active = $company->status; @endphp
+                <td><input type="checkbox" name="selected_items[]" value="{{ $company->id }}"   @if($active != '2') disabled @endif>
+                </td>
+                  <td>{{$company->vendor}}</td>
+                  <td>{{$company->services}}</td>
+      
+                  <td>{{$company->expenses}}</td>
+                  <td>{{$company->amount}}</td>
                   <td class="text-center">
-
+              
                   @foreach($roles as $role)
-                  @if($fpurchaseorder->approvedby == $role->id)
-                  {{$role->name}}
+                  @if($company->approvedby == $role->id)
+                     {{$role->name}}
                   @endif
-                  @endforeach
+                   @endforeach
              
                   </td>
 
-              <td class="text-center">
+                  <td class="text-center">
               
-              @if($fpurchaseorder->status == 0)
+              @if($company->status == 0)
               <button type="button" class="btn btn-outline-primary"><span class="fa fa-spinner"></span> Pending</button>
-                @elseif($fpurchaseorder->status == 1)
+                @elseif($company->status == 1)
                 <button type="button" class="btn btn-outline-primary"><span class="fa fa-spinner"></span> Pending</button>
-                @elseif($fpurchaseorder->status == 2)
+                @elseif($company->status == 2)
                 <button type="button" class="btn btn-outline-success"><span class="fa fa-check-circle"></span> Approved</button>
-                @elseif($fpurchaseorder->status == 3)
+                @elseif($company->status == 3)
                 <button type="button" class="btn btn-outline-danger"><span class="fa fa-times-circle"></span> Rejected</button>
-                @elseif($fpurchaseorder->status == 4)
+                @elseif($company->status == 4)
                 <button type="button" class="btn btn-outline-info"><span class="fa fa-arrow-left"></span> Returned</button>
                 @else
                 <button type="button" class="btn btn-outline-primary"><span class="fa fa-spinner"></span> Processing</button>
@@ -70,16 +76,16 @@
               </td>
           
                   <td class="text-center">
-                  @if($fpurchaseorder->status == 0 OR $fpurchaseorder->status == 4)
+                  @if($company->status == 0 OR $company->status == 4)
                 
-                   <a  href="/procurement/{{$fpurchaseorder->requisitionId}}/logs" class='btn btn-success btn-sm' style='color: white;'>
+                   <a  href="/procurement/{{$company->requisitionId}}/logs" class='btn btn-success btn-sm' style='color: white;'>
                       <span class='fa fa-pencil'></span>
                       <span class='hidden-sm hidden-sm hidden-md'>  Logs</span>
                    </a>&nbsp;
 
                     @else
                   
-                   <a  href="/procurement/{{$fpurchaseorder->requisitionId}}/logs" class='btn btn-success btn-sm' style='color: white;'>
+                   <a  href="/procurement/{{$company->requisitionId}}/logs" class='btn btn-success btn-sm' style='color: white;'>
                       <span class='fa fa-pencil'></span>
                       <span class='hidden-sm hidden-sm hidden-md'>  Logs</span>
                    </a>&nbsp;

@@ -260,7 +260,7 @@ class ProcurementController extends Controller
 
         foreach ($selectedPurchaseOrders as $orderId) {
 
-            $purchaseOrder = PurchaseOrder::find($orderId);
+            $purchaseOrder = FpurchaseOrder::find($orderId);
             if($purchaseOrder->status == 2 ){
             if ($purchaseOrder) {
                 $purchaseOrder->releaseStatus = 1; // Set status to 1 (or any status you want)
@@ -479,7 +479,7 @@ class ProcurementController extends Controller
    
         if  (Storage::disk('public')->exists($jobcard)) {
             
-            
+
             $jobcardpath = Storage::disk('public')->url($jobcard);
         }else{
             $jobcardpath = null;
