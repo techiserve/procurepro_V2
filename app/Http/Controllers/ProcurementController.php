@@ -479,7 +479,7 @@ class ProcurementController extends Controller
    
         if  (Storage::disk('public')->exists($jobcard)) {
             
-          //  $jobcardpath = Storage::get($jobcard);
+            
             $jobcardpath = Storage::disk('public')->url($jobcard);
         }else{
             $jobcardpath = null;
