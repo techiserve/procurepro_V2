@@ -93,7 +93,7 @@
 
                      <a  href="/procurement/{{$fpurchaseorder->id}}/paymentRelease" class='btn btn-secondary btn-sm' style='color: white;'>
                       <span class='fa fa-pencil'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'>  Payment Release</span>
+                      <span class='hidden-sm hidden-sm hidden-md'>Payment Release</span>
                      </a>&nbsp;  
 
                      <a  href="/procurement/{{$fpurchaseorder->requisitionId}}/logs" class='btn btn-info btn-sm' style='color: white;'>
@@ -101,48 +101,88 @@
                       <span class='hidden-sm hidden-sm hidden-md'>View</span>
                      </a>&nbsp;  
 
-                     <a  href="/procurement/{{$fpurchaseorder->requisitionId}}/logs" class='btn btn-success btn-sm' style='color: white;'>
+                     <a  href="#" class='btn btn-success btn-sm' data-toggle="modal" data-target="#viewdocuments{{ $fpurchaseorder->id }}"style='color: white;'>
                       <span class='fa fa-download'></span>
                       <span class='hidden-sm hidden-sm hidden-md'>View Documents</span>
                      </a>&nbsp;  
                      
+
+
                      
                {{-- modal --}}
-              <div class="modal fade" id="pop{{ $fpurchaseorder->id }}" tabindex="-1"  role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            	<div class="modal-dialog modal-primary modal-md" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h4 class="modal-title"><i style="color:white;" class="fa fa-envelope"></i> Upload Proof of Payment</h4>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">×</span>
-                    </button>
-                  </div>
-                  <div class="modal-body"  style="font-size: 14px;">							
-  
-                  <form method="POST" action="/procurement/{{$fpurchaseorder->id}}/pop"   enctype="multipart/form-data">
-                   @csrf
-                  @method('put')
-										<div class="form-group">
-											<label for="message">Upload document</label>
-											<input type="file" name="pop" class="form-control" maxlength="150"  />
-										</div>
-                  </div>
+  <div class="modal fade" id="viewdocuments{{ $fpurchaseorder->id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-primary modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h4 class="modal-title"><i class="fa fa-envelope"></i> Upload Proof of Payment</h4>
+        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
 
-                  <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
-										<button class="btn btn-primary" type="submit" ><span class='fa fa-arrow-left'></span> Upload</button>
-                  </div>
-                </div> 
-              </form>
-              <!-- /.modal-content-->
+      <form method="POST" action="" enctype="multipart/form-data">
+        @csrf
+        @method('put')
+
+        <div class="modal-body" style="font-size: 14px;">
+          @php
+            // Assuming $documents is an array of up to 4 filenames passed from the controller
+          $docs = [
+                  'Quotation' => $fpurchaseorder->quotation ?? null,
+                  'Invoice'   => $fpurchaseorder->invoice ?? null,
+                  'POP'       => $fpurchaseorder->pop ?? null,
+                  'Job Card'  => $fpurchaseorder->jobcard ?? null,
+                ];
+
+          @endphp
+
+          @if(array_filter($docs))
+            <div class="mt-4">
+              <h5>View Documents</h5>
+              <table class="table table-sm table-bordered table-striped">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Document Name</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                 @php $counter = 1; @endphp
+                  @foreach($docs as $label => $file)
+                    @if($file)
+                      <tr>
+                        <td>{{ $counter++ }}</td>
+                        <td>{{ $label }}</td>
+                        <td>
+                          <a href="{{ asset('storage/uploads/' . $file) }}" target="_blank" class="btn btn-sm btn-info">
+                            <i class="fa fa-eye"></i> View
+                          </a>
+                        </td>
+                      </tr>
+                    @endif
+                  @endforeach
+                </tbody>
+              </table>
             </div>
-            <!-- /.modal-dialog-->
-            </div>
+          @endif
+
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+          <button class="btn btn-primary" type="submit">
+            <i class="fa fa-upload"></i> Upload
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
 
 
 
-
-{{--  --}}
 
              <!-- Modal Structure -->
                    <div class="modal fade" id="historyModal{{ $fpurchaseorder->id }}" tabindex="-1" role="dialog" aria-labelledby="historyModalLabel{{ $fpurchaseorder->id }}" aria-hidden="true">
@@ -215,6 +255,39 @@
             </table>
            
             </form>
+
+         {{--  --}}
+            <div class="modal fade" id="pop{{ $fpurchaseorder->id }}" tabindex="-1"  role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            	<div class="modal-dialog modal-primary modal-md" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h4 class="modal-title"><i style="color:white;" class="fa fa-envelope"></i>Upload Proof of Payment</h4>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">×</span>
+                    </button>
+                  </div>
+                  <div class="modal-body"  style="font-size: 14px;">							
+  
+                  <form method="POST" action="/procurement/{{$fpurchaseorder->id}}/pop"   enctype="multipart/form-data">
+                   @csrf
+                   @method('put')
+										<div class="form-group">
+											<label for="message">Upload document</label>
+											<input type="file" name="pop" class="form-control" maxlength="150"  required/>
+										</div>
+                  </div>
+
+                  <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+										<button class="btn btn-primary" type="submit" ><span class='fa fa-arrow-left'></span> Upload</button>
+                  </div>
+                </div> 
+              </form>
+              <!-- /.modal-content-->
+            </div>
+            <!-- /.modal-dialog-->
+            </div>
+       {{--  --}}
 
           </div>
 
