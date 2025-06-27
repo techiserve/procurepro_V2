@@ -114,7 +114,7 @@
   <div class="modal-dialog modal-primary modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header bg-primary text-white">
-        <h4 class="modal-title"><i class="fa fa-envelope"></i> Upload Proof of Payment</h4>
+        <h4 class="modal-title"><i class="fa fa-envelope"></i> View Documentsfai</h4>
         <button class="close" type="button" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
