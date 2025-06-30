@@ -96,7 +96,7 @@
                       <span class='hidden-sm hidden-sm hidden-md'>Payment Release</span>
                      </a>&nbsp;  
 
-                     <a  href="/procurement/{{$fpurchaseorder->requisitionId}}/logs" class='btn btn-info btn-sm' style='color: white;'>
+                     <a  href="/procurement/{{$fpurchaseorder->frequisition_id}}/view" class='btn btn-info btn-sm' style='color: white;'>
                       <span class='fa fa-desktop'></span>
                       <span class='hidden-sm hidden-sm hidden-md'>View</span>
                      </a>&nbsp;  

@@ -308,13 +308,53 @@ class ProcurementController extends Controller
      }
 
 
+         public function view(string $id)
+     { 
+
+        $fpurchaseorder = FpurchaseOrder::where('frequisition_id',$id)->first();
+        $departments = Department::where('id', $fpurchaseorder->department)->first();
+        $invoice = 'uploads/' . $fpurchaseorder->invoice;
+        $jobcard = 'uploads/' . $fpurchaseorder->jobcard;
+
+         $formFields = FormField::where('companyId', $fpurchaseorder->companyId)->get();
+
+       // dd($invoice);
+        if  (Storage::disk('public')->exists($invoice)) {
+            
+            $invoicepath = Storage::disk('public')->url($invoice);
+        }else{
+            $invoicepath = null;
+
+        }
+
+   
+        if  (Storage::disk('public')->exists($jobcard)) {
+            
+
+            $jobcardpath = Storage::disk('public')->url($jobcard);
+        }else{
+            $jobcardpath = null;
+
+        }
+          
+            $frequisition = Frequisition::where('id',$id)->first();
+            $vendor = FrequisitionVendor::where('frequisition_id',$id)->where('status','=','1')->first();
+            $history = RequisitionHistory::where('frequisition_id', $id)->get();
+
+           // dd($history);
+
+            return view('procurement.viewmanagepurchaseorder', compact('frequisition','fpurchaseorder','formFields','invoicepath','history','jobcardpath','vendor'));
+
+     }
+
+
+
 
 
     public function requisitionfilter(Request $request)
     {
         $query = Requisition::query();
          
-        // Check for search inputs
         if ($request->filled('status')) {
             $query->where('status', 'like', '%' . $request->input('status') . '%');
         }
