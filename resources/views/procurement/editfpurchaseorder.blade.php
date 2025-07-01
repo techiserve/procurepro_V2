@@ -63,10 +63,24 @@
                 </div>
                 @endif
             @endforeach
-        </div>
+   {{--  --}}
+             <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="grower_number">Beneficiary Reference</label>
+                  <input type="text" class="form-control" name="ref1" aria-describedby="inputGroupFileAddon04" >
+                </div>
+              </div>    
+
+             <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="grower_number">Own Reference</label>
+                  <input type="text" class="form-control" name="ref2" aria-describedby="inputGroupFileAddon04" >
+                </div>
+              </div>    
+        
 
         @if ($purchaseorder->status == 4 OR $purchaseorder->status == 3 )
-        <div class="row">
+       
         <div class="col-sm-6">
                 <div class="form-group">
                   <label for="grower_number">Reason for Return</label>
@@ -77,7 +91,7 @@
         </div>
          @endif
 
-              <div class="row">
+          
         <div class="col-sm-6">
                 <div class="form-group">
                   <label for="grower_number">Upload Invoice</label>

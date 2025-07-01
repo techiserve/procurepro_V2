@@ -21,6 +21,8 @@ class Fpurchaseorder extends Model
         'invoice',
         'userId',
         'status',
+        'ownref',
+        'benref',
         'purchaseorderstatus',
         'balance',
         'approvallevel',

@@ -9,6 +9,9 @@ use App\Models\Department;
 use App\Models\Purchaseorder;
 use App\Models\Departmentapproval;
 use App\Models\Requisition;
+use App\Models\Fpurchaseorder;
+use App\Models\Vendor;
+use App\Models\Frequisition;
 use App\Models\RequisitionHistory;
 use App\Models\Requisitionfile;
 use App\Models\Bankaccount;
@@ -157,9 +160,14 @@ class ReportController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        //
+    public function fnb()
+    {        
+          $fpurchaseorder = Fpurchaseorder::where('companyId', Auth::user()->companyId)->get();
+          $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
+          $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
+          $departments = Department::where('companyId', Auth::user()->companyId)->get();
+
+        return view('reports.fnb', compact('fpurchaseorder','departments','vendors','servicetype'));
     }
 
     /**

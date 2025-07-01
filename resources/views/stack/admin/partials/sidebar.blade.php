@@ -215,6 +215,21 @@
                                 Purchase Order Summary
                             </a>
                         </li>
+                        <li>
+                            <a class="menu-item" href="/reports/fnb" data-i18n="nav.starter_kit.2_columns">
+                             FNB 
+                            </a>
+                        </li>
+                        <li>
+                            <a class="menu-item" href="/reports/albarak" data-i18n="nav.starter_kit.2_columns">
+                             Al Barak
+                            </a>
+                        </li>
+                        <li>
+                            <a class="menu-item" href="/reports/standardbank" data-i18n="nav.starter_kit.2_columns">
+                             Standard Bank
+                            </a>
+                        </li>
                         <!-- Uncomment if needed
                         <li>
                             <a class="menu-item" href="/reports/waitingpurchaseorder" data-i18n="nav.starter_kit.3_columns">
