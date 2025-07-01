@@ -76,7 +76,9 @@
                   <label for="grower_number">Own Reference</label>
                   <input type="text" class="form-control" name="ref2" aria-describedby="inputGroupFileAddon04" >
                 </div>
-              </div>    
+              </div> 
+              
+              
         
 
         @if ($purchaseorder->status == 4 OR $purchaseorder->status == 3 )
