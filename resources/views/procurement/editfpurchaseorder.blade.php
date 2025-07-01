@@ -67,14 +67,14 @@
              <div class="col-sm-6">
                 <div class="form-group">
                   <label for="grower_number">Beneficiary Reference</label>
-                  <input type="text" class="form-control" name="ref1" aria-describedby="inputGroupFileAddon04" >
+                  <input type="text" class="form-control" name="benref" aria-describedby="inputGroupFileAddon04" >
                 </div>
               </div>    
 
              <div class="col-sm-6">
                 <div class="form-group">
                   <label for="grower_number">Own Reference</label>
-                  <input type="text" class="form-control" name="ref2" aria-describedby="inputGroupFileAddon04" >
+                  <input type="text" class="form-control" name="ownref" aria-describedby="inputGroupFileAddon04" >
                 </div>
               </div> 
               

@@ -745,6 +745,10 @@ class ProcurementController extends Controller
         'invoiceamount'  =>$request->invoiceamount,
         'invoice'  => $invoicefilePath,
         'jobcardfile'  => $jobfilePath,
+
+        'benref'  => $request->benref,
+        'ownref'  => $request->ownref,
+
         'status'  => 1,
         'approvallevel'  => $level,
         'totalapprovallevels'  => $totalapprovallevels,
