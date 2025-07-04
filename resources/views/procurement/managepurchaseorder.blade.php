@@ -268,7 +268,7 @@
                   </div>
                   <div class="modal-body"  style="font-size: 14px;">							
   
-                  <form method="POST" action="/procurement/{{$fpurchaseorder->id}}/pop"   enctype="multipart/form-data">
+                  <form method="POST" action="/procurement/pop"   enctype="multipart/form-data">
                    @csrf
                    @method('put')
 										<div class="form-group">
@@ -282,10 +282,8 @@
 										<button class="btn btn-primary" type="submit" ><span class='fa fa-arrow-left'></span> Upload</button>
                   </div>
                 </div> 
-              </form>
-          
+              </form> 
             </div>
-          
             </div>
        {{--  --}}
 
