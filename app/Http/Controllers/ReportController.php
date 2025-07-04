@@ -162,7 +162,7 @@ class ReportController extends Controller
      */
     public function fnb()
     {        
-          $fpurchaseorder = Fpurchaseorder::where('companyId', Auth::user()->companyId)->get();
+          $fpurchaseorder = Fpurchaseorder::where('companyId', Auth::user()->companyId)->where('bankAccountName','=','FNB/RMB')->get();
           $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
           $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
           $departments = Department::where('companyId', Auth::user()->companyId)->get();
@@ -170,6 +170,29 @@ class ReportController extends Controller
         return view('reports.fnb', compact('fpurchaseorder','departments','vendors','servicetype'));
     }
 
+
+
+
+        public function albarak()
+    {        
+          $fpurchaseorder = Fpurchaseorder::where('companyId', Auth::user()->companyId)->where('bankAccountName','=','Albaraka Bank')->get();
+          $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
+          $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
+          $departments = Department::where('companyId', Auth::user()->companyId)->get();
+
+        return view('reports.albarak', compact('fpurchaseorder','departments','vendors','servicetype'));
+    }
+
+
+        public function standardbank()
+    {        
+          $fpurchaseorder = Fpurchaseorder::where('companyId', Auth::user()->companyId)->where('bankAccountName','=','Standard Bank')->get();
+          $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
+          $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
+          $departments = Department::where('companyId', Auth::user()->companyId)->get();
+
+        return view('reports.standardbank', compact('fpurchaseorder','departments','vendors','servicetype'));
+    }
     /**
      * Show the form for editing the specified resource.
      */

@@ -7,7 +7,7 @@
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header">
-                    <strong> Purchase Order Summary</strong>
+                    <strong>FNB Report</strong>
                     <button class="btn btn-primary btn-sm pull-right"  data-toggle="modal" data-target="#filterModal" style="padding: 10px 20px; font-size: 16px; min-width: 100px;"><i class="fa fa-filter"></i> Filter </button>
                     <!-- <a href="/growers/" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="fa fa-align-justify"></i> Filter Requisitions</a> -->
                
@@ -21,16 +21,13 @@
                         <table class="table table-striped table-bordered file-export">
                             <thead>
                                 <tr>
-                                    <th data-field="id" class='text-center'>ID</th>
-                                    <th data-field="grower_name" class='text-center'> Vendor</th>
-                                    <th data-field="grower_number" class='text-center'>Services</th>
-                                    <th data-field="province" class='text-center'>Payment Method</th>
-                                    <th data-field="grower_type" class='text-center'>Department</th>
-                                    <th data-field="grower_size" class='text-center'>Expenses</th>
-                                    <th data-field="grower_agent" class='text-center'>(ZAR) Invoice Amount</th>
-                                    <th data-field="action" class='text-center'>(ZAR) Amount</th>
-                                    <th data-field="status" class='text-center'>Status</th>
-                                    <th data-field="date" class='text-center'>Date</th>
+                                    <th data-field="id" class='text-center'>RICIPIENT NAME</th>
+                                    <th data-field="grower_name" class='text-center'> RICIPIENT ACCOUNT</th>
+                                    <th data-field="grower_number" class='text-center'>RICIPIENT ACCOUNT TYPE</th>
+                                    <th data-field="province" class='text-center'>BRANCH</th>
+                                    <th data-field="grower_type" class='text-center'>AMOUNT</th>
+                                    <th data-field="grower_size" class='text-center'>OWN REFERENCES</th>
+                                    <th data-field="grower_agent" class='text-center'>RICIPIENT REFERENCES</th> 
                                
                                 </tr>
                             </thead>
@@ -38,16 +35,14 @@
                                 @foreach($fpurchaseorder as $grower)
                                     <tr>
        
-                                        <td>{{ $grower->id }}</td>
                                         <td>{{ $grower->vendor }}</td>
-                                        <td>{{ $grower->services }}</td>
-                                        <td>{{ $grower->paymentmethod }}</td>
-                                        <td> @foreach($departments as $department)@if($grower->department == $department->id){{$department->name}}@endif @endforeach</td>
-                                        <td>{{ $grower->expenses }}</td>
-                                        <td>{{ $grower->invoiceamount }}</td>
-                                        <td>{{$grower->amount}}</td>
-                                        <td>@if($grower->status == 0)<button type="button" class="btn btn-outline-primary"><span class="fa fa-spinner"></span>Pending</button>@elseif($grower->status == 1)<button type="button" class="btn btn-outline-primary"><span class="fa fa-spinner"></span>Pending</button>@elseif($grower->status == 2)<button type="button" class="btn btn-outline-success"><span class="fa fa-check-circle"></span>Approved</button>@elseif($grower->status == 3)<button type="button" class="btn btn-outline-danger"><span class="fa fa-times-circle"></span>Rejected</button>@elseif($grower->status == 4)<button type="button" class="btn btn-outline-info"><span class="fa fa-arrow-left"></span>Returned</button>@else<button type="button" class="btn btn-outline-primary"><span class="fa fa-spinner"></span>Processing</button>@endif</td>   
-                                        <td>{{$grower->created_at}}</td>                                  
+                                        <td>{{ $grower->bankAccountNumber }}</td>
+                                        <td>{{ $grower->bankAccountType }}</td>
+                                        <td>3310</td>
+                                        <td>{{$grower->invoiceamount}}</td>
+                                        <td>{{ $grower->ownref }}</td>
+                                        <td>{{ $grower->benref }}</td>
+                                                               
                                     </tr>
                                 @endforeach
                             </tbody>
