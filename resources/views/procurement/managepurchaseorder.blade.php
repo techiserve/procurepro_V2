@@ -247,14 +247,7 @@
     </div>
 </div>
 {{--  --}}
-                   
-                  </td>
-                </tr>
-                @endforeach
-              </tbody>
-            </table>
-           
-            </form>
+
 
          {{--  --}}
             <div class="modal fade" id="pop{{ $fpurchaseorder->id }}" tabindex="-1"  role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -288,6 +281,15 @@
           
             </div>
        {{--  --}}
+                   
+                  </td>
+                </tr>
+                @endforeach
+              </tbody>
+            </table>
+           
+            </form>
+
 
           </div>
 
