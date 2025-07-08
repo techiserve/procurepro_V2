@@ -50,15 +50,15 @@ class ProcurementController extends Controller
     public function createrequisition()
     {  
 
-        $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();
+        // $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();
 
-        $servicetypes = DB::connection('sqlsrv')->table('ServiceTypes')->select('ServiceTypeDescription')->get();
+        // $servicetypes = DB::connection('sqlsrv')->table('ServiceTypes')->select('ServiceTypeDescription')->get();
 
-        $properties = DB::connection('sqlsrv')->table('Properties')->select('PropertyName')->get();
+        // $properties = DB::connection('sqlsrv')->table('Properties')->select('PropertyName')->get();
 
-        $transcations = DB::connection('sqlsrv')->table('TransactionCodes')->select('TransactionDescription')->get();
+        // $transcations = DB::connection('sqlsrv')->table('TransactionCodes')->select('TransactionDescription')->get();
 
-        $taxes = DB::connection('sqlsrv')->table('TaxTypes')->select('TaxTypeDescription')->get();
+        // $taxes = DB::connection('sqlsrv')->table('TaxTypes')->select('TaxTypeDescription')->get();
 
         $departments = Department::where('IsActive', '!=' , null)->where('companyId', Auth::user()->companyId)->get();
 
@@ -84,7 +84,8 @@ class ProcurementController extends Controller
         $expenses = ClassificationOfExpense::all();
 
        // dd($vendors);
-        return view('procurement.createrequisition', compact('departments','vendors','banks','vendorTypes','expenses','servicetypes','properties','transcations','taxes','formFields','company'));
+        // return view('procurement.createrequisition', compact('departments','vendors','banks','vendorTypes','expenses','servicetypes','properties','transcations','taxes','formFields','company'));
+        return view('procurement.createrequisition', compact('departments','vendors','banks','vendorTypes','expenses','formFields','company'));
 
     }
     
@@ -713,7 +714,8 @@ class ProcurementController extends Controller
     public function updatepurchaseorder(Request $request,$id)
     {   
         
-       //dd($request->all());
+        dd($request->all());
+
         $fpur = Fpurchaseorder::where('id', $id)->first();
         $freq = Frequisition::where('id', $fpur->frequisition_id)->first();
         $departmentName = Department::where('id', $freq->department)->first();
@@ -766,6 +768,10 @@ class ProcurementController extends Controller
       return back()->with('error', 'Failed to update documents!');
 
     }
+
+
+
+
 
     /**
      * Display the specified resource.
