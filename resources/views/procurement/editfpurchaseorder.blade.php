@@ -11,7 +11,7 @@
   <div class="animated fadeIn">
     <div class="row">
       <div class="col-sm-12">
-    <form method="POST" action="/purchaseorder/update/{{$purchaseorder->id}}"  enctype="multipart/form-data">
+    <form method="POST" action="/purchaseorder/update/{{$purchaseorder->id}}" enctype="multipart/form-data" id="mainForm">
        @csrf
        @method('put')
           <div class="card">
@@ -126,6 +126,10 @@
         </div>    
 
         </div>
+
+        <!-- Hidden container for dynamic items -->
+        <div id="hiddenItemsContainer" style="display: none;"></div>
+
       </div>
       
 			<hr style="border-color: black;">
@@ -142,6 +146,7 @@
       
           
        </div>
+    </form>
     </div>
       
   
@@ -180,13 +185,13 @@
             </thead>
             <tbody id="itemTableBody">
               <tr>
-                <td><input type="text" name="items[0][item]" class="form-control" /></td>
-                <td><input type="text" name="items[0][description]" class="form-control" /></td>
-                <td><input type="number" name="items[0][quantity]" class="form-control" /></td>
-                <td><input type="number" name="items[0][price]" class="form-control" step="0.01" /></td>
-                <td><input type="number" name="items[0][weight]" class="form-control" step="0.01" /></td>
-                <td><input type="number" name="items[0][linetotal]" class="form-control" step="0.01" /></td>
-                <td><input type="number" name="items[0][vat]" class="form-control" step="0.01" /></td>
+                <td><input type="text" name="items[0][item]" class="form-control item-input" /></td>
+                <td><input type="text" name="items[0][description]" class="form-control item-input" /></td>
+                <td><input type="number" name="items[0][quantity]" class="form-control item-input" /></td>
+                <td><input type="number" name="items[0][price]" class="form-control item-input" step="0.01" /></td>
+                <td><input type="number" name="items[0][weight]" class="form-control item-input" step="0.01" /></td>
+                <td><input type="number" name="items[0][linetotal]" class="form-control item-input" step="0.01" /></td>
+                <td><input type="number" name="items[0][vat]" class="form-control item-input" step="0.01" /></td>
                 <td><button type="button" class="btn btn-danger btn-sm remove-row">Remove</button></td>
               </tr>
             </tbody>
@@ -195,14 +200,15 @@
         <button type="button" class="btn btn-secondary" id="addRowBtn">Add Row</button>
       </div>
       <div class="modal-footer">
+        <button type="button" class="btn btn-success" id="saveItemsBtn">Save Items</button>
         <button type="button" class="btn btn-secondary" id="closeModalBtn">Close</button>
       </div>
     </div>
   </div>
 </div>
 
-  </form>
 @endsection
+
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     const checkbox = document.getElementById('customModalTrigger');
@@ -212,6 +218,9 @@
     const modalCloseBtn = document.getElementById('modalCloseBtn');
     const itemTableBody = document.getElementById('itemTableBody');
     const addRowBtn = document.getElementById('addRowBtn');
+    const saveItemsBtn = document.getElementById('saveItemsBtn');
+    const hiddenItemsContainer = document.getElementById('hiddenItemsContainer');
+    const mainForm = document.getElementById('mainForm');
 
     // Show modal when checkbox is checked
     checkbox.addEventListener('change', function () {
@@ -220,14 +229,7 @@
       }
     });
 
-    // Close modal and uncheck checkbox
-    // [closeBtn, modalCloseBtn].forEach(btn => {
-    //   btn.addEventListener('click', function () {
-    //     modal.hide();
-    //     checkbox.checked = false;
-    //   });
-    // });
-
+    // Handle modal close
     modalElement.addEventListener('hidden.bs.modal', function () {
       checkbox.checked = false;
     });
@@ -246,15 +248,16 @@
 
     // Add new dynamic row
     addRowBtn.addEventListener('click', function () {
+      const rowCount = itemTableBody.querySelectorAll('tr').length;
       const newRow = document.createElement('tr');
       newRow.innerHTML = `
-        <td><input type="text" name="items[][item]" class="form-control" /></td>
-        <td><input type="text" name="items[][description]" class="form-control" /></td>
-        <td><input type="number" name="items[][quantity]" class="form-control" /></td>
-        <td><input type="number" name="items[][price]" class="form-control" step="0.01" /></td>
-        <td><input type="number" name="items[][weight]" class="form-control" step="0.01" /></td>
-        <td><input type="number" name="items[][linetotal]" class="form-control" step="0.01" /></td>
-        <td><input type="number" name="items[][vat]" class="form-control" step="0.01" /></td>
+        <td><input type="text" name="items[${rowCount}][item]" class="form-control item-input" /></td>
+        <td><input type="text" name="items[${rowCount}][description]" class="form-control item-input" /></td>
+        <td><input type="number" name="items[${rowCount}][quantity]" class="form-control item-input" /></td>
+        <td><input type="number" name="items[${rowCount}][price]" class="form-control item-input" step="0.01" /></td>
+        <td><input type="number" name="items[${rowCount}][weight]" class="form-control item-input" step="0.01" /></td>
+        <td><input type="number" name="items[${rowCount}][linetotal]" class="form-control item-input" step="0.01" /></td>
+        <td><input type="number" name="items[${rowCount}][vat]" class="form-control item-input" step="0.01" /></td>
         <td><button type="button" class="btn btn-danger btn-sm remove-row">Remove</button></td>
       `;
       itemTableBody.appendChild(newRow);
@@ -265,9 +268,56 @@
     itemTableBody.addEventListener('click', function (e) {
       if (e.target.classList.contains('remove-row')) {
         const row = e.target.closest('tr');
-        row.remove();
-        reindexRows();
+        // Don't allow removal of the last row
+        if (itemTableBody.querySelectorAll('tr').length > 1) {
+          row.remove();
+          reindexRows();
+        } else {
+          alert('At least one item row must remain.');
+        }
       }
+    });
+
+    // Save items and transfer to hidden form
+    saveItemsBtn.addEventListener('click', function () {
+      transferItemsToHiddenForm();
+      modal.hide();
+    });
+
+    // Transfer items from modal to hidden form inputs
+    function transferItemsToHiddenForm() {
+      // Clear existing hidden inputs
+      hiddenItemsContainer.innerHTML = '';
+      
+      // Get all rows from the modal table
+      const rows = itemTableBody.querySelectorAll('tr');
+      
+      rows.forEach((row, index) => {
+        const inputs = row.querySelectorAll('input.item-input');
+        
+        inputs.forEach(input => {
+          // Create hidden input for each field
+          const hiddenInput = document.createElement('input');
+          hiddenInput.type = 'hidden';
+          hiddenInput.name = input.name;
+          hiddenInput.value = input.value;
+          hiddenItemsContainer.appendChild(hiddenInput);
+        });
+      });
+    }
+
+    // Before form submission, ensure items are transferred
+    mainForm.addEventListener('submit', function (e) {
+      if (checkbox.checked) {
+        transferItemsToHiddenForm();
+      }
+    });
+
+    // Close modal handlers
+    [closeBtn, modalCloseBtn].forEach(btn => {
+      btn.addEventListener('click', function () {
+        modal.hide();
+      });
     });
   });
 </script>

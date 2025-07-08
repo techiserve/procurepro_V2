@@ -13,6 +13,7 @@ use App\Models\ClassificationOfExpense;
 use App\Services\WhatsAppService;
 use App\Models\Departmentapproval;
 use App\Models\Requisition;
+use App\Models\Itemizedfpurchaseorder;
 use App\Models\RequisitionHistory;
 use App\Models\Requisitionfile;
 use App\Models\Bankaccount;
@@ -547,13 +548,14 @@ class ProcurementController extends Controller
           
        $accounts = Bankaccount::where('companyId', $fpurchaseorder->companyId)->get();
        $departmentapproval = Departmentapproval::where('departmentId', $departments->id)->where('IsBankAccount' ,'!=', null)->first();
-
+       $itemizedItems = Itemizedfpurchaseorder::where('requisition_id', $fpurchaseorder->frequisition_id)->get();
+      // dd($itemizedItems);
        $history = RequisitionHistory::where('frequisition_id', $id)->where('userId',  Auth::user()->id)->where('action', '=', 'Purchase Order Approved')
        ->orwhere('action', '=', 'Purchase Order Rejected')->where('frequisition_id', $id)->where('userId',  Auth::user()->id)
        ->orwhere('action', '!=', 'Purchase Order Returned')->where('frequisition_id', $id)->where('userId',  Auth::user()->id)->first();
 
 
-        return view('procurement.viewfpurchaseorder', compact('fpurchaseorder','formFields','invoicepath','jobcardpath','history','departments','departmentapproval','accounts'));
+        return view('procurement.viewfpurchaseorder', compact('fpurchaseorder','itemizedItems','formFields','invoicepath','jobcardpath','history','departments','departmentapproval','accounts'));
     }
 
     /**
@@ -714,9 +716,39 @@ class ProcurementController extends Controller
     public function updatepurchaseorder(Request $request,$id)
     {   
         
-        dd($request->all());
 
         $fpur = Fpurchaseorder::where('id', $id)->first();
+        $subtotal = 0;
+        $vattotal = 0;
+        $grandtotal = 0;
+        
+        if ($request->filled('items') && is_array($request->input('items')) && count($request->input('items')) > 0) {
+
+         $items = $request->input('items');
+
+            foreach ($items as $item) {
+                $lineTotal = floatval($item['linetotal']);
+                $vatAmount = floatval($item['vat']);
+
+                $subtotal += $lineTotal;
+                $vattotal += $vatAmount;
+
+                Itemizedfpurchaseorder::create([
+                    'requisition_id' => $fpur->frequisition_id,
+                    'item'           => $item['item'],
+                    'description'    => $item['description'],
+                    'quantity'       => $item['quantity'],
+                    'price'          => $item['price'],
+                    'weight'         => $item['weight'],
+                    'linetotal'      => $lineTotal,
+                    'vat'            => $vatAmount,
+                ]);
+            }
+
+          $grandtotal = $subtotal + $vattotal;
+
+        }
+
         $freq = Frequisition::where('id', $fpur->frequisition_id)->first();
         $departmentName = Department::where('id', $freq->department)->first();
        // dd($departmentName);
@@ -744,13 +776,13 @@ class ProcurementController extends Controller
 
        $requisition = Fpurchaseorder::where('id',$id)->update([
 
-        'invoiceamount'  =>$request->invoiceamount,
+        'subtotal'      => is_numeric($subtotal) ? $subtotal : 0,
+        'vattotal'      => is_numeric($vattotal) ? $vattotal : 0,
+        'invoiceamount' => $grandtotal > 0 ? $grandtotal : $request->invoiceamount,       
         'invoice'  => $invoicefilePath,
         'jobcardfile'  => $jobfilePath,
-
         'benref'  => $request->benref,
         'ownref'  => $request->ownref,
-
         'status'  => 1,
         'approvallevel'  => $level,
         'totalapprovallevels'  => $totalapprovallevels,
@@ -758,7 +790,6 @@ class ProcurementController extends Controller
         'isActive'  => 1,
         
        ]);
-
 
 
        if($requisition){

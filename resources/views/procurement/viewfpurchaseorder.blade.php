@@ -183,6 +183,60 @@
 
     
 
+@if(isset($itemizedItems) && $itemizedItems->isNotEmpty())
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card mt-3">
+      <div class="card-header">
+        <strong>Itemized Purchase Order Details</strong>
+      </div>
+      <div class="card-body table-responsive">
+        <table class="table table-bordered table-striped">
+          <thead class="table-light">
+            <tr>
+              <th>#</th>
+              <th>Item</th>
+              <th>Description</th>
+              <th>Quantity</th>
+              <th>Price/Item</th>
+              <th>Total Weight</th>
+              <th>Line Total</th>
+              <th>V.A.T</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach($itemizedItems as $index => $item)
+            <tr>
+              <td>{{ $index + 1 }}</td>
+              <td>{{ $item->item }}</td>
+              <td>{{ $item->description }}</td>
+              <td>{{ $item->quantity }}</td>
+              <td>{{ number_format($item->price, 2) }}</td>
+              <td>{{ $item->weight }}</td>
+              <td>{{ number_format($item->linetotal, 2) }}</td>
+              <td>{{ number_format($item->vat, 2) }}</td>
+            </tr>
+            @endforeach
+          </tbody>
+          <tfoot>
+            <tr>
+              <th colspan="6" class="text-end">Sub Total</th>
+              <th>ZAR {{ number_format($itemizedItems->sum('linetotal'), 2) }}</th>
+              <th>ZAR {{ number_format($itemizedItems->sum('vat'), 2) }}</th>
+            </tr>
+               <tr>
+              <th colspan="6" class="text-end">Total</th>
+              <th>ZAR {{ number_format($itemizedItems->sum('linetotal') + $itemizedItems->sum('vat'), 2) }}</th>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+@endif
+
+
 
     			<!-- modal for sending copy of cashflow to grower -->
           <div class="modal fade" id="emailCopy" tabindex="-1"  role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

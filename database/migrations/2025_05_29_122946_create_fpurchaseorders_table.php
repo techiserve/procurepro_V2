@@ -19,7 +19,8 @@ return new class extends Migration
             $table->string('requisitionNumber');
             $table->integer('department')->nullable();
             $table->string('jobcardfile')->nullable();
-            $table->string('invoice')->nullable();
+            $table->string('subtotal')->nullable();
+            $table->string('vattotal')->nullable();
             $table->string('pop')->nullable();
             $table->string('benref')->nullable();
             $table->string('ownref')->nullable();

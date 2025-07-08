@@ -18,6 +18,8 @@ class Fpurchaseorder extends Model
         'companyId',
         'invoiceamount',
         'jobcardfile',
+        'subtotal',
+        'vattotal',
         'invoice',
         'userId',
         'status',
