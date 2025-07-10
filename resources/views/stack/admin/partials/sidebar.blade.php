@@ -230,6 +230,11 @@
                              Standard Bank
                             </a>
                         </li>
+                                     <li>
+                            <a class="menu-item" href="/reports" data-i18n="nav.starter_kit.2_columns">
+                             Custom Reports
+                            </a>
+                        </li>
                         <!-- Uncomment if needed
                         <li>
                             <a class="menu-item" href="/reports/waitingpurchaseorder" data-i18n="nav.starter_kit.3_columns">
@@ -258,6 +263,7 @@
                                 <i class="nav-icon icon-cloud-upload"></i> Manage Companies
                             </a>
                         </li>
+                
                     </ul>
                 </li>
 

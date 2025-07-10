@@ -16,6 +16,7 @@ use App\Models\RequisitionHistory;
 use App\Models\Requisitionfile;
 use App\Models\Bankaccount;
 use App\Models\Company;
+use App\Models\CustomReport;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Rolepermission;
 use Alert;
@@ -200,6 +201,65 @@ class ReportController extends Controller
     {
         //
     }
+
+    public function store(Request $request)
+    {
+
+        $validated = $request->validate([
+            'report_name' => 'required|string',
+            'report_description' => 'nullable|string',
+            'columns' => 'required|array|min:1',
+            'columns.*.label' => 'required|string',
+            'columns.*.table' => 'nullable|string',
+            'columns.*.column' => 'nullable|string',
+            'columns.*.blank' => 'nullable|boolean',
+        ]);
+
+        CustomReport::create([
+            'companyId' => $request->companyId,
+            'name' => $validated['report_name'],
+            'description' => $validated['report_description'],
+            'config' => json_encode($validated['columns'])
+        ]);
+
+    
+        return back()->with('success', 'Report created successfully!');
+   
+    }
+
+        public function show($id)
+        {
+            $report = CustomReport::findOrFail($id);
+            $config = json_decode($report->config, true);
+
+            // Get only non-blank columns (no more need to check 'table')
+            $columns = collect($config)
+                ->filter(fn($col) => empty($col['blank']) && !empty($col['column']))
+                ->pluck('column')
+                ->unique()
+                ->toArray();
+
+            // Fetch data from fpurchaseorders scoped by company
+            $fpurchaseorder = DB::table('fpurchaseorders')
+                ->where('companyId', Auth::user()->companyId)
+                ->select($columns)
+                ->get();
+
+               // dd($fpurchaseorder,$columns);
+
+            return view('reports.show', compact('report', 'config', 'fpurchaseorder'));
+        }
+
+
+    public function index()
+        {
+        //    $company = Company::where('id', Auth::user()->companyId)->first();
+
+            $reports = CustomReport::where('companyId','=', Auth::user()->companyId)->latest()->get();
+            $fpurchaseorderColumns = \Schema::getColumnListing('fpurchaseorder');
+
+            return view('reports.index', compact('reports','fpurchaseorderColumns'));
+        }
 
     /**
      * Update the specified resource in storage.

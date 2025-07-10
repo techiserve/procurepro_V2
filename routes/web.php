@@ -78,6 +78,7 @@ Route::middleware('auth')->group(function () {
      Route::post('/companies/store', [CompanyController::class, 'store'])->name('companies.store');
      Route::get('/company/{id}/delete', [CompanyController::class, 'companydelete'])->name('company.delete');
      Route::get('/company/{id}/edit', [CompanyController::class, 'companyedit'])->name('company.edit');
+     Route::get('/company/{id}/configure', [CompanyController::class, 'configure'])->name('company.configure');
      Route::put('/company/{id}/update', [CompanyController::class, 'companyUpdate'])->name('company.update');
 
      Route::get('/users/index', [UserController::class, 'index'])->name('users.index');
@@ -192,12 +193,14 @@ Route::prefix('classifications')->name('classifications.')->group(function () {
 });
 
 
-
-
-
-
 Route::get('/form/configure', [RequisitionController::class, 'configureForm'])->name('form.configure');
 Route::post('/form/configure', [RequisitionController::class, 'storeFormConfiguration'])->name('form.configure.store');
+
+
+Route::get('/reports/create', [ReportController::class, 'create'])->name('reports.create');
+Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
+Route::get('/reports/{id}', [ReportController::class, 'show'])->name('reports.show');
+Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 
 //Route::get('/requisition/create', [RequisitionController::class, 'createRequisition'])->name('requisition.create');
 //Route::post('/requisition/store', [RequisitionController::class, 'storeRequisition'])->name('requisition.store');

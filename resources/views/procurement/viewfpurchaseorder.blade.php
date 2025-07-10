@@ -64,7 +64,6 @@
                 @endif
             @endforeach
         </div>
-
                @if ($fpurchaseorder->status == 4 OR $fpurchaseorder->status == 3 )
         <div class="row">
         <div class="col-sm-6">
