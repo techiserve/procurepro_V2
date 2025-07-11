@@ -202,6 +202,8 @@ Route::post('/reports', [ReportController::class, 'store'])->name('reports.store
 Route::get('/reports/{id}', [ReportController::class, 'show'])->name('reports.show');
 Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 
+Route::delete('/reports/destroy/{id}', [ReportController::class, 'destroy'])->name('reports.destroy');
+
 //Route::get('/requisition/create', [RequisitionController::class, 'createRequisition'])->name('requisition.create');
 //Route::post('/requisition/store', [RequisitionController::class, 'storeRequisition'])->name('requisition.store');
 

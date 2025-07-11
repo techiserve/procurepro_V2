@@ -205,7 +205,7 @@ class ReportController extends Controller
     public function store(Request $request)
     {
 
-        $validated = $request->validate([
+            $validated = $request->validate([
             'report_name' => 'required|string',
             'report_description' => 'nullable|string',
             'columns' => 'required|array|min:1',
@@ -213,6 +213,7 @@ class ReportController extends Controller
             'columns.*.table' => 'nullable|string',
             'columns.*.column' => 'nullable|string',
             'columns.*.blank' => 'nullable|boolean',
+            'columns.*.default' => 'nullable|string',
         ]);
 
         CustomReport::create([
@@ -232,18 +233,19 @@ class ReportController extends Controller
             $report = CustomReport::findOrFail($id);
             $config = json_decode($report->config, true);
 
-            // Get only non-blank columns (no more need to check 'table')
+            // Get only non-blank columns to query from fpurchaseorder
             $columns = collect($config)
                 ->filter(fn($col) => empty($col['blank']) && !empty($col['column']))
                 ->pluck('column')
                 ->unique()
                 ->toArray();
 
-            // Fetch data from fpurchaseorders scoped by company
             $fpurchaseorder = DB::table('fpurchaseorders')
                 ->where('companyId', Auth::user()->companyId)
                 ->select($columns)
                 ->get();
+           
+             //   dd($config);
 
                // dd($fpurchaseorder,$columns);
 
@@ -274,6 +276,12 @@ class ReportController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+       // dd($id);
+
+    $report = CustomReport::findOrFail($id);
+    $report->delete();
+
+    return redirect()->route('reports.index')
+        ->with('success', 'Report deleted successfully.');
     }
 }

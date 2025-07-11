@@ -49,20 +49,24 @@
             <th>Label</th>
             <th>Source Column</th>
             <th>Leave Blank?</th>
+            <th>Default Value</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody id="columnConfigBody">
-          <tr>
-            <td><input type="text" name="columns[0][label]" class="form-control" required></td>
-            <td>   <select name="columns[0][column]" class="form-control column-select">
-            @foreach($fpurchaseorderColumns as $column)
-                <option value="{{ $column }}">{{ $column }}</option>
-            @endforeach
-            </select></td>
-            <td class="text-center"><input type="checkbox" name="columns[0][blank]" value="1"></td>
-            <td><button type="button" class="btn btn-danger btn-sm remove-row">Remove</button></td>
-          </tr>
+           <tr>
+                <td><input type="text" name="columns[0][label]" class="form-control" required></td>
+                <td>
+                <select name="columns[0][column]" class="form-control column-select">
+                    @foreach($fpurchaseorderColumns as $column)
+                    <option value="{{ $column }}">{{ $column }}</option>
+                    @endforeach
+                </select>
+                </td>
+                <td class="text-center"><input type="checkbox" name="columns[0][blank]" value="1"></td>
+                <td><input type="text" name="columns[0][default]" class="form-control" placeholder="Optional default"></td>
+                <td><button type="button" class="btn btn-danger btn-sm remove-row">Remove</button></td>
+            </tr>
         </tbody>
       </table>
       <button type="button" class="btn btn-secondary" id="addColumnBtn">Add Column</button>
@@ -125,18 +129,19 @@ $(document).ready(function () {
   }, 100);
 
   $('#addColumnBtn').on('click', function () {
-    const newRow = `
-      <tr>
-        <td><input type="text" name="columns[${rowCount}][label]" class="form-control" required></td>
-        <td>
-          <select name="columns[${rowCount}][column]" class="form-control column-select">
-            ${generateColumnOptionsHTML()}
-          </select>
-        </td>
-        <td class="text-center"><input type="checkbox" name="columns[${rowCount}][blank]" value="1"></td>
-        <td><button type="button" class="btn btn-danger btn-sm remove-row">Remove</button></td>
-      </tr>
-    `;
+        const newRow = `
+        <tr>
+            <td><input type="text" name="columns[${rowCount}][label]" class="form-control" required></td>
+            <td>
+            <select name="columns[${rowCount}][column]" class="form-control column-select">
+                ${generateColumnOptionsHTML()}
+            </select>
+            </td>
+            <td class="text-center"><input type="checkbox" name="columns[${rowCount}][blank]" value="1"></td>
+            <td><input type="text" name="columns[${rowCount}][default]" class="form-control" placeholder="Optional default"></td>
+            <td><button type="button" class="btn btn-danger btn-sm remove-row">Remove</button></td>
+        </tr>
+        `;
     $('#columnConfigBody').append(newRow);
     
     // Re-initialize Select2 for all dropdowns

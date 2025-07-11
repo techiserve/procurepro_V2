@@ -34,9 +34,17 @@
                                 @foreach($config as $col)
                                 @php
                                 $value = '';
-                                if (empty($col['blank']) && !empty($col['column'])) {
+
+                                if (!empty($col['blank'])) {
+                                    // Explicitly marked as blank
+                                    $value = $col['default'] ?? '';
+                                } elseif (!empty($col['column'])) {
+                                    // Column exists in DB
                                     $columnName = $col['column'];
-                                    $value = $row->$columnName ?? '';
+                                    $value = $row->$columnName ?? $col['default'] ?? '';
+                                } elseif (empty($col['column']) && isset($col['default'])) {
+                                    // No DB column, but default is present (like 'Water')
+                                    $value = $col['default'];
                                 }
                                 @endphp
                                 <td>{{ $value }}</td>
