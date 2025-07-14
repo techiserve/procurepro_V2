@@ -13,6 +13,10 @@
     .field-row select {
         flex: 1;
     }
+
+    .is-invalid {
+  border-color: #dc3545;
+}
 </style>
 @section('content')
 <div class="container-fluid">
@@ -65,15 +69,16 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="national_id">Password</label>
-                  <input class="form-control" id="national_id" name="password" type="password" placeholder="Password" required>
+                  <input class="form-control" id="password" name="password" type="password" placeholder="Password" required>
                 </div>
               </div>
 
               <div class="col-sm-6">
-                <div class="form-group">
-                  <label for="grower_type">Confirm Password</label>
-                  <input class="form-control" id="national_id" name="confirmPassword" type="password" placeholder="Confirm Password" required>
-                </div>
+             <div class="form-group">
+              <label for="confirm_password">Confirm Password</label>
+              <input class="form-control" id="confirm_password" name="confirmPassword" type="password" placeholder="Confirm Password" required>
+              <div id="confirmPasswordError" class="text-danger" style="display: none; font-size: 14px;"></div>
+            </div>
               </div>
             </div>
 
@@ -198,11 +203,43 @@ function removeField(index) {
     }
 }
 
-window.onload = function () {
+document.addEventListener('DOMContentLoaded', function () {
+    // Load default fields on page load
     addField('vendor', 'Vendor', 'string');
     addField('amount', 'Amount', 'integer');
     addField('department', 'Department', 'string');
     addField('invoiceamount', 'Invoice Amount', 'integer');
     addField('paymentmethod', 'Payment Method', 'string');
-};
+
+    // Password validation
+    const form = document.querySelector('form');
+    const password = document.getElementById('password');
+    const confirm = document.getElementById('confirm_password');
+    const errorDiv = document.getElementById('confirmPasswordError');
+
+    form.addEventListener('submit', function (e) {
+        if (password.value !== confirm.value) {
+            e.preventDefault();
+            confirm.classList.add('is-invalid');
+            errorDiv.innerText = 'Passwords do not match.';
+            errorDiv.style.display = 'block';
+        } else {
+            confirm.classList.remove('is-invalid');
+            errorDiv.innerText = '';
+            errorDiv.style.display = 'none';
+        }
+    });
+
+    confirm.addEventListener('input', function () {
+        if (this.value !== password.value) {
+            this.classList.add('is-invalid');
+            errorDiv.innerText = 'Passwords do not match.';
+            errorDiv.style.display = 'block';
+        } else {
+            this.classList.remove('is-invalid');
+            errorDiv.innerText = '';
+            errorDiv.style.display = 'none';
+        }
+    });
+});
 </script>
