@@ -33,7 +33,7 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="grower_name">Company Name</label>
-                  <input class="form-control" id="grower_name" name="companyname" type="text" placeholder="Company Name">
+                  <input class="form-control" id="grower_name" name="companyname" type="text" placeholder="Company Name" required>
                 </div>
               </div>
 
@@ -49,7 +49,7 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="grower_address">Username</label>
-                  <input class="form-control" id="grower_address" name="username" type="text" placeholder="Username">
+                  <input class="form-control" id="grower_address" name="username" type="text" placeholder="Username" required>
                 </div>
               </div>
 
@@ -65,14 +65,14 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="national_id">Password</label>
-                  <input class="form-control" id="national_id" name="password" type="password" placeholder="Password">
+                  <input class="form-control" id="national_id" name="password" type="password" placeholder="Password" required>
                 </div>
               </div>
 
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="grower_type">Confirm Password</label>
-                  <input class="form-control" id="national_id" name="confirmPassword" type="password" placeholder="Confirm Password">
+                  <input class="form-control" id="national_id" name="confirmPassword" type="password" placeholder="Confirm Password" required>
                 </div>
               </div>
             </div>
@@ -88,7 +88,7 @@
               <div class="col-sm-4">
                 <div class="form-group">       
                   <label for="province">Email Address</label>
-                  <input class="form-control" id="national_id" name="email" type="text" placeholder="Email Address">
+                  <input class="form-control" id="national_id" name="email" type="text" placeholder="Email Address" required>
                 </div>
               </div>
             
@@ -110,7 +110,7 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="vendor_source">Vendor Source</label>
-                  <select class="form-control" id="vendor_source" name="vendor_source">
+                  <select class="form-control" id="vendor_source" name="vendor_source" required>
                     <option value="">-- Select Vendor Source --</option>
                     <option value="Vendor Management">Vendor Management</option>
                     <option value="Sage">Sage</option>
@@ -120,6 +120,15 @@
               </div>
             </div>
           <hr style="border-color: black;">
+
+            <!-- Labels once -->
+            <div class="row field-labels mb-2">
+              <div class="col-md-4"><label>Form Name</label></div>
+              <div class="col-md-4"><label>Form Label</label></div>
+              <div class="col-md-3"><label>Form Type</label></div>
+              <div class="col-md-1"></div>
+            </div>
+
             <div id="fields">
             <!-- Dynamic fields will be added here -->
         </div>
@@ -144,7 +153,7 @@
 </div>
 @endsection
 <script>
-    let fieldIndex = 0;
+let fieldIndex = 0;
 
 function createField(index, name = '', label = '', type = '') {
     const requiredFields = ['department', 'amount', 'vendor'];
@@ -175,33 +184,25 @@ function createField(index, name = '', label = '', type = '') {
     `;
 }
 
+function addField(name = '', label = '', type = '') {
+    const container = document.getElementById('fields');
+    const fieldHTML = createField(fieldIndex, name, label, type);
+    container.insertAdjacentHTML('beforeend', fieldHTML);
+    fieldIndex++;
+}
 
-    function addField(name = '', label = '', type = '') {
-
-        const container = document.getElementById('fields');
-        const fieldHTML = createField(fieldIndex, name, label, type);
-        container.insertAdjacentHTML('beforeend', fieldHTML);
-        fieldIndex++;
-
+function removeField(index) {
+    const field = document.getElementById(`field-${index}`);
+    if (field) {
+        field.remove();
     }
+}
 
-    function removeField(index) {
-
-        const field = document.getElementById(`field-${index}`);
-        if (field) {
-            field.remove();
-        }
-
-    }
-
-    window.onload = function () {
-
-        addField('vendor', 'Vendor', 'string');
-        addField('amount', 'Amount', 'integer');
-        addField('department', 'Department', 'string');
-        addField('invoiceamount', 'Invoice Amount', 'integer');
-        addField('paymentmethod', 'Payment Method', 'string');
-        
-    };
-
+window.onload = function () {
+    addField('vendor', 'Vendor', 'string');
+    addField('amount', 'Amount', 'integer');
+    addField('department', 'Department', 'string');
+    addField('invoiceamount', 'Invoice Amount', 'integer');
+    addField('paymentmethod', 'Payment Method', 'string');
+};
 </script>
