@@ -116,11 +116,18 @@ class CompanyController extends Controller
     {
       
         $user = User::where('email', $request->email)->first();
-
+       $company = Company::where('email', $request->email)->first();
         if($user){
            
               return redirect()->route('companies.create')->with('warning', 'Sorry buddy, this email has already been used!');
-        }
+
+         }
+        // elseif($company){
+        //     if($company->domain == $request->companydomain){
+           
+        //       return redirect()->route('companies.create')->with('warning', 'Sorry buddy, this domain has already been used!');
+        //     }
+        // }
  
         $company = new Company();
         $company->name = $request->companyname;
