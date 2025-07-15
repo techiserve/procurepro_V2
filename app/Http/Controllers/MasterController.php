@@ -441,4 +441,32 @@ class MasterController extends Controller
         return view('master.editbank',compact('bank','banks'));
     }
 
+
+     public function bankedit($id)
+    {
+         //$bank = Bankaccount::where('id', $id)->first();
+         $bank = Bank::where('id', $id)->first();  
+         return view('master.editbanks',compact('bank'));
+    }
+
+      public function bankUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'active' => 'required|boolean',
+        ]);
+
+        $classification = Bank::findOrFail($id);
+        $classification->update($request->only('name', 'active'));
+
+        return redirect()->route('master.banks')->with('success', 'Bank updated successfully.');
+    }
+
+    public function bankDelete($id)
+    {
+        $classification = Bank::findOrFail($id);
+        $classification->delete();
+
+        return redirect()->route('master.banks')->with('success', 'Bank deleted successfully.');
+    }
 }

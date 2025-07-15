@@ -197,6 +197,9 @@ Route::prefix('classifications')->group(function () {
 });
 
 
+    Route::get('banks/{id}/edit', [MasterController::class, 'bankEdit'])->name('bank.edit');
+    Route::put('banks/{id}/update', [MasterController::class, 'bankUpdate'])->name('bank.update');
+    Route::get('banks/{id}/delete', [MasterController::class, 'bankDelete'])->name('bank.delete');
 
 
 Route::get('/form/configure', [RequisitionController::class, 'configureForm'])->name('form.configure');

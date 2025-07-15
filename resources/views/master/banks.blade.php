@@ -90,7 +90,7 @@
                     @endif
                     </td>           
                   <td class="text-center">
-                  <a href='/manageRole/{{$user->id}}/editrole' class='btn btn-info btn-sm' style='color: white;'>
+                  <a href='/banks/{{$user->id}}/edit' class='btn btn-info btn-sm' style='color: white;'>
                       <span class='fa fa-pencil'></span>
                       <span class='hidden-sm hidden-sm hidden-md'>Edit</span>
                     </a>
