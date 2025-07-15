@@ -25,7 +25,7 @@
                 <div class="col-sm-6">
                   <div class="form-group">
                     <label for="grower_name">Department Name</label>
-                    <input class="form-control" id="grower_name" name="departmentname" type="text" placeholder="Enter Department Name...">
+                    <input class="form-control" id="grower_name" name="departmentname" type="text" placeholder="Enter Department Name..." required>
                   </div>
                 </div>
 
