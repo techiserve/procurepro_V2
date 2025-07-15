@@ -55,6 +55,11 @@ class MasterController extends Controller
 
     public function banksStore(Request $request)
     {  
+          $banks = Bank::where('name', $request->bankname)->first();  
+
+          if($banks){
+            return back()->with('error', 'Bank already exists!');
+        }
 
         $userId = Auth::user()->id;
         $companyId = Auth::user()->companyId;
