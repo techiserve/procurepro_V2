@@ -7,6 +7,32 @@
 
 <!-- SweetAlert2 JS -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<style>
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+.me-2 {
+    margin-right: 0.5rem;
+}
+
+.mt-3 {
+    margin-top: 1rem;
+}
+
+.mb-3 {
+    margin-bottom: 1rem;
+}
+</style>
 
 @section('content')
 <div class="container-fluid">
@@ -27,7 +53,7 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="grower_nam">Role Name</label>
-                  <input class="form-control" id="grower_nam" name="roleName" type="text" placeholder="Enter Role Name">
+                  <input class="form-control" id="grower_nam" name="roleName" type="text" placeholder="Enter Role Name" required>
                 </div>
               </div>
 
@@ -308,4 +334,127 @@
    </div>
 </div>
 @endsection
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form[name="add_name"]');
+    
+    // Function to check if at least one checkbox is checked
+    function hasCheckedCheckbox() {
+        const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+        return Array.from(checkboxes).some(checkbox => checkbox.checked);
+    }
+    
+    // Function to display error message
+    function showErrorMessage() {
+        // Remove existing error message if any
+        const existingError = document.getElementById('checkbox-error');
+        if (existingError) {
+            existingError.remove();
+        }
+        
+        // Create and display error message
+        const errorDiv = document.createElement('div');
+        errorDiv.id = 'checkbox-error';
+        errorDiv.className = 'alert alert-danger mt-3';
+        errorDiv.style.marginTop = '15px';
+        errorDiv.innerHTML = '<strong>Error:</strong> Please select at least one permission to create a role.';
+        
+        // Insert error message before the card footer
+        const cardFooter = document.querySelector('.card-footer');
+        cardFooter.parentNode.insertBefore(errorDiv, cardFooter);
+        
+        // Scroll to error message
+        errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    
+    // Function to hide error message
+    function hideErrorMessage() {
+        const errorDiv = document.getElementById('checkbox-error');
+        if (errorDiv) {
+            errorDiv.remove();
+        }
+    }
+    
+    // Add event listeners to all checkboxes for real-time validation
+    const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            if (hasCheckedCheckbox()) {
+                hideErrorMessage();
+            }
+        });
+    });
+    
+    // Form submission validation
+    form.addEventListener('submit', function(e) {
+        // Check if role name is filled
+        const roleNameInput = document.getElementById('grower_nam');
+        if (!roleNameInput.value.trim()) {
+            e.preventDefault();
+            roleNameInput.focus();
+            Swal.fire({
+                title: 'Validation Error',
+                text: 'Please enter a role name.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return false;
+        }
+        
+        // Check if at least one checkbox is checked
+        if (!hasCheckedCheckbox()) {
+            e.preventDefault();
+            showErrorMessage();
+            Swal.fire({
+                title: 'Validation Error',
+                text: 'Please select at least one permission for this role.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return false;
+        }
+        
+        // If validation passes, show success message and allow form submission
+        hideErrorMessage();
+        return true;
+    });
+    
+    // Optional: Add "Select All" and "Clear All" functionality
+    function addSelectAllButtons() {
+        const tabContent = document.getElementById('nav-tabContent');
+        if (tabContent) {
+            const buttonContainer = document.createElement('div');
+            buttonContainer.className = 'mt-3 mb-3';
+            buttonContainer.innerHTML = `
+                <button type="button" class="btn btn-sm btn-outline-primary me-2" onclick="selectAllCheckboxes()">
+                    Select All
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearAllCheckboxes()">
+                    Clear All
+                </button>
+            `;
+            tabContent.insertBefore(buttonContainer, tabContent.firstChild);
+        }
+    }
+    
+    // Add the select all buttons
+    addSelectAllButtons();
+    
+    // Global functions for select all/clear all
+    window.selectAllCheckboxes = function() {
+        const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = true;
+        });
+        hideErrorMessage();
+    };
+    
+    window.clearAllCheckboxes = function() {
+        const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = false;
+        });
+    };
+});
+</script>
 

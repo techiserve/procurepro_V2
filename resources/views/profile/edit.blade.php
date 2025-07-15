@@ -43,14 +43,14 @@
       <div class="row">
         <div class="col-sm-6">
           <div class="form-group">
-            <label for="grower_name">Name</label>
+            <label for="grower_name">User Name</label>
             <input class="form-control" id="grower_name" name="name" type="text" value="{{$user->name}}" required  >
           </div>
         </div>
 
         <div class="col-sm-6">
           <div class="form-group">
-            <label for="grower_rep">Email</label>
+            <label for="grower_rep">Emai.l</label>
             <input class="form-control" id="grower_rep" name="email" type="email" value="{{$user->email}}" required >
           </div>
         </div>

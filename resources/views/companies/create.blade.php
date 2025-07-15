@@ -146,7 +146,7 @@
           <div class="card-footer">
             <div class="form-group pull-right">
               <input type="submit" class="btn btn-success" value="Save"/>
-              <input type="reset" class="btn btn-danger" value="Cancel"/>
+              <input type="reset" class="btn btn-danger" value="Cancel" id="resetBtn"/>
             </div>
           </div>
        </div>
@@ -240,5 +240,22 @@ document.addEventListener('DOMContentLoaded', function () {
             errorDiv.style.display = 'none';
         }
     });
+
+    document.getElementById('resetBtn').addEventListener('click', function () {
+    // Clear all dynamic fields
+    const fieldsContainer = document.getElementById('fields');
+    fieldsContainer.innerHTML = '';
+
+    // Reset field index
+    fieldIndex = 0;
+
+    // Re-add default fields
+    addField('vendor', 'Vendor', 'string');
+    addField('amount', 'Amount', 'integer');
+    addField('department', 'Department', 'string');
+    addField('invoiceamount', 'Invoice Amount', 'integer');
+    addField('paymentmethod', 'Payment Method', 'string');
+});
+
 });
 </script>
