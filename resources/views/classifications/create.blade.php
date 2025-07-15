@@ -64,12 +64,19 @@
                         {{ $classification->active ? 'Active' : 'Inactive' }}
                       </span>
                     </td>
-                    <td>
-                      <a href="#" class="label label-sm label-success">Edit</a>
-                      <form action="#" method="POST" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="label label-sm label-danger" style="border:none; background:none;">Delete</button>
+                   <td>
+                      <a href="{{ route('classifications.edit', $classification->id) }}" class="label label-sm label-success">
+                          <span class='fa fa-pencil'></span>
+                          <span class='hidden-sm hidden-sm hidden-md'> Edit</span>
+                      </a>
+
+                      <form action="{{ route('classifications.destroy', $classification->id) }}" method="POST" style="display:inline;">
+                          @csrf
+                          @method('DELETE')
+                          <button type="submit" class="label label-sm label-danger" style="border:none; background:none;">
+                              <span class='fa fa-trash'></span>
+                              <span class='hidden-sm hidden-sm hidden-md'> Delete</span>
+                          </button>
                       </form>
                     </td>
                   </tr>

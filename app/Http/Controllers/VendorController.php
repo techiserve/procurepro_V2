@@ -218,4 +218,33 @@ public function handleApprovalAction(Request $request, $id)
     return redirect()->route('vendors.approval')->with('success', 'Vendor status updated successfully.');
 }
 
+
+
+    public function editClassification($id)
+    {
+        $classification = ClassificationOfExpense::findOrFail($id);
+        return view('classifications.edit', compact('classification'));
+    }
+
+    public function updateClassification(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'active' => 'required|boolean',
+        ]);
+
+        $classification = ClassificationOfExpense::findOrFail($id);
+        $classification->update($request->only('name', 'active'));
+
+        return redirect()->route('classifications.create')->with('success', 'Classification updated successfully.');
+    }
+
+    public function deleteClassification($id)
+    {
+        $classification = ClassificationOfExpense::findOrFail($id);
+        $classification->delete();
+
+        return redirect()->route('classifications.create')->with('success', 'Classification deleted successfully.');
+    }
+
 }

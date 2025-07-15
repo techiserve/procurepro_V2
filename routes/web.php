@@ -187,10 +187,16 @@ Route::prefix('vendor-types')->name('vendor-types.')->group(function () {
 });
 
 
-Route::prefix('classifications')->name('classifications.')->group(function () {
-    Route::get('/create', [VendorController::class, 'createClassification'])->name('create');
-    Route::post('/store', [VendorController::class, 'storeClassification'])->name('store');
+Route::prefix('classifications')->group(function () {
+    Route::get('/create', [VendorController::class, 'createClassification'])->name('classifications.create');
+    Route::post('/store', [VendorController::class, 'storeClassification'])->name('classifications.store');
+    Route::get('/{id}/edit', [VendorController::class, 'editClassification'])->name('classifications.edit');
+    Route::put('/{id}/update', [VendorController::class, 'updateClassification'])->name('classifications.update');
+    Route::delete('/{id}', [VendorController::class, 'deleteClassification'])->name('classifications.destroy');
+
 });
+
+
 
 
 Route::get('/form/configure', [RequisitionController::class, 'configureForm'])->name('form.configure');
