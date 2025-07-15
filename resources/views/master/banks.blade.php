@@ -25,7 +25,7 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="grower_name">Name</label>
-                  <input class="form-control" id="grower_name" name="bankname" type="text" placeholder="Name">
+                  <input class="form-control" id="grower_name" name="bankname" type="text" placeholder="Name" required>
                 </div>
               </div>
        
