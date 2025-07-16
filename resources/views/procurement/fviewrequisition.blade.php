@@ -84,7 +84,7 @@
             @foreach ($frequisitionvendors as $faira)
               <tr>
                 <td class="text-center">
-                  <input type="checkbox" name="selected_vendor" value="{{ $faira->id }}" class="exclusive-checkbox"{{ $faira->status == 1 ? 'checked' : '' }}>
+                <input type="checkbox" name="selected_vendor" value="{{ $faira->id }}" class="exclusive-checkbox"{{ $faira->status == 1 ? 'checked' : '' }} required/>
                 </td>
                 <td class="text-center">{{ $faira->vendor_final }}</td>
                 <td class="text-center">R {{ number_format($faira->amount, 2) }}</td>
