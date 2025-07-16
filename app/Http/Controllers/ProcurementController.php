@@ -580,9 +580,9 @@ class ProcurementController extends Controller
 
      $requisitionNumber = $company->name . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
        //dd($requisitionNumber);
-       $formFields = FormField::all();
+       $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
        $data = [];
-
+         dd($formFields);
     // Collect dynamic form field data
     foreach ($formFields as $field) {
         if ($request->has($field->name)) {
