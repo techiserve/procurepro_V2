@@ -582,7 +582,7 @@ class ProcurementController extends Controller
        //dd($requisitionNumber);
        $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
        $data = [];
-         dd($formFields);
+       //  dd($formFields);
     // Collect dynamic form field data
     foreach ($formFields as $field) {
         if ($request->has($field->name)) {
@@ -620,7 +620,6 @@ class ProcurementController extends Controller
         return !is_null($value);
     });
        
-
     dd($filteredData);
     
     // Create the requisition
