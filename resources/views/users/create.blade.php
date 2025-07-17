@@ -42,7 +42,7 @@
         <div class="col-sm-6">
           <div class="form-group">
             <label for="grower_name">Name</label>
-            <input class="form-control" id="grower_name" name="name" type="text" placeholder="Name">
+            <input class="form-control" id="grower_name" name="name" type="text" placeholder="Name" required>
           </div>
         </div>
 
@@ -58,7 +58,7 @@
         <div class="col-sm-6">
           <div class="form-group">
             <label for="grower_address">Role</label>
-            <select class="js-example-basic-single form-control" id="grower_size" name="role">
+            <select class="js-example-basic-single form-control" id="grower_size" name="role" required>
               <option value="">Select Role</option>
               @foreach($roles as $role)
               <option value="{{ $role->id }}">{{ $role->name }}</option>
@@ -70,7 +70,7 @@
         <div class="col-sm-6">
           <div class="form-group">
             <label for="national_id">Department</label>
-            <select class="js-example-basic-single form-control" id="grower_sizes" name="department">
+            <select class="js-example-basic-single form-control" id="grower_sizes" name="department" required>
               <option value="">Select Department</option>
               @foreach($departments as $department)
               <option value="{{ $department->id }}">{{ $department->name }}</option>
@@ -91,7 +91,7 @@
         <div class="col-sm-6">
           <div class="form-group">
             <label for="province">Email Address</label>
-            <input class="form-control" id="national_id" name="email" type="text" placeholder="Email Address">
+            <input class="form-control" id="national_id" name="email" type="email" placeholder="Email Address" required>
           </div>
         </div>
       </div>
@@ -100,14 +100,14 @@
         <div class="col-sm-6">
           <div class="form-group">
             <label for="grower_address">Password</label>
-            <input class="form-control" id="grower_address" name="password" type="password" placeholder="********">
+            <input class="form-control" id="grower_address" name="password" type="password" placeholder="********" required>
           </div>
         </div>
 
         <div class="col-sm-6">
           <div class="form-group">
             <label for="province">Confirm Password</label>
-            <input class="form-control" id="national_id" name="confirmpassword" type="password" placeholder="********">
+            <input class="form-control" id="national_id" name="confirmpassword" type="password" placeholder="********" required>
           </div>
         </div>
       </div>

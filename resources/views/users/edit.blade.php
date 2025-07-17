@@ -35,6 +35,23 @@
               </div>
             </div>
      
+               <div class="row">
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label for="grower_address">Password</label>
+                    <input class="form-control" id="grower_address" name="password" type="password" placeholder="********" required>
+                  </div>
+                </div>
+
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label for="province">Confirm Password</label>
+                    <input class="form-control" id="national_id" name="confirmpassword" type="password" placeholder="********" required>
+                  </div>
+                </div>
+              </div>
+
+
             <div class="row">
               <div class="col-sm-6">
                 <div class="form-group">

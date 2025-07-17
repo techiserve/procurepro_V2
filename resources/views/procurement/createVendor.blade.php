@@ -22,13 +22,13 @@
                 <div class="col-sm-6">
                   <div class="form-group">
                     <label for="name">Vendor Name</label>
-                    <input class="form-control" id="name" name="name" type="text">
+                    <input class="form-control" id="name" name="name" type="text" required>
                   </div>
                 </div>
                 <div class="col-sm-6">
                   <div class="form-group">
                     <label for="type">Vendor Type</label>
-                    <select class="form-control" id="type" name="type">
+                    <select class="form-control" id="type" name="type" required>
                       <option value="">--Select--</option>
                       @foreach($vendorTypes as $type)
                         <option value="{{ $type->name }}">{{ $type->name }}</option>
@@ -94,7 +94,7 @@
                 <div class="col-sm-6">
                   <div class="form-group">
                     <label for="finance_manager">Finance Manager</label>
-                    <select class="form-control" id="finance_manager" name="finance_manager">
+                    <select class="form-control" id="finance_manager" name="finance_manager" required>
                       <option value="0">--Select--</option>
                      @foreach($users as $user)
                     <option value="{{ $user->id }}">{{ $user->name }}</option>

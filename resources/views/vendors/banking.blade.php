@@ -24,13 +24,9 @@
                     <label for="bank_name">Bank Name</label>
                     <select id="bank_name" name="bank_name" class="form-control">
                       <option value="">--Select--</option>
-                      <option value="ABSA">ABSA</option>
-                      <option value="FNB">FNB</option>
-                      <option value="Standard Bank">Standard Bank</option>
-                      <option value="Nedbank">Nedbank</option>
-                      <option value="Capitec">Capitec</option>
-                      <option value="Investec">Investec</option>
-                      <!-- Add more as needed -->
+                      @for ($bank = 0; $bank < count($banks); $bank++)
+                        <option value="{{ $banks[$bank]->name }}">{{ $banks[$bank]->name }}</option>              
+                      @endfor             
                     </select>
                   </div>
                 </div>

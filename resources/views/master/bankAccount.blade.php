@@ -26,7 +26,7 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="grower_address">Bank</label>
-                  <select class="js-example-basic-single form-control" id="grower_size" name="bank">
+                  <select class="js-example-basic-single form-control" id="grower_size" name="bank" required>
                           <option value="" >Select Bank</option>
                            @foreach($banks as $role)
                             <option value="{{ $role->name }}"> {{ $role->name }}</option>
@@ -38,7 +38,7 @@
               <div class="col-sm-6">
                 <div class="form-group">
                 <label for="national_id">Branch Name</label>
-                <input class="form-control" id="grower_name" name="branchname" type="text" placeholder="Branch Name">
+                <input class="form-control" id="grower_name" name="branchname" type="text" placeholder="Branch Name" required>
                 </div>
               </div>
             </div>
@@ -48,14 +48,14 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="grower_name">Account Name</label>
-                  <input class="form-control" id="grower_name" name="accountname" type="text" placeholder="Acoount Number">
+                  <input class="form-control" id="grower_name" name="accountname" type="text" placeholder="Acoount Number" required>
                 </div>
               </div>
 
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="grower_rep">Account Type</label>
-                  <input class="form-control" id="grower_rep" name="accounttype" type="text" placeholder="Account Type">
+                  <input class="form-control" id="grower_rep" name="accounttype" type="text" placeholder="Account Type" required>
                 </div>
               </div>
             </div>
@@ -65,7 +65,7 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="grower_name">Account Number</label>
-                  <input class="form-control" id="grower_name" name="accountnumber" type="text" placeholder="Account Number">
+                  <input class="form-control" id="grower_name" name="accountnumber" type="number" placeholder="Account Number" required>
                 </div>
               </div>
 
@@ -81,7 +81,7 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="grower_name">Branch Code</label>
-                  <input class="form-control" id="grower_name" name="branchcode" type="text" placeholder="Branch Code">
+                  <input class="form-control" id="grower_name" name="branchcode" type="text" placeholder="Branch Code" >
                 </div>
               </div>
        

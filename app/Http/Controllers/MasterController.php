@@ -84,7 +84,13 @@ class MasterController extends Controller
 
         $userId = Auth::user()->id;
         $companyId = Auth::user()->companyId;
+       
+        $bank = Bankaccount::where('accountNumber', $request->accountnumber)->first();
 
+        if($bank){
+
+            return back()->with('error', 'Bank Account exists!');
+        }
 
         $bank = new Bankaccount();
         $bank->bankName = $request->bank;

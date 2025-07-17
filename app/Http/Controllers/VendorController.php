@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Vendor;
 use App\Models\VendorType;
 use App\Models\User;
+use App\Models\Bank;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\ClassificationOfExpense;
@@ -49,7 +50,7 @@ class VendorController extends Controller
         }
     
         return $request->input('is_frm_continue') === 'continue'
-            ? redirect('/vendors/banking')
+             ? redirect('/vendors/banking')->with('banks', Bank::all())
             : redirect('/vendors/index')->with('success', 'Vendor created successfully.');
     }
 
@@ -59,7 +60,9 @@ class VendorController extends Controller
         if (!session('vendor_id')) {
             return redirect('/vendors/create')->with('error', 'Please complete vendor info first.');
         }
-        return view('vendors.banking');
+
+         $banks = Bank::all();
+        return view('vendors.banking', compact('banks'));
     }
 
     public function storeBanking(Request $request)
@@ -246,5 +249,21 @@ public function handleApprovalAction(Request $request, $id)
 
         return redirect()->route('classifications.create')->with('success', 'Classification deleted successfully.');
     }
+
+         public function delete($id)
+        {
+            $deleteuser = Vendor::where('id', $id)->delete();
+        
+            if($deleteuser){
+        
+                return back()->with('success', 'Vendor deleted successfully!');
+
+            }else{
+
+                return back()->with('error', 'Failed to delete Vendor!');
+            }
+
+            
+        }
 
 }

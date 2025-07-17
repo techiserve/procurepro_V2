@@ -127,21 +127,7 @@ class UserController extends Controller
  }
 
 
- public function userdelete($id)
- {
-      $deleteuser = User::where('id', $id)->delete();
- 
-      if($deleteuser){
-   
-         return back()->with('success', 'User deleted successfully!');
 
-     }else{
-
-        return back()->with('error', 'Failed to delete User!');
-     }
-
-     
- }
 
 
 
@@ -156,7 +142,7 @@ class UserController extends Controller
 
 
   public function userunlock($id)
- {
+   {
        $user = User::where('id', $id)->update([
         'is_locked' => false,
         'login_attempts' => 0,
@@ -164,7 +150,7 @@ class UserController extends Controller
 
     return back()->with('success', 'User account unlocked.');
 
- }
+   }
 
 
     public function companyindex()
@@ -282,15 +268,21 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-
+    
         // dd($request->all());
         $user = User::findOrFail($id);
 
+        if($request->password != $request->confirmpassword) {
+            // return redirect()->route('users.edit', $id)->with('error', 'Passwords do not match!');          
+         return back()->with('error', 'Passwords do not match!');
+
+        }
+
         // Update user fields
         $user->name = $request->name;
-        //$user->username = $$request->username;
         $user->email = $request->email;
         $user->address = $request->address;
+        $user->password = Hash::make($request->password);
         $user->userrole = $request->role;
         $user->position = $request->position;
         $user->address = $request->address;
