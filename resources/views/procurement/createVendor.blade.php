@@ -22,13 +22,13 @@
                 <div class="col-sm-6">
                   <div class="form-group">
                     <label for="name">Vendor Name</label>
-                    <input class="form-control" id="name" name="name" type="text" required>
+                    <input class="form-control" id="name" name="name" type="text" >
                   </div>
                 </div>
                 <div class="col-sm-6">
                   <div class="form-group">
                     <label for="type">Vendor Type</label>
-                    <select class="form-control" id="type" name="type" required>
+                    <select class="form-control" id="type" name="type" >
                       <option value="">--Select--</option>
                       @foreach($vendorTypes as $type)
                         <option value="{{ $type->name }}">{{ $type->name }}</option>
@@ -79,7 +79,7 @@
                 <div class="col-sm-6">
                   <div class="form-group">
                     <label for="supplier_code">Supplier Code</label>
-                    <input class="form-control" id="supplier_code" name="supplier_code" type="text">
+                    <input class="form-control" id="supplier_code" name="supplier_code" type="text" >
                   </div>
                 </div>
               </div>
@@ -93,13 +93,12 @@
                 </div>
                 <div class="col-sm-6">
                   <div class="form-group">
-                    <label for="finance_manager">Finance Manager</label>
+                    <label for="finance_manager">Finance Manager.</label>
                     <select class="form-control" id="finance_manager" name="finance_manager" required>
-                      <option value="0">--Select--</option>
+                      <option value="">--Select--</option>
                      @foreach($users as $user)
                     <option value="{{ $user->id }}">{{ $user->name }}</option>
-                     @endforeach
-                      
+                     @endforeach                
                     </select>
                   </div>
                 </div>
@@ -209,7 +208,7 @@
 
   function submitForm(action) {
     document.getElementById('is_frm_continue').value = action;
-    document.getElementById('vendorForm').submit();
+    document.getElementById('vendorForm').requestSubmit();
   }
 </script>
 @endsection
