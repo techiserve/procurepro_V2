@@ -147,9 +147,10 @@ class VendorController extends Controller
 {
     $vendor = Vendor::with('documents')->findOrFail($id);
     $vendorTypes = VendorType::all(); // assuming VendorType is your list source
-       $users = User::where('companyId','=',Auth::user()->companyId)->get();
+    $users = User::where('companyId','=',Auth::user()->companyId)->get();
+    $finance = User::where('id','=', $vendor->finance_manager)->first();
 
-    return view('vendors.edit', compact('vendor', 'users','vendorTypes'));
+    return view('vendors.edit', compact('vendor', 'users','vendorTypes','finance'));
 }
 
 public function update(Request $request, $id)
@@ -177,6 +178,33 @@ public function update(Request $request, $id)
     ));
     
   
+    
+        // Handle deleting existing documents
+    if ($request->has('delete_documents')) {
+        foreach ($request->delete_documents as $docId) {
+            $doc = VendorDocument::find($docId);
+            if ($doc) {
+                Storage::disk('public')->delete($doc->file_path); // Delete file
+                $doc->delete(); // Delete DB record
+            }
+        }
+    }
+
+    // Handle uploading new documents (with names)
+    if ($request->has('new_documents')) {
+        foreach ($request->new_documents as $index => $docData) {
+            if (isset($docData['file']) && $request->file("new_documents.$index.file")) {
+                $file = $request->file("new_documents.$index.file");
+                $path = $file->store('vendor_docs', 'public');
+
+                VendorDocument::create([
+                    'vendor_id' => $vendor->id,
+                    'document_name' => $docData['name'],
+                    'file_path' => $path,
+                ]);
+            }
+        }
+    }
 
     return redirect('/vendors/index')->with('success', 'Vendor updated successfully.');
 }

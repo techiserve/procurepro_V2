@@ -46,18 +46,18 @@
                   </div>
                 </div>
                 <div class="col-sm-6">
-  <div class="form-group">
-    <label>VAT Registered</label><br>
-    <div class="mt-1"> <!-- Added margin top -->
-      <label class="radio-inline">
-        <input type="radio" name="vat_registered" value="Yes" {{ $vendor->vat_registered == 'Yes' ? 'checked' : '' }}> Yes
-      </label>
-      <label class="radio-inline ml-3">
-        <input type="radio" name="vat_registered" value="No" {{ $vendor->vat_registered == 'No' ? 'checked' : '' }}> No
-      </label>
-    </div>
-  </div>
-</div>
+          <div class="form-group">
+            <label>VAT Registered</label><br>
+            <div class="mt-1"> <!-- Added margin top -->
+              <label class="radio-inline">
+                <input type="radio" name="vat_registered" value="Yes" {{ $vendor->vat_registered == 'Yes' ? 'checked' : '' }}> Yes
+              </label>
+              <label class="radio-inline ml-3">
+                <input type="radio" name="vat_registered" value="No" {{ $vendor->vat_registered == 'No' ? 'checked' : '' }}> No
+              </label>
+            </div>
+          </div>
+        </div>
               </div>
 
               <div class="row">
@@ -101,7 +101,7 @@
                   <div class="form-group">
                     <label>Finance Manager</label>
                     <select class="form-control" name="finance_manager">
-                      <option value="0">--Select--</option>
+                      <option value="{{ $vendor->finance_manager }}">{{$finance->name}}</option>
                          @foreach($users as $user)
                     <option value="{{ $user->id }}">{{ $user->name }}</option>
                      @endforeach
@@ -166,17 +166,54 @@
               @endif
 
 
-              <hr>
-              <h4>Uploaded Documents</h4>
+              <h4>Upload Documents</h4>
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label>Document Name</label>
+                    <input type="text" class="form-control" id="vendor_document_name_temp" placeholder="Enter document name">
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label>Upload File(s)</label>
+                    <input type="file" class="form-control" id="vendor_document_temp" multiple>
+                  </div>
+                </div>
+              </div>
+
+              <button type="button" class="btn btn-primary" onclick="addDocument()">Add Document</button>
+
+              <table class="table table-bordered mt-3">
+                <thead>
+                  <tr>
+                    <th>Document Name</th>
+                    <th>File(s)</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="vendor_documents_list"></tbody>
+              </table>
+
+              <!-- Hidden Inputs for Submission -->
+              <div id="document_inputs_container"></div>
+              
+                            <h4 class="mt-4">Existing Documents</h4>
               @if($vendor->documents && count($vendor->documents))
                 <ul>
                   @foreach($vendor->documents as $doc)
-                    <li><a href="{{ asset('storage/' . $doc->file_path) }}" target="_blank">{{ $doc->document_name }}</a></li>
+                    <li>
+                      <a href="{{ asset('storage/' . $doc->file_path) }}" target="_blank">{{ $doc->document_name }}</a>
+                      <label class="ml-2 text-danger" style="cursor:pointer;">
+                        <input type="checkbox" name="delete_documents[]" value="{{ $doc->id }}"> Delete
+                      </label>
+                    </li>
                   @endforeach
                 </ul>
               @else
                 <p>No documents uploaded.</p>
               @endif
+
             </div>
 
             <div class="card-footer">
@@ -191,3 +228,68 @@
   </div>
 </div>
 @endsection
+<script>
+let documentIndex = 0;
+
+function addDocument() {
+  const name = document.getElementById('vendor_document_name_temp').value;
+  const filesInput = document.getElementById('vendor_document_temp');
+  const files = filesInput.files;
+
+  if (!name || files.length === 0) {
+    alert("Please enter a document name and select file(s).");
+    return;
+  }
+
+  for (let i = 0; i < files.length; i++) {
+    const rowId = `doc_row_${documentIndex}`;
+
+    // Add visible row
+    const row = `
+      <tr id="${rowId}">
+        <td>${name}</td>
+        <td>${files[i].name}</td>
+        <td><button type="button" class="btn btn-danger btn-sm" onclick="removeDocument('${rowId}')">Remove</button></td>
+      </tr>
+    `;
+    document.getElementById('vendor_documents_list').insertAdjacentHTML('beforeend', row);
+
+    // Add hidden inputs
+    const container = document.getElementById('document_inputs_container');
+
+    const nameInput = document.createElement('input');
+    nameInput.type = 'hidden';
+    nameInput.name = `new_documents[${documentIndex}][name]`;
+    nameInput.value = name;
+
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.name = `new_documents[${documentIndex}][file]`;
+    fileInput.files = createFileList(files[i]);
+
+    const wrapper = document.createElement('div');
+    wrapper.id = `wrapper_${rowId}`;
+    wrapper.appendChild(nameInput);
+    wrapper.appendChild(fileInput);
+
+    container.appendChild(wrapper);
+
+    documentIndex++;
+  }
+
+  // Clear inputs
+  document.getElementById('vendor_document_name_temp').value = '';
+  filesInput.value = '';
+}
+
+function removeDocument(rowId) {
+  document.getElementById(rowId)?.remove();
+  document.getElementById(`wrapper_${rowId}`)?.remove();
+}
+
+function createFileList(file) {
+  const dataTransfer = new DataTransfer();
+  dataTransfer.items.add(file);
+  return dataTransfer.files;
+}
+</script>
