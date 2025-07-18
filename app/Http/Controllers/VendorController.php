@@ -116,9 +116,12 @@ class VendorController extends Controller
     }
 
     public function vendorTypeDestroy($id)
-    {
+    { 
+        // dd($id);
         VendorType::findOrFail($id)->delete();
-        return redirect()->route('vendors.vendortype')->with('success', 'Vendor type deleted.');
+
+         return back()->with('success', 'Vendor Type deleted successfully!');
+       
     }
 
     public function createClassification()
