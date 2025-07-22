@@ -23,10 +23,26 @@
               <thead>
                 <tr>
                 <th>#</th>
-                <th>Requusition #</th>   
-               @foreach($formFields as $field)
-                <th>{{ ucfirst($field->name) }}</th>
-                @endforeach
+                <th>Requisition #</th>   
+                  @php
+                        $hiddenFields = ['invoiceamount']; // Add more fields to hide as needed
+                        $customLabels = [
+                            'paymentmethod' => 'Payment Method',
+                            'payment_method' => 'Payment Method',
+                            // Add more custom mappings here
+                        ];
+                    @endphp
+
+                    @foreach($formFields as $field)
+                        @continue(in_array(strtolower($field->name), $hiddenFields))
+
+                        @php
+                            $fieldName = strtolower($field->name);
+                            $label = $customLabels[$fieldName] ?? ucfirst($field->name);
+                        @endphp
+
+                        <th>{{ $label }}</th>
+                    @endforeach
                 <th>Approved By</th>   
                 <th>Status</th>         
                 <th class="text-center">Action</th>   
@@ -39,9 +55,14 @@
                 <tr>
                 <td> <input type="checkbox" id="select" name="requisition_ids[]" value="{{ $frequisition->id }}"></td>
                  <td>{{ $frequisition->requisitionNumber }}</td>
-                  @foreach($formFields as $field) 
-                        <td>{{ $frequisition->{$field->name} ?? '' }}</td>
-                    @endforeach
+               @php
+                    $hiddenFields = ['invoiceamount']; // Extend this list if needed
+                @endphp
+
+                @foreach($formFields as $field)
+                    @continue(in_array(strtolower($field->name), $hiddenFields))
+                    <td>{{ $frequisition->{$field->name} ?? '' }}</td>
+                @endforeach
                 
                     <!-- <td>{{ $frequisition->userId }}</td>
                     <td>{{ $frequisition->companyId }}</td>
