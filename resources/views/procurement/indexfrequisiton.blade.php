@@ -67,12 +67,22 @@
         @endphp
 
         @foreach($formFields as $field)
-            @php $normalizedField = strtolower(trim($field->name)); @endphp
+           @php
+                $normalizedField = strtolower(trim($field->name));
+            @endphp
+
             @continue(in_array($normalizedField, $hiddenFields))
-            <td>{{ $normalizedRequisition[$normalizedField] ?? '' }}</td>
-        @endforeach
-                
-                    <!-- <td>{{ $frequisition->userId }}</td>
+
+            <td>
+                @if ($normalizedField === 'department')
+                    {{-- Map department ID to department name --}}
+                    {{ $departments->firstWhere('id', $frequisition->department)->name ?? 'Unknown Department' }}
+                @else
+                    {{ $normalizedRequisition[$normalizedField] ?? '' }}
+                @endif
+            </td>
+        @endforeach          
+               <!-- <td>{{ $frequisition->userId }}</td>
                     <td>{{ $frequisition->companyId }}</td>
                     <td>{{ $frequisition->status }}</td>
                     <td>{{ $frequisition->isActive }}</td>

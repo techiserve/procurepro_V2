@@ -128,7 +128,7 @@ class ProcurementController extends Controller
  
         $frequisitions = Frequisition::with('histories')->where('userId', Auth::user()->id)->where('companyId', Auth::user()->companyId)->orwhere('isActive', '=', 1)->where('companyId', Auth::user()->companyId)->orderby('id','desc')->get();
          //  dd($frequisitions);
-        return view('procurement.indexfrequisiton', compact('formFields', 'frequisitions','roles'));
+        return view('procurement.indexfrequisiton', compact('formFields', 'frequisitions','roles','departments'));
     }
 
     
