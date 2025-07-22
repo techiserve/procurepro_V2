@@ -49,20 +49,28 @@
                 </tr>
               </thead>
               <tbody>
-                @foreach($frequisitions as $frequisition)
-                {{--  --}}
-                @if(auth()->user()->id == $frequisition->userId OR auth()->user()->userrole  == $frequisition->approvedby )
-                <tr>
-                <td> <input type="checkbox" id="select" name="requisition_ids[]" value="{{ $frequisition->id }}"></td>
-                 <td>{{ $frequisition->requisitionNumber }}</td>
-               @php
-                    $hiddenFields = ['invoiceamount']; // Extend this list if needed
-                @endphp
+       @foreach($frequisitions as $frequisition)
+    @if(auth()->user()->id == $frequisition->userId || auth()->user()->userrole == $frequisition->approvedby)
+    <tr>
+        <td>
+            <input type="checkbox" id="select" name="requisition_ids[]" value="{{ $frequisition->id }}">
+        </td>
+        <td>{{ $frequisition->requisitionNumber }}</td>
 
-                @foreach($formFields as $field)
-                    @continue(in_array(strtolower($field->name), $hiddenFields))
-                    <td>{{ $frequisition->{$field->name} ?? '' }}</td>
-                @endforeach
+        @php
+            $hiddenFields = ['invoiceamount'];
+            // Normalize requisition data to lowercase keys for safe access
+            $normalizedRequisition = [];
+            foreach ($frequisition->getAttributes() as $key => $value) {
+                $normalizedRequisition[strtolower(trim($key))] = $value;
+            }
+        @endphp
+
+        @foreach($formFields as $field)
+            @php $normalizedField = strtolower(trim($field->name)); @endphp
+            @continue(in_array($normalizedField, $hiddenFields))
+            <td>{{ $normalizedRequisition[$normalizedField] ?? '' }}</td>
+        @endforeach
                 
                     <!-- <td>{{ $frequisition->userId }}</td>
                     <td>{{ $frequisition->companyId }}</td>
