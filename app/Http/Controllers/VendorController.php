@@ -101,8 +101,8 @@ class VendorController extends Controller
 
     public function vendorTypeEdit($id)
     {
-        $type = VendorType::findOrFail($id);
-        return view('vendor_types.edit', compact('type'));
+        $vendor = VendorType::findOrFail($id);
+        return view('vendors.editvendortype', compact('vendor'));
     }
 
     public function vendorTypeUpdate(Request $request, $id)
@@ -112,7 +112,8 @@ class VendorController extends Controller
             'name' => $request->name,
             'active' => $request->has('active'),
         ]);
-        return redirect()->route('vendors.vendortype')->with('success', 'Vendor type updated.');
+
+       return back()->with('success', 'Vendor Type updated successfully!');
     }
 
     public function vendorTypeDestroy($id)

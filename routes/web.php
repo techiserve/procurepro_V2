@@ -183,12 +183,12 @@ Route::prefix('vendor-types')->name('vendor-types.')->group(function () {
     Route::get('/', [VendorController::class, 'vendorTypeIndex'])->name('index');
     Route::post('/store', [VendorController::class, 'vendorTypeStore'])->name('store');
     Route::get('/{id}/edit', [VendorController::class, 'vendorTypeEdit'])->name('edit');
-    Route::post('/{id}/update', [VendorController::class, 'vendorTypeUpdate'])->name('update');
    
 });
 
- Route::get('vendor-types/delete/{id}', [VendorController::class, 'vendorTypeDestroy'])->name('destroy');
-Route::prefix('classifications')->group(function () {
+    Route::get('vendor-types/delete/{id}', [VendorController::class, 'vendorTypeDestroy'])->name('destroy');
+    Route::put('vendortype/update/{id}', [VendorController::class, 'vendorTypeUpdate'])->name('update');
+    Route::prefix('classifications')->group(function () {
     Route::get('/create', [VendorController::class, 'createClassification'])->name('classifications.create');
     Route::post('/store', [VendorController::class, 'storeClassification'])->name('classifications.store');
     Route::get('/{id}/edit', [VendorController::class, 'editClassification'])->name('classifications.edit');
