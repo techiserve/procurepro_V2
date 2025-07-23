@@ -835,23 +835,29 @@ class ProcurementController extends Controller
                 
                ]);
 
-      $frequisition = Frequisition::where('id', $id)->first();
+            $frequisition = Frequisition::where('id', $id)->first();
 
-    $formFields = FormField::where(function ($query) use ($frequisition) {
-        $query->Where('companyId', $frequisition->companyId);
-    })->pluck('name')->unique();
+            $formFields = FormField::where(function ($query) use ($frequisition) {
+                $query->where('companyId', $frequisition->companyId);
+            })->pluck('name')->unique();
 
-   // dd($formFields, $frequisition);
+            // Step 1: Normalize $frequisition attributes to lowercase for safe comparison
+            $normalizedRequisition = [];
+            foreach ($frequisition->getAttributes() as $key => $value) {
+                $normalizedRequisition[strtolower(trim($key))] = $value;
+            }
 
-    // 3. Initialize data array to copy values from frequisition to fpurchaseorder
-    $purchaseOrderData = [];
+            // Step 2: Initialize purchase order data array
+            $purchaseOrderData = [];
 
-    foreach ($formFields as $fieldName) {
-        // Check if the field exists on frequisition
-        if (isset($frequisition->$fieldName)) {
-            $purchaseOrderData[$fieldName] = $frequisition->$fieldName;
-        }
-    }
+            foreach ($formFields as $fieldName) {
+                $normalizedField = strtolower(trim($fieldName));
+
+                if (array_key_exists($normalizedField, $normalizedRequisition)) {
+                    $purchaseOrderData[$fieldName] = $normalizedRequisition[$normalizedField];
+                }
+            }
+         
 
     // 4. Add other static or required fields if needed
     $purchaseOrderData['companyId'] = $frequisition->companyId;
