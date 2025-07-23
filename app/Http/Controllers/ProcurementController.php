@@ -841,23 +841,29 @@ class ProcurementController extends Controller
                 $query->where('companyId', $frequisition->companyId);
             })->pluck('name')->unique();
 
-            // Step 1: Normalize $frequisition attributes to lowercase for safe comparison
+             $requisitionData = $frequisition->getAttributes();
+
+            // Normalize keys from $frequisition for case-insensitive matching
             $normalizedRequisition = [];
-            foreach ($frequisition->getAttributes() as $key => $value) {
-                $normalizedRequisition[strtolower(trim($key))] = $value;
+            foreach ($requisitionData as $key => $value) {
+                $normalizedRequisition[strtolower(trim($key))] = [
+                    'original' => $key,  // Preserve original casing
+                    'value' => $value
+                ];
             }
 
-            // Step 2: Initialize purchase order data array
+            // Build purchase order data with correct casing
             $purchaseOrderData = [];
 
             foreach ($formFields as $fieldName) {
                 $normalizedField = strtolower(trim($fieldName));
 
-                if (array_key_exists($normalizedField, $normalizedRequisition)) {
-                    $purchaseOrderData[$fieldName] = $normalizedRequisition[$normalizedField];
+                if (isset($normalizedRequisition[$normalizedField])) {
+                    // Use the original column name from $frequisition
+                    $originalKey = $normalizedRequisition[$normalizedField]['original'];
+                    $purchaseOrderData[$originalKey] = $normalizedRequisition[$normalizedField]['value'];
                 }
             }
-         
 
     // 4. Add other static or required fields if needed
     $purchaseOrderData['companyId'] = $frequisition->companyId;
