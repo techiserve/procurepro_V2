@@ -140,7 +140,10 @@ class ProcurementController extends Controller
        // $frequisitions = Frequisition::with('histories')->where('userId', Auth::user()->id)->where('companyId', Auth::user()->companyId)->orwhere('isActive', '=', 1)->where('companyId', Auth::user()->companyId)->orderby('id','desc')->get();
         $departments = Department::all();
 
-        $frequisitions = Frequisition::with('histories')->where('approvedby', Auth::user()->userrole)->where('status', '=', 1)->where('companyId', Auth::user()->companyId)->orderby('id','desc')->get();
+        $frequisitions = Frequisition::with('histories')->where('approvedby', Auth::user()->userrole)->where('status', '=', 1)->where('companyId', Auth::user()->companyId)->orderby('id','desc')
+        ->orwhere('userId', Auth::user()->id)->where('status', '=', 1)->where('companyId', Auth::user()->companyId)->orderby('id','desc')
+        ->get();
+        
         $roles = userrole::where('companyId', Auth::user()->companyId)->get(); 
      
         return view('procurement.myrequisiton', compact('frequisitions','roles','formFields'));
