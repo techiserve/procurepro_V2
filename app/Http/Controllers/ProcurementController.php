@@ -1378,7 +1378,8 @@ class ProcurementController extends Controller
     
         if ($returnVar !== 0) {
             // Handle the error (you may want to log this or throw an exception)
-            throw new \Exception('PDF conversion failed for ' . $pdfPath);
+           // throw new \Exception('PDF conversion failed for ' . $pdfPath);
+         return back()->with('error', 'no PDF found for ' . $pdfPath);
         }
     
         return $convertedPdfPath;
