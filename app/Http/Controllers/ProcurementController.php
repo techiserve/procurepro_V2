@@ -1303,57 +1303,54 @@ class ProcurementController extends Controller
 
     }
 
-
-
-
-    public function generateAndMergePDFs(string $id)
-    {
-        // Fetch company, user, history, and department data
-        $company = Frequisition::where('id', '=', $id)->first(); 
+public function generateAndMergePDFs(string $id)
+{
+    try {
+        // Fetch data
+        $company = Frequisition::findOrFail($id); 
         $history = Requisitionhistory::where('frequisition_id', $company->id)->get();
-       $department = Department::find($company->department);
-       $user = User::find($company->userId);
-       $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
+        $department = Department::find($company->department);
+        $user = User::find($company->userId);
+        $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
 
-            // Build a normalized key-value map from $company for safe access
-            $normalizedCompanyData = [];
-            foreach ($company->getAttributes() as $key => $value) {
-                $normalizedCompanyData[strtolower(trim($key))] = $value;
-            }
+        // Normalize attributes
+        $normalizedCompanyData = [];
+        foreach ($company->getAttributes() as $key => $value) {
+            $normalizedCompanyData[strtolower(trim($key))] = $value;
+        }
 
-         $pdf = Pdf::loadView('pdf.requisition', compact('company', 'formFields', 'normalizedCompanyData', 'user','department','history'));
-
-        // Save the newly generated PDF
+        // Generate new PDF
+        $pdf = Pdf::loadView('pdf.requisition', compact('company', 'formFields', 'normalizedCompanyData', 'user','department','history'));
         $newPDFPath = storage_path('app/public/new_report.pdf');
         $pdf->save($newPDFPath);
-    
-        // Step 3: Retrieve existing PDF paths from the database (e.g., pdf_files table)
+
+        // Get existing files
         $existingPDFs = Requisitionfile::where('requisitionId', '=', $id)->pluck('file')->toArray();
-    
-        // Create a merger instance
+
         $merger = new Merger();
-    
-        // Convert and add the newly created PDF
-       // $convertedNewPDF = $this->convertPdfToVersion($newPDFPath);
         $merger->addFile($newPDFPath);
-    
-        // Convert and add existing PDFs
+
         foreach ($existingPDFs as $existingPDFPath) {
             $fullPath = storage_path('app/public/uploads/' . $existingPDFPath);
-            $convertedExistingPDF = $this->convertPdfToVersion($fullPath);
+            $convertedExistingPDF = $this->convertPdfToVersion($fullPath); // might throw
             $merger->addFile($convertedExistingPDF);
         }
-    
+
         // Merge and output
         $mergedPdf = $merger->merge();
-    
-        // Save the consolidated PDF
         $consolidatedPath = storage_path('app/public/consolidated_report.pdf');
         file_put_contents($consolidatedPath, $mergedPdf);
-    
-        // Return the merged PDF to the user
+
         return response()->download($consolidatedPath);
+
+    } catch (Exception $e) {
+
+        Log::error('PDF generation/merging error: ' . $e->getMessage());
+
+        return back()->with('error', 'Non PDF found in the documents!.');
     }
+}
+
     
     /**
      * Convert PDF to version 1.4 using Ghostscript.
@@ -1378,8 +1375,8 @@ class ProcurementController extends Controller
     
         if ($returnVar !== 0) {
             // Handle the error (you may want to log this or throw an exception)
-           // throw new \Exception('PDF conversion failed for ' . $pdfPath);
-         return back()->with('error', 'no PDF found for ' . $pdfPath);
+            throw new \Exception('PDF conversion failed for ' . $pdfPath);
+        // return back()->with('error', 'no PDF found for ' . $pdfPath);
         }
     
         return $convertedPdfPath;
@@ -1387,60 +1384,69 @@ class ProcurementController extends Controller
 
 
 
-    public function downloadrequisitions(Request $request)
-    {
+public function downloadrequisitions(Request $request)
+{
+    try {
         $requisitionIds = $request->input('requisition_ids');
         $consolidatedPDFs = [];
-   
-        foreach ($requisitionIds as $id) {
-            // Fetch requisition data and create PDF (same process as before)
-            $company = Frequisition::where('id' ,'=', $id)->first();
-            $user = User::where('id', $company->userId)->first();
-            $history = Requisitionhistory::where('frequisition_id', $company->id)->get();
-            $department = Department::where('id', $company->department)->first();
-             $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
 
-                $normalizedCompanyData = [];
+        foreach ($requisitionIds as $id) {
+            // Fetch requisition data
+            $company = Frequisition::findOrFail($id);
+            $user = User::find($company->userId);
+            $history = Requisitionhistory::where('frequisition_id', $company->id)->get();
+            $department = Department::find($company->department);
+            $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
+
+            $normalizedCompanyData = [];
             foreach ($company->getAttributes() as $key => $value) {
                 $normalizedCompanyData[strtolower(trim($key))] = $value;
             }
-            // Step 2: Generate a PDF from the fetched data
-            $pdf = Pdf::loadView('pdf.requisition', compact('company','user','history','normalizedCompanyData','department','formFields'));
+
+            // Generate individual PDF
+            $pdf = Pdf::loadView('pdf.requisition', compact('company', 'user', 'history', 'normalizedCompanyData', 'department', 'formFields'));
             $newPDFPath = storage_path("app/public/new_report_{$id}.pdf");
             $pdf->save($newPDFPath);
-            
-            // Merge with existing PDFs as per your original logic
-            $existingPDFs = Requisitionfile::where('requisitionId', '=', $id)->pluck('file')->toArray();
+
+            // Merge with existing uploaded files
+            $existingPDFs = Requisitionfile::where('requisitionId', $id)->pluck('file')->toArray();
             $merger = new Merger();
             $merger->addFile($newPDFPath);
+
             foreach ($existingPDFs as $existingPDFPath) {
-
                 $fullPath = storage_path('app/public/uploads/' . $existingPDFPath);
-                $convertedExistingPDF = $this->convertPdfToVersion($fullPath);
+                $convertedExistingPDF = $this->convertPdfToVersion($fullPath); // may throw exception
                 $merger->addFile($convertedExistingPDF);
-
             }
+
             $mergedPdf = $merger->merge();
             $consolidatedPDFPath = storage_path("app/public/consolidated_report_{$id}.pdf");
             file_put_contents($consolidatedPDFPath, $mergedPdf);
+
             $consolidatedPDFs[] = $consolidatedPDFPath;
         }
-    
-        // Use Laravel's Storage to create the zip
+
+        // Create zip archive
         $zipFileName = 'consolidated_requisitions.zip';
         $zipPath = storage_path('app/public/' . $zipFileName);
-    
-        // Create a new zip
+
         $zip = new \ZipArchive();
-        if ($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === TRUE) {
+        if ($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === true) {
             foreach ($consolidatedPDFs as $pdfPath) {
                 $zip->addFile($pdfPath, basename($pdfPath));
             }
             $zip->close();
+        } else {
+            throw new Exception('Failed to create ZIP file.');
         }
-    
+
         return response()->download($zipPath)->deleteFileAfterSend(true);
+
+    } catch (Exception $e) {
+        Log::error('Download requisitions error: ' . $e->getMessage());
+        return back()->with('error', 'Non PDF documents found.');
     }
+}
     
 
 
