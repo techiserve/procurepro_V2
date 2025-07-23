@@ -801,9 +801,9 @@ class ProcurementController extends Controller
     {
 
         FrequisitionVendor::where('frequisition_id', $id)->update(['status' => null]);
-        $selectedvendor = FrequisitionVendor::where('id', $request->selected_vendor)->update([
-            'status' => 1
-        ]);
+        // $selectedvendor = FrequisitionVendor::where('id', $request->selected_vendor)->update([
+        //     'status' => 1
+        // ]);
 
          $vendor = FrequisitionVendor::where('id', $request->selected_vendor)->first();
          //dd($vendor);
@@ -813,16 +813,16 @@ class ProcurementController extends Controller
          
            // dd('zvapera');
             $updatedapprovallevel = $frequisition->approvallevel+1;
-                 $updatereq = Frequisition::where('id', $id)->update([
+                //  $updatereq = Frequisition::where('id', $id)->update([
                 
-                'vendor' => $vendor->vendor_final,
-                'amount' => $vendor->amount,
-                'approvallevel' =>  $updatedapprovallevel,
-                'approvedby' => Auth::user()->userrole,
-                'isActive'  => 1,
-                'status'  => 2,
+                // 'vendor' => $vendor->vendor_final,
+                // 'amount' => $vendor->amount,
+                // 'approvallevel' =>  $updatedapprovallevel,
+                // 'approvedby' => Auth::user()->userrole,
+                // 'isActive'  => 1,
+                // 'status'  => 2,
 
-                 ]); 
+                //  ]); 
                  
                  
              $savefile = Requisitionfile::create([
@@ -841,7 +841,7 @@ class ProcurementController extends Controller
         $query->Where('companyId', $frequisition->companyId);
     })->pluck('name')->unique();
 
-    dd( $formFields, $frequisition);
+    dd($formFields, $frequisition);
 
     // 3. Initialize data array to copy values from frequisition to fpurchaseorder
     $purchaseOrderData = [];
