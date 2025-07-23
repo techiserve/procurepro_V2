@@ -27,19 +27,19 @@
            <div class="card-body">
         <div class="row">
             @foreach ($formFields as $field)
-                @php
-                    $fieldName = $field->name;
-                    $value = $fpurchaseorder->$fieldName ?? '';
-                @endphp
+
+             @php
+            $normalizedAttributes = collect($purchaseorder->getAttributes())
+             ->keyBy(fn($v, $k) => strtolower($k));
+
+            $fieldName = strtolower($field->name);
+            $value = $normalizedAttributes[$fieldName] ?? '';
+            @endphp
                  
                 @if(in_array($fieldName, array_map('strtolower', $paymentmethodNames)))
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">{{ $field->label }}</label>
-              <select class="js-example-basic-single form-control" name="{{ $fieldName }}" readonly>
-                <option value="">Select Payment Method</option>
-                <option value="EFT" {{ $value === 'EFT' ? 'selected' : '' }}>EFT</option>
-                <option value="Credit Card" {{ $value === 'Credit Card' ? 'selected' : '' }}>Credit Card</option>
-            </select>
+                 <label class="form-label">{{ $field->label }}</label>
+               <input type="text" class="form-control" name="{{ $fieldName }}" value="{{ $value }}" readonly>
                 </div>
                 @elseif(in_array($fieldName, array_map('strtolower', $amount)))
                    <div class="col-md-6 mb-3">
