@@ -56,16 +56,31 @@
                @if(auth()->user()->id == $fpurchaseorder->userId OR auth()->user()->userrole  == $fpurchaseorder->approvedby )
                 <td> <input type="checkbox" id="select" name="requisition_ids[]" value="{{ $fpurchaseorder->id }}"></td>
                     <td>{{ $fpurchaseorder->requisitionNumber }}</td>
-                   @foreach($formFields as $field)
-                        @continue(in_array(strtolower($field->name), $hiddenFields))
+                     @php
+            $hiddenFields = [''];
+            // Normalize requisition data to lowercase keys for safe access
+            $normalizedRequisition = [];
+            foreach ($fpurchaseorder->getAttributes() as $key => $value) {
+                $normalizedRequisition[strtolower(trim($key))] = $value;
+            }
+        @endphp
 
-                        @php
-                            $fieldName = $field->name;
-                            $value = $fpurchaseorder->$fieldName ?? '';
-                        @endphp
+        @foreach($formFields as $field)
+           @php
+                $normalizedField = strtolower(trim($field->name));
+            @endphp
 
-                        <td>{{ $value }}</td>
-                    @endforeach
+            @continue(in_array($normalizedField, $hiddenFields))
+
+            <td>
+                @if ($normalizedField === 'department')
+                    {{-- Map department ID to department name --}}
+                    {{ $departments->firstWhere('id', $fpurchaseorder->department)->name ?? 'Unknown Department' }}
+                @else
+                    {{ $normalizedRequisition[$normalizedField] ?? '' }}
+                @endif
+            </td>
+        @endforeach   
                 
                     <!-- <td>{{ $fpurchaseorder->userId }}</td>
                     <td>{{ $fpurchaseorder->companyId }}</td>
