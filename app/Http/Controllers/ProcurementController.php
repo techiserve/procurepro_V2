@@ -51,15 +51,15 @@ class ProcurementController extends Controller
     public function createrequisition()
     {  
 
-        // $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();
+        $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();
 
-        // $servicetypes = DB::connection('sqlsrv')->table('ServiceTypes')->select('ServiceTypeDescription')->get();
+        $servicetypes = DB::connection('sqlsrv')->table('ServiceTypes')->select('ServiceTypeDescription')->get();
 
-        // $properties = DB::connection('sqlsrv')->table('Properties')->select('PropertyName')->get();
+        $properties = DB::connection('sqlsrv')->table('Properties')->select('PropertyName')->get();
 
-        // $transcations = DB::connection('sqlsrv')->table('TransactionCodes')->select('TransactionDescription')->get();
+        $transcations = DB::connection('sqlsrv')->table('TransactionCodes')->select('TransactionDescription')->get();
 
-        // $taxes = DB::connection('sqlsrv')->table('TaxTypes')->select('TaxTypeDescription')->get();
+        $taxes = DB::connection('sqlsrv')->table('TaxTypes')->select('TaxTypeDescription')->get();
 
         $departments = Department::where('IsActive', '!=' , null)->where('companyId', Auth::user()->companyId)->get();
 
@@ -85,8 +85,8 @@ class ProcurementController extends Controller
         $expenses = ClassificationOfExpense::all();
 
        // dd($vendors);
-        // return view('procurement.createrequisition', compact('departments','vendors','banks','vendorTypes','expenses','servicetypes','properties','transcations','taxes','formFields','company'));
-        return view('procurement.createrequisition', compact('departments','vendors','banks','vendorTypes','expenses','formFields','company'));
+         return view('procurement.createrequisition', compact('departments','vendors','banks','vendorTypes','expenses','servicetypes','properties','transcations','taxes','formFields','company'));
+       // return view('procurement.createrequisition', compact('departments','vendors','banks','vendorTypes','expenses','formFields','company'));
 
     }
     
@@ -124,7 +124,6 @@ class ProcurementController extends Controller
         $departments = Department::all();
 
         $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
-        //dd($formFields);
  
         $frequisitions = Frequisition::with('histories')->where('userId', Auth::user()->id)->where('companyId', Auth::user()->companyId)->orwhere('isActive', '=', 1)->where('companyId', Auth::user()->companyId)->orderby('id','desc')->get();
          //  dd($frequisitions);
@@ -563,7 +562,6 @@ class ProcurementController extends Controller
      */
     public function requisitionstore(Request $request,WhatsAppService $whatsapp)
     {
-      //  dd($request->all());
 
         $company = Company::where('id', Auth::user()->companyId)->first();
         $latest = Frequisition::where('requisitionNumber', 'LIKE', $company->name . '-%')
@@ -626,31 +624,21 @@ class ProcurementController extends Controller
        $requisition = Frequisition::forceCreate($filteredData);
  
 
-    //    if ($request->hasFile('file')) {
-    //     // Loop through each file
-    //     foreach ($request->file('file') as $file) {
-    //         // Generate a unique name for the file
-    //         $quotationfile = $file->store('uploads', 'public');
+           $requisitiond = RequisitionHistory::create([
 
-    //         $quotation =  Str::afterLast($quotationfile, '/');
-
-    //         // Save the filename in the database
-    //         // $savefile = Requisitionfile::create([
-
-    //         //     'requisitionId' => $requisition->id,
-    //         //     'companyId'  =>Auth::user()->companyId,
-    //         //     'file'  =>  $quotation,
-    //         //     'userId'  =>Auth::user()->id,
-    //         //     'path'  => 1,
-                
-    //         //    ]);
-    //     }
-
-    // } 
-
-    //    $emailData = $requisition->toArray();
-      
-    //     Mail::to('b.essop@techiserve.com')->queue(new SendSampleEmail($emailData));
+            'frequisition_id' => $requisition->id,
+            // 'amount'  => $frequisition->amount,
+            'companyId'  =>Auth::user()->companyId,
+            'userId'  =>Auth::user()->id,
+            'status'  => 1,
+            'approvallevel' =>  $level,
+            'approvedby' => Auth::user()->userrole, 
+            'isActive'  => 1,
+            'action'  => "Purchase Requisition Created",
+            'doneby' => Auth::user()->name
+            
+           ]);
+    
 
     $vendorFinal = $request->input('vendor_final');
     $amounts = $request->input('damount');
@@ -1023,7 +1011,7 @@ class ProcurementController extends Controller
     public function approvepurchaseorder(string $id)
     {
  
-      // dd($request->account_id());
+     
         $requisition = Fpurchaseorder::where('id', $id)->first();
 
         if($requisition->approvallevel+1 > $requisition->totalapprovallevels){
@@ -1038,11 +1026,12 @@ class ProcurementController extends Controller
 
                  ]);  
                  
-                 
+                   
+                // dd('history1');
 
                  $requisitiond = RequisitionHistory::create([
 
-                    'frequisition_id' => $requisition->requisition_id,
+                    'frequisition_id' => $requisition->frequisition_id,
                     'amount'  => $requisition->amount,
                     'companyId'  =>Auth::user()->companyId,
                  //   'file'  => $quotation,
@@ -1071,10 +1060,11 @@ class ProcurementController extends Controller
                  ]);   
 
 
+                 // dd('history2');
 
                  $requisitiond = RequisitionHistory::create([
 
-                    'frequisition_id' => $requisition->requisition_id,
+                    'frequisition_id' => $requisition->frequisition_id,
                     'amount'  => $requisition->amount,
                     'companyId'  =>Auth::user()->companyId,
                     'userId'  =>Auth::user()->id,
@@ -1123,13 +1113,14 @@ class ProcurementController extends Controller
                  ]);  
                  
                  
+                // dd('history3');
+
 
                  $requisitiond = RequisitionHistory::create([
 
-                    'frequisition_id' => $requisition->requisition_id,
+                    'frequisition_id' => $requisition->frequisition_id,
                     'amount'  => $requisition->amount,
                     'companyId'  =>Auth::user()->companyId,
-                 //   'file'  => $quotation,
                     'userId'  =>Auth::user()->id,
                     'status'  => 1,
                     'approvallevel' =>  $updatedapprovallevel,
@@ -1158,10 +1149,12 @@ class ProcurementController extends Controller
                  ]);   
 
 
+                
+                //  dd('history4');
 
                  $requisitiond = RequisitionHistory::create([
 
-                    'frequisition_id' => $requisition->requisition_id,
+                    'frequisition_id' => $requisition->frequisition_id,
                     'amount'  => $requisition->amount,
                     'companyId'  =>Auth::user()->companyId,
                     'userId'  =>Auth::user()->id,
@@ -1301,14 +1294,20 @@ class ProcurementController extends Controller
     public function generateAndMergePDFs(string $id)
     {
         // Fetch company, user, history, and department data
-        $company = Requisition::where('id', '=', $id)->first(); 
-        $user = User::where('id', $company->userId)->first();
-        $history = Requisitionhistory::where('requisition_id', $company->id)->get();
-        $department = Department::where('id', $company->department)->first();
-    
-        // Step 2: Generate a PDF from the fetched data
-        $pdf = Pdf::loadView('pdf.requisition', compact('company', 'user', 'history', 'department'));
-    
+        $company = Frequisition::where('id', '=', $id)->first(); 
+        $history = Requisitionhistory::where('frequisition_id', $company->id)->get();
+       $department = Department::find($company->department);
+       $user = User::find($company->userId);
+       $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
+
+            // Build a normalized key-value map from $company for safe access
+            $normalizedCompanyData = [];
+            foreach ($company->getAttributes() as $key => $value) {
+                $normalizedCompanyData[strtolower(trim($key))] = $value;
+            }
+
+         $pdf = Pdf::loadView('pdf.requisition', compact('company', 'formFields', 'normalizedCompanyData', 'user','department','history'));
+
         // Save the newly generated PDF
         $newPDFPath = storage_path('app/public/new_report.pdf');
         $pdf->save($newPDFPath);
@@ -1379,12 +1378,18 @@ class ProcurementController extends Controller
    
         foreach ($requisitionIds as $id) {
             // Fetch requisition data and create PDF (same process as before)
-            $company = Requisition::where('id' ,'=', $id)->first();
+            $company = Frequisition::where('id' ,'=', $id)->first();
             $user = User::where('id', $company->userId)->first();
-            $history = Requisitionhistory::where('requisition_id', $company->id)->get();
+            $history = Requisitionhistory::where('frequisition_id', $company->id)->get();
             $department = Department::where('id', $company->department)->first();
+             $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
+
+                $normalizedCompanyData = [];
+            foreach ($company->getAttributes() as $key => $value) {
+                $normalizedCompanyData[strtolower(trim($key))] = $value;
+            }
             // Step 2: Generate a PDF from the fetched data
-            $pdf = Pdf::loadView('pdf.requisition', compact('company','user','history','department'));
+            $pdf = Pdf::loadView('pdf.requisition', compact('company','user','history','normalizedCompanyData','department','formFields'));
             $newPDFPath = storage_path("app/public/new_report_{$id}.pdf");
             $pdf->save($newPDFPath);
             
