@@ -16,7 +16,7 @@
        @method('put')
           <div class="card">
           <div class="card-header">
-            <strong>View Requisition</strong>
+            <strong>View Purchase Order</strong>
             <a href="/procurement/indexrequisition" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="fa fa-align-justify"></i> Requistions List</a>
            </div>
 @php
@@ -32,30 +32,31 @@
 @endphp
            <div class="card-body">
         <div class="row">
-<div class="col-md-12 mb-3">
-  <div class="form-check form-switch" style="margin-left: 26px;">
-    <input class="form-check-input" type="checkbox" role="switch"
-           name="manageusers" value="Manage Users"
-           id="customModalTrigger" />
-    <label class="form-check-label" for="customModalTrigger">
-      Is this an itemized Purchase Order?
-    </label>
-  </div>
-</div>
+          <div class="col-md-12 mb-3">
+            <div class="form-check form-switch" style="margin-left: 26px;">
+              <input class="form-check-input" type="checkbox" role="switch"
+                    name="manageusers" value="Manage Users"
+                    id="customModalTrigger" />
+              <label class="form-check-label" for="customModalTrigger">
+                Is this an itemized Purchase Order?
+              </label>
+            </div>
+          </div>
+
             @foreach ($formFields as $field)
-                @php
-                    $fieldName = $field->name;
-                    $value = $purchaseorder->$fieldName ?? '';
-                @endphp
+
+            @php
+            $normalizedAttributes = collect($purchaseorder->getAttributes())
+             ->keyBy(fn($v, $k) => strtolower($k));
+
+            $fieldName = strtolower($field->name);
+            $value = $normalizedAttributes[$fieldName] ?? '';
+            @endphp
                  
                 @if(in_array($fieldName, array_map('strtolower', $paymentmethodNames)))
                 <div class="col-md-6 mb-3">
                     <label class="form-label">{{ $field->label }}</label>
-              <select class="js-example-basic-single form-control" name="{{ $fieldName }}" readonly>
-                <option value="">Select Payment Method</option>
-                <option value="EFT" {{ $value === 'EFT' ? 'selected' : '' }}>EFT</option>
-                <option value="Credit Card" {{ $value === 'Credit Card' ? 'selected' : '' }}>Credit Card</option>
-            </select>
+                   <input type="text" class="form-control" name="{{ $fieldName }}" value="{{ $value }}" readonly>
                 </div>
                 @elseif(in_array($fieldName, array_map('strtolower', $amount)))
                    <div class="col-md-6 mb-3">

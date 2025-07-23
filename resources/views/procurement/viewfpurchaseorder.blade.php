@@ -10,7 +10,7 @@
         @method('put')
           <div class="card">
           <div class="card-header">
-            <strong>View Requisition</strong>
+            <strong>View Purchase Order</strong>
             <a href="/procurement/indexrequisition" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="fa fa-align-justify"></i> Requistions List</a>
            </div>
 @php
