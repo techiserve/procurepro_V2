@@ -22,21 +22,27 @@
            </div>
 
            <div class="card-body">
-        <div class="row">
-            @foreach ($formFields as $field)
-                @php
-                    $fieldName = $field->name;
-                    $value = $frequisition->$fieldName ?? '';
-                @endphp
-                
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">{{ $field->label }}</label>
-                    <input type="text" class="form-control" value="{{ $value }}" readonly>
-                </div>
-            @endforeach
-          
-        </div>
+              <div class="row">
+              @php
+                  // Normalize requisition attributes to lowercase for safe access
+                  $normalizedRequisition = [];
+                  foreach ($frequisition->getAttributes() as $key => $value) {
+                      $normalizedRequisition[strtolower(trim($key))] = $value;
+                  }
+              @endphp
 
+              @foreach ($formFields as $field)
+                  @php
+                      $normalizedFieldName = strtolower(trim($field->name));
+                      $value = $normalizedRequisition[$normalizedFieldName] ?? '';
+                  @endphp
+
+                  <div class="col-md-6 mb-3">
+                      <label class="form-label">{{ $field->label }}</label>
+                      <input type="text" class="form-control" value="{{ $value }}" readonly>
+                  </div>
+              @endforeach
+             </div>
          <div class="row">
             
             <div class="col-sm-6">
