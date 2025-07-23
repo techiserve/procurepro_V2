@@ -1333,6 +1333,9 @@ public function generateAndMergePDFs(string $id)
         foreach ($existingPDFs as $existingPDFPath) {
             $fullPath = storage_path('app/public/uploads/' . $existingPDFPath);
             $convertedExistingPDF = $this->convertPdfToVersion($fullPath); // might throw
+            if (!$convertedExistingPDF) {
+                 return back()->with('error', 'Non PDF found in the documents!.');
+            }
             $merger->addFile($convertedExistingPDF);
         }
 
@@ -1358,7 +1361,7 @@ public function generateAndMergePDFs(string $id)
      * @param string $pdfPath
      * @return string Path to the converted PDF.
      */
-    private function convertPdfToVersion(string $pdfPath): string
+    private function convertPdfToVersion(string $pdfPath): ?string
     {
         // Define the path for the converted PDF
         $convertedPdfPath = pathinfo($pdfPath, PATHINFO_DIRNAME) . '/' . pathinfo($pdfPath, PATHINFO_FILENAME) . '_converted.pdf';
@@ -1416,6 +1419,9 @@ public function downloadrequisitions(Request $request)
             foreach ($existingPDFs as $existingPDFPath) {
                 $fullPath = storage_path('app/public/uploads/' . $existingPDFPath);
                 $convertedExistingPDF = $this->convertPdfToVersion($fullPath); // may throw exception
+                  if (!$convertedExistingPDF) {
+                 return back()->with('error', 'Non PDF found in the documents!.');
+            }
                 $merger->addFile($convertedExistingPDF);
             }
 
