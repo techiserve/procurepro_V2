@@ -841,7 +841,7 @@ class ProcurementController extends Controller
         $query->Where('companyId', $frequisition->companyId);
     })->pluck('name')->unique();
 
-    dd($formFields, $frequisition);
+   // dd($formFields, $frequisition);
 
     // 3. Initialize data array to copy values from frequisition to fpurchaseorder
     $purchaseOrderData = [];
@@ -866,7 +866,7 @@ class ProcurementController extends Controller
     $purchaseOrderData['purchaseorderstatus'] = 1;
     $purchaseOrderData['isActive'] = 0;
 
-   // dd($purchaseOrderData);
+    dd($purchaseOrderData);
     // 5. Create the purchase order
     $fpurchaseorder = Fpurchaseorder::forceCreate($purchaseOrderData);
 
