@@ -155,7 +155,7 @@ class ProcurementController extends Controller
         $files = Requisitionfile::where('requisitionId', $id)->get();
         //$vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
        // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
-        $departments = Department::where('id', $frequisition->department)->first();
+        $departments = Department::where('id', $frequisition->department)->get();
 
        // dd($frequisitionvendors);
         if(!$departments){

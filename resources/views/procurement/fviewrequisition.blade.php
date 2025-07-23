@@ -22,27 +22,42 @@
            </div>
 
            <div class="card-body">
-              <div class="row">
-              @php
-                  // Normalize requisition attributes to lowercase for safe access
-                  $normalizedRequisition = [];
-                  foreach ($frequisition->getAttributes() as $key => $value) {
-                      $normalizedRequisition[strtolower(trim($key))] = $value;
-                  }
-              @endphp
+    <div class="row">
+    @php
+        // Normalize requisition attributes to lowercase keys for safe access
+        $normalizedRequisition = [];
+        foreach ($frequisition->getAttributes() as $key => $value) {
+            $normalizedRequisition[strtolower(trim($key))] = $value;
+        }
 
-              @foreach ($formFields as $field)
-                  @php
-                      $normalizedFieldName = strtolower(trim($field->name));
-                      $value = $normalizedRequisition[$normalizedFieldName] ?? '';
-                  @endphp
+        // Define hidden fields
+        $hiddenFields = ['invoiceamount', 'invoice amount'];
+    @endphp
 
-                  <div class="col-md-6 mb-3">
-                      <label class="form-label">{{ $field->label }}</label>
-                      <input type="text" class="form-control" value="{{ $value }}" readonly>
-                  </div>
-              @endforeach
-             </div>
+    @foreach ($formFields as $field)
+        @php
+            $normalizedField = strtolower(trim($field->name));
+        @endphp
+
+        @continue(in_array($normalizedField, $hiddenFields)) {{-- Skip hidden fields --}}
+
+        @php
+            $value = '';
+
+            if ($normalizedField === 'department') {
+                // Map department ID to department name
+                $value = $departments->firstWhere('id', $frequisition->department)->name ?? 'Unknown Department';
+            } else {
+                $value = $normalizedRequisition[$normalizedField] ?? '';
+            }
+        @endphp
+
+        <div class="col-md-6 mb-3">
+            <label class="form-label">{{ $field->label }}</label>
+            <input type="text" class="form-control" value="{{ $value }}" readonly>
+        </div>
+    @endforeach
+</div>
          <div class="row">
             
             <div class="col-sm-6">
