@@ -24,8 +24,26 @@
                 <tr>
                 <th>#</th>
                 <th>Requisition #</th>   
-               @foreach($formFields as $field)
-                <th>{{ ucfirst($field->name) }}</th>
+                        @php
+                    $hiddenFields = []; // No hidden fields now
+
+                    $customLabels = [
+                        'paymentmethod' => 'Payment Method',
+                        'payment_method' => 'Payment Method',
+                        'invoiceamount' => 'Invoice Amount',
+                        // Add more mappings as needed
+                    ];
+                @endphp
+
+                @foreach($formFields as $field)
+                    @continue(in_array(strtolower($field->name), $hiddenFields))
+
+                    @php
+                        $fieldName = strtolower($field->name);
+                        $label = $customLabels[$fieldName] ?? ucfirst($field->name);
+                    @endphp
+
+                    <th>{{ $label }}</th>
                 @endforeach
                 <th>Approved By</th>   
                 <th>Status</th>         
@@ -38,8 +56,15 @@
                @if(auth()->user()->id == $fpurchaseorder->userId OR auth()->user()->userrole  == $fpurchaseorder->approvedby )
                 <td> <input type="checkbox" id="select" name="requisition_ids[]" value="{{ $fpurchaseorder->id }}"></td>
                     <td>{{ $fpurchaseorder->requisitionNumber }}</td>
-                  @foreach($formFields as $field)
-                        <td>{{ $fpurchaseorder->{$field->name} ?? '' }}</td>
+                   @foreach($formFields as $field)
+                        @continue(in_array(strtolower($field->name), $hiddenFields))
+
+                        @php
+                            $fieldName = $field->name;
+                            $value = $fpurchaseorder->$fieldName ?? '';
+                        @endphp
+
+                        <td>{{ $value }}</td>
                     @endforeach
                 
                     <!-- <td>{{ $fpurchaseorder->userId }}</td>
