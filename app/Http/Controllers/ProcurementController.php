@@ -1306,7 +1306,7 @@ class ProcurementController extends Controller
 public function generateAndMergePDFs(string $id)
 {
     try {
-        // Fetch data
+       
         $company = Frequisition::findOrFail($id); 
         $history = Requisitionhistory::where('frequisition_id', $company->id)->get();
         $department = Department::find($company->department);
@@ -1375,8 +1375,8 @@ public function generateAndMergePDFs(string $id)
     
         if ($returnVar !== 0) {
             // Handle the error (you may want to log this or throw an exception)
-            throw new \Exception('PDF conversion failed for ' . $pdfPath);
-        // return back()->with('error', 'no PDF found for ' . $pdfPath);
+        session()->flash('pdf_conversion_error', 'PDF conversion failed for file: ' . basename($pdfPath));
+        return null;
         }
     
         return $convertedPdfPath;
