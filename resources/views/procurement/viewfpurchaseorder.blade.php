@@ -29,7 +29,7 @@
             @foreach ($formFields as $field)
 
              @php
-            $normalizedAttributes = collect($purchaseorder->getAttributes())
+            $normalizedAttributes = collect($fpurchaseorder->getAttributes())
              ->keyBy(fn($v, $k) => strtolower($k));
 
             $fieldName = strtolower($field->name);
