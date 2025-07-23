@@ -143,7 +143,7 @@ class ProcurementController extends Controller
         $frequisitions = Frequisition::with('histories')->where('approvedby', Auth::user()->userrole)->where('status', '=', 1)->where('companyId', Auth::user()->companyId)->orderby('id','desc')
         ->orwhere('userId', Auth::user()->id)->where('status', '=', 1)->where('companyId', Auth::user()->companyId)->orderby('id','desc')
         ->get();
-        
+
         $roles = userrole::where('companyId', Auth::user()->companyId)->get(); 
      
         return view('procurement.myrequisiton', compact('frequisitions','roles','formFields'));
@@ -841,7 +841,7 @@ class ProcurementController extends Controller
         $query->Where('companyId', $frequisition->companyId);
     })->pluck('name')->unique();
 
-   // dd( $formFields, $frequisition);
+    dd( $formFields, $frequisition);
 
     // 3. Initialize data array to copy values from frequisition to fpurchaseorder
     $purchaseOrderData = [];
