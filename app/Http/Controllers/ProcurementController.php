@@ -199,7 +199,7 @@ class ProcurementController extends Controller
         $departments = Department::all();
 
         //  dd($fpurchaseorders);
-        return view('procurement.indexfpurchaseorder', compact('fpurchaseorders','roles','formFields'));
+        return view('procurement.indexfpurchaseorder', compact('fpurchaseorders','roles','formFields','departments'));
     }
 
 
