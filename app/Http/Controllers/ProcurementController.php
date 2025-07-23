@@ -878,7 +878,7 @@ class ProcurementController extends Controller
     $purchaseOrderData['purchaseorderstatus'] = 1;
     $purchaseOrderData['isActive'] = 0;
 
-    dd($purchaseOrderData);
+  //  dd($purchaseOrderData);
     // 5. Create the purchase order
     $fpurchaseorder = Fpurchaseorder::forceCreate($purchaseOrderData);
 
