@@ -18,14 +18,35 @@
           @csrf <!-- Always include CSRF token for security -->
           <button  type="submit"  name="action" value="Complete_Selected_Orders" class="btn btn-primary btn-sm pull-right" style="padding: 10px 20px; font-size: 16px; min-width: 100px;margin-top:-60px"><i class="fa fa-filter" ></i> Complete Selected Orders</button>
           <button  type="submit"  name="action" value="Release_Selected_Orders" class="btn btn-success btn-sm pull-right" style="padding: 10px 20px; font-size: 16px; min-width: 100px;margin-top:-60px;margin-right: 260px;"><i class="fa fa-filter"></i> Release Purchase Orders</button>
-            <table class="table table-striped table-bordered zero-configuration">
+            <div style="overflow-x:auto;">
+              <table class="table table-striped table-bordered zero-configuration" >
               <thead>
                 <tr>
                 <th><input type="checkbox"  id="selectAll"></th> <!-- Select All Checkbox -->
                 <th>Requisition #</th>   
+                  @php
+                    $hiddenFields = []; // No hidden fields now
+
+                    $customLabels = [
+                        'paymentmethod' => 'Payment Method',
+                        'payment_method' => 'Payment Method',
+                        'invoiceamount' => 'Invoice Amount',
+                        // Add more mappings as needed
+                    ];
+                @endphp
+
                 @foreach($formFields as $field)
-                <th>{{ ucfirst($field->name) }}</th>
+                    @continue(in_array(strtolower($field->name), $hiddenFields))
+
+                    @php
+                        $fieldName = strtolower($field->name);
+                        $label = $customLabels[$fieldName] ?? ucfirst($field->name);
+                    @endphp
+
+                    <th>{{ $label }}</th>
                 @endforeach
+                <th>Bank</th>   
+                <th>Account</th>   
                 <th>Approved By</th>   
                 <th>Status</th>         
                 <th class="text-center" style="width: 180px;">Action</th>    
@@ -37,10 +58,34 @@
                   @php  $active = $fpurchaseorder->status; @endphp
                 <td><input type="checkbox" name="selected_items[]" value="{{ $fpurchaseorder->id }}"   @if($active != '2') disabled @endif>
                     <td>{{ $fpurchaseorder->requisitionNumber }}</td>
-                  @foreach($formFields as $field)
-                        <td>{{ $fpurchaseorder->{$field->name} ?? '' }}</td>
-                    @endforeach
+                     @php
+                        $hiddenFields = [''];
+                        // Normalize requisition data to lowercase keys for safe access
+                        $normalizedRequisition = [];
+                        foreach ($fpurchaseorder->getAttributes() as $key => $value) {
+                            $normalizedRequisition[strtolower(trim($key))] = $value;
+                        }
+                    @endphp
+
+                    @foreach($formFields as $field)
+                      @php
+                            $normalizedField = strtolower(trim($field->name));
+                        @endphp
+
+                        @continue(in_array($normalizedField, $hiddenFields))
+
+                        <td>
+                            @if ($normalizedField === 'department')
+                                {{-- Map department ID to department name --}}
+                                {{ $departments->firstWhere('id', $fpurchaseorder->department)->name ?? 'Unknown Department' }}
+                            @else
+                                {{ $normalizedRequisition[$normalizedField] ?? '' }}
+                            @endif
+                        </td>
+                    @endforeach   
                 
+                 <td class="text-center">{{$fpurchaseorder->bankAccountName}}</td>
+                 <td class="text-center">{{$fpurchaseorder->bankAccountNumber}}</td>
                   <td class="text-center">
 
                   @foreach($roles as $role)
@@ -165,6 +210,7 @@
                 </tbody>
               </table>
             </div>
+               </div>
           @endif
 
         </div>

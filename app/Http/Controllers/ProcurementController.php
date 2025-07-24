@@ -226,7 +226,7 @@ class ProcurementController extends Controller
         // $purchaseorders = Purchaseorder::where('releaseStatus', '=', null)->where('companyId', Auth::user()->companyId)->get();
         // $roles = userrole::where('companyId', Auth::user()->companyId)->get();
 
-        return view('procurement.managepurchaseorder', compact('fpurchaseorders','formFields','roles'));
+        return view('procurement.managepurchaseorder', compact('fpurchaseorders','formFields','roles','departments'));
     }
 
 
@@ -1110,7 +1110,7 @@ class ProcurementController extends Controller
     {
            
        $bank = Bankaccount::where('id',$request->account_id)->first();
-    //   dd($bank);
+ 
         $requisition = Fpurchaseorder::where('id', $id)->first();
 
         if($requisition->approvallevel+1 > $requisition->totalapprovallevels){
