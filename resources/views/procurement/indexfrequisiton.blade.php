@@ -43,7 +43,7 @@
 
                         <th>{{ $label }}</th>
                     @endforeach
-                <th>Approved By</th>   
+                <th>Next Approver</th>   
                 <th>Status</th>         
                 <th class="text-center">Action</th>   
                 </tr>

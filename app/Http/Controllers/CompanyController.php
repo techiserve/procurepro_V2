@@ -163,57 +163,59 @@ class CompanyController extends Controller
          //
           $fields = $request->input('fields');
          /// dd($fields);
-        foreach ($fields as $field) {
+ foreach ($fields as $field) {
 
-            // Save form field configuration
+    // Normalize field name: lowercase and remove spaces
+    $normalizedName = strtolower(str_replace(' ', '', $field['name']));
 
-            FormField::create([
-                'companyId' => $company->id,
-                'name' => $field['name'],
-                'label' => $field['label'],
-                'type' => $field['type'],
-            ]);
+    // Save form field configuration
+    FormField::create([
+        'companyId' => $company->id,
+        'name' => $normalizedName,
+        'label' => $field['label'],
+        'type' => $field['type'],
+    ]);
 
-            // Dynamically add column to requisitions table
-            if (!Schema::hasColumn('frequisitions', $field['name'])) {
-                Schema::table('frequisitions', function (Blueprint $table) use ($field) {
-                    switch ($field['type']) {
-                        case 'string':
-                            $table->string($field['name'])->nullable();
-                            break;
-                        case 'integer':
-                            $table->integer($field['name'])->nullable();
-                            break;
-                        case 'text':
-                            $table->text($field['name'])->nullable();
-                            break;
-                        // Add more cases as needed
-                        default:
-                            $table->string($field['name'])->nullable();
-                    }
-                });
+    // Dynamically add column to frequisitions table
+    if (!Schema::hasColumn('frequisitions', $normalizedName)) {
+        Schema::table('frequisitions', function (Blueprint $table) use ($field, $normalizedName) {
+            switch ($field['type']) {
+                case 'string':
+                    $table->string($normalizedName)->nullable();
+                    break;
+                case 'integer':
+                    $table->integer($normalizedName)->nullable();
+                    break;
+                case 'text':
+                    $table->text($normalizedName)->nullable();
+                    break;
+                // Add more cases as needed
+                default:
+                    $table->string($normalizedName)->nullable();
             }
-
-            // Dynamically add column to purchaseorder table
-                   if (!Schema::hasColumn('fpurchaseorders', $field['name'])) {
-                Schema::table('fpurchaseorders', function (Blueprint $table) use ($field) {
-                    switch ($field['type']) {
-                        case 'string':
-                            $table->string($field['name'])->nullable();
-                            break;
-                        case 'integer':
-                            $table->integer($field['name'])->nullable();
-                            break;
-                        case 'text':
-                            $table->text($field['name'])->nullable();
-                            break;
-                        // Add more cases as needed
-                        default:
-                            $table->string($field['name'])->nullable();
-                    }
-                });
-            }
+        });
     }
+
+    // Dynamically add column to fpurchaseorders table
+    if (!Schema::hasColumn('fpurchaseorders', $normalizedName)) {
+        Schema::table('fpurchaseorders', function (Blueprint $table) use ($field, $normalizedName) {
+            switch ($field['type']) {
+                case 'string':
+                    $table->string($normalizedName)->nullable();
+                    break;
+                case 'integer':
+                    $table->integer($normalizedName)->nullable();
+                    break;
+                case 'text':
+                    $table->text($normalizedName)->nullable();
+                    break;
+                // Add more cases as needed
+                default:
+                    $table->string($normalizedName)->nullable();
+            }
+        });
+    }
+}
 
     if($user && $company){
 

@@ -591,6 +591,8 @@ class ProcurementController extends Controller
         }
     }
 
+
+
     // Add additional static fields
     $data['userId'] = Auth::id();
     $data['requisitionNumber'] = $requisitionNumber;
@@ -621,7 +623,7 @@ class ProcurementController extends Controller
         return !is_null($value);
     });
        
-    dd($filteredData,$request->all());
+   // dd($filteredData,$request->all());
     
     // Create the requisition
        $requisition = Frequisition::forceCreate($filteredData);
