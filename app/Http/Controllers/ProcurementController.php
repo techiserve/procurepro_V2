@@ -621,7 +621,7 @@ class ProcurementController extends Controller
         return !is_null($value);
     });
        
-  //  dd($filteredData);
+    dd($filteredData);
     
     // Create the requisition
        $requisition = Frequisition::forceCreate($filteredData);
