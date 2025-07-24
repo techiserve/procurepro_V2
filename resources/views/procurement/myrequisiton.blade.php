@@ -23,27 +23,66 @@
               <thead>
                 <tr>
                 <th>#</th>
-                <th>Requusition #</th>   
-               @foreach($formFields as $field)
-                <th>{{ ucfirst($field->name) }}</th>
-                @endforeach
+                <th>Requisition #</th>   
+                  @php
+                        $hiddenFields = ['invoiceamount','Vendor','vendor','amount','Amount']; // Add more fields to hide as needed
+                        $customLabels = [
+                            'paymentmethod' => 'Payment Method',
+                            'payment_method' => 'Payment Method',
+                            // Add more custom mappings here
+                        ];
+                    @endphp
+
+                    @foreach($formFields as $field)
+                        @continue(in_array(strtolower($field->name), $hiddenFields))
+
+                        @php
+                            $fieldName = strtolower($field->name);
+                            $label = $customLabels[$fieldName] ?? ucfirst($field->name);
+                        @endphp
+
+                        <th>{{ $label }}</th>
+                    @endforeach
                 <th>Next Approver</th>   
                 <th>Status</th>         
                 <th class="text-center">Action</th>   
                 </tr>
               </thead>
               <tbody>
-                @foreach($frequisitions as $frequisition)
-                {{--  --}}
-                @if(auth()->user()->id == $frequisition->userId OR auth()->user()->userrole  == $frequisition->approvedby )
-                <tr>
-                <td> <input type="checkbox" id="select" name="requisition_ids[]" value="{{ $frequisition->id }}"></td>
-                 <td>{{ $frequisition->requisitionNumber }}</td>
-                  @foreach($formFields as $field) 
-                        <td>{{ $frequisition->{$field->name} ?? '' }}</td>
-                    @endforeach
-                
-                    <!-- <td>{{ $frequisition->userId }}</td>
+       @foreach($frequisitions as $frequisition)
+    @if(auth()->user()->id == $frequisition->userId || auth()->user()->userrole == $frequisition->approvedby)
+    <tr>
+        <td>
+            <input type="checkbox" id="select" name="requisition_ids[]" value="{{ $frequisition->id }}">
+        </td>
+        <td>{{ $frequisition->requisitionNumber }}</td>
+
+        @php
+            $hiddenFields = ['invoiceamount','Vendor','vendor','amount','Amount'];
+            // Normalize requisition data to lowercase keys for safe access
+            $normalizedRequisition = [];
+            foreach ($frequisition->getAttributes() as $key => $value) {
+                $normalizedRequisition[strtolower(trim($key))] = $value;
+            }
+        @endphp
+
+        @foreach($formFields as $field)
+           @php
+                $normalizedField = strtolower(trim($field->name));
+            @endphp
+
+            @continue(in_array($normalizedField, $hiddenFields))
+
+            <td>
+                @if ($normalizedField === 'department')
+                    {{-- Map department ID to department name --}}
+                    {{ $departments->firstWhere('id', $frequisition->department)->name ?? 'Unknown Department' }}
+                @else
+                    {{ $normalizedRequisition[$normalizedField] ?? '' }}
+                @endif
+            </td>
+        @endforeach          
+               <!-- <td>{{ $frequisition->userId }}</td>
                     <td>{{ $frequisition->companyId }}</td>
                     <td>{{ $frequisition->status }}</td>
                     <td>{{ $frequisition->isActive }}</td>
@@ -362,29 +401,3 @@
         });
     });
 </script>
-
-@if(session('approved'))
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        window.addEventListener('DOMContentLoaded', function () {
-            // Wait 500ms so alert shows first
-            Swal.fire({
-                title: 'Approved!',
-                text: 'Your request was successfully approved.',
-                icon: 'success',
-                timer: 1000,
-                showConfirmButton: false
-            });
-
-            // Fire confetti slightly after the alert starts
-            setTimeout(() => {
-                confetti({
-                    particleCount: 300,
-                    spread: 250,
-                    origin: { y: 0.6 }
-                });
-            }, 1100);
-        });
-    </script>
-@endif

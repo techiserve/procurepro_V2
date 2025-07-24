@@ -146,7 +146,7 @@ class ProcurementController extends Controller
 
         $roles = userrole::where('companyId', Auth::user()->companyId)->get(); 
      
-        return view('procurement.myrequisiton', compact('frequisitions','roles','formFields'));
+        return view('procurement.myrequisiton', compact('frequisitions','roles','formFields','departments'));
     }
 
         public function viewrequisition(string $id)
