@@ -60,12 +60,6 @@
 </div>
          <div class="row">
             
-            <div class="col-sm-6">
-          <div class="form-group">
-            <label for="grower_type">Reason</label>
-            <textarea class="form-control" id="exampleFormControlTextarea1" name="reason" rows="3" readonly>{{$frequisition->reason}}</textarea>
-          </div>
-        </div>
         </div>
       </div>
       
