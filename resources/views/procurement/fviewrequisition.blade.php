@@ -66,8 +66,6 @@
 			<hr style="border-color: black;">
 			<br>
          
-    
-
           
        </div>
     </div>
@@ -99,7 +97,9 @@
             @foreach ($frequisitionvendors as $faira)
               <tr>
                 <td class="text-center">
-                <input type="checkbox" name="selected_vendor" value="{{ $faira->id }}" class="exclusive-checkbox"{{ $faira->status == 1 ? 'checked' : '' }} required/>
+                {{-- <input type="checkbox" name="selected_vendor" value="{{ $faira->id }}" class="exclusive-checkbox"{{ $faira->status == 1 ? 'checked' : '' }} required/> --}}
+                <input type="checkbox" name="selected_vendor[]" value="{{ $faira->id }}" class="exclusive-checkbox" {{ $faira->status == 1 ? 'checked' : '' }}/>
+
                 </td>
                 <td class="text-center">{{ $faira->vendor_final }}</td>
                 <td class="text-center">R {{ number_format($faira->amount, 2) }}</td>
@@ -254,20 +254,41 @@
 @endif
 
 <script>
-
-  document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
     const checkboxes = document.querySelectorAll('.exclusive-checkbox');
+    const form = document.querySelector('form');
 
+    // Initial check: if one is checked, disable all others
+    const initiallyChecked = Array.from(checkboxes).find(cb => cb.checked);
+    if (initiallyChecked) {
+        checkboxes.forEach(cb => {
+            if (cb !== initiallyChecked) cb.disabled = true;
+        });
+    }
+
+    // Only one vendor can be selected at a time
     checkboxes.forEach(checkbox => {
-      checkbox.addEventListener('change', function () {
-        if (this.checked) {
-          checkboxes.forEach(cb => {
-            if (cb !== this) cb.disabled = true;
-          });
-        } else {
-          checkboxes.forEach(cb => cb.disabled = false);
-        }
-      });
+        checkbox.addEventListener('change', function () {
+            if (this.checked) {
+                checkboxes.forEach(cb => {
+                    if (cb !== this) cb.disabled = true;
+                });
+            } else {
+                const stillChecked = Array.from(checkboxes).some(cb => cb.checked);
+                if (!stillChecked) {
+                    checkboxes.forEach(cb => cb.disabled = false);
+                }
+            }
+        });
     });
-  });
+
+    // Validate on form submit
+    form.addEventListener('submit', function (e) {
+        const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+        if (!anyChecked) {
+            e.preventDefault();
+            alert('You must select one vendor before continuing.');
+        }
+    });
+});
 </script>
