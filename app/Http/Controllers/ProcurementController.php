@@ -81,6 +81,12 @@ class ProcurementController extends Controller
 
         
         $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
+      
+            $formFields = $formFields->reject(function ($field) {
+                return in_array(strtolower($field->name), ['vendor', 'amount']);
+            });
+
+       // dd($formFields);
 
         $expenses = ClassificationOfExpense::all();
 
