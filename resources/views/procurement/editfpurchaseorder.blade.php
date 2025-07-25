@@ -38,7 +38,7 @@
                     name="manageusers" value="Manage Users"
                     id="customModalTrigger" />
               <label class="form-check-label" for="customModalTrigger">
-                Is this an itemized Purchase Order?
+                Is this an itemized Purchase Order?.
               </label>
             </div>
           </div>
@@ -58,16 +58,16 @@
                     <label class="form-label">{{ $field->label }}</label>
                    <input type="text" class="form-control" name="{{ $fieldName }}" value="{{ $value }}" readonly>
                 </div>
-                @elseif(in_array($fieldName, array_map('strtolower', $amount)))
-                   <div class="col-md-6 mb-3">
-                    <label class="form-label">{{ $field->label }}</label>
-                    <input type="text" class="form-control" name="{{ $fieldName }}" value="{{ $value }}" readonly>
-                </div>
-                   @elseif(in_array($fieldName, array_map('strtolower', $invoiceamount)))
-                   <div class="col-md-6 mb-3">
-                    <label class="form-label">{{ $field->label }}</label>
-                    <input type="text" class="form-control" name="{{ $fieldName }}" value="{{ $value }}" >
-                </div>
+           @elseif(in_array($fieldName, array_map('strtolower', $amount)))
+    <div class="col-md-6 mb-3">
+        <label class="form-label">{{ $field->label }}</label>
+        <input type="text" class="form-control" id="amount_field" name="{{ $fieldName }}" value="{{ $value }}" readonly>
+    </div>
+@elseif(in_array($fieldName, array_map('strtolower', $invoiceamount)))
+    <div class="col-md-6 mb-3">
+        <label class="form-label">{{ $field->label }}</label>
+        <input type="number" class="form-control" id="invoice_amount_field" name="{{ $fieldName }}" value="{{ $value }}" step="0.01" min="0">
+    </div>
                     @elseif(in_array($fieldName, array_map('strtolower', $departmentNames)))
                    <div class="col-md-6 mb-3">
                    <label class="form-label">{{ $field->label }}</label>
@@ -321,4 +321,31 @@
       });
     });
   });
+
+document.addEventListener('DOMContentLoaded', function () {
+    const invoiceInput = document.getElementById('invoice_amount_field');
+    const amountField = document.getElementById('amount_field');
+    const form = document.getElementById('mainForm');
+
+    if (form && invoiceInput) {
+        form.addEventListener('submit', function (e) {
+            const invoiceAmount = parseFloat(invoiceInput.value);
+
+            let amountValue = null;
+            if (amountField && amountField.value.trim() !== '') {
+                // Remove commas and currency symbols, then parse
+                const cleanedAmount = amountField.value.replace(/[^0-9.]/g, '');
+                amountValue = parseFloat(cleanedAmount);
+            }
+
+            // Validate only if amount field exists and has a value
+            if (!isNaN(amountValue)) {
+                if (invoiceAmount > amountValue) {
+                    e.preventDefault();
+                    alert('Invoice amount cannot be greater than the original amount.');
+                }
+            }
+        });
+    }
+});
 </script>
