@@ -218,7 +218,7 @@ class ProcurementController extends Controller
         $fpurchaseorders = Fpurchaseorder::with('histories')->where('approvedby', Auth::user()->userrole)->where('status', '=', 1)->where('companyId', Auth::user()->companyId)->get();
         $roles = userrole::where('companyId', Auth::user()->companyId)->get();
 
-        return view('procurement.mypurchaseorder', compact('fpurchaseorders','roles','formFields'));
+        return view('procurement.mypurchaseorder', compact('fpurchaseorders','roles','formFields','departments'));
     }
 
 
