@@ -713,7 +713,7 @@ class ProcurementController extends Controller
 
     public function updatepurchaseorder(Request $request,$id)
     {   
-         dd("all");
+        // dd("all");
 
         $fpur = Fpurchaseorder::where('id', $id)->first();
         $subtotal = 0;
