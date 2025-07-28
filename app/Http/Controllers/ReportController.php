@@ -14,6 +14,7 @@ use App\Models\Vendor;
 use App\Models\Frequisition;
 use App\Models\RequisitionHistory;
 use App\Models\Requisitionfile;
+use App\Models\FormField;
 use App\Models\Bankaccount;
 use App\Models\Company;
 use App\Models\CustomReport;
@@ -48,16 +49,12 @@ class ReportController extends Controller
 
     public function requisitionfiltered(Request $request)
     {
-        $query = Requisition::query();
+        $query = Frequisition::query();
          
-       // dd($request->all());
-        // Check for search inputs
         if ($request->filled('status')) {
             $query->where('status', 'like', '%' . $request->input('status') . '%');
         }
-        if ($request->filled('service')) {
-            $query->where('services', 'like', '%' . $request->input('service') . '%');
-        }
+
         if ($request->filled('vendor')) {
             $query->where('vendor', 'like', '%' . $request->input('vendor') . '%');
         }
@@ -77,13 +74,20 @@ class ReportController extends Controller
             $query->where('created_at', '<=', $end_date);
         }
 
-        $requisitions = $query->where('companyId', Auth::user()->companyId)->get();
+        $frequisitions = $query->where('companyId', Auth::user()->companyId)->get();
 
-        $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
+         $vendors = Frequisition::where('companyId', Auth::user()->companyId)
+            ->select('vendor')
+            ->groupBy('vendor')
+            ->distinct()
+            ->get();
         $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
         $departments = Department::where('companyId', Auth::user()->companyId)->get();
+        $roles = userrole::all(); 
+        $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
 
-      return view('reports.filteredrequisitionreport', compact('requisitions','vendors','servicetype','departments'));
+      return view('reports.filteredrequisitionreport', compact('frequisitions','vendors','servicetype','departments','formFields','roles'));
+
     }
 
 
@@ -92,7 +96,7 @@ class ReportController extends Controller
 
     public function purchaseorderfiltered(Request $request)
     {
-        $query = Purchaseorder::query();
+        $query = Fpurchaseorder::query();
          
        // dd($request->all());
         if ($request->filled('status')) {
@@ -120,13 +124,22 @@ class ReportController extends Controller
             $query->where('created_at', '<=', $end_date);
         }
 
-        $requisitions = $query->where('companyId', Auth::user()->companyId)->get();
-
-        $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
+        $fpurchaseorders = $query->where('companyId', Auth::user()->companyId)->get();
+ 
         $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
         $departments = Department::where('companyId', Auth::user()->companyId)->get();
+         $vendors = Frequisition::where('companyId', Auth::user()->companyId)
+            ->select('vendor')
+            ->groupBy('vendor')
+            ->distinct()
+            ->get();
+        $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
+        $departments = Department::where('companyId', Auth::user()->companyId)->get();
+        $roles = userrole::all(); 
+        $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
 
-      return view('reports.filteredpurchaseorderreport', compact('requisitions','vendors','servicetype','departments'));
+      return view('reports.filteredpurchaseorderreport', compact('fpurchaseorders','vendors','servicetype','departments','formFields','roles'));
+
     }
 
     /**
@@ -256,7 +269,7 @@ class ReportController extends Controller
 
     public function index()
         {
-            
+
         //    $company = Company::where('id', Auth::user()->companyId)->first();
 
             $reports = CustomReport::where('companyId','=', Auth::user()->companyId)->latest()->get();
