@@ -906,7 +906,7 @@ class ProcurementController extends Controller
            $requisitiond = RequisitionHistory::create([
 
             'frequisition_id' => $frequisition->id,
-            'amount'  => $frequisition->amount,
+           // 'amount'  => $frequisition->amount,
             'companyId'  =>Auth::user()->companyId,
             'userId'  =>Auth::user()->id,
             'status'  => 1,
