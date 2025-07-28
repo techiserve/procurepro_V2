@@ -937,7 +937,7 @@ class ProcurementController extends Controller
 
                     'companyId'  =>Auth::user()->companyId,
                     'frequisition_id' => $frequisition->id,
-                    'amount'  => $vendor->amount,
+                   // 'amount'  => $vendor->amount,
                     'userId'  =>Auth::user()->id,
                     'status'  => 1,
                     'approvallevel' =>  $updatedapprovallevel,
