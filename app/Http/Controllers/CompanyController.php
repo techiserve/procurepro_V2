@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Company;
 use App\Models\CompanyRole;
 use App\Models\FormField;
+use App\Models\CustomReport;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use App\Models\Frequisition;
@@ -260,6 +261,18 @@ class CompanyController extends Controller
     }
 
 
+        public function manageReports(string $id)
+    {
+         $company = Company::where('id', $id)->first();
+
+         $reports = CustomReport::where('companyId','=', $id)->latest()->get();
+
+        return view('reports.manageReports', compact('company','reports'));
+
+    }
+     
+
+   
 
 
     /**

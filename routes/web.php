@@ -79,6 +79,7 @@ Route::middleware('auth')->group(function () {
      Route::get('/company/{id}/delete', [CompanyController::class, 'companydelete'])->name('company.delete');
      Route::get('/company/{id}/edit', [CompanyController::class, 'companyedit'])->name('company.edit');
      Route::get('/company/{id}/configure', [CompanyController::class, 'configure'])->name('company.configure');
+     Route::get('/company/{id}/manageReports', [CompanyController::class, 'manageReports'])->name('company.manageReports');
      Route::put('/company/{id}/update', [CompanyController::class, 'companyUpdate'])->name('company.update');
 
      Route::get('/users/index', [UserController::class, 'index'])->name('users.index');

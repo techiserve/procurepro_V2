@@ -74,7 +74,7 @@
                       <span class='fa fa-pencil'></span>
                       <span class='hidden-sm hidden-sm hidden-md'> Delete</span>
                     </a>&nbsp;
-                       <a href='/company/{{$company->id}}/configure' class='btn btn-info btn-sm'>
+                       <a href='/company/{{$company->id}}/manageReports' class='btn btn-info btn-sm'>
                       <span class='fa fa-bank'></span>
                       <span class='hidden-sm hidden-sm hidden-md'>Configure Reports</span>
                     </a>&nbsp;

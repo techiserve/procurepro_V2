@@ -256,6 +256,7 @@ class ReportController extends Controller
 
     public function index()
         {
+            
         //    $company = Company::where('id', Auth::user()->companyId)->first();
 
             $reports = CustomReport::where('companyId','=', Auth::user()->companyId)->latest()->get();
