@@ -163,7 +163,8 @@ class ReportController extends Controller
      */
     public function fnb()
     {        
-          $fpurchaseorder = Fpurchaseorder::where('companyId', Auth::user()->companyId)->where('bankAccountName','=','FNB/RMB')->get();
+          $fpurchaseorder = Fpurchaseorder::where('companyId', Auth::user()->companyId)->where('bankAccountName','=','FNB/RMB')->where('releaseStatus','=', null)->get();
+        //  dd($fpurchaseorder);
           $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
           $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
           $departments = Department::where('companyId', Auth::user()->companyId)->get();
@@ -176,7 +177,7 @@ class ReportController extends Controller
 
         public function albarak()
     {        
-          $fpurchaseorder = Fpurchaseorder::where('companyId', Auth::user()->companyId)->where('bankAccountName','=','Albaraka Bank')->get();
+          $fpurchaseorder = Fpurchaseorder::where('companyId', Auth::user()->companyId)->where('bankAccountName','=','Albaraka Bank')->where('releaseStatus','=', null)->get();
           $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
           $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
           $departments = Department::where('companyId', Auth::user()->companyId)->get();
@@ -187,7 +188,7 @@ class ReportController extends Controller
 
         public function standardbank()
     {        
-          $fpurchaseorder = Fpurchaseorder::where('companyId', Auth::user()->companyId)->where('bankAccountName','=','Standard Bank')->get();
+          $fpurchaseorder = Fpurchaseorder::where('companyId', Auth::user()->companyId)->where('bankAccountName','=','Standard Bank')->where('releaseStatus','=', null)->get();
           $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
           $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
           $departments = Department::where('companyId', Auth::user()->companyId)->get();

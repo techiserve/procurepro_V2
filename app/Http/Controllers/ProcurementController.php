@@ -305,6 +305,7 @@ class ProcurementController extends Controller
      public function paymentRelease(string $id)
      { 
 
+       // dd($id);
             $purchaseOrder = FpurchaseOrder::find($id);
             if($purchaseOrder->status == 2 ){
             if ($purchaseOrder) {
