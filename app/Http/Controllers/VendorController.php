@@ -270,7 +270,8 @@ public function showApprovalPage()
 public function viewApprovalDetails($id)
 {
     $vendor = Vendor::with('documents')->findOrFail($id);
-    return view('vendors.approval-view', compact('vendor'));
+    $users = User::where('companyId', Auth::user()->companyId)->get();
+    return view('vendors.approval-view', compact('vendor','users'));
 }
 
 public function handleApprovalAction(Request $request, $id)

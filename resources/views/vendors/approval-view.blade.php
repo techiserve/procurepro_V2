@@ -42,7 +42,13 @@
                 <div class="col-sm-6">
                   <div class="form-group">
                     <label>Finance Manager</label>
-                    <input type="text" class="form-control" value="{{ $vendor->finance_manager }}" readonly>
+                    @foreach ($users as $user)
+                    @if ($user->id == $vendor->finance_manager)
+                     <input type="text" class="form-control" value="{{ $user->name }}" readonly> 
+                    @endif
+                      
+                    @endforeach
+                    
                   </div>
                 </div>
               </div>
