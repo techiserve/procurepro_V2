@@ -17,7 +17,7 @@
        @method('put')
           <div class="card">
           <div class="card-header">
-            <strong>View Requisition</strong>
+            <strong>View Requisition.</strong>
             <a href="/procurement/indexrequisition" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="fa fa-align-justify"></i> Requistions List</a>
            </div>
 
@@ -98,8 +98,14 @@
               <tr>
                 <td class="text-center">
                 {{-- <input type="checkbox" name="selected_vendor" value="{{ $faira->id }}" class="exclusive-checkbox"{{ $faira->status == 1 ? 'checked' : '' }} required/> --}}
-                <input type="checkbox" name="selected_vendor[]" value="{{ $faira->id }}" class="exclusive-checkbox" {{ $faira->status == 1 ? 'checked' : '' }}/>
-
+                {{-- <input type="checkbox" name="selected_vendor[]" value="{{ $faira->id }}" class="exclusive-checkbox" {{ $faira->status == 1 ? 'checked' : '' }}/> --}}
+               
+            <input type="checkbox"
+                   name="selected_vendor"
+                   value="{{ $faira->id }}"
+                   class="exclusive-checkbox"
+                   {{ $faira->status == 1 ? 'checked' : '' }}>
+        </td>
                 </td>
                 <td class="text-center">{{ $faira->vendor_final }}</td>
                 <td class="text-center">R {{ number_format($faira->amount, 2) }}</td>
@@ -129,7 +135,7 @@
             <div class="card-footer">
             <div class="form-group pull-right">
     				
-           <button type="submit" class="btn btn-success" onclick="celebrate()">
+           <button type="submit"  id="submitBtn" class="btn btn-success" onclick="celebrate()" disabled>
                   <span class='fa fa-check-circle'></span> Approve
                 </button> 
         
@@ -252,42 +258,41 @@
 
 
 @endif
-
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const checkboxes = document.querySelectorAll('.exclusive-checkbox');
     const form = document.querySelector('form');
+    const submitBtn = document.getElementById('submitBtn');
 
-    // Initial check: if one is checked, disable all others
-    const initiallyChecked = Array.from(checkboxes).find(cb => cb.checked);
-    if (initiallyChecked) {
+    // Allow only one checkbox to be checked at a time
+    function enforceSingleSelection(selected) {
         checkboxes.forEach(cb => {
-            if (cb !== initiallyChecked) cb.disabled = true;
+            if (cb !== selected) cb.checked = false;
         });
     }
 
-    // Only one vendor can be selected at a time
-    checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', function () {
-            if (this.checked) {
-                checkboxes.forEach(cb => {
-                    if (cb !== this) cb.disabled = true;
-                });
-            } else {
-                const stillChecked = Array.from(checkboxes).some(cb => cb.checked);
-                if (!stillChecked) {
-                    checkboxes.forEach(cb => cb.disabled = false);
-                }
-            }
+    // Enable/disable submit button based on selection
+    function updateSubmitButtonState() {
+        const isChecked = Array.from(checkboxes).some(cb => cb.checked);
+        submitBtn.disabled = !isChecked;
+    }
+
+    // Init state on load
+    updateSubmitButtonState();
+
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', function () {
+            enforceSingleSelection(this);
+            updateSubmitButtonState();
         });
     });
 
-    // Validate on form submit
+    // Failsafe validation on submit
     form.addEventListener('submit', function (e) {
-        const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
-        if (!anyChecked) {
+        const isChecked = Array.from(checkboxes).some(cb => cb.checked);
+        if (!isChecked) {
             e.preventDefault();
-            alert('You must select one vendor before continuing.');
+            alert('You must select exactly one vendor.');
         }
     });
 });
