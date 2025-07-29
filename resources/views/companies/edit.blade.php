@@ -114,8 +114,20 @@
 
             <hr style="border-color: black;">
             <br>
-          </div>
+                    {{--  --}}
+          <h5>Dynamic Fields</h5>
+        @if(isset($dynamicFields) && count($dynamicFields) > 0)
+            <div class="row">
+              <div class="col-sm-12">
+                <h5>Additional Fields</h5>
+              </div>
+            </div>
+        @endif
 
+       
+          <div id="fields"></div>
+          <button type="button" class="btn btn-secondary" onclick="addField()">Add Field</button>
+    
           <div class="card-footer">
             <div class="form-group pull-right">
               <input type="submit" class="btn btn-success" value="Save" style="padding: 10px 20px; font-size: 16px; min-width: 100px;"/>
@@ -131,17 +143,67 @@
 @endsection
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    document.getElementById("passwordForm").addEventListener("submit", function (event) {       
-        const newPassword = document.getElementById("new_password").value;
-        const confirmPassword = document.getElementById("confirm_password").value;
+    let fieldIndex = 0;
+    let existingFields = @json($dynamicFields);
 
-        if (newPassword !== confirmPassword) {
-            event.preventDefault(); // Prevent form submission
-            document.getElementById("confirm_password").classList.add("is-invalid");
+    document.addEventListener('DOMContentLoaded', function () {
+        if (existingFields.length > 0) {
+            existingFields.forEach(field => {
+                addField(field.name, field.label, field.type, field.id);
+            });
         } else {
-            document.getElementById("confirm_password").classList.remove("is-invalid");
+            addField('vendor', 'Vendor', 'string');
+            addField('amount', 'Amount', 'integer');
+            addField('department', 'Department', 'string');
+            addField('invoiceamount', 'Invoice Amount', 'integer');
+            addField('paymentmethod', 'Payment Method', 'string');
         }
     });
-});
+
+    function addField(name = '', label = '', type = '', fieldId = '') {
+        const container = document.getElementById('fields');
+        const fieldHTML = createField(fieldIndex, name, label, type, fieldId);
+        container.insertAdjacentHTML('beforeend', fieldHTML);
+        fieldIndex++;
+    }
+
+   function createField(index, name = '', label = '', type = '', fieldId = '') {
+    const requiredFields = ['department', 'amount', 'vendor'];
+    const isRemovable = !requiredFields.includes(name.toLowerCase());
+
+    return `
+        <div class="form-group" id="field-${index}">
+            <div class="row">
+                <input type="hidden" name="fields[${index}][id]" value="${fieldId}">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" name="fields[${index}][name]" value="${name}" placeholder="Field Name" required ${isRemovable ? '' : 'readonly'}>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" name="fields[${index}][label]" value="${label}" placeholder="Label" required ${isRemovable ? '' : 'readonly'}>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-control" name="fields[${index}][type]" required ${isRemovable ? '' : 'readonly'}>
+                                <option value="">-- Select type --</option>
+                                <option value="string" ${type === 'string' ? 'selected' : ''}>String</option>
+                                <option value="integer" ${type === 'integer' ? 'selected' : ''}>Integer</option>
+                                <option value="checkbox" ${type === 'checkbox' ? 'selected' : ''}>Checkbox</option>
+                            </select>
+                        </div>
+                        <div class="col-md-1 text-right">
+                            ${isRemovable ? `<button type="button" class="btn btn-danger btn-md" onclick="removeField(${index})">&times;</button>` : ''}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+
+    function removeField(index) {
+        const element = document.getElementById(`field-${index}`);
+        if (element) element.remove();
+    }
 </script>

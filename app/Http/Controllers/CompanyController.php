@@ -231,8 +231,9 @@ class CompanyController extends Controller
     public function companyedit(string $id)
     {
         $company = Company::where('id', $id)->first();
+        $dynamicFields = FormField::where('companyId','=',$id)->get();
 
-        return view('companies.edit', compact('company'));
+        return view('companies.edit', compact('company','dynamicFields'));
     }
 
 
@@ -297,6 +298,8 @@ class CompanyController extends Controller
     public function companyUpdate(Request $request, string $id)
     {
 
+       // dd($request->all());
+
         $updaterequisition = Company::where('id', $id)->update([
 
             'name'  => $request->companyname,
@@ -327,6 +330,64 @@ class CompanyController extends Controller
               ]);
     
          }
+
+   $dynamicFields = FormField::where('companyId','=',$id)->delete();
+
+            $fields = $request->input('fields');
+         /// dd($fields);
+ foreach ($fields as $field) {
+
+    // Normalize field name: lowercase and remove spaces
+    $normalizedName = strtolower(str_replace(' ', '', $field['name']));
+
+    // Save form field configuration
+    FormField::create([
+        'companyId' => $id,
+        'name' => $normalizedName,
+        'label' => $field['label'],
+        'type' => $field['type'],
+    ]);
+
+    // Dynamically add column to frequisitions table
+    if (!Schema::hasColumn('frequisitions', $normalizedName)) {
+        Schema::table('frequisitions', function (Blueprint $table) use ($field, $normalizedName) {
+            switch ($field['type']) {
+                case 'string':
+                    $table->string($normalizedName)->nullable();
+                    break;
+                case 'integer':
+                    $table->integer($normalizedName)->nullable();
+                    break;
+                case 'text':
+                    $table->text($normalizedName)->nullable();
+                    break;
+                // Add more cases as needed
+                default:
+                    $table->string($normalizedName)->nullable();
+            }
+        });
+    }
+
+    // Dynamically add column to fpurchaseorders table
+    if (!Schema::hasColumn('fpurchaseorders', $normalizedName)) {
+        Schema::table('fpurchaseorders', function (Blueprint $table) use ($field, $normalizedName) {
+            switch ($field['type']) {
+                case 'string':
+                    $table->string($normalizedName)->nullable();
+                    break;
+                case 'integer':
+                    $table->integer($normalizedName)->nullable();
+                    break;
+                case 'text':
+                    $table->text($normalizedName)->nullable();
+                    break;
+                // Add more cases as needed
+                default:
+                    $table->string($normalizedName)->nullable();
+            }
+        });
+    }
+}
 
    
       if($updaterequisition){
