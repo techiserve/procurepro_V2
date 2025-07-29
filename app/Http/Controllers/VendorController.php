@@ -178,26 +178,41 @@ public function update(Request $request, $id)
 {
     $vendor = Vendor::findOrFail($id);
 
-    $vendor->update(array_merge(
-        $request->only([
-            'name',
-            'type',
-            'description',
-            'vat_registered',
-            'vat_allocation',
-            'contact_no_1',
-            'contact_no_2',
-            'supplier_code',
-            'address',
-            'finance_manager',
-            'bank_name',
-            'account_number',
-            'account_type',
-            'branch_code',
-        ]),
-        ['status' => 2]
-    ));
-    
+// Capture original attributes
+$original = $vendor->getOriginal();
+
+$updatedData = $request->only([
+    'name',
+    'type',
+    'description',
+    'vat_registered',
+    'vat_allocation',
+    'contact_no_1',
+    'contact_no_2',
+    'supplier_code',
+    'address',
+    'finance_manager',
+    'bank_name',
+    'account_number',
+    'account_type',
+    'branch_code',
+]);
+
+$updatedData['status'] = 2;
+
+// Update the vendor
+$vendor->update($updatedData);
+
+// Compare and store changes
+$changeString = '';
+foreach ($updatedData as $key => $newValue) {
+    $oldValue = $original[$key] ?? null;
+
+    if ($oldValue != $newValue) {
+        $changeString .= ucfirst(str_replace('_', ' ', $key)) . " changed from '{$oldValue}' to '{$newValue}'; ";
+    }
+} 
+//dd($changeString);
   
     
         // Handle deleting existing documents
@@ -226,6 +241,21 @@ public function update(Request $request, $id)
             }
         }
     }
+
+       Vendorhistory::create([
+                
+                'vendor_id' => $vendor->id,
+                'companyId' => Auth::user()->companyId,
+                'userId' => Auth::user()->id,
+                'status' => 1, // Assuming 1 is for 'Pending'
+                'approvallevel' => 1, // Assuming the first approval level
+                'isActive' => 1,
+                'doneby' => Auth::user()->name,
+                'action' => 'Updated',
+                'reason' => $changeString
+
+                ]);
+
 
     return redirect('/vendors/index')->with('success', 'Vendor updated successfully.');
 }
