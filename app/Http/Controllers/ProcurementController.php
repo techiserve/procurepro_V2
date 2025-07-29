@@ -825,8 +825,7 @@ class ProcurementController extends Controller
             'status' => 1
         ]);
 
-         $vendor = FrequisitionVendor::where('id', $request->selected_vendor)->first();
-         //dd($vendor);
+        $vendor = FrequisitionVendor::where('id', $request->selected_vendor)->first();
         $frequisition = Frequisition::where('id', $id)->first();
 
         if($frequisition->approvallevel+1 > $frequisition->totalapprovallevels){

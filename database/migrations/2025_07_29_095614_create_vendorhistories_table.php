@@ -11,16 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('requisition_histories', function (Blueprint $table) {
+        Schema::create('vendorhistories', function (Blueprint $table) {
             $table->id();
-            $table->integer('frequisition_id')->nullable();
+            $table->integer('vendor_id')->nullable();
             $table->integer('companyId')->nullable();
-            $table->string('vendor')->nullable();
-            $table->string('services')->nullable();
-            $table->string('paymentmethod')->nullable();
-            $table->string('expenses')->nullable();
-            $table->string('projectcode')->nullable();
-            $table->integer('amount')->nullable();
+            $table->string('department')->nullable();
             $table->string('action')->nullable();
             $table->string('file')->nullable();
             $table->integer('userId')->nullable();
@@ -30,7 +25,6 @@ return new class extends Migration
             $table->string('reason')->nullable();
             $table->string('doneby')->nullable();
             $table->timestamps();
-
         });
     }
 
@@ -39,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('requisition_histories');
+        Schema::dropIfExists('vendorhistories');
     }
 };

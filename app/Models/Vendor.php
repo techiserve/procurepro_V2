@@ -35,4 +35,10 @@ class Vendor extends Model
 {
     return $this->hasMany(VendorDocument::class);
 }
+
+  public function history()
+{
+    return $this->hasMany(Vendorhistory::class);
+}
+
 }

@@ -38,7 +38,6 @@
                       @if ($user->id == $vendor->finance_manager )
                      <td>{{ $user->name }}</td>
                       @endif                         
-                   
                        @endforeach
                       <td>
                         <span class="badge badge-warning">Pending</span>

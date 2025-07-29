@@ -112,6 +112,73 @@
                               <span class='fa fa-trash'></span>
                               <span class='hidden-sm hidden-md'> Delete</span>
                             </a>
+
+                             <a href="#" data-toggle="modal" data-target="#historyModal{{ $vendor->id }}"  class="btn btn-icon btn-success mr-1">
+                              <i class="fa fa-pencil"></i> Logs
+                            </a>
+
+                            <!-- Modal Structure -->
+                <div class="modal fade" id="historyModal{{ $vendor->id }}" tabindex="-1" role="dialog" aria-labelledby="historyModalLabel{{ $vendor->id }}" aria-hidden="true">
+<div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="timelineModalLabel">Vendor Request Logs</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Timeline 7 - Bootstrap Brain Component -->
+                <section class="bsb-timeline-7 py-3">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-12">
+                            @if($vendor->history->isEmpty())
+                                        <p>No history found for this requisition.</p>
+                                    @else
+                                <ul class="timeline">
+                                @foreach($vendor->history as $history)
+
+                                @php
+                                    $date = \Carbon\Carbon::parse($history->created_at);
+                                    @endphp
+
+                                    <li class="timeline-item">
+                                        <div class="timeline-body">
+                                            <div class="timeline-meta">
+                                                <div class="d-inline-flex flex-column px-2 py-1 text-success-emphasis bg-success-subtle border border-success-subtle rounded-2 text-md-end">
+                                                    <span class="fw-bold">{{$date->format('d F Y')}}</span>
+                                                    <span>{{$date->format('g:ia')}}</span>
+                                                </div>
+                                            </div>
+                                            <div class="timeline-content timeline-indicator">
+                                                <div class="card border-0 shadow">
+                                                    <div class="card-body p-xl-4"  style="position: relative;">
+                                                    <h6 class="card-subtitle text-secondary mb-3" style="position: absolute; top: 10; right: 10;">{{ $loop->iteration }}</h6>
+                                                        <h2 class="card-title mb-2">{{$history->doneby}}</h2>
+                                                      
+                                                        <p class="card-text m-0">{{$history->reason}}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>             
+                                 @endforeach
+                                </ul>
+
+                                @endif
+
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
                           </td>
                         </tr>
                       @empty

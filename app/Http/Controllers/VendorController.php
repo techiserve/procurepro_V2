@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\ClassificationOfExpense;
 use App\Models\VendorDocument;
+use App\Models\Vendorhistory;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -17,7 +18,7 @@ class VendorController extends Controller
 {
     public function index()
     {    
-        $vendors = Vendor::where('companyId', Auth::user()->companyId)->get();
+        $vendors = Vendor::with('history')->where('companyId', Auth::user()->companyId)->get();
         $users = User::where('companyId', Auth::user()->companyId)->get();
         $vendorTypes = VendorType::where('companyId', Auth::user()->companyId)->get();
         return view('vendors.index', compact('vendors','vendorTypes','users'));
@@ -48,6 +49,22 @@ class VendorController extends Controller
                 ]);
             }
         }
+
+
+           Vendorhistory::create([
+                
+                'vendor_id' => $vendor->id,
+                'companyId' => $company,
+                'userId' => Auth::user()->id,
+                'status' => 1, // Assuming 1 is for 'Pending'
+                'approvallevel' => 1, // Assuming the first approval level
+                'isActive' => 1,
+                'doneby' => Auth::user()->name,
+                'action' => 'Created',
+                'reason' => 'Vendor created successfully'
+
+                ]);
+
     
         return $request->input('is_frm_continue') === 'continue'
              ? redirect('/vendors/banking')->with('banks', Bank::all())
@@ -235,20 +252,41 @@ public function handleApprovalAction(Request $request, $id)
         case 'approve':
             $vendor->status = 3;
             $vendor->message = null;
+            $action = 'Approved';
+            $reason = 'Vendor request approved successfully';
             break;
         case 'return':
             $vendor->status = 4;
             $vendor->message = $request->input('message');
+             $action = 'Returned';
+            $reason = 'Vendor request returned for more information';
             break;
         case 'reject':
             $vendor->status = 5;
             $vendor->message = null;
+            $action = 'Approved';
+            $reason = 'Vendor request rejected';
             break;
         default:
             return back()->with('error', 'Invalid action.');
     }
 
     $vendor->save();
+
+           Vendorhistory::create([
+                
+                'vendor_id' => $vendor->id,
+                'companyId' => $vendor->companyId,
+                'userId' => Auth::user()->id,
+                'status' => $vendor->status, // Assuming 1 is for 'Pending'
+                'approvallevel' => 2, // Assuming the first approval level
+                'isActive' => 1,
+                'doneby' => Auth::user()->name,
+                'action' => $action,
+                'reason' => $reason
+
+                ]);
+
 
     return redirect()->route('vendors.approval')->with('success', 'Vendor status updated successfully.');
 }
