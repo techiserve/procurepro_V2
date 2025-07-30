@@ -53,7 +53,7 @@
               <tbody>
                 @foreach($fpurchaseorders as $fpurchaseorder)
                 <tr>
-               @if(auth()->user()->id == $fpurchaseorder->userId OR auth()->user()->userrole  == $fpurchaseorder->approvedby )
+      
                 <td> <input type="checkbox" id="select" name="requisition_ids[]" value="{{ $fpurchaseorder->id }}"></td>
                     <td>{{ $fpurchaseorder->requisitionNumber }}</td>
                      @php
@@ -271,7 +271,7 @@
                   
                   </td>
                 </tr>
-                 @endif
+               
                 @endforeach
               </tbody>
             </table>        

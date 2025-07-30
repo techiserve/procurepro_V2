@@ -137,9 +137,31 @@ class ProcurementController extends Controller
             ->distinct()
             ->get();
           //  dd($vendors);
- 
-        $frequisitions = Frequisition::with('histories')->where('userId', Auth::user()->id)->where('companyId', Auth::user()->companyId)->orwhere('isActive', '=', 1)->where('companyId', Auth::user()->companyId)->orderby('id','desc')->get();
-         //  dd($frequisitions);
+        
+        $frequisitions = Frequisition::with('histories')->where('userId', Auth::user()->id)->where('companyId', Auth::user()->companyId)->orderby('id','desc')->get(); 
+
+        $actions = ['Purchase Requisition Approved', 'Purchase Requisition Returned', 'Purchase Requisition Rejected','Purchase Requisition Approved and Purchase Order Created'];
+
+        $history = RequisitionHistory::where('userId', Auth::user()->id)
+            ->where('companyId', Auth::user()->companyId)
+            ->whereIn('action', $actions)
+            ->groupBy('frequisition_id') 
+            ->get();
+
+        $frequisitionIds = $history->pluck('frequisition_id')->toArray();
+
+        $historicalFrequisitions = Frequisition::with('histories')
+        ->whereIn('id', $frequisitionIds)
+        ->orderBy('id', 'desc')
+        ->get();
+
+        if($frequisitions->isEmpty()){
+          // dd('bho');
+            $frequisitions = $historicalFrequisitions;
+        }
+
+       // dd($frequisitions,$historicalFrequisitions);
+
         return view('procurement.indexfrequisiton', compact('formFields', 'frequisitions','roles','departments','vendors'));
     }
 
@@ -204,7 +226,7 @@ class ProcurementController extends Controller
     public function indexpurchaseorder()
     {
      
-        $fpurchaseorders = Fpurchaseorder::with('histories')->where('userId', Auth::user()->id)->orwhere('isActive', '=', 1)->where('companyId', Auth::user()->companyId)->orderby('id','desc')->get();
+        $fpurchaseorders = Fpurchaseorder::with('histories')->where('userId', Auth::user()->id)->where('companyId', Auth::user()->companyId)->orderby('id','desc')->get();
         $roles = userrole::where('companyId', Auth::user()->companyId)->get();
        // $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
        // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
@@ -216,7 +238,29 @@ class ProcurementController extends Controller
             ->distinct()
             ->get();
 
-        //  dd($fpurchaseorders);
+
+        $actions = ['Purchase Order Approved', 'Purchase Order Approved and Sent to Upload File', 'Purchase Order Returned','Purchase Order Rejected'];
+
+        $history = RequisitionHistory::where('userId', Auth::user()->id)
+            ->where('companyId', Auth::user()->companyId)
+            ->whereIn('action', $actions)
+            ->groupBy('frequisition_id') 
+            ->get();
+
+        $frequisitionIds = $history->pluck('frequisition_id')->toArray();
+
+        $historicalFpurchaseorders = Fpurchaseorder::with('histories')
+        ->whereIn('frequisition_id', $frequisitionIds)
+        ->orderBy('id', 'desc')
+        ->get();
+
+        if($fpurchaseorders->isEmpty()){
+          // dd('bho');
+            $fpurchaseorders = $historicalFpurchaseorders;
+        }
+
+
+         // dd($fpurchaseorders);
         return view('procurement.indexfpurchaseorder', compact('fpurchaseorders','roles','formFields','departments','vendors'));
     }
 
