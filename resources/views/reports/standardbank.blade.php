@@ -35,7 +35,7 @@
                                 @foreach($fpurchaseorder as $grower)
                                     <tr>
        
-                                        <td>{{ $grower->vendor }}</td>
+                                        <td>{{ $grower->Vendor }}</td>
                                         <td>{{ $grower->bankAccountNumber }}</td>
                                         <td>{{ $grower->bankAccountType }}</td>
                                         <td>3310</td>

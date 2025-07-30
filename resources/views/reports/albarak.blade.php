@@ -44,7 +44,7 @@
                                     <tr>
        
                                         <td>{{ $grower->bankAccountNumber }}</td>
-                                        <td>{{ $grower->vendor }}</td>
+                                        <td>{{ $grower->Vendor }}</td>
                                         <td>330</td>
                                         <td>11111</td>
                                         <td>{{$grower->ownref}}</td>
