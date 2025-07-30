@@ -171,9 +171,7 @@ class ReportController extends Controller
         return view('reports.waitingpurchaseorder', compact('requisitions','vendors','servicetype','departments'));
     }
 
-    /**
-     * Display the specified resource.
-     */
+
     public function fnb()
     {        
           $fpurchaseorder = Fpurchaseorder::where('companyId', Auth::user()->companyId)->where('bankAccountName','=','FNB/RMB')->where('releaseStatus','=', null)->get();
