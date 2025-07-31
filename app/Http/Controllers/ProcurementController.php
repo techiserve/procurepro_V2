@@ -369,6 +369,25 @@ class ProcurementController extends Controller
              }
             }
         
+
+            
+           $requisitiond = RequisitionHistory::create([
+
+            'frequisition_id' => $purchaseOrder->frequisition_id,
+            // 'amount'  => $frequisition->amount,
+            'companyId'  =>Auth::user()->companyId,
+            'userId'  =>Auth::user()->id,
+            'status'  => 1,
+            // 'approvallevel' =>  $level,
+            'approvedby' => Auth::user()->userrole, 
+            'isActive'  => 1,
+            'action'  => "Purchase Order Released",
+            'doneby' => Auth::user()->name
+            
+           ]);
+    
+
+            //
         return back()->with('success', 'Payment Release Completed!'); 
 
      }
