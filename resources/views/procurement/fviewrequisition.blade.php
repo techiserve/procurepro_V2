@@ -56,8 +56,8 @@
             <label class="form-label">{{ $field->label }}</label>
             <input type="text" class="form-control" value="{{ $value }}" readonly>
         </div>
-    @endforeach
-</div>
+        @endforeach
+        </div>
          <div class="row">
           @if($frequisition->reason != null)
               <div class="col-sm-6">
