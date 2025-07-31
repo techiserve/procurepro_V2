@@ -59,19 +59,6 @@
 
               <div class="col-sm-6">
                 <div class="form-group">
-                  <label for="grower-id">Assign Company</label>
-                  <select class="js-example-basic-multiple form-control" multiple="multiple"id="grower_name" name="compan[]" >
-                  @foreach($companies as $company)
-                    <option value="{{ $company->id }}"> {{ $company->name }}</option>
-                    @endforeach
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-sm-6">
-                <div class="form-group">
                   <label for="province">Address</label>
                   <textarea class="form-control" id="exampleFormControlTextarea1" name="address" rows="3"></textarea>
                 </div>
@@ -85,7 +72,7 @@
 			<br>
 
 			<!-- the dynamic field for adding growers is suppped to go here -->
-			<div class="clearfix" id="dynamic_field">
+			{{-- <div class="clearfix" id="dynamic_field">
 				<div class="row">
 					<div class="col-md-5">
 						<div class="form-group">
@@ -114,7 +101,7 @@
 						<button type="button" name="add" id="add" class="btn add-more btn-primary"> &nbsp;+&nbsp; </button>
 					</div>
 				</div>
-			</div>
+			</div> --}}
 			<!-- end of dynamic field -->
           </div>
           <div class="card-footer">

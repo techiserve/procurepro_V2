@@ -25,7 +25,7 @@
             <li class="nav-item main-sibebar">
                 <a href="/home">
                     <i class="feather icon-grid"></i>
-                    <span class="menu-title" data-i18n="">Dashboard</span>
+                    <span class="menu-title" data-i18n="">Dashboard.</span>
                 </a>
             </li>
             
@@ -87,32 +87,13 @@
                         
                     </ul>
                 </li>
+
+
+             
             @endif
 
 
-                <!-- <li class="nav-item main-sibebar">
-                    <a href="#"><i class="feather icon-users"></i><span class="menu-title" data-i18n="">Flexible Forms</span></a>
-                    <ul class="menu-content main-sibebar" style="margin-left:-30px;">
-                 
-                            <li>
-                                <a class="menu-item" href="/form/configure" data-i18n="nav.starter_kit.1_column">
-                                    <i class="nav-icon icon-"></i>Configure
-                                </a>
-                            </li>
-                     
-
-                 
-                            <li>
-                                <a class="menu-item" href="/requisition/create" data-i18n="nav.starter_kit.2_columns">
-                                    <i class="nav-icon icon-cloud-"></i> Reqs
-                                </a>
-                            </li>
-                   
-
-                        
-                    </ul>
-                </li> -->
-         
+       
 
                 @if(auth()->user()->userrole == 3 OR auth()->user()->userrole == 2 OR $data->contains('Request a Vendor') OR $data->contains('Pending Requests') OR $data->contains('All Vendors') OR $data->contains('My Requests')OR $data->contains('Vendor Type'))
                 <li class="nav-item main-sibebar">
@@ -267,8 +248,8 @@
                     </ul>
                 </li>
 
-                <!-- EXECUTIVE -->
-                <!-- <li class="nav-item main-sibebar">
+                            <!-- EXECUTIVE -->
+                <li class="nav-item main-sibebar">
                     <a href="#"><i class="feather icon-shield"></i><span class="menu-title" data-i18n="">Executive</span></a>
                     <ul class="menu-content main-sibebar">
                         <li>
@@ -282,7 +263,8 @@
                             </a>
                         </li>
                     </ul>
-                </li> -->
+                </li> 
+       
             @endif  
 
              

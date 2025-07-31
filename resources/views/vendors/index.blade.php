@@ -90,7 +90,8 @@
                               {{ $currentStatus['text'] }}
                             </span>
                           </td>
-                          <td class="text-center">                
+                          <td class="text-center">
+                            @if($vendor->status != 5)                
                             <a href="/vendors/edit/{{$vendor->id}}" class="btn btn-icon btn-info mr-1">
                               <i class="fa fa-pencil"></i> Edit
                             </a>
@@ -112,7 +113,7 @@
                               <span class='fa fa-trash'></span>
                               <span class='hidden-sm hidden-md'> Delete</span>
                             </a>
-
+                            @endif
                              <a href="#" data-toggle="modal" data-target="#historyModal{{ $vendor->id }}"  class="btn btn-icon btn-success mr-1">
                               <i class="fa fa-pencil"></i> Logs
                             </a>

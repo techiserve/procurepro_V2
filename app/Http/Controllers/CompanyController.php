@@ -58,7 +58,7 @@ class CompanyController extends Controller
         $executive->email = $request->email;
         $executive->password = Hash::make($request->password);
         $executive->userName = $request->username;
-        $executive->companyId = $request->compan[0];
+        // $executive->companyId = $request->compan[0];
         $executive->address = $request->address;
         $executive->isActive = 1;     
         $executive->save();
@@ -70,29 +70,15 @@ class CompanyController extends Controller
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
         $user->username =  $request->username;
-        $user->companyId = $request->compan[0];
+        // $user->companyId = $request->compan[0];
         $user->executiveId = $executive->id;
         $user->userrole = 2;      
         $user->save();
 
-        $company = $request->input('company');
-        $userrole = $request->input('userrole');
-
-
-        foreach($company as $key => $n ) {
-
-            $arrData[] = array(
-
-                $companyrole = CompanyRole::create([
-                    'userId' => $user->id,
-                    "companyId"=>$company[$key],
-                    "roleId"=>$userrole[$key]
-                ])
-            );
-
-        }
-
        }
+
+
+       
 
         if($user && $executive){
      
