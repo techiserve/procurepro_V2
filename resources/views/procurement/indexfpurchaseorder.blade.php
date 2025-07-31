@@ -10,7 +10,7 @@
       <div class="col-sm-12">
         <div class="card">
           <div class="card-header">
-            <strong>Requisitions</strong>
+            <strong>Purchase Orders</strong>
           </div>
     
           <div class="card-body">
