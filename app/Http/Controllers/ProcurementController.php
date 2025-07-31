@@ -203,7 +203,7 @@ class ProcurementController extends Controller
 
         $history = RequisitionHistory::where('frequisition_id', $id)->where('userId',  Auth::user()->id)->where('action','!=', 'Created Purchase Requisition')->where('action', '!=', 'Purchase Requisition Returned')->first();
     
-        // return view('procurement.fviewrequisition', compact('frequisition','files','vendors','servicetype','formFields','history','departments'));
+        // return view('procurement.downloadrequisitionsewrequisition', compact('frequisition','files','vendors','servicetype','formFields','history','departments'));
             
         return view('procurement.fviewrequisition', compact('frequisition','frequisitionvendors','files','formFields','history','departments'));
     }
@@ -1516,6 +1516,80 @@ public function downloadrequisitions(Request $request)
         return back()->with('error', 'Non PDF documents found.');
     }
 }
+
+
+
+
+
+
+public function downloadpurchaseorder(Request $request)
+{
+    try {
+        $requisitionIds = $request->input('requisition_ids');
+        $consolidatedPDFs = [];
+
+        foreach ($requisitionIds as $id) {
+            // Fetch requisition data
+            $company = Fpurchaseorder::findOrFail($id);
+            $user = User::find($company->userId);
+            $history = Requisitionhistory::where('frequisition_id', $company->frequisition_id)->get();
+            $department = Department::find($company->department);
+            $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
+
+            $normalizedCompanyData = [];
+            foreach ($company->getAttributes() as $key => $value) {
+                $normalizedCompanyData[strtolower(trim($key))] = $value;
+            }
+
+            // Generate individual PDF
+            $pdf = Pdf::loadView('pdf.requisition', compact('company', 'user', 'history', 'normalizedCompanyData', 'department', 'formFields'));
+            $newPDFPath = storage_path("app/public/new_report_{$id}.pdf");
+            $pdf->save($newPDFPath);
+
+            // Merge with existing uploaded files
+            $existingPDFs = [];
+          //  dd($existingPDFs,$id);
+            $merger = new Merger();
+            $merger->addFile($newPDFPath);
+
+            foreach ($existingPDFs as $existingPDFPath) {
+                $fullPath = storage_path('app/public/uploads/' . $existingPDFPath);
+                $convertedExistingPDF = $this->convertPdfToVersion($fullPath); // may throw exception
+                  if (!$convertedExistingPDF) {
+                 return back()->with('error', 'Non PDF found in the documents!.');
+            }
+                $merger->addFile($convertedExistingPDF);
+            }
+
+            $mergedPdf = $merger->merge();
+            $consolidatedPDFPath = storage_path("app/public/consolidated_report_{$id}.pdf");
+            file_put_contents($consolidatedPDFPath, $mergedPdf);
+
+            $consolidatedPDFs[] = $consolidatedPDFPath;
+        }
+
+        // Create zip archive
+        $zipFileName = 'consolidated_requisitions.zip';
+        $zipPath = storage_path('app/public/' . $zipFileName);
+
+        $zip = new \ZipArchive();
+        if ($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === true) {
+            foreach ($consolidatedPDFs as $pdfPath) {
+                $zip->addFile($pdfPath, basename($pdfPath));
+            }
+            $zip->close();
+        } else {
+            throw new Exception('Failed to create ZIP file.');
+        }
+
+        return response()->download($zipPath)->deleteFileAfterSend(true);
+
+    } catch (Exception $e) {
+        Log::error('Download purchaseorders error: ' . $e->getMessage());
+        return back()->with('error', 'Non PDF documents found.');
+    }
+}
+    
     
 
 
