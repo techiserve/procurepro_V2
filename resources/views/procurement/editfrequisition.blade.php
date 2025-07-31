@@ -48,7 +48,7 @@
                     @elseif(in_array($fieldName, array_map('strtolower', $departmentNames)))
                    <div class="col-md-6 mb-3">
                     <label class="form-label">{{ $field->label }}</label>
-                    <input type="text" class="form-control" name="{{ $fieldName }}" value="{{ $value }}" >
+                    <input type="text" class="form-control" name="{{ $fieldName }}" value="{{ $departments->name ?? 'Unknown' }}"  readonly>
                 </div>
                 @else
                 <div class="col-md-6 mb-3">
