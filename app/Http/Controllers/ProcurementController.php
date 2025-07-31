@@ -1534,8 +1534,13 @@ public function downloadpurchaseorder(Request $request)
             $user = User::find($company->userId);
             $history = Requisitionhistory::where('frequisition_id', $company->frequisition_id)->get();
             $department = Department::find($company->department);
-            $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
-
+           // dd($department);
+           $formFields = FormField::where('companyId', Auth::user()->companyId)
+    ->where('name', '!=', 'department')
+    ->orwhere('name','!=', 'Department')
+   -> where('companyId', Auth::user()->companyId)
+    ->get();
+     //   dd($formFields);
             $normalizedCompanyData = [];
             foreach ($company->getAttributes() as $key => $value) {
                 $normalizedCompanyData[strtolower(trim($key))] = $value;

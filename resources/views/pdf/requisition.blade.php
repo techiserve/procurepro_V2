@@ -118,7 +118,7 @@
                    <br><br>70 3rd Road<br>Linbro Park, Sandton<br>2090<br>Gauteng<br>South Africa
                 </td>
                 <td style="text-align: right;">
-                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('coreui/img/tag.png'))) }}" alt="Company Logo" class="logo">
+                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('coreui/img/zarq1.png'))) }}" alt="Company Logo" class="logo">
                 </td>
             </tr>
         </table>
@@ -170,7 +170,7 @@
 
             <!-- Dynamic Fields -->
             @foreach($formFields as $field)
-                @if($field->name !== 'invoiceamount') {{-- Skip this field --}}
+                @if($field->name !== 'invoiceamount' || $field->name !== 'department'|| $field->name !== 'Department'  ) {{-- Skip this field --}}
                     <tr>
                         <td class="left-column">{{ ucwords(str_replace('_', ' ', $field->name)) }}:</td>
                         <td class="right-column">{{ $company->{$field->name} ?? '' }}</td>
