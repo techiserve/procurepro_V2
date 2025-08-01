@@ -217,8 +217,19 @@ class ProcurementController extends Controller
         $formFields = FormField::where('companyId', $frequisition->companyId)->get();
         $files = Requisitionfile::where('requisitionId', $id)->get();
         $departments = Department::where('id', $frequisition->department)->first();
+         $frequisitionvendors = FrequisitionVendor::where('frequisition_id', $frequisition->id)->get();
 
-        return view('procurement.editfrequisition', compact('frequisition','formFields','files','departments'));
+        $company = Company::where('id', Auth::user()->companyId)->first();
+   $vendorTypes = VendorType::where('companyId', Auth::user()->companyId)->get();
+            if($company->vendor_source == "Vendor Management"){
+           $vendors = Vendor::select(
+                'id as SupplierID', 
+                'name as SupplierName'
+            )->where('companyId', Auth::user()->companyId)->where('status','=', '3')->get();
+        }
+
+
+        return view('procurement.editfrequisition', compact('frequisition','formFields','files','departments','frequisitionvendors','company','vendors','vendorTypes'));
     }
 
 
@@ -528,19 +539,23 @@ class ProcurementController extends Controller
 
       
          $frequisition = Frequisition::findOrFail($id);
-       // dd($frequisition);
+       // dd($request->all());
         $departmentName = Department::where('id', $frequisition->department)->first();
-        $level = Departmentapproval::where('mode','=','PR')->where('departmentId', $departmentName->id)->min('approvalId');
-        $totalapprovallevels = Departmentapproval::where('mode','=','PR')->where('departmentId', $departmentName->id)->count();
-        $approver = Departmentapproval::where('mode','=','PR')->where('departmentId', $departmentName->id)->where('approvalId', $level)->first();
-  
+        $level = Departmentapproval::where('mode','=','PR')->where('departmentId', $frequisition->department)->min('approvalId');
+        $totalapprovallevels = Departmentapproval::where('mode','=','PR')->where('departmentId', $frequisition->department)->count();
+        $approver = Departmentapproval::where('mode','=','PR')->where('departmentId', $frequisition->department)->where('approvalId', $level)->first();
+       
         $frequisition = Frequisition::findOrFail($id);
 
             // Fetch dynamic form fields for this companyId or global fields (null)
             $formFields = FormField::where(function($query) use ($frequisition) {
-                $query->where('companyId', $frequisition->companyId);
+                $query->where('companyId', $frequisition->companyId)
+                  ->where('name','!=', 'department')
+                  ->orwhere('companyId', $frequisition->companyId)
+                   ->where('name','!=', 'Department');
             })->pluck('name')->unique();
-
+                 
+          //  dd($frequisition->id);
             // Update each field dynamically from the request
             foreach ($formFields as $fieldName) {
                 if ($request->has($fieldName)) {
@@ -553,8 +568,55 @@ class ProcurementController extends Controller
             $frequisition->approvedby = $approver->roleId ?? null;
             $frequisition->isActive = 1;
             $frequisition->status = 1;
-
+            // dd($approver,$frequisition);
             $frequisition->save();
+
+        $vendorFinal = $request->input('vendor_final');
+        $amounts = $request->input('damount');
+        $modalVendorNames = $request->input('modal_vendor_name');
+        $types = $request->input('type');
+        $vatAllocations = $request->input('Vatallocation');
+        $supplierCodes = $request->input('supplierCode');
+        $banks = $request->input('bank');
+        $accountNumbers = $request->input('accountNumber');
+        $accountTypes = $request->input('accountType');
+
+        $files = $request->file('dfile');
+        $docs = $request->file('doc');
+
+    foreach ($vendorFinal as $index => $vendorName) {
+        $frequisition = new FrequisitionVendor();
+        $frequisition->vendor_final = $vendorName;
+        $frequisition->amount = $amounts[$index];
+        $frequisition->frequisition_id = $id;
+
+        if (isset($files[$index])) {
+             
+             $faira = $files[$index]->store('uploads', 'public');
+             $fieldquote =  Str::afterLast($faira, '/');
+             $frequisition->file_path = $fieldquote;
+        }
+
+        // If modal data exists (for one-time vendors)
+        if (isset($modalVendorNames[$index])) {
+            $frequisition->modal_vendor_name = $modalVendorNames[$index];
+            $frequisition->type = $types[$index] ?? null;
+            $frequisition->vat_allocation = $vatAllocations[$index] ?? null;
+            $frequisition->supplier_code = $supplierCodes[$index] ?? null;
+            $frequisition->bank = $banks[$index] ?? null;
+            $frequisition->account_number = $accountNumbers[$index] ?? null;
+            $frequisition->account_type = $accountTypes[$index] ?? null;
+
+            if (isset($docs[$index])) {
+                $frequisitionfile = $docs[$index]->store('uploads', 'public');
+                $fieldquote1 =  Str::afterLast($frequisitionfile, '/');
+                $frequisition->doc_path = $fieldquote1; 
+            }
+        }
+
+        $frequisition->save();
+    }
+
 
     //   $updaterequisition = Frequisition::where('id', $id)->update([
 
