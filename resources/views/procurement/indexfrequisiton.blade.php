@@ -111,6 +111,8 @@
                 <button type="button" class="btn btn-outline-danger"><span class="fa fa-times-circle"></span> Rejected</button>
                 @elseif($frequisition->status == 4)
                 <button type="button" class="btn btn-outline-info"><span class="fa fa-arrow-left"></span> Returned</button>
+                 @elseif($frequisition->status == 6)
+                <button type="button" class="btn btn-outline-danger"><span class="fa fa-arrow-left"></span> Voided</button>
                 @else
                 <button type="button" class="btn btn-outline-primary"><span class="fa fa-spinner"></span> Processing</button>
                 @endif

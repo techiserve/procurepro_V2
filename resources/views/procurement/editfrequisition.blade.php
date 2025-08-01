@@ -45,7 +45,7 @@
                 @elseif(in_array($fieldName, array_map('strtolower', $amount)))
                    <div class="col-md-6 mb-3">
                     <label class="form-label">{{ $field->label }}</label>
-                    <input type="text" class="form-control" name="{{ $fieldName }}" value="{{ $value }}" >
+                    <input type="text" class="form-control" name="{{ $fieldName }}" value="{{ $value }}" readonly>
                 </div>
                     @elseif(in_array($fieldName, array_map('strtolower', $departmentNames)))
                    <div class="col-md-6 mb-3">
@@ -106,7 +106,7 @@
         
               <th class="text-center">Vendor Name</th>
               <th class="text-center">Amount</th>
-              <th class="text-center">Document</th>
+              <th class="text-center">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -119,6 +119,9 @@
                  @if (!empty($faira->file_path))
                 <a href="{{ asset('/storage/uploads/' . $faira->file_path) }}" target="_blank" class="btn btn-info btn-sm" style="color: white;">
                 <span class="fa fa-eye"></span> View Document
+                </a>
+                  <a href="/frequisition/{{$faira->id}}/removeDocument" class="btn btn-danger btn-sm" style="color: white;">
+                <span class="fa fa-eye"></span> Remove Document
                 </a>
                @else
                     <p>No document available.</p>
@@ -171,13 +174,13 @@
                   <div class="col-sm-3">
                     <div class="form-group">
                       <label>Upload Document</label>
-                      <input type="file" class="form-control" name="dfile[]" required>
+                      <input type="file" class="form-control" name="dfile[]" >
                     </div>
                   </div>
                   <div class="col-sm-2">
                     <div class="form-group">
                       <label>Amount</label>
-                      <input type="number"   class="form-control" name="damount[]" required>
+                      <input type="number"   class="form-control" name="damount[]" >
                     </div>
                   </div>
 
@@ -188,9 +191,10 @@
       </div>
             <div class="card-footer">
             <div class="form-group pull-right">
-    				
+    				@if ($frequisition->status != 6)      
              <input type="submit" class="btn btn-success" value="Update"/>
-
+            <a href="/frequisition/{{$frequisition->id}}/void" class="btn btn-danger" >Mark as Void</a>
+            @endif
     			</div> 
           </div>
            </form>

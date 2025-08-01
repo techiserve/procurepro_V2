@@ -584,6 +584,8 @@ class ProcurementController extends Controller
         $files = $request->file('dfile');
         $docs = $request->file('doc');
 
+        if(!empty(array_filter($request->vendor_final))){
+
     foreach ($vendorFinal as $index => $vendorName) {
         $frequisition = new FrequisitionVendor();
         $frequisition->vendor_final = $vendorName;
@@ -616,6 +618,7 @@ class ProcurementController extends Controller
 
         $frequisition->save();
     }
+}
 
 
     //   $updaterequisition = Frequisition::where('id', $id)->update([
@@ -1683,8 +1686,48 @@ public function downloadpurchaseorder(Request $request)
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function void(string $id)
     {
-        //
+       
+        $requisition = Frequisition::where('id', $id)->update([
+
+            'isActive' => 0,
+            'status' => 6,
+        ]);
+
+        $requisitionHistory = RequisitionHistory::create([
+            'frequisition_id' => $id,
+            'amount' => 0, // Assuming amount is not relevant for voiding
+            'companyId' => Auth::user()->companyId,
+            'userId' => Auth::user()->id,
+            'status' => 1,
+            'approvallevel' => 0, // Assuming no approval level for voiding
+            'approvedby' => Auth::user()->userrole,
+            'isActive' => 1,
+            'action' => "Purchase Requisition Voided",
+            'doneby' => Auth::user()->name
+        ]);
+
+        if ($requisition && $requisitionHistory) {
+          //  return redirect()->route('procurement.myrequisition')->with('success', 'Requisition voided successfully!');
+              return back()->with('success', 'Requisition voided successfully!');
+        } else {
+            return back()->with('error', 'Failed to void requisition!');
+        }
+    }
+
+
+     public function removeDocument(string $id)
+    {
+       
+        $requisition = FrequisitionVendor::where('id', $id)->delete();
+
+
+        if ($requisition) {
+          //  return redirect()->route('procurement.myrequisition')->with('success', 'Requisition voided successfully!');
+              return back()->with('success', 'Document removed successfully!');
+        } else {
+            return back()->with('error', 'Failed to remove document!');
+        }
     }
 }

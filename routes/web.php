@@ -131,6 +131,8 @@ Route::middleware('auth')->group(function () {
      Route::get('/procurement/{id}/viewrequisition', [ProcurementController::class, 'viewrequisition'])->name('procurement.viewrequisition');
      Route::get('/procurement/{id}/download', [ProcurementController::class, 'generateAndMergePDFs'])->name('procurement.download');
      Route::get('/procurement/{id}/editrequisition', [ProcurementController::class, 'editrequisition'])->name('procurement.editrequisition');
+       Route::get('/frequisition/{id}/void', [ProcurementController::class, 'void'])->name('procurement.void');
+        Route::get('/frequisition/{id}/removeDocument', [ProcurementController::class, 'removeDocument'])->name('procurement.removeDocument');
      Route::put('/procurement/{id}/updaterequisition', [ProcurementController::class, 'updaterequisition'])->name('procurement.updaterequisition');
      Route::put('/purchaseorder/update/{id}', [ProcurementController::class, 'updatepurchaseorder'])->name('procurement.updatepurchaseorder');
      Route::get('/procurement/{id}/viewpurchaseorder', [ProcurementController::class, 'viewpurchaseorder'])->name('procurement.viewpurchaseorder');
