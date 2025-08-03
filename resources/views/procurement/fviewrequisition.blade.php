@@ -137,7 +137,7 @@
                 </button>
               </div> --}}
 
-             @if($frequisition->userId != auth()->user()->id AND $history == NULL )
+             @if($frequisition->userId != auth()->user()->id AND $history == NULL AND  $frequisition->status != 6)
             @if($frequisition->approvedby == auth()->user()->userrole AND $frequisition->approvallevel <= $frequisition->totalapprovallevels)
             <div class="card-footer">
             <div class="form-group pull-right">
