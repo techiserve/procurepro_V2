@@ -12,6 +12,7 @@ use Illuminate\Database\Schema\Blueprint;
 use App\Models\Frequisition;
 use App\Models\Fpurchaseorder;
 use App\Models\Executive;
+use App\Models\ExecutiveRole;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Alert;
@@ -25,7 +26,7 @@ class CompanyController extends Controller
      */
     public function companyindex()
     {
-        $companies = Company::all();
+            
 
         return view('companies.index', compact('companies'));
     }
@@ -53,6 +54,12 @@ class CompanyController extends Controller
     public function executivesstore(Request $request)
     {
      
+
+        if(User::where('email', $request->email)->exists()) {
+            
+            return redirect()->back()->with('error', 'Executive already exists!');
+        }
+
         $executive = new Executive();
         $executive->name = $request->executiveName;
         $executive->email = $request->email;
@@ -72,13 +79,29 @@ class CompanyController extends Controller
         $user->username =  $request->username;
         // $user->companyId = $request->compan[0];
         $user->executiveId = $executive->id;
-        $user->userrole = 2;      
+        $user->userrole = 3;  
+        $user->isActive = 1;    
         $user->save();
 
        }
 
+       $companies = Company::all();
 
-       
+       foreach ($companies as $company) {
+
+            $executiveRole = new ExecutiveRole();
+            $executiveRole->executiveId = $executive->id;
+            $executiveRole->userId = $user->id;
+            $executiveRole->companyId = $company->id;
+            $executiveRole->roleId = 3; // Assuming roleId 1 is for executives
+            $executiveRole->status = 1; // Assuming status 1 means active
+            $executiveRole->createdBy = Auth::user()->id; // Assuming created by current user
+            $executiveRole->IsActive = 1; // Assuming IsActive means the role is active
+            $executiveRole->save();
+        }
+
+
+ 
 
         if($user && $executive){
      
@@ -392,4 +415,23 @@ class CompanyController extends Controller
     {
         //
     }
+
+
+public function checkExecutive(Request $request)
+{
+    $user = User::where('email', $request->email)->first();
+     
+   // dd($user);
+   \Log::info('Check Executive:', ['user' => $user]);
+    
+    if (!$user) {
+        return response()->json(['is_executive' => false, 'exists' => false]);
+    }
+
+    return response()->json([
+        'is_executive' => !is_null($user->executiveId),
+        'exists' => true
+    ]);
+}
+
 }

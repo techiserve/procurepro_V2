@@ -1,1 +1,1 @@
-[{"label":"Vendor","column":"vendor","default":null},{"label":"Beneficial Reference","column":"benref","default":null},{"label":"Menu","column":null,"blank":"1","default":null},{"label":"Water","column":null,"default":"123"}]
+CREATE OR REPLACE VIEW validation_report_view AS SELECT p.FIRST_NAME, p.LAST_NAME, p.CBP, p.PAYMENT_REF, p.ADVANCE_USD, p.USD_CASH_VALUE, p.PACKS, p.MASS, p.DATE, p.GROWER_NATIONAL_ID, p.SEASON, p.CREATED_BY, COUNT(*) OVER (PARTITION BY p.PAYMENT_REF) AS payment_ref_count FROM payments p; 

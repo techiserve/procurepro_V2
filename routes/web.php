@@ -7,6 +7,7 @@ use App\Http\Controllers\ProcurementController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReportController;
+use App\Models\Company;
 use App\Http\Controllers\PasswordResetLinkController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\RequisitionController;
@@ -35,7 +36,10 @@ Route::get('/forgot-password', function () {
 });
 
 Route::get('/', function () {
-    return view('auth.figma');
+
+    $companies = Company::all();
+
+    return view('auth.figma', compact('companies'));
 });
 
 
@@ -51,7 +55,7 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-
+Route::post('/check-executive', [CompanyController::class, 'checkExecutive'])->name('check-executive');
 Route::middleware('auth')->group(function () {
      Route::get('/profile/{id}', [ProfileController::class, 'edit'])->name('profile.edit');
      Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -90,6 +94,8 @@ Route::middleware('auth')->group(function () {
      Route::get('/executives/index', [CompanyController::class, 'executivesindex'])->name('executives.index');
      Route::get('/executives/create', [CompanyController::class, 'executivescreate'])->name('executives.create');
      Route::post('/executives/store', [CompanyController::class, 'executivesstore'])->name('executives.store');
+     
+
 
      //Master Pages
      Route::get('/master/manageRole', [MasterController::class, 'manageRole'])->name('master.manageRole');

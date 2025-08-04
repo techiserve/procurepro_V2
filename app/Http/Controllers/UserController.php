@@ -5,6 +5,7 @@ use App\Models\userrole;
 use App\Models\User;
 use App\Models\Rolepermission;
 use App\Models\Company;
+use App\Models\ExecutiveRole;
 use Alert;
 use App\Models\Requisition;
 use App\Models\Frequisition;
@@ -29,7 +30,7 @@ class UserController extends Controller
     {
            $user = Auth::user()->companyId;    
        
-         $users = User::where('userrole', '>', 3)->where('companyId', Auth::user()->companyId)->get();
+         $users = User::where('userrole', '>', 3)->where('companyId', Auth::user()->companyId)->orwhere('executiveId','!=', null)->get();
 
         return view('users.index', compact('users'));
     }
@@ -47,7 +48,7 @@ class UserController extends Controller
         if($user == 2 OR  Auth::user()->executiveId != null){
             $userId = Auth::user()->id;
             $companies = CompanyRole::where('userId','=',$userId)->first();
-            $allcompanies = Company::where('companyId', Auth::user()->companyId)->get();
+            $allcompanies = Company::where('id', Auth::user()->companyId)->get();
         
             if($companies == null){
         
@@ -270,32 +271,41 @@ class UserController extends Controller
     {
     
         // dd($request->all());
-        $user = User::findOrFail($id);
+                $user = User::findOrFail($id);
 
-        if($request->password != $request->confirmpassword) {
-            // return redirect()->route('users.edit', $id)->with('error', 'Passwords do not match!');          
-         return back()->with('error', 'Passwords do not match!');
+            // Only validate password match if either field is filled
+            if ($request->filled('password') || $request->filled('confirmpassword')) {
+                if ($request->password !== $request->confirmpassword) {
+                    return back()->with('error', 'Passwords do not match!');
+                }
 
-        }
+                // Update password only if matched
+                $user->password = Hash::make($request->password);
+            }
 
-        // Update user fields
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->address = $request->address;
-        $user->password = Hash::make($request->password);
-        $user->userrole = $request->role;
-        $user->position = $request->position;
-        $user->address = $request->address;
-        $user->isActive = $request->IsActive;
-        $user->phoneNumber = $request->phonenumber;
-        $user->save();
+            // Update other fields
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->address = $request->address;
+            $user->userrole = $request->role;
+            $user->position = $request->position;
+            $user->isActive = $request->IsActive;
+            $user->phoneNumber = $request->phonenumber;
+            $user->save();
 
+            // Update executive role if applicable
+            if ($user->executiveId !== null) {
+                $executiveRole = ExecutiveRole::where('userId', $user->id)
+                    ->where('companyId', Auth::user()->companyId)
+                    ->first();
 
-    if($user){
+                if ($executiveRole) {
+                    $executiveRole->roleId = $request->role;
+                    $executiveRole->save();
+                }
+            }
 
-       return redirect()->route('users.index')->with('success', 'User updated successfully!');
-
-    }
+            return redirect()->route('users.index')->with('success', 'User updated successfully!');
 
     }
 
