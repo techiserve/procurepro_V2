@@ -29,7 +29,7 @@ class CompanyController extends Controller
             
       
         $companies = Company::all();
-        
+
         return view('companies.index', compact('companies'));
     }
 
@@ -93,6 +93,7 @@ class CompanyController extends Controller
         $companies =  $request->company_ids;
 
         // Create executive roles for each selected company
+        if (is_array($companies) && count($companies) > 0) {
        foreach ($companies as $company) {
 
         //dd((int) $company->id);
@@ -106,7 +107,7 @@ class CompanyController extends Controller
             $executiveRole->IsActive = 1; // Assuming IsActive means the role is active
             $executiveRole->save();
         }
-
+    }
 
  
 
