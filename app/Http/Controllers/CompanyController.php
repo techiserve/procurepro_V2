@@ -27,7 +27,9 @@ class CompanyController extends Controller
     public function companyindex()
     {
             
-
+      
+        $companies = Company::all();
+        
         return view('companies.index', compact('companies'));
     }
 
@@ -54,11 +56,13 @@ class CompanyController extends Controller
     public function executivesstore(Request $request)
     {
      
-
+      //   dd($request->all());
         if(User::where('email', $request->email)->exists()) {
-            
+
             return redirect()->back()->with('error', 'Executive already exists!');
         }
+       
+  
 
         $executive = new Executive();
         $executive->name = $request->executiveName;
@@ -85,14 +89,17 @@ class CompanyController extends Controller
 
        }
 
-       $companies = Company::all();
+    
+        $companies =  $request->company_ids;
 
+        // Create executive roles for each selected company
        foreach ($companies as $company) {
 
+        //dd((int) $company->id);
             $executiveRole = new ExecutiveRole();
             $executiveRole->executiveId = $executive->id;
             $executiveRole->userId = $user->id;
-            $executiveRole->companyId = $company->id;
+            $executiveRole->companyId = $company;
             $executiveRole->roleId = 3; // Assuming roleId 1 is for executives
             $executiveRole->status = 1; // Assuming status 1 means active
             $executiveRole->createdBy = Auth::user()->id; // Assuming created by current user
@@ -116,7 +123,8 @@ class CompanyController extends Controller
 
     public function executivescreate()
     {
-        $companies = Company::where('id', Auth::user()->companyId)->get();
+
+         $companies = Company::all();
 
         return view('executives.create', compact('companies'));
 
@@ -422,16 +430,25 @@ public function checkExecutive(Request $request)
     $user = User::where('email', $request->email)->first();
      
    // dd($user);
-   \Log::info('Check Executive:', ['user' => $user]);
+   //\Log::info('Check Executive:', ['user' => $user]);
     
     if (!$user) {
         return response()->json(['is_executive' => false, 'exists' => false]);
     }
 
+    if ($user->executiveId) {
+
+    $companyIds = ExecutiveRole::where('userId', $user->id)->pluck('companyId');
+    $companies = Company::whereIn('id', $companyIds)->get(['id', 'name']);
+
     return response()->json([
         'is_executive' => !is_null($user->executiveId),
-        'exists' => true
+        'exists' => true,
+        'companies' => $companies
     ]);
+
+    }
+    
 }
 
 }

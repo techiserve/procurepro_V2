@@ -70,39 +70,35 @@
 
             <hr style="border-color: black;">
 			<br>
-
-			<!-- the dynamic field for adding growers is suppped to go here -->
-			{{-- <div class="clearfix" id="dynamic_field">
-				<div class="row">
-					<div class="col-md-5">
-						<div class="form-group">
-                         <!-- <input type="text" placeholder="Phone Number" required id="phone_number" name="phone_number[]" spellcheck="false" class="form-control" value=""/> -->
-                         <select class="js-example-basic-single form-control" id="grower_size" name="company[]">
-                          <option value="" >Select Company</option>
-                           @foreach($companies as $company)
-                            <option value="{{ $company->id }}"> {{ $company->name }}</option>
-                            @endforeach
-                        </select>
-						</div>
-					</div>
-					<div class="col-md-6">
-						<div class="form-group">
-                        <!-- <input type="email" placeholder="Email Address" id="email" required name="email[]" spellcheck="false" class="form-control" value=""/> -->
-                        <select class="js-example-basic-single form-control" id="grower_sizes" name="userrole[]">
-                          <option value="" >Select User Role</option>                       
-                            <option value="4">Finance Manager</option>                          
-                            <option value="5">Normal End User</option>
-                            <option value="6">Manager</option>                         
-                            <option value="7">Stress Test Role</option>                         
-                        </select>
-						</div>
-					</div>
-					<div class="col-md-1">
-						<button type="button" name="add" id="add" class="btn add-more btn-primary"> &nbsp;+&nbsp; </button>
-					</div>
-				</div>
-			</div> --}}
-			<!-- end of dynamic field -->
+               <div class="row">
+  <div class="col-sm-12">
+    <div class="form-group">
+      <label><strong>Select Companies</strong></label>
+      <table class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <th style="width: 50px;"><input type="checkbox" id="select-all"></th>
+            <th>Company Name</th>
+            <th>Email</th>
+            <th>Location</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach($companies as $company)
+          <tr>
+            <td>
+              <input type="checkbox" name="company_ids[]" value="{{ $company->id }}" class="company-checkbox">
+            </td>
+            <td>{{ $company->name }}</td>
+            <td>{{ $company->email }}</td>
+            <td>{{ $company->contactPerson }}</td>
+          </tr>
+          @endforeach
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
           </div>
           <div class="card-footer">
             <div class="form-group pull-right">
@@ -110,51 +106,18 @@
     				<input type="reset" class="btn btn-danger" value="Cancel"/>
     			</div>
           </div>
-       </div>
+          
+       </div> 
       </form>
      </div>
     </div>
    </div>
 </div>
 @endsection
-<!-- for adding grower contacts -->
-<script type="text/javascript">
-    $(document).ready(function(){      
-      var i=1;  
-
-      //method for adding a dynamic field for the 
-      $('#add').click(function(){  
-           i++;  
-           $('#dynamic_field').append('<div id="row'+i+'" class="row dynamic-added"><hr><div class="col-md-5"><div class="form-group"><div class="form-line" id="field"><select class="js-example-basic-single form-control" id="grower_size" name="company[]"><option value="" >Select Company</option> @foreach($companies as $company)<option value="{{ $company->id }}"> {{ $company->name }}</option>@endforeach</select></div></div></div><div class="col-md-6"><div class="form-group"><div class="form-line">  <select class="js-example-basic-single form-control" id="grower_sizes" name="userrole[]"><option value="" >Select User Role</option><option value="4">Finance Manager</option><option value="5">Normal End User</option><option value="6">Manager</option><option value="7">Stress Test Role</option></select></div></div></div><div class="col-md-1"><button type="button" name="remove" id="'+i+'" class="btn btn_remove btn-danger"> &nbsp;x&nbsp; </button></div></div>');
-      });  
-
-      //method for row removal using button
-      $(document).on('click', '.btn_remove', function(){  
-           var button_id = $(this).attr("id");   
-           $('#row'+button_id+'').remove();  
-      });  
-
-    });  
+<script>
+    $(document).ready(function () {
+    $('#select-all').click(function () {
+      $('.company-checkbox').prop('checked', this.checked);
+    });
+  });
 </script>
-<!-- end of method used for adding grower contacts dynamic fields-->
-
-<!-- for  adding bank details -->
-<!-- <script type="text/javascript">
-	$(document).ready(function(){
-
-		var i = 1;
-
-		//method for adding dynamic fileds for the bank details
-		$('#addBank').click(function(){
-			i++;
-			$('#dynamic_bank').append('<div id="row'+i+'" class="row dynamic-added"><div class="col-md-4"><div class="form-group"><div class="form-line" id="field"><input type="text" placeholder="Bank Name" required name="bank_name[]" spellcheck="false" class="form-control" value=""/></div></div></div><div class="col-md-4"><div class="form-group"><div class="form-line"><input type="text" placeholder="Account Name" id="account_name" required name="account_name[]" spellcheck="false" class="form-control" value=""/></div></div></div><div class="col-md-4"><div class="form-group"><div class="form-line"><input type="text" placeholder="Account Number" id="account_number" required name="account_number[]" spellcheck="false" class="form-control" value=""/></div></div></div><div class="col-md-4"><div class="form-group"><div class="form-line"><input type="text" placeholder="Branch Name" required name="branch_name[]" spellcheck="false" class="form-control" value=""/></div></div></div><div class="col-md-3"><div class="form-group"><div class="form-line"><input type="text" placeholder="Sort Code" required name="sort_code[]" spellcheck="false" class="form-control" value=""/></div></div></div><div class="col-md-4"><div class="form-group"><div class="form-line"><input type="text" placeholder="Priority" required name="bank_priority[]" spellcheck="false" class="form-control" value=""/></div></div></div><div class="col-md-1"><button type="button" name="remove" id="'+i+'" class="btn btn_remove_bank btn-danger"> &nbsp;x&nbsp; </button></div></div>');
-		});
-
-		//method for row removal using a remove button
-		$(document).on('click', '.btn_remove_bank', function(){
-			var button_id = $(this).attr("id");
-			$('#row' + button_id + '').remove();
-		});
-
-	});
-</script> -->

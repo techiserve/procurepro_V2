@@ -268,9 +268,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (data.is_executive) {
                 // Show modal
-                 console.log(data);
+                // console.log(data);
                 document.getElementById('modal-email').value = email;
                 document.getElementById('modal-password').value = password;
+                const companySelect = document.getElementById('companySelect');
+                companySelect.innerHTML = '';
+
+                // Populate with fetched companies
+                data.companies.forEach(company => {
+                    const option = document.createElement('option');
+                    option.value = company.id;
+                    option.textContent = company.name;
+                    companySelect.appendChild(option);
+                });
                 $('#companySelectModal').modal('show');
             } else {
                 // Submit original login form
