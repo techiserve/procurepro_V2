@@ -240,7 +240,7 @@
                       </div>
                     </div>
                     <div class="modal-footer">
-                      <button type="button" class="btn btn-primary" onclick="saveOneTimeVendor(1)">Done</button>
+                      <button type="button" class="btn btn-primary" onclick="saveOneTimeVendorDynamic(1)">Done</button>
                     </div>
                   </div>
                 </div>

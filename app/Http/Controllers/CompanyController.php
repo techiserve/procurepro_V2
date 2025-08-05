@@ -10,6 +10,7 @@ use App\Models\CustomReport;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use App\Models\Frequisition;
+use Illuminate\Support\Facades\DB;
 use App\Models\Fpurchaseorder;
 use App\Models\Executive;
 use App\Models\ExecutiveRole;
@@ -94,6 +95,7 @@ class CompanyController extends Controller
 
         // Create executive roles for each selected company
         if (is_array($companies) && count($companies) > 0) {
+
        foreach ($companies as $company) {
 
         //dd((int) $company->id);
@@ -107,6 +109,7 @@ class CompanyController extends Controller
             $executiveRole->IsActive = 1; // Assuming IsActive means the role is active
             $executiveRole->save();
         }
+
     }
 
  
@@ -141,6 +144,7 @@ class CompanyController extends Controller
               return redirect()->route('companies.create')->with('warning', 'Sorry buddy, this email has already been used!');
 
          }
+
         // elseif($company){
         //     if($company->domain == $request->companydomain){
            
@@ -150,9 +154,6 @@ class CompanyController extends Controller
  
         $company = new Company();
         $company->name = $request->companyname;
-      //  $company->email = $request->email;
-      //  $company->password = Hash::make($request->password);
-       // $company->companyname =  $request->companyname;
         $company->domain = $request->companydomain;
         $company->username =  $request->username;
         $company->contactPerson = $request->contactPerson;
@@ -305,10 +306,104 @@ class CompanyController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function executiveedit(string $id)
     {
-        //
+        $executive = Executive::where('id', $id)->first();
+        $companies = Company::all();
+        $executiveRoles = ExecutiveRole::where('executiveId', $id)->get();
+        $executiveCompanyIds = $executiveRoles->pluck('companyId')->toArray();
+         //dd( $executiveCompanyIds, $executiveRoles , $executive);
+        if (!$executive) {
+
+            return redirect()->back()->with('error', 'Executive not found!');
+        }
+
+        return view('executives.edit', compact('executive', 'companies', 'executiveRoles','executiveCompanyIds'));
     }
+
+
+    public function update(Request $request, $id)
+{
+ 
+    DB::beginTransaction();
+
+    try {
+        // Update Executive manually
+        DB::table('executives')->where('id', $id)->update([
+            'name' => $request->executiveName,
+            'userName' => $request->username,
+            'email' => $request->email,
+            'address' => $request->address,
+        ]);
+
+        // Update User (manually find and update using executiveId)
+        $user = DB::table('users')->where('executiveId', $id)->first();
+
+        if ($user) {
+            $userData = [
+                'email' => $request->email,
+                'username' => $request->username,
+            ];
+
+            if ($request->filled('password')) {
+                $userData['password'] = Hash::make($request->password);
+            }
+
+            DB::table('users')->where('id', $user->id)->update($userData);
+        }
+
+                        // Sync executive_roles (manually remove and insert)
+                        $existingRoles = DB::table('executive_roles')
+                    ->where('executiveId', $id)
+                    ->pluck('companyId', 'id'); // [role_id => companyId]
+
+                // 2. Handle input
+                $newCompanyIds = collect($request->company_ids ?? []);
+                $existingCompanyIds = collect($existingRoles->values());
+
+                // 3. Identify companies to add and to disable (optional)
+                $toAdd = $newCompanyIds->diff($existingCompanyIds);
+                $toDisable = $existingCompanyIds->diff($newCompanyIds);
+
+                // 4. Add new roles
+                $roleInserts = [];
+
+                foreach ($toAdd as $companyId) {
+                    $roleInserts[] = [
+                        'executiveId' => $id,
+                        'userId' => $user->id ?? null,
+                        'roleId' => 3,
+                        'status' => 1,
+                        'createdBy' => Auth::id(),
+                        'companyId' => $companyId,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+
+                if (!empty($roleInserts)) {
+                    DB::table('executive_roles')->insert($roleInserts);
+                }
+
+                // 5. Optional: Disable roles that are no longer selected
+                if ($toDisable->isNotEmpty()) {
+                    DB::table('executive_roles')
+                        ->where('executiveId', $id)
+                        ->whereIn('companyId', $toDisable)
+                        ->delete();
+                }
+
+                 DB::commit();
+
+        return redirect()->back()->with('success', 'Executive updated successfully.');
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return redirect()->back()->with('error', 'Error updating executive: ' . $e->getMessage());
+    }
+}
+
+
 
     /**
      * Update the specified resource in storage.
@@ -420,9 +515,21 @@ class CompanyController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function executivedelete(string $id)
     {
-        //
+       // dd($id);
+        $executive = Executive::where('id', $id)->first();
+        if (!$executive) {
+            return redirect()->back()->with('error', 'Executive not found!');
+        }
+        // Delete the executive
+        $executive->delete();   
+        // Also delete the associated user
+        User::where('executiveId', $id)->delete();  
+        // Delete the executive roles associated with this executive
+        ExecutiveRole::where('executiveId', $id)->delete();  
+
+        return redirect()->route('executives.index')->with('success', 'Executive deleted successfully!');
     }
 
 

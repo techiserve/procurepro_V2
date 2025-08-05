@@ -1,5 +1,11 @@
 @extends('stack.layouts.admin')
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script> 
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.4/tutorials/timelines/timeline-7/assets/css/timeline-7.css">
 @section('content')
 <div class="container-fluid">
   <div class="animated fadeIn">
@@ -43,14 +49,29 @@
                     @endif              
                   </td>
                   <td class="text-center">
-                  <a href='' class='btn btn-success btn-sm'>
+                  <a href='/executives/{{$executive->id}}/edit' class='btn btn-success btn-sm'>
                       <span class='fa fa-desktop'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'> View</span>
+                      <span class='hidden-sm hidden-sm hidden-md'>Edit</span>
                     </a>&nbsp;
-                    <a href='' class='btn btn-info btn-sm' style='color: white;'>
+                    <a href='#' class='btn btn-danger btn-sm' style='color: white;' onclick="
+                        event.preventDefault(); // Prevent the default link behavior
+                        Swal.fire({
+                            title: 'Delete Executive?',
+                            text: 'You won\'t be able to undo this!',
+                            icon: 'info', // Updated property for SweetAlert2
+                            showCancelButton: true,
+                            confirmButtonText: 'Continue',
+                            cancelButtonText: 'Cancel'
+                          }).then((result) => {
+                            if (result.isConfirmed) {
+                              // Redirect to the URL or perform an action
+                              window.location.href = '/executives/{{$executive->id}}/delete'; // Replace with your actual URL
+                            }
+                          })
+                      ">
                       <span class='fa fa-pencil'></span>
-                      <span class='hidden-sm hidden-sm hidden-md'> Edit</span>
-                    </a>
+                      <span class='hidden-sm hidden-sm hidden-md'> Delete</span>
+                    </a>&nbsp;
                   </td>
                 </tr>
                 @endforeach

@@ -94,6 +94,9 @@ Route::middleware('auth')->group(function () {
      Route::get('/executives/index', [CompanyController::class, 'executivesindex'])->name('executives.index');
      Route::get('/executives/create', [CompanyController::class, 'executivescreate'])->name('executives.create');
      Route::post('/executives/store', [CompanyController::class, 'executivesstore'])->name('executives.store');
+     Route::get('/executives/{id}/delete', [CompanyController::class, 'executivedelete'])->name('executives.delete');
+     Route::get('/executives/{id}/edit', [CompanyController::class, 'executiveedit'])->name('executives.edit');
+     Route::put('/executives/{id}/update', [CompanyController::class, 'update'])->name('executives.update');
      
 
 
