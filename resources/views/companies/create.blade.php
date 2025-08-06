@@ -2,7 +2,6 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script> 
 <style>
     .field-row {
@@ -17,8 +16,12 @@
     }
 
     .is-invalid {
-  border-color: #dc3545;
-}
+        border-color: #dc3545;
+    }
+
+    .dropdown-options {
+        margin-top: 10px;
+    }
 </style>
 @section('content')
 <div class="container-fluid">
@@ -127,9 +130,10 @@
 
             <!-- Labels once -->
             <div class="row field-labels mb-2">
-              <div class="col-md-4"><label>Form Name</label></div>
-              <div class="col-md-4"><label>Form Label</label></div>
-              <div class="col-md-3"><label>Form Type</label></div>
+              <div class="col-md-3"><label>Form Name</label></div>
+              <div class="col-md-3"><label>Form Label</label></div>
+              <div class="col-md-2"><label>Form Type</label></div>
+              <div class="col-md-3"><label>Options (for dropdown)</label></div>
               <div class="col-md-1"></div>
             </div>
 
@@ -159,26 +163,31 @@
 <script>
 let fieldIndex = 0;
 
-function createField(index, name = '', label = '', type = '') {
+function createField(index, name = '', label = '', type = '', options = '') {
     const requiredFields = ['department', 'amount', 'vendor'];
     const isRemovable = !requiredFields.includes(name.toLowerCase());
 
     return `
         <div class="form-group" id="field-${index}">
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <input type="text" class="form-control" name="fields[${index}][name]" value="${name}" placeholder="Field Name" required ${isRemovable ? '' : 'readonly'}>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <input type="text" class="form-control" name="fields[${index}][label]" value="${label}" placeholder="Label" required ${isRemovable ? '' : 'readonly'}>
                 </div>
-                <div class="col-md-3">
-                    <select class="form-control" name="fields[${index}][type]" required ${isRemovable ? '' : 'readonly'}>
+                <div class="col-md-2">
+                    <select class="form-control" name="fields[${index}][type]" onchange="toggleDropdownOptions(${index})" required ${isRemovable ? '' : 'readonly'}>
                         <option value="">-- Select type --</option>
                         <option value="string" ${type === 'string' ? 'selected' : ''}>String</option>
                         <option value="integer" ${type === 'integer' ? 'selected' : ''}>Integer</option>
                         <option value="checkbox" ${type === 'checkbox' ? 'selected' : ''}>Checkbox</option>
+                        <option value="dropdown" ${type === 'dropdown' ? 'selected' : ''}>Dropdown</option>
                     </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" class="form-control" id="options-${index}" name="fields[${index}][options]" value="${options}" placeholder="Option1,Option2,Option3" style="display: ${type === 'dropdown' ? 'block' : 'none'};">
+                    <small class="text-muted" id="options-help-${index}" style="display: ${type === 'dropdown' ? 'block' : 'none'};">Separate options with commas</small>
                 </div>
                 <div class="col-md-1 text-right">
                     ${isRemovable ? `<button type="button" class="btn btn-danger btn-md" onclick="removeField(${index})">&times;</button>` : ''}
@@ -188,9 +197,9 @@ function createField(index, name = '', label = '', type = '') {
     `;
 }
 
-function addField(name = '', label = '', type = '') {
+function addField(name = '', label = '', type = '', options = '') {
     const container = document.getElementById('fields');
-    const fieldHTML = createField(fieldIndex, name, label, type);
+    const fieldHTML = createField(fieldIndex, name, label, type, options);
     container.insertAdjacentHTML('beforeend', fieldHTML);
     fieldIndex++;
 }
@@ -199,6 +208,23 @@ function removeField(index) {
     const field = document.getElementById(`field-${index}`);
     if (field) {
         field.remove();
+    }
+}
+
+function toggleDropdownOptions(index) {
+    const typeSelect = document.querySelector(`select[name="fields[${index}][type]"]`);
+    const optionsInput = document.getElementById(`options-${index}`);
+    const optionsHelp = document.getElementById(`options-help-${index}`);
+    
+    if (typeSelect.value === 'dropdown') {
+        optionsInput.style.display = 'block';
+        optionsHelp.style.display = 'block';
+        optionsInput.required = true;
+    } else {
+        optionsInput.style.display = 'none';
+        optionsHelp.style.display = 'none';
+        optionsInput.required = false;
+        optionsInput.value = ''; // Clear the value when hidden
     }
 }
 
@@ -242,20 +268,19 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     document.getElementById('resetBtn').addEventListener('click', function () {
-    // Clear all dynamic fields
-    const fieldsContainer = document.getElementById('fields');
-    fieldsContainer.innerHTML = '';
+        // Clear all dynamic fields
+        const fieldsContainer = document.getElementById('fields');
+        fieldsContainer.innerHTML = '';
 
-    // Reset field index
-    fieldIndex = 0;
+        // Reset field index
+        fieldIndex = 0;
 
-    // Re-add default fields
-    addField('vendor', 'Vendor', 'string');
-    addField('amount', 'Amount', 'integer');
-    addField('department', 'Department', 'string');
-    addField('invoiceamount', 'Invoice Amount', 'integer');
-    addField('paymentmethod', 'Payment Method', 'string');
-});
-
+        // Re-add default fields
+        addField('vendor', 'Vendor', 'string');
+        addField('amount', 'Amount', 'integer');
+        addField('department', 'Department', 'string');
+        addField('invoiceamount', 'Invoice Amount', 'integer');
+        addField('paymentmethod', 'Payment Method', 'string');
+    });
 });
 </script>

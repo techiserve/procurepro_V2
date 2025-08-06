@@ -64,6 +64,16 @@
                             <label class="form-check-label">No</label>
                         </div>
 
+                           @elseif($field->type === 'dropdown')
+                           <select class="form-control" name="{{ $field->name }}" id="{{ $field->name }}">
+                              <option value="">-- Select {{ $field->label }} --</option>
+                              @if($field->options)
+                                  @foreach(json_decode($field->options) as $option)
+                                      <option value="{{ $option }}">{{ $option }}</option>
+                                  @endforeach
+                              @endif
+                          </select>
+
 
                         @elseif(in_array($fieldNameLower, array_map('strtolower', $departmentNames)))
                             <select class="js-example-basic-single form-control" name="{{ $field->name }}" required>
@@ -122,14 +132,6 @@
 
                            @elseif(in_array($fieldNameLower, array_map('strtolower', $invoiceNames)))
                          
-
-                        @elseif(in_array($fieldNameLower, array_map('strtolower', $expensesNames)))
-                            <select class="js-example-basic-single form-control" name="{{ $field->name }}">
-                                <option value="">Select Expense</option>
-                                @foreach($expenses as $expense)
-                                    <option value="{{ $expense->name }}">{{ $expense->name }}</option>
-                                @endforeach
-                            </select>
 
                         @else
                             <input type="{{ $field->type === 'integer' ? 'number' : 'text' }}" class="form-control" name="{{ $field->name }}">

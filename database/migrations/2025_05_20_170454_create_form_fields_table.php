@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name'); // e.g., 'item_name'
             $table->string('label'); // e.g., 'Item Name'
             $table->string('type'); // e.g., 'string', 'integer'
+            $table->string('options'); // e.g., 'string', 'integer'
             $table->timestamps();
         });
     }

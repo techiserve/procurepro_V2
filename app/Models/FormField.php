@@ -7,5 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class FormField extends Model
 {
-    protected $fillable = ['companyId','name', 'label', 'type'];
+    protected $fillable = ['companyId','name', 'label', 'type','options'];
 }
