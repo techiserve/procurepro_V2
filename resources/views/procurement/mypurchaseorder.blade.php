@@ -18,7 +18,7 @@
           <form method="POST" action="{{ route('procurement.downloadrequisitions') }}">
           @csrf
           <button  type="submit" class="btn btn-success btn-sm pull-right" style="padding: 10px 20px; font-size: 16px; min-width: 100px;margin-top:-60px;margin-right: 110px;"><i class="fa fa-filter"></i> Download </button>&nbsp;
-         
+          <div style="overflow-x:auto;">
             <table class="table table-striped table-bordered zero-configuration">
               <thead>
                 <tr>
@@ -274,7 +274,8 @@
                  @endif
                 @endforeach
               </tbody>
-            </table>        
+            </table>  
+        </div>      
           </form>
           </div>
 
