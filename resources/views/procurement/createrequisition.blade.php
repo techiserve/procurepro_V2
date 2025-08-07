@@ -183,7 +183,7 @@
                   <div class="col-sm-2">
                     <div class="form-group">
                       <label>Amount</label>
-                      <input type="number"   class="form-control" name="damount[]" required>
+                      <input type="number"   step="0.01"  class="form-control" name="damount[]" required>
                     </div>
                   </div>
 
