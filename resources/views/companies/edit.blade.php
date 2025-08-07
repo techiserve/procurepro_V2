@@ -3,6 +3,27 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script> 
 
+<style>
+    .field-row {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .field-row input,
+    .field-row select {
+        flex: 1;
+    }
+
+    .is-invalid {
+        border-color: #dc3545;
+    }
+
+    .dropdown-options {
+        margin-top: 10px;
+    }
+</style>
+
 @section('content')
 <div class="container-fluid">
   <div class="animated fadeIn">
@@ -124,7 +145,15 @@
             </div>
         @endif
 
-       
+            <!-- Labels once -->
+            <div class="row field-labels mb-2">
+              <div class="col-md-3"><label>Form Name</label></div>
+              <div class="col-md-3"><label>Form Label</label></div>
+              <div class="col-md-2"><label>Form Type</label></div>
+              <div class="col-md-3"><label>Options (for dropdown)</label></div>
+              <div class="col-md-1"></div>
+            </div>
+
           <div id="fields"></div>
           <button type="button" class="btn btn-secondary" onclick="addField()">Add Field</button>
     
@@ -148,8 +177,17 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         if (existingFields.length > 0) {
-            existingFields.forEach(field => {
-                addField(field.name, field.label, field.type, field.id);
+           existingFields.forEach(field => {
+                let parsedOptions = '';
+
+                try {
+                    const json = JSON.parse(field.options);
+                    parsedOptions = Array.isArray(json) ? json.join(',') : field.options;
+                } catch (e) {
+                    parsedOptions = field.options;
+                }
+
+                addField(field.name, field.label, field.type, field.id, parsedOptions);
             });
         } else {
             addField('vendor', 'Vendor', 'string');
@@ -158,16 +196,26 @@
             addField('invoiceamount', 'Invoice Amount', 'integer');
             addField('paymentmethod', 'Payment Method', 'string');
         }
+        
+        // After loading fields, ensure dropdown options are visible for existing dropdown fields
+        setTimeout(() => {
+            for (let i = 0; i < fieldIndex; i++) {
+                const typeSelect = document.querySelector(`select[name="fields[${i}][type]"]`);
+                if (typeSelect && typeSelect.value === 'dropdown') {
+                    toggleDropdownOptions(i);
+                }
+            }
+        }, 100);
     });
 
-    function addField(name = '', label = '', type = '', fieldId = '') {
+    function addField(name = '', label = '', type = '', fieldId = '', options = '') {
         const container = document.getElementById('fields');
-        const fieldHTML = createField(fieldIndex, name, label, type, fieldId);
+        const fieldHTML = createField(fieldIndex, name, label, type, fieldId, options);
         container.insertAdjacentHTML('beforeend', fieldHTML);
         fieldIndex++;
     }
 
-   function createField(index, name = '', label = '', type = '', fieldId = '') {
+   function createField(index, name = '', label = '', type = '', fieldId = '', options = '') {
     const requiredFields = ['department', 'amount', 'vendor'];
     const isRemovable = !requiredFields.includes(name.toLowerCase());
 
@@ -175,35 +223,52 @@
         <div class="form-group" id="field-${index}">
             <div class="row">
                 <input type="hidden" name="fields[${index}][id]" value="${fieldId}">
-                <div class="col-md-12">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <input type="text" class="form-control" name="fields[${index}][name]" value="${name}" placeholder="Field Name" required ${isRemovable ? '' : 'readonly'}>
-                        </div>
-                        <div class="col-md-4">
-                            <input type="text" class="form-control" name="fields[${index}][label]" value="${label}" placeholder="Label" required ${isRemovable ? '' : 'readonly'}>
-                        </div>
-                        <div class="col-md-3">
-                            <select class="form-control" name="fields[${index}][type]" required ${isRemovable ? '' : 'readonly'}>
-                                <option value="">-- Select type --</option>
-                                <option value="string" ${type === 'string' ? 'selected' : ''}>String</option>
-                                <option value="integer" ${type === 'integer' ? 'selected' : ''}>Integer</option>
-                                <option value="checkbox" ${type === 'checkbox' ? 'selected' : ''}>Checkbox</option>
-                            </select>
-                        </div>
-                        <div class="col-md-1 text-right">
-                            ${isRemovable ? `<button type="button" class="btn btn-danger btn-md" onclick="removeField(${index})">&times;</button>` : ''}
-                        </div>
-                    </div>
+                <div class="col-md-3">
+                    <input type="text" class="form-control" name="fields[${index}][name]" value="${name}" placeholder="Field Name" required ${isRemovable ? '' : 'readonly'}>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" class="form-control" name="fields[${index}][label]" value="${label}" placeholder="Label" required ${isRemovable ? '' : 'readonly'}>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-control" name="fields[${index}][type]" onchange="toggleDropdownOptions(${index})" required ${isRemovable ? '' : 'readonly'}>
+                        <option value="">-- Select type --</option>
+                        <option value="string" ${type === 'string' ? 'selected' : ''}>String</option>
+                        <option value="integer" ${type === 'integer' ? 'selected' : ''}>Integer</option>
+                        <option value="checkbox" ${type === 'checkbox' ? 'selected' : ''}>Checkbox</option>
+                        <option value="dropdown" ${type === 'dropdown' ? 'selected' : ''}>Dropdown</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" class="form-control" id="options-${index}" name="fields[${index}][options]" value="${options}" placeholder="Option1,Option2,Option3" style="display: ${type === 'dropdown' ? 'block' : 'none'};">
+                    <small class="text-muted" id="options-help-${index}" style="display: ${type === 'dropdown' ? 'block' : 'none'};">Separate options with commas</small>
+                </div>
+                <div class="col-md-1 text-right">
+                    ${isRemovable ? `<button type="button" class="btn btn-danger btn-md" onclick="removeField(${index})">&times;</button>` : ''}
                 </div>
             </div>
         </div>
     `;
 }
 
-
     function removeField(index) {
         const element = document.getElementById(`field-${index}`);
         if (element) element.remove();
+    }
+
+    function toggleDropdownOptions(index) {
+        const typeSelect = document.querySelector(`select[name="fields[${index}][type]"]`);
+        const optionsInput = document.getElementById(`options-${index}`);
+        const optionsHelp = document.getElementById(`options-help-${index}`);
+        
+        if (typeSelect.value === 'dropdown') {
+            optionsInput.style.display = 'block';
+            optionsHelp.style.display = 'block';
+            optionsInput.required = true;
+        } else {
+            optionsInput.style.display = 'none';
+            optionsHelp.style.display = 'none';
+            optionsInput.required = false;
+            optionsInput.value = ''; // Clear the value when hidden
+        }
     }
 </script>

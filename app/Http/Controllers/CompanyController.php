@@ -268,8 +268,10 @@ class CompanyController extends Controller
     {
         $company = Company::where('id', $id)->first();
         $dynamicFields = FormField::where('companyId','=',$id)->get();
+       // dd($dynamicFields);
 
         return view('companies.edit', compact('company','dynamicFields'));
+
     }
 
 
@@ -465,10 +467,17 @@ class CompanyController extends Controller
 
             $fields = $request->input('fields');
          /// dd($fields);
- foreach ($fields as $field) {
-
+foreach ($fields as $field) {
     // Normalize field name: lowercase and remove spaces
     $normalizedName = strtolower(str_replace(' ', '', $field['name']));
+
+    // Prepare options if type is dropdown
+    $options = null;
+    if (isset($field['type']) && $field['type'] === 'dropdown') {
+        $rawOptions = isset($field['options']) ? $field['options'] : '';
+        $splitOptions = array_map('trim', explode(',', $rawOptions));
+        $options = json_encode($splitOptions);
+    }
 
     // Save form field configuration
     FormField::create([
@@ -476,9 +485,10 @@ class CompanyController extends Controller
         'name' => $normalizedName,
         'label' => $field['label'],
         'type' => $field['type'],
+        'options' => $options, // null for non-dropdowns, JSON string for dropdown
     ]);
 
-    // Dynamically add column to frequisitions table
+    // Add column to frequisitions if not exists
     if (!Schema::hasColumn('frequisitions', $normalizedName)) {
         Schema::table('frequisitions', function (Blueprint $table) use ($field, $normalizedName) {
             switch ($field['type']) {
@@ -491,14 +501,19 @@ class CompanyController extends Controller
                 case 'text':
                     $table->text($normalizedName)->nullable();
                     break;
-                // Add more cases as needed
+                case 'checkbox':
+                    $table->boolean($normalizedName)->nullable();
+                    break;
+                case 'dropdown':
+                    $table->string($normalizedName)->nullable();
+                    break;
                 default:
                     $table->string($normalizedName)->nullable();
             }
         });
     }
 
-    // Dynamically add column to fpurchaseorders table
+    // Add column to fpurchaseorders if not exists
     if (!Schema::hasColumn('fpurchaseorders', $normalizedName)) {
         Schema::table('fpurchaseorders', function (Blueprint $table) use ($field, $normalizedName) {
             switch ($field['type']) {
@@ -511,7 +526,12 @@ class CompanyController extends Controller
                 case 'text':
                     $table->text($normalizedName)->nullable();
                     break;
-                // Add more cases as needed
+                case 'checkbox':
+                    $table->boolean($normalizedName)->nullable();
+                    break;
+                case 'dropdown':
+                    $table->string($normalizedName)->nullable();
+                    break;
                 default:
                     $table->string($normalizedName)->nullable();
             }
