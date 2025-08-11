@@ -306,6 +306,12 @@ public function filter(Request $request)
         ->unique()
         ->toArray();
 
+    //  if (!in_array($report->description, $dbColumns)) {
+    // array_unshift($dbColumns, $report->description);
+    // }
+
+    dd($dbColumns);
+
     // Fetch only relevant DB columns
     $fpurchaseorders = DB::table('fpurchaseorders')
         ->where('companyId', Auth::user()->companyId)
@@ -325,11 +331,11 @@ public function filter(Request $request)
         // e.g. 'season' or 'status'
         $columnName = $report->description;
 
-        // $filteredRows = $fpurchaseorders->filter(function ($row) use ($filterValue, $columnName) {
-        //     return isset($row->$columnName) && $row->$columnName == $filterValue;
-        // });
+        $filteredRows = $fpurchaseorders->filter(function ($row) use ($filterValue, $columnName) {
+            return isset($row->$columnName) && $row->$columnName == $filterValue;
+        });
 
-        $filteredRows = $fpurchaseorders;
+        // $filteredRows = $fpurchaseorders;
 
         dd($filteredRows,$filterValue);
 
