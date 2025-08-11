@@ -306,11 +306,11 @@ public function filter(Request $request)
         ->unique()
         ->toArray();
 
-    //  if (!in_array($report->description, $dbColumns)) {
-    // array_unshift($dbColumns, $report->description);
-    // }
+     if (!in_array($report->description, $dbColumns)) {
+    array_unshift($dbColumns, $report->description);
+    }
 
-    dd($dbColumns);
+    dd($dbColumns,$report->description);
 
     // Fetch only relevant DB columns
     $fpurchaseorders = DB::table('fpurchaseorders')
