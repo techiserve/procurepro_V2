@@ -26,7 +26,9 @@ use App\Models\CompanyRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-
+use ZipArchive;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ArrayExport;
 
 class ReportController extends Controller
 {
@@ -231,7 +233,7 @@ class ReportController extends Controller
         CustomReport::create([
             'companyId' => $request->companyId,
             'name' => $validated['report_name'],
-            'description' => $validated['report_description'],
+            'description' => $request->filterfield,
             'config' => json_encode($validated['columns'])
         ]);
 
@@ -250,25 +252,33 @@ class ReportController extends Controller
                 ->filter(fn($col) => empty($col['blank']) && !empty($col['column']))
                 ->pluck('column')
                 ->unique()
+                ->prepend('id')
                 ->toArray();
 
             $fpurchaseorder = DB::table('fpurchaseorders')
                 ->where('companyId', Auth::user()->companyId)
+                ->where('uploadStatus', '=', null)
                 ->select($columns)
                 ->get();
-           
-             //   dd($config);
 
-               // dd($fpurchaseorder,$columns);
 
-            return view('reports.show', compact('report', 'config', 'fpurchaseorder'));
+               // dd($fpurchaseorder);
+          $filters = DB::table('fpurchaseorders')
+            ->where('companyId', Auth::user()->companyId)
+            ->where('uploadStatus', '=', null)
+            ->select($report->description)
+            ->groupBy($report->description)
+            ->pluck($report->description)
+            ->toArray();  
+
+         // dd($filters);
+
+            return view('reports.show', compact('report', 'config', 'fpurchaseorder','filters'));
         }
 
 
-    public function index()
+      public function index()
         {
-
-        //    $company = Company::where('id', Auth::user()->companyId)->first();
 
             $reports = CustomReport::where('companyId','=', Auth::user()->companyId)->latest()->get();
             $fpurchaseorderColumns = \Schema::getColumnListing('fpurchaseorder');
@@ -279,10 +289,92 @@ class ReportController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        //
+ 
+public function filter(Request $request)
+{
+    $reportId = $request->input('report_id');
+    $selectedFilters = $request->input('selected_filters', []);
+
+    // Get report config
+    $report = CustomReport::findOrFail($reportId);
+    $config = json_decode($report->config, true);
+
+    // DB columns from config
+    $dbColumns = collect($config)
+        ->filter(fn($col) => empty($col['blank']) && !empty($col['column']))
+        ->pluck('column')
+        ->unique()
+        ->toArray();
+
+    // Fetch only relevant DB columns
+    $fpurchaseorders = DB::table('fpurchaseorders')
+        ->where('companyId', Auth::user()->companyId)
+        ->where('uploadStatus', '=', null)
+        ->select($dbColumns)
+        ->get();
+      //  dd($fpurchaseorders);
+
+    // Prepare ZIP file
+    $zipFile = storage_path('app/filtered_exports.zip');
+    $zip = new ZipArchive;
+    $zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+
+    foreach ($selectedFilters as $filterValue) {
+        // Filter dataset by this filter value (adjust column name if needed)
+        // Here I’m assuming we filter by a column that exists in $dbColumns
+        // e.g. 'season' or 'status'
+        $columnName = $report->description;
+
+        $filteredRows = $fpurchaseorders->filter(function ($row) use ($filterValue, $columnName) {
+            return isset($row->$columnName) && $row->$columnName == $filterValue;
+        });
+
+       // dd($filteredRows,$filterValue);
+
+        // Build CSV content
+        $csvContent = '';
+
+        // Header row
+        $headers = collect($config)->pluck('label')->toArray();
+        $csvContent .= implode(',', $headers) . "\n";
+
+        // Data rows
+        foreach ($filteredRows as $row) {
+            $rowData = [];
+
+            foreach ($config as $col) {
+                $value = '';
+
+                if (!empty($col['blank'])) {
+                    $value = $col['default'] ?? '';
+                } elseif (!empty($col['column'])) {
+                    $columnName = $col['column'];
+                    $value = $row->$columnName ?? $col['default'] ?? '';
+                } elseif (empty($col['column']) && isset($col['default'])) {
+                    $value = $col['default'];
+                }
+
+                // Escape CSV-safe
+                $value = str_replace('"', '""', $value);
+                $rowData[] = "\"{$value}\"";
+            }
+
+            $csvContent .= implode(',', $rowData) . "\n";
+        }
+
+        // Save temp CSV
+        $tempCsvPath = storage_path("app/{$filterValue}.csv");
+        file_put_contents($tempCsvPath, $csvContent);
+
+        // Add to ZIP
+        $zip->addFile($tempCsvPath, "{$filterValue}.csv");
     }
+
+    $zip->close();
+
+    // Download ZIP
+    return response()->download($zipFile)->deleteFileAfterSend(true);
+}
 
     /**
      * Remove the specified resource from storage.
@@ -297,4 +389,31 @@ class ReportController extends Controller
     return redirect()->route('reports.index')
         ->with('success', 'Report deleted successfully.');
     }
+
+
+
+         public function custom_report_remove(Request $request)
+        {
+
+             $reportId = $request->input('report_id');
+            $selectedRowIds = $request->input('selected_rows', []);
+
+            if (empty($selectedRowIds)) {
+                return back()->with('error', 'No rows selected.');
+            }
+           
+            //dd($selectedRowIds);
+            // Perform your removal logic here, e.g., delete from fpurchaseorders by IDs
+            DB::table('fpurchaseorders')->whereIn('id', $selectedRowIds)->update([
+
+                'uploadStatus' => '1', // Assuming you want to set releaseStatus to null
+
+            ]);
+
+            return back()->with('success', count($selectedRowIds) . ' rows removed successfully.');
+
+        }
+
+   
 }
+

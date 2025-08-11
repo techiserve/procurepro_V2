@@ -222,6 +222,8 @@ Route::post('/form/configure', [RequisitionController::class, 'storeFormConfigur
 
 Route::get('/reports/create', [ReportController::class, 'create'])->name('reports.create');
 Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
+Route::post('/filter', [ReportController::class, 'filter'])->name('filter.route');
+Route::post('/custom_report/remove', [ReportController::class, 'custom_report_remove'])->name('custom_report.remove');
 Route::get('/reports/{id}', [ReportController::class, 'show'])->name('reports.show');
 Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 

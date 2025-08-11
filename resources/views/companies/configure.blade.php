@@ -35,8 +35,12 @@
 
     <div class="col-md-6 mb-3">
         <div class="form-group">
-      <label for="report_description" class="form-label">Report Description</label>
-      <textarea name="report_description" id="report_description" class="form-control" rows="3"></textarea>
+      <label for="report_description" class="form-label">Select Filter Field</label>
+       <select name="filterfield" class="form-control column-select">
+                    @foreach($fpurchaseorderColumns as $column)
+                    <option value="{{ $column }}">{{ $column }}</option>
+                    @endforeach
+                </select>
     </div>
     </div>
 </div>
