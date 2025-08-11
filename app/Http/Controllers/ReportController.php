@@ -312,7 +312,7 @@ public function filter(Request $request)
         ->where('uploadStatus', '=', null)
         ->select($dbColumns)
         ->get();
-      //  dd($fpurchaseorders);
+        dd($fpurchaseorders);
 
     // Prepare ZIP file
     $zipFile = storage_path('app/filtered_exports.zip');
