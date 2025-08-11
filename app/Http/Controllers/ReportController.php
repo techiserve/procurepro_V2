@@ -335,9 +335,6 @@ public function filter(Request $request)
             return isset($row->$columnName) && $row->$columnName == $filterValue;
         });
 
-        // $filteredRows = $fpurchaseorders;
-
-        dd($filteredRows,$filterValue);
 
         // Build CSV content
         $csvContent = '';
