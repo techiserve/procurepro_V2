@@ -325,9 +325,9 @@ public function filter(Request $request)
         // e.g. 'season' or 'status'
         $columnName = $report->description;
 
-        $filteredRows = $fpurchaseorders->filter(function ($row) use ($filterValue, $columnName) {
-            return isset($row->$columnName) && $row->$columnName == $filterValue;
-        });
+        // $filteredRows = $fpurchaseorders->filter(function ($row) use ($filterValue, $columnName) {
+        //     return isset($row->$columnName) && $row->$columnName == $filterValue;
+        // });
 
         $filteredRows = $fpurchaseorders;
 
