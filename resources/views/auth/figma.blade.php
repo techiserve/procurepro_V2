@@ -165,7 +165,7 @@
         <img src="{{ asset('template/assets/media/photos/logo1.png') }}" alt="TagPay Logo">
     </div>
     <div class="right">
-        <h3 style="font-family: 'Gilroy-Bold', Arial, sans-serif;" >Login to TagPay</h3>
+        <h3 style="font-family: 'Gilroy-Bold', Arial, sans-serif;" >Login to TagPay..</h3>
         <div class="login-title"></div> 
         <form  id="login-form"  action="{{ route('login') }}" method="POST">
         @csrf
