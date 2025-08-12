@@ -182,7 +182,7 @@
             @enderror
 
             <div class="forgot-password">
-            <a href="/forgot-password">Forgot Password?</a>
+            <a href="/forgot-password">Forgot Password?.</a>
             </div>
 
             <input id="show-company-modal"  type="submit" value="Sign in" style="font-family: 'Gilroy-Bold', Arial, sans-serif;">
