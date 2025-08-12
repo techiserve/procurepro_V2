@@ -16,7 +16,7 @@
                 <div class="card-header">
                     <h2>{{ $report->name }}</h2>
                     <p>{{ $report->description }}</p>
-                     <button class="btn btn-primary btn-sm pull-right"  data-toggle="modal" data-target="#filterModal" style="padding: 10px 20px; font-size: 16px; min-width: 100px;"><i class="fa fa-filter"></i> Filter </button>            
+                     <button class="btn btn-primary btn-sm pull-right"  data-toggle="modal" data-target="#filterModal" style="padding: 10px 20px; font-size: 16px; min-width: 100px;"><i class="fa fa-filter"></i> Filter and Download </button>            
                 </div>
 
                 <div class="card-body">
