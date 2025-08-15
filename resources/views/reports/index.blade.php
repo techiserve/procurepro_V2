@@ -1,4 +1,4 @@
-@extends('stack.layouts.admin')
+@extends('html.default')
 
 @section('content')
 <div class="container-fluid">
@@ -7,6 +7,7 @@
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header">
+                    
                     <strong> Custom Reports</strong>
                     {{-- <button class="btn btn-primary btn-sm pull-right"  data-toggle="modal" data-target="#filterModal" style="padding: 10px 20px; font-size: 16px; min-width: 100px;"><i class="fa fa-filter"></i> Filter</button> --}}
                     <!-- <a href="/growers/" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="fa fa-align-justify"></i> Filter Requisitions</a> -->

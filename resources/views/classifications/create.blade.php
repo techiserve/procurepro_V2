@@ -1,10 +1,14 @@
-@extends('stack.layouts.admin')
-
+@extends('html.default')
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 @section('content')
 <div class="container-fluid">
   <div class="animated fadeIn">
     <div class="row">
       <div class="col-sm-12">
+
+        <!-- Create Classification Form -->
         <form method="POST" action="{{ route('classifications.store') }}">
           @csrf
           <div class="card">
@@ -42,6 +46,7 @@
 
         <br>
 
+        <!-- List of Classifications -->
         <div class="card">
           <div class="card-header">
             <strong>All Classifications of Expense</strong>
@@ -64,19 +69,19 @@
                         {{ $classification->active ? 'Active' : 'Inactive' }}
                       </span>
                     </td>
-                   <td>
+                    <td>
                       <a href="{{ route('classifications.edit', $classification->id) }}" class="label label-sm label-success">
-                          <span class='fa fa-pencil'></span>
-                          <span class='hidden-sm hidden-sm hidden-md'> Edit</span>
+                        <span class='fa fa-pencil'></span>
+                        <span class='hidden-sm hidden-sm hidden-md'> Edit</span>
                       </a>
 
-                      <form action="{{ route('classifications.destroy', $classification->id) }}" method="POST" style="display:inline;">
-                          @csrf
-                          @method('DELETE')
-                          <button type="submit" class="label label-sm label-danger" style="border:none; background:none;">
-                              <span class='fa fa-trash'></span>
-                              <span class='hidden-sm hidden-sm hidden-md'> Delete</span>
-                          </button>
+                      <form action="{{ route('classifications.destroy', $classification->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this classification?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="label label-sm label-danger" style="border:none; background:none;">
+                          <span class='fa fa-trash'></span>
+                          <span class='hidden-sm hidden-sm hidden-md'> Delete</span>
+                        </button>
                       </form>
                     </td>
                   </tr>
@@ -95,3 +100,15 @@
   </div>
 </div>
 @endsection
+
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    // Optional: SweetAlert confirmation for deletion
+    $('form').on('submit', function(e){
+      if($(this).find('button[type=submit]').hasClass('label-danger')){
+        return confirm('Are you sure you want to delete this classification?');
+      }
+    });
+  });
+</script>

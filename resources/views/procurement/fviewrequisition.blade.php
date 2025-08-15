@@ -1,4 +1,4 @@
-@extends('stack.layouts.admin')
+@extends('html.default')
 <!-- iCheck CSS -->
 <link href="https://cdn.jsdelivr.net/npm/icheck/skins/square/blue.css" rel="stylesheet">
 
@@ -18,7 +18,11 @@
           <div class="card">
           <div class="card-header">
             <strong>View Requisition.</strong>
-            <a href="/procurement/indexrequisition" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="fa fa-align-justify"></i> Requistions List</a>
+            <div class="d-flex justify-content-end">
+              <a href="/procurement/indexrequisition" class="btn btn-primary btn-sm">
+                <i style="color:white;" class="fa fa-align-justify"></i> Requistions List
+              </a>
+            </div>
            </div>
 
            <div class="card-body">
@@ -70,7 +74,7 @@
         </div>
       </div>
       
-			<hr style="border-color: black;">
+
 			<br>
          
           

@@ -211,7 +211,7 @@ class UserController extends Controller
      */
     public function userrolestore(Request $request)
     {
-         
+          //dd($request->all());
         $user = new userrole();
         $user->name = $request->roleName;
         $user->companyId = Auth::user()->companyId;

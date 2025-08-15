@@ -1,59 +1,64 @@
-<!-- resources/views/your-view.blade.php -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Procure Pro 360</title>
-    <!-- Include Bootstrap CSS for the modal -->
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="container">
-        <!-- Modal -->
-      	  <!-- /.modal for provinces modal -->
-    <div class="modal fade" id="addProvince" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-primary modal-md" role="document">
-            	<form method="post" action="/executivehome/store">
-            		 @csrf
-	              <div class="modal-content">
-	                <div class="modal-header">
-	                  <h4 class="modal-title">Select Company</h4>
-	                
-	                </div>
-	                <div class="modal-body">
-                  <div class="form-group">
-                                <label for="province_id">Companies</label>
-                                <select name="company" class="js-example-basic-single form-control" required>
-                                <option value="" selected disabled>-- Select Company --</option>
-                                    @foreach($companies as $company)
-                                    <option value="{{ $company->companyId }}"> @foreach($allcompanies as $comp) @if($comp->id == $company->companyId)
-                                    {{ $comp->name }}
-                                    @endif  @endforeach</option>
-                                    @endforeach
-                                </select>
-                  </div>
-	                </div>
-	                <div class="modal-footer">
-	                  <button class="btn btn-primary" type="submit">Select Company</button>
-	                </div>
-	              </div>
-	            </form>
-              <!-- /.modal-content-->
-            </div>
-            <!-- /.modal-dialog-->
-          </div>
-    </div>
+@extends('html.default')
 
-    <!-- Include jQuery and Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            // Activate the modal as soon as the page is rendered
-            $('#addProvince').modal('show');
-        });
-    </script>
-</body>
-</html>
+
+@section('content')
+ <div class="body-content__header">
+                <ul>
+                    <li><a href="#">Requisition Summary</a></li>
+                </ul>
+                <button class="btn-requisition-list"><i class="icon-20"></i> Requisition List</button>
+            </div>
+            <div class="body-content__wrapper requesition-body">
+                <div class="requesition-top">
+                    <ul class="requesition-btn-list">
+                        <li><button><img src="assets/img/copy-icon.png" alt=""> Copy</button></li>
+                        <li><button><img src="assets/img/csv-icon.png" alt=""> CSV</button></li>
+                        <li><button><img src="assets/img/excel-icon.png" alt=""> Excel</button></li>
+                        <li><button><img src="assets/img/pdf-icon.png" alt=""> PDF</button></li>
+                        <li><button><img src="assets/img/print-icon.png" alt=""> Print</button></li>
+                    </ul>
+                    <div class="requesition-search">
+                        <input type="search" placeholder="Search Here.........">
+                        <button><img src="assets/img/search-icon.png" alt=""></button>
+                    </div>
+                </div>
+                <div class="requesition-table">
+                    <table id="example" class="display responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Vendor</th>
+                                <th>Services</th>
+                                <th>Payment Method</th>
+                                <th>Department</th>
+                                <th>Expenses</th>
+                                <th>Project Code</th>
+                                <th>(ZAR) amount</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                        </tbody>
+                    </table>
+                </div>
+                <div class="requesition-bottom">
+                    <div class="page-number">
+                        <label for="">Records per page:</label>
+                        <select name="">
+                            <option value="">21</option>
+                            <option value="">21</option>
+                            <option value="">21</option>
+                        </select>
+                    </div>
+                    <ul class="requesition-pagination">
+                        <li><button><img src="assets/img/pagi-arrow-left.png" alt=""></button></li>
+                        <li>
+                            <p>0 to 100</p>
+                        </li>
+                        <li><button><img src="assets/img/pagi-arrow-next.png" alt=""></button></li>
+                    </ul>
+                </div>
+            </div>
+@endsection

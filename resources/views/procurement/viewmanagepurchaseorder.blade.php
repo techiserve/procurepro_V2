@@ -1,4 +1,4 @@
-@extends('stack.layouts.admin')
+@extends('html.default')
 
 @section('content')
 <div class="container-fluid">
@@ -11,8 +11,10 @@
           <div class="card">
           <div class="card-header">
             <strong>View Requisition</strong>
+              <div class="d-flex justify-content-end">
             <a href="/procurement/indexrequisition" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="fa fa-align-justify"></i> Requistions List</a>
            </div>
+            </div>
 @php
       $vendorNames = ['vendor', 'vendor list', 'vendors', 'Vendor', 'Vendor List'];
       $propertyNames = ['property', 'properties','Property List', 'property list'];

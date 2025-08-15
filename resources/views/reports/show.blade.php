@@ -1,4 +1,4 @@
-@extends('stack.layouts.admin')
+@extends('html.default')
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
@@ -16,7 +16,12 @@
                 <div class="card-header">
                     <h2>{{ $report->name }}</h2>
                     <p>{{ $report->description }}</p>
-                     <button class="btn btn-primary btn-sm pull-right"  data-toggle="modal" data-target="#filterModal" style="padding: 10px 20px; font-size: 16px; min-width: 100px;"><i class="fa fa-filter"></i> Filter and Download </button>            
+                      <div class="d-flex justify-content-end mb-3" >
+                     <button class="btn btn-primary btn-sm pull-right"  data-bs-toggle="modal" 
+        data-bs-target="#filterModal" 
+        style="padding: 10px 20px; font-size: 16px; min-width: 100px;">
+    <i class="fa fa-filter"></i> Filter and Download </button>            
+                </div>
                 </div>
 
                 <div class="card-body">
@@ -79,23 +84,21 @@
 
 
 <!-- Filter Modal -->
-<div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="filterModalLabel" aria-hidden="true">
+<div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <form action="{{ route('filter.route') }}" method="POST">
       @csrf
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="filterModalLabel">Select Filters</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
 
         <div class="modal-body">
-<input type="hidden" name="report_id" value="{{ $report->id }}">
+          <input type="hidden" name="report_id" value="{{ $report->id }}">
           <div class="mb-3">
-            <input type="checkbox" id="select_all" /> 
-            <label for="select_all"><strong>Select All</strong></label>
+            <input type="checkbox" id="select_all_filters" /> 
+            <label for="select_all_filters"><strong>Select All</strong></label>
           </div>
 
           <div class="table-responsive">
@@ -113,19 +116,18 @@
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $filter }}</td>
                     <td class="text-center">
-                      <input class="form-check-input" type="checkbox" name="selected_filters[]"  role="switch" value="{{ $filter }}" id="filter_{{ $index }}"  id="flexSwitchCheckDefault">
+                      <input class="form-check-input filter-checkbox" type="checkbox" name="selected_filters[]" value="{{ $filter }}" id="filter_{{ $index }}">
                     </td>
                   </tr>
                 @endforeach
               </tbody>
             </table>
           </div>
-
         </div>
 
         <div class="modal-footer">
           <button type="submit" class="btn btn-primary">Apply Filters</button>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </form>
@@ -156,4 +158,11 @@ document.getElementById('select_all').addEventListener('click', function() {
         const checked = this.checked;
         document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = checked);
     });
+</script>
+
+<script>
+document.getElementById('select_all_filters').addEventListener('click', function() {
+    const checked = this.checked;
+    document.querySelectorAll('.filter-checkbox').forEach(cb => cb.checked = checked);
+});
 </script>

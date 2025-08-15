@@ -1,4 +1,4 @@
-@extends('stack.layouts.admin')
+@extends('html.default')
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script> 
 
@@ -14,8 +14,10 @@
         <div class="card">
           <div class="card-header">
             <strong>Executive Registration</strong>
+            <div class="d-flex justify-content-end mb-3" style="gap: 10px;">
             <a href="/growers/" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="fa fa-align-justify"></i> Executives List</a>
           </div>
+            </div>
 
           <div class="card-body">
             <div class="row">

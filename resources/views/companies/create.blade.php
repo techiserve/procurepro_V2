@@ -1,4 +1,4 @@
-@extends('stack.layouts.admin')
+@extends('html.default')
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -22,6 +22,35 @@
     .dropdown-options {
         margin-top: 10px;
     }
+
+    /* Only affect dynamic fields - make them smaller */
+    .dynamic-field-row .form-control {
+        height: 49px !important;
+        padding: 8px 10px !important;
+        font-size: 15px !important;
+    }
+
+    .dynamic-field-row .btn {
+        height: 31px !important;
+        width: 39px !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 12px !important;
+    }
+
+    /* Small text for dynamic field help */
+    .dynamic-field-row small {
+        font-size: 10px !important;
+    }
+
+    /* Labels styling */
+    .field-labels label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 14px;
+    }
 </style>
 @section('content')
 <div class="container-fluid">
@@ -34,7 +63,9 @@
         <div class="card">
           <div class="card-header">
             <strong>Add New Company</strong>
+          <div class="d-flex justify-content-end mb-3" style="gap: 10px;">
             <a href="/companies/index" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="fa fa-align-justify"></i> Companies List</a>
+          </div>
           </div>
 
           <div class="card-body">
@@ -129,18 +160,18 @@
           <hr style="border-color: black;">
 
             <!-- Labels once -->
-            <div class="row field-labels mb-2">
-              <div class="col-md-3"><label>Form Name</label></div>
-              <div class="col-md-3"><label>Form Label</label></div>
+            <div class="row field-labels mb-3">
+              <div class="col-md-2"><label>Form Name</label></div>
+              <div class="col-md-2"><label>Form Label</label></div>
               <div class="col-md-2"><label>Form Type</label></div>
-              <div class="col-md-3"><label>Options (for dropdown)</label></div>
-              <div class="col-md-1"></div>
+              <div class="col-md-4"><label>Options (for dropdown)</label></div>
+              <div class="col-md-2"></div>
             </div>
 
             <div id="fields">
             <!-- Dynamic fields will be added here -->
         </div>
-        <button type="button"  class="btn btn-info" onclick="addField()">Add Field</button>
+        <button type="button"  class="btn btn-info btn-sm" onclick="addField()">Add Field</button>
         <br><br>
 
          
@@ -168,12 +199,12 @@ function createField(index, name = '', label = '', type = '', options = '') {
     const isRemovable = !requiredFields.includes(name.toLowerCase());
 
     return `
-        <div class="form-group" id="field-${index}">
-            <div class="row">
-                <div class="col-md-3">
+        <div class="form-group dynamic-field-row mb-2" id="field-${index}">
+            <div class="row align-items-center">
+                <div class="col-md-2">
                     <input type="text" class="form-control" name="fields[${index}][name]" value="${name}" placeholder="Field Name" required ${isRemovable ? '' : 'readonly'}>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <input type="text" class="form-control" name="fields[${index}][label]" value="${label}" placeholder="Label" required ${isRemovable ? '' : 'readonly'}>
                 </div>
                 <div class="col-md-2">
@@ -185,12 +216,12 @@ function createField(index, name = '', label = '', type = '', options = '') {
                         <option value="dropdown" ${type === 'dropdown' ? 'selected' : ''}>Dropdown</option>
                     </select>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <input type="text" class="form-control" id="options-${index}" name="fields[${index}][options]" value="${options}" placeholder="Option1,Option2,Option3" style="display: ${type === 'dropdown' ? 'block' : 'none'};">
                     <small class="text-muted" id="options-help-${index}" style="display: ${type === 'dropdown' ? 'block' : 'none'};">Separate options with commas</small>
                 </div>
-                <div class="col-md-1 text-right">
-                    ${isRemovable ? `<button type="button" class="btn btn-danger btn-md" onclick="removeField(${index})">&times;</button>` : ''}
+                <div class="col-md-2 text-center">
+                    ${isRemovable ? `<button type="button" class="btn btn-danger btn-sm" onclick="removeField(${index})" title="Remove field">&times;</button>` : ''}
                 </div>
             </div>
         </div>

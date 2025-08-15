@@ -1,4 +1,4 @@
-@extends('stack.layouts.admin')
+@extends('html.default')
 <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.4/tutorials/timelines/timeline-7/assets/css/timeline-7.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

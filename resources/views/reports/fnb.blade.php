@@ -1,5 +1,4 @@
-@extends('stack.layouts.admin')
-
+@extends('html.default')
 @section('content')
 <div class="container-fluid">
   <div class="animated fadeIn">
@@ -8,9 +7,10 @@
             <div class="card">
                 <div class="card-header">
                     <strong>FNB Report</strong>
+                         <div class="d-flex justify-content-end mb-3" >
                     <button class="btn btn-primary btn-sm pull-right"  data-toggle="modal" data-target="#filterModal" style="padding: 10px 20px; font-size: 16px; min-width: 100px;"><i class="fa fa-filter"></i> Filter </button>
                     <!-- <a href="/growers/" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="fa fa-align-justify"></i> Filter Requisitions</a> -->
-               
+                  </div>
                 </div>
 
                 <div class="card-body">
@@ -93,16 +93,7 @@
                   @endforeach        
                 </select>
               </div>
-              <div class="form-group">
-                <label for="service">Service Type</label>
-                <select name="service" id="service" class="js-example-basic-single form-control"  style="width:100%;"> 
-                <option value="">--Select Service--</option> 
-                @foreach($servicetype as $servicetype)  
-                
-                <option value="{{ $servicetype->ServiceTypeDescription }}"> {{ $servicetype->ServiceTypeDescription }}</option>
-                  @endforeach          
-                </select>
-              </div>
+             
             </div>
             <div class="modal-footer">
               <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>

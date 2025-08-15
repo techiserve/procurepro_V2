@@ -39,11 +39,15 @@ class ReportController extends Controller
     {
 
         $requisitions = Requisition::where('companyId', Auth::user()->companyId)->get();
-        $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
-        $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
+       // $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get(); 
+         $vendors = Vendor::select(
+                'id as SupplierID', 
+                'name as SupplierName'
+            )->where('companyId', Auth::user()->companyId)->where('status','=', '3')->get(); 
+       // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
         $departments = Department::where('companyId', Auth::user()->companyId)->get();
 
-       return view('reports.requisitionreport', compact('requisitions','vendors','servicetype','departments'));
+       return view('reports.requisitionreport', compact('requisitions','vendors','departments'));
 
     }
 
@@ -151,12 +155,15 @@ class ReportController extends Controller
     {
 
         $requisitions = Purchaseorder::where('companyId', Auth::user()->companyId)->get();
-        $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
-        $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
+          $vendors = Vendor::select(
+                'id as SupplierID', 
+                'name as SupplierName'
+            )->where('companyId', Auth::user()->companyId)->where('status','=', '3')->get(); 
+        // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
         $departments = Department::where('companyId', Auth::user()->companyId)->get();
 
 
-        return view('reports.purchaseorderreport' , compact('requisitions','vendors','servicetype','departments'));
+        return view('reports.purchaseorderreport' , compact('requisitions','vendors','departments'));
     }
 
     /**
@@ -178,11 +185,14 @@ class ReportController extends Controller
     {        
           $fpurchaseorder = Fpurchaseorder::where('companyId', Auth::user()->companyId)->where('bankAccountName','=','FNB/RMB')->where('releaseStatus','=', null)->get();
           //dd($fpurchaseorder);
-          $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
-          $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
+            $vendors = Vendor::select(
+                'id as SupplierID', 
+                'name as SupplierName'
+            )->where('companyId', Auth::user()->companyId)->where('status','=', '3')->get();  
+        //   $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
           $departments = Department::where('companyId', Auth::user()->companyId)->get();
 
-        return view('reports.fnb', compact('fpurchaseorder','departments','vendors','servicetype'));
+        return view('reports.fnb', compact('fpurchaseorder','departments','vendors'));
     }
 
 
@@ -191,22 +201,28 @@ class ReportController extends Controller
         public function albarak()
     {        
           $fpurchaseorder = Fpurchaseorder::where('companyId', Auth::user()->companyId)->where('bankAccountName','=','Albaraka Bank')->where('releaseStatus','=', null)->get();
-          $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
-          $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
+           $vendors = Vendor::select(
+                'id as SupplierID', 
+                'name as SupplierName'
+            )->where('companyId', Auth::user()->companyId)->where('status','=', '3')->get();   
+        //   $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
           $departments = Department::where('companyId', Auth::user()->companyId)->get();
 
-        return view('reports.albarak', compact('fpurchaseorder','departments','vendors','servicetype'));
+        return view('reports.albarak', compact('fpurchaseorder','departments','vendors'));
     }
 
 
         public function standardbank()
     {        
           $fpurchaseorder = Fpurchaseorder::where('companyId', Auth::user()->companyId)->where('bankAccountName','=','Standard Bank')->where('releaseStatus','=', null)->get();
-          $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
-          $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
+             $vendors = Vendor::select(
+                'id as SupplierID', 
+                'name as SupplierName'
+            )->where('companyId', Auth::user()->companyId)->where('status','=', '3')->get();   
+         // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
           $departments = Department::where('companyId', Auth::user()->companyId)->get();
 
-        return view('reports.standardbank', compact('fpurchaseorder','departments','vendors','servicetype'));
+        return view('reports.standardbank', compact('fpurchaseorder','departments','vendors'));
     }
     /**
      * Show the form for editing the specified resource.

@@ -1,5 +1,6 @@
-@extends('stack.layouts.admin')
-<link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+@extends('html.default')
+
+<link rel="stylesheet" href="https://unpkg.com/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.4/tutorials/timelines/timeline-7/assets/css/timeline-7.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -14,12 +15,27 @@
           </div>
     
           <div class="card-body">
-         <button class="btn btn-primary btn-sm pull-right"  data-toggle="modal" data-target="#filterModal" style="padding: 10px 20px; font-size: 16px; min-width: 100px;margin-top:-60px"><i class="fa fa-filter"></i> Filter </button>
-          <form method="POST" action="{{ route('procurement.downloadrequisitions') }}">
-          @csrf
-          <button  type="submit" class="btn btn-success btn-sm pull-right" style="padding: 10px 20px; font-size: 16px; min-width: 100px;margin-top:-60px;margin-right: 110px;"><i class="fa fa-filter"></i> Download </button>&nbsp;
-          <div style="overflow-x:auto;">
-            <table class="table table-striped table-bordered zero-configuration">
+            <!-- Action buttons aligned to the right above the table -->
+            <div class="row mb-3">
+              <div class="col-12">
+                <div class="float-right">
+                  <button class="btn btn-primary btn-sm mr-2" data-toggle="modal" data-target="#filterModal" style="padding: 10px 20px; font-size: 16px; min-width: 100px;">
+                    <i class="fa fa-filter"></i> Filter
+                  </button>
+                  <form method="POST" action="{{ route('procurement.downloadrequisitions') }}" style="display: inline-block;">
+                    @csrf
+                    <button type="submit" class="btn btn-success btn-sm" style="padding: 10px 20px; font-size: 16px; min-width: 100px;">
+                      <i class="fa fa-download"></i> Download
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <!-- Checkbox form for table data -->
+            <form method="POST" action="{{ route('procurement.downloadrequisitions') }}" id="tableForm">
+              @csrf
+              <div style="overflow-x:auto;">
+                <table class="table table-striped table-bordered zero-configuration"  id="example"  style="width:100%">
               <thead>
                 <tr>
                 <th>#</th>
@@ -53,7 +69,7 @@
    
     <tr>
         <td>
-            <input type="checkbox" id="select" name="requisition_ids[]" value="{{ $frequisition->id }}">
+            <input type="checkbox" id="select_{{ $frequisition->id }}" name="requisition_ids[]" value="{{ $frequisition->id }}">
         </td>
         <td>{{ $frequisition->requisitionNumber }}</td>
 
@@ -128,156 +144,28 @@
                       <span class='fa fa-desktop'></span>
                       <span class='hidden-sm hidden-sm hidden-md'> Update </span>
                     </a>&nbsp;
-                    <a  href="#" class='btn btn-success btn-sm' data-toggle="modal" data-target="#historyModal{{ $frequisition->id }}" style='color: white;'>
+                    <button type="button" class='btn btn-success btn-sm' data-toggle="modal" data-target="#historyModal{{ $frequisition->id }}" style='color: white;'>
                       <span class='fa fa-pencil'></span>
                       <span class='hidden-sm hidden-sm hidden-md'> Logs</span>
-                   </a>&nbsp;
+                   </button>&nbsp;
                    <a  href="/procurement/{{$frequisition->id}}/download" class='btn btn-primary btn-sm'  style='color: white;'>
                       <span class='fa fa-download'></span>
                       <span class='hidden-sm hidden-sm hidden-md'>Download</span>
                    </a>&nbsp;
-                   
-                <!-- Modal Structure -->
-                <div class="modal fade" id="historyModal{{ $frequisition->id }}" tabindex="-1" role="dialog" aria-labelledby="historyModalLabel{{ $frequisition->id }}" aria-hidden="true">
-<div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="timelineModalLabel">Requisition Logs</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <!-- Timeline 7 - Bootstrap Brain Component -->
-                <section class="bsb-timeline-7 py-3">
-                    <div class="container">
-                        <div class="row justify-content-center">
-                            <div class="col-12">
-                            @if($frequisition->histories->isEmpty())
-                                        <p>No history found for this requisition.</p>
-                                    @else
-                                <ul class="timeline">
-                                @foreach($frequisition->histories as $history)
-
-                                @php
-                                    $date = \Carbon\Carbon::parse($history->created_at);
-                                    @endphp
-
-                                    <li class="timeline-item">
-                                        <div class="timeline-body">
-                                            <div class="timeline-meta">
-                                                <div class="d-inline-flex flex-column px-2 py-1 text-success-emphasis bg-success-subtle border border-success-subtle rounded-2 text-md-end">
-                                                    <span class="fw-bold">{{$date->format('d F Y')}}</span>
-                                                    <span>{{$date->format('g:ia')}}</span>
-                                                </div>
-                                            </div>
-                                            <div class="timeline-content timeline-indicator">
-                                                <div class="card border-0 shadow">
-                                                    <div class="card-body p-xl-4"  style="position: relative;">
-                                                    <h6 class="card-subtitle text-secondary mb-3" style="position: absolute; top: 10; right: 10;">{{ $loop->iteration }}</h6>
-                                                        <h2 class="card-title mb-2">{{$history->doneby}}</h2>
-                                                      
-                                                        <p class="card-text m-0">{{$history->action}}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>             
-                                 @endforeach
-                                </ul>
-
-                                @endif
-
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 
                     @else
                       <a  href="/procurement/{{$frequisition->id}}/viewrequisition"  class='btn btn-info btn-sm' style='color: white;'>
                       <span class='fa fa-desktop'></span>
                       <span class='hidden-sm hidden-sm hidden-md'>View</span>
                     </a>&nbsp;
-                    <a  href="#" class='btn btn-success btn-sm' data-toggle="modal" data-target="#historyModal{{ $frequisition->id }}" style='color: white;'>
+                    <button type="button" class='btn btn-success btn-sm' data-toggle="modal" data-target="#historyModal{{ $frequisition->id }}" style='color: white;'>
                       <span class='fa fa-pencil'></span>
                       <span class='hidden-sm hidden-sm hidden-md'>Logs</span>
-                   </a>&nbsp;
+                   </button>&nbsp;
                    <a  href="/procurement/{{$frequisition->id}}/download" class='btn btn-primary btn-sm'  style='color: white;'>
                       <span class='fa fa-download'></span>
                       <span class='hidden-sm hidden-sm hidden-md'>Download</span>
                    </a>&nbsp;
-
-
-                <div class="modal fade" id="historyModal{{ $frequisition->id }}" tabindex="-1" role="dialog" aria-labelledby="historyModalLabel{{ $frequisition->id }}" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="timelineModalLabel">Requisition Logs</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-       <div class="modal-body">
-                <!-- Timeline 7 - Bootstrap Brain Component -->
-                <section class="bsb-timeline-7 py-3">
-                    <div class="container">
-                        <div class="row justify-content-center">
-                            <div class="col-12">
-                            @if($frequisition->histories->isEmpty())
-                                        <p>No history found for this requisition.</p>
-                                    @else
-                                <ul class="timeline">
-                                @foreach($frequisition->histories as $history)
-
-                                @php
-                                    $date = \Carbon\Carbon::parse($history->created_at);
-                                    @endphp
-
-                                    <li class="timeline-item">
-                                        <div class="timeline-body">
-                                            <div class="timeline-meta">
-                                                <div class="d-inline-flex flex-column px-2 py-1 text-success-emphasis bg-success-subtle border border-success-subtle rounded-2 text-md-end">
-                                                    <span class="fw-bold">{{$date->format('d F Y')}}</span>
-                                                    <span>{{$date->format('g:ia')}}</span>
-                                                </div>
-                                            </div>
-                                            <div class="timeline-content timeline-indicator">
-                                                <div class="card border-0 shadow">
-                                                    <div class="card-body p-xl-4"  style="position: relative;">
-                                                    <h6 class="card-subtitle text-secondary mb-3" style="position: absolute; top: 10; right: 10;">{{ $loop->iteration }}</h6>
-                                                        <h2 class="card-title mb-2">{{$history->doneby}}</h2>
-                                                      
-                                                        <p class="card-text m-0">{{$history->action}}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>             
-                                 @endforeach
-                                </ul>
-
-                                @endif
-
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 
                    @endif                              
 
@@ -286,77 +174,14 @@
                       <span class='fa fa-desktop'></span>
                       <span class='hidden-sm hidden-sm hidden-md'> View </span>
                    </a>&nbsp;
-                   <a  href="#" class='btn btn-success btn-sm' data-toggle="modal" data-target="#historyModal{{ $frequisition->id }}" style='color: white;'>
+                   <button type="button" class='btn btn-success btn-sm' data-toggle="modal" data-target="#historyModal{{ $frequisition->id }}" style='color: white;'>
                       <span class='fa fa-pencil'></span>
                       <span class='hidden-sm hidden-sm hidden-md'>  Logs</span>
-                   </a>&nbsp;
+                   </button>&nbsp;
                    <a  href="/procurement/{{$frequisition->id}}/download" class='btn btn-primary btn-sm'  style='color: white;'>
                       <span class='fa fa-download'></span>
                       <span class='hidden-sm hidden-sm hidden-md'>Download</span>
                    </a>&nbsp;
-
-                <!-- Modal Structure -->
-                <div class="modal fade" id="historyModal{{ $frequisition->id }}" tabindex="-1" role="dialog" aria-labelledby="historyModalLabel{{ $frequisition->id }}" aria-hidden="true">
-                <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                <h5 class="modal-title" id="timelineModalLabel">Requisition Logs</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-               </div>
-               <div class="modal-body">
-                <!-- Timeline 7 - Bootstrap Brain Component -->
-                <section class="bsb-timeline-7 py-3">
-                    <div class="container">
-                        <div class="row justify-content-center">
-                            <div class="col-12">
-                            @if($frequisition->histories->isEmpty())
-                                        <p>No history found for this requisition.</p>
-                                    @else
-                                <ul class="timeline">
-                                @foreach($frequisition->histories as $history)
-
-                                @php
-                                    $date = \Carbon\Carbon::parse($history->created_at);
-                                    @endphp
-
-                                    <li class="timeline-item">
-                                        <div class="timeline-body">
-                                            <div class="timeline-meta">
-                                                <div class="d-inline-flex flex-column px-2 py-1 text-success-emphasis bg-success-subtle border border-success-subtle rounded-2 text-md-end">
-                                                    <span class="fw-bold">{{$date->format('d F Y')}}</span>
-                                                    <span>{{$date->format('g:ia')}}</span>
-                                                </div>
-                                            </div>
-                                            <div class="timeline-content timeline-indicator">
-                                                <div class="card border-0 shadow">
-                                                    <div class="card-body p-xl-4"  style="position: relative;">
-                                                    <h6 class="card-subtitle text-secondary mb-3" style="position: absolute; top: 10; right: 10;">{{ $loop->iteration }}</h6>
-                                                        <h2 class="card-title mb-2">{{$history->doneby}}</h2>
-                                                      
-                                                        <p class="card-text m-0">{{$history->action}}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>             
-                                 @endforeach
-                                </ul>
-
-                                @endif
-
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
 
                    @endif
                   </td>
@@ -365,37 +190,100 @@
                 {{--  --}}
                 @endforeach
               </tbody>
-            </table>  
-            </div>      
-          </form>
+                </table>  
+              </div>      
+            </form>
           </div>
 
         </div>
       </div>
     </div>
 
+    <!-- History Modals (moved outside the loop to avoid duplication) -->
+    @foreach($frequisitions as $frequisition)
+    <div class="modal fade" id="historyModal{{ $frequisition->id }}" tabindex="-1" role="dialog" aria-labelledby="historyModalLabel{{ $frequisition->id }}" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="historyModalLabel{{ $frequisition->id }}">Requisition Logs - {{ $frequisition->requisitionNumber }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Timeline 7 - Bootstrap Brain Component -->
+                    <section class="bsb-timeline-7 py-3">
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                <div class="col-12">
+                                @if($frequisition->histories->isEmpty())
+                                            <p>No history found for this requisition.</p>
+                                        @else
+                                    <ul class="timeline">
+                                    @foreach($frequisition->histories as $history)
 
+                                    @php
+                                        $date = \Carbon\Carbon::parse($history->created_at);
+                                        @endphp
+
+                                        <li class="timeline-item">
+                                            <div class="timeline-body">
+                                                <div class="timeline-meta">
+                                                    <div class="d-inline-flex flex-column px-2 py-1 text-success-emphasis bg-success-subtle border border-success-subtle rounded-2 text-md-end">
+                                                        <span class="fw-bold">{{$date->format('d F Y')}}</span>
+                                                        <span>{{$date->format('g:ia')}}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="timeline-content timeline-indicator">
+                                                    <div class="card border-0 shadow">
+                                                        <div class="card-body p-xl-4"  style="position: relative;">
+                                                        <h6 class="card-subtitle text-secondary mb-3" style="position: absolute; top: 10px; right: 10px;">{{ $loop->iteration }}</h6>
+                                                            <h2 class="card-title mb-2">{{$history->doneby}}</h2>
+                                                          
+                                                            <p class="card-text m-0">{{$history->action}}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>             
+                                     @endforeach
+                                    </ul>
+
+                                    @endif
+
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endforeach
        
-        <!-- /.modal for documents-->
-        <div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <!-- Filter Modal -->
+        <div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="filterModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-primary modal-md" role="document">
         <form method="post" action="{{ route('requisition.filtered') }}" enctype="multipart/form-data">
           {{ csrf_field() }}
           <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title">Filter Purchase Order Summary</h4>
+              <h4 class="modal-title" id="filterModalLabel">Filter Purchase Order Summary</h4>
               <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">×</span>
               </button>
             </div>
             <div class="modal-body">
               <div class="form-group">
-                <label for="areas">Date From</label>
-                <input class="form-control" id="grower_name" name="start_date" type="date">
+                <label for="start_date">Date From</label>
+                <input class="form-control" id="start_date" name="start_date" type="date">
               </div>
               <div class="form-group">
-                <label for="assessors">Date To</label>
-                <input class="form-control" id="grower_name" name="end_date" type="date" >
+                <label for="end_date">Date To</label>
+                <input class="form-control" id="end_date" name="end_date" type="date" >
               </div>
               <div class="form-group">
                 <label for="status">Status</label>
@@ -410,13 +298,11 @@
                 <label for="vendor">Vendor</label>
                 <select name="vendor" id="vendor" class="js-example-basic-single form-control"  style="width:100%;">   
                 <option value="">--Select Vendor--</option> 
-                @foreach($vendors as $vendor)
-               
+                @foreach($vendors as $vendor)               
                 <option value="{{ $vendor->vendor }}"> {{ $vendor->vendor }}</option>
                   @endforeach        
                 </select>
-              </div>
-             
+              </div>             
             </div>
             <div class="modal-footer">
               <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
@@ -429,32 +315,36 @@
       <!-- /.modal-dialog-->
     </div>
 
-
-
-
   </div>
 </div>
 
 @endsection
+
+<!-- Include jQuery and Bootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/js/bootstrap.min.js"></script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const downloadButton = document.querySelector('button[type="submit"]');
-        const form = document.querySelector('form');
+        // Get both download buttons (the one above table and any others)
+        const downloadButtons = document.querySelectorAll('button[type="submit"]');
+        
+        downloadButtons.forEach(function(downloadButton) {
+            downloadButton.addEventListener('click', function(event) {
+                // Check if any checkboxes are checked
+                const checkboxes = document.querySelectorAll('input[name="requisition_ids[]"]:checked');
+                if (checkboxes.length === 0) {
+                    event.preventDefault(); // Prevent form submission
 
-        downloadButton.addEventListener('click', function(event) {
-            // Check if any checkboxes are checked
-            const checkboxes = document.querySelectorAll('input[name="requisition_ids[]"]:checked');
-            if (checkboxes.length === 0) {
-                event.preventDefault(); // Prevent form submission
-
-                // Display SweetAlert2 alert
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'No Selection',
-                    text: 'Please select at least one checkbox before downloading.',
-                    confirmButtonText: 'Okay'
-                });
-            }
+                    // Display SweetAlert2 alert
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'No Selection',
+                        text: 'Please select at least one checkbox before downloading.',
+                        confirmButtonText: 'Okay'
+                    });
+                }
+            });
         });
     });
 </script>

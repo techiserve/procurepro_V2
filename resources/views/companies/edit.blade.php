@@ -1,4 +1,4 @@
-@extends('stack.layouts.admin')
+@extends('html.default')
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script> 
@@ -22,6 +22,35 @@
     .dropdown-options {
         margin-top: 10px;
     }
+
+    /* Reduced size styles for dynamic fields */
+    .dynamic-fields-section .form-group {
+        margin-bottom: 0.75rem;
+    }
+
+    .dynamic-fields-section .form-control {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        height: auto;
+    }
+
+    .dynamic-fields-section .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+
+    .dynamic-fields-section .text-muted {
+        font-size: 0.75rem;
+    }
+
+    .dynamic-fields-section .row {
+        margin-bottom: 0.5rem;
+    }
+
+    .field-labels {
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
 </style>
 
 @section('content')
@@ -36,7 +65,9 @@
         <div class="card">
           <div class="card-header">
             <strong>Edit Company</strong>
+               <div class="d-flex justify-content-end mb-3" style="gap: 10px;">
             <a href="/companies/index" class="btn btn-primary btn-md pull-right"><i style="color:white;" class="fa fa-align-justify"></i> Companies List</a>
+          </div>
           </div>
 
           <div class="card-body">
@@ -135,27 +166,30 @@
 
             <hr style="border-color: black;">
             <br>
-                    {{--  --}}
-          <h5>Dynamic Fields</h5>
-        @if(isset($dynamicFields) && count($dynamicFields) > 0)
-            <div class="row">
-              <div class="col-sm-12">
-                <h5>Additional Fields</h5>
+
+            <!-- Dynamic Fields Section with reduced size -->
+            <div class="dynamic-fields-section">
+              <h5>Dynamic Fields</h5>
+              @if(isset($dynamicFields) && count($dynamicFields) > 0)
+                  <div class="row">
+                    <div class="col-sm-12">
+                      <h5>Additional Fields</h5>
+                    </div>
+                  </div>
+              @endif
+
+              <!-- Labels once -->
+              <div class="row field-labels mb-1">
+                <div class="col-md-3"><label>Form Name</label></div>
+                <div class="col-md-3"><label>Form Label</label></div>
+                <div class="col-md-2"><label>Form Type</label></div>
+                <div class="col-md-3"><label>Options (for dropdown)</label></div>
+                <div class="col-md-1"></div>
               </div>
-            </div>
-        @endif
 
-            <!-- Labels once -->
-            <div class="row field-labels mb-2">
-              <div class="col-md-3"><label>Form Name</label></div>
-              <div class="col-md-3"><label>Form Label</label></div>
-              <div class="col-md-2"><label>Form Type</label></div>
-              <div class="col-md-3"><label>Options (for dropdown)</label></div>
-              <div class="col-md-1"></div>
+              <div id="fields"></div>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="addField()">Add Field</button>
             </div>
-
-          <div id="fields"></div>
-          <button type="button" class="btn btn-secondary" onclick="addField()">Add Field</button>
     
           <div class="card-footer">
             <div class="form-group pull-right">
@@ -224,13 +258,13 @@
             <div class="row">
                 <input type="hidden" name="fields[${index}][id]" value="${fieldId}">
                 <div class="col-md-3">
-                    <input type="text" class="form-control" name="fields[${index}][name]" value="${name}" placeholder="Field Name" required ${isRemovable ? '' : 'readonly'}>
+                    <input type="text" class="form-control form-control-sm" name="fields[${index}][name]" value="${name}" placeholder="Field Name" required ${isRemovable ? '' : 'readonly'}>
                 </div>
                 <div class="col-md-3">
-                    <input type="text" class="form-control" name="fields[${index}][label]" value="${label}" placeholder="Label" required ${isRemovable ? '' : 'readonly'}>
+                    <input type="text" class="form-control form-control-sm" name="fields[${index}][label]" value="${label}" placeholder="Label" required ${isRemovable ? '' : 'readonly'}>
                 </div>
                 <div class="col-md-2">
-                    <select class="form-control" name="fields[${index}][type]" onchange="toggleDropdownOptions(${index})" required ${isRemovable ? '' : 'readonly'}>
+                    <select class="form-control form-control-sm" name="fields[${index}][type]" onchange="toggleDropdownOptions(${index})" required ${isRemovable ? '' : 'readonly'}>
                         <option value="">-- Select type --</option>
                         <option value="string" ${type === 'string' ? 'selected' : ''}>String</option>
                         <option value="integer" ${type === 'integer' ? 'selected' : ''}>Integer</option>
@@ -239,11 +273,11 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <input type="text" class="form-control" id="options-${index}" name="fields[${index}][options]" value="${options}" placeholder="Option1,Option2,Option3" style="display: ${type === 'dropdown' ? 'block' : 'none'};">
+                    <input type="text" class="form-control form-control-sm" id="options-${index}" name="fields[${index}][options]" value="${options}" placeholder="Option1,Option2,Option3" style="display: ${type === 'dropdown' ? 'block' : 'none'};">
                     <small class="text-muted" id="options-help-${index}" style="display: ${type === 'dropdown' ? 'block' : 'none'};">Separate options with commas</small>
                 </div>
                 <div class="col-md-1 text-right">
-                    ${isRemovable ? `<button type="button" class="btn btn-danger btn-md" onclick="removeField(${index})">&times;</button>` : ''}
+                    ${isRemovable ? `<button type="button" class="btn btn-danger btn-sm" onclick="removeField(${index})">&times;</button>` : ''}
                 </div>
             </div>
         </div>

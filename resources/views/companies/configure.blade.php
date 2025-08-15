@@ -1,4 +1,4 @@
-@extends('stack.layouts.admin')
+@extends('html.default')
 
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -13,9 +13,10 @@
         <div class="card">
           <div class="card-header">
             <strong>Companies</strong>
-          
+           <div class="d-flex justify-content-end mb-3" style="gap: 10px;">
              <a style="color:white;" href="/companies/create" class="btn btn-primary btn-md pull-right"><i style="color:white;" class="icon-cloud-upload"></i> Add New Company</a>
           </div>
+           </div>
 
           <div class="card-body">
            <h2 class="mb-4">Create Custom Reports</h2>
@@ -73,7 +74,7 @@
             </tr>
         </tbody>
       </table>
-      <button type="button" class="btn btn-secondary" id="addColumnBtn">Add Column</button>
+      <button type="button" class="btn btn-info" id="addColumnBtn">Add Column</button>
     </div>
 
     <button type="submit" class="btn btn-success">Save Report</button>

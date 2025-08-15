@@ -16,6 +16,7 @@ use App\Models\Executive;
 use App\Models\ExecutiveRole;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Alert;
 
 use Illuminate\Http\Request;
@@ -585,7 +586,8 @@ public function checkExecutive(Request $request)
 
     $companyIds = ExecutiveRole::where('userId', $user->id)->pluck('companyId');
     $companies = Company::whereIn('id', $companyIds)->get(['id', 'name']);
-
+      
+       \Log::info('Check Executive:', ['user' => $user,]);
     return response()->json([
         'is_executive' => !is_null($user->executiveId),
         'exists' => true,

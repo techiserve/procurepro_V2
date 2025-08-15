@@ -1,5 +1,4 @@
-@extends('stack.layouts.admin')
-
+@extends('html.default')
 @section('content')
 <div class="container-fluid">
   <div class="animated fadeIn">

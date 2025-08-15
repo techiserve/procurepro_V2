@@ -1,4 +1,4 @@
-@extends('stack.layouts.admin')
+@extends('html.default')
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script> 
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
@@ -15,8 +15,10 @@
           <div class="card-header">
             <strong>Executives</strong>
             <small>List</small>
+                  <div class="d-flex justify-content-end mb-3" style="gap: 10px;">
              <a style="color:white;" href="/executives/create" class="btn btn-primary btn-sm pull-right"><i style="color:white;" class="icon-cloud-upload"></i> Add New Executive</a>
           </div>
+            </div>
 
           <div class="card-body">
             <table class="table table-striped table-bordered zero-configuration">
