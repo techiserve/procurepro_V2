@@ -14,9 +14,9 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <strong>Vendors List</strong>
-            <a href="/procurement/createVendor" class="btn btn-success btn-md">
+            {{-- <a href="/procurement/createVendor" class="btn btn-success btn-md">
                 <i class="fa fa-plus"></i> Add Vendor
-            </a>
+            </a> --}}
         </div>
 
         <div class="card-body">

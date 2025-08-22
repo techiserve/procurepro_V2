@@ -4,6 +4,11 @@
 <div class="body-content__header">
     <ul>
         <li><a href="#">Edit Vendor</a></li>
+        {{-- <li class="ms-auto">
+            <a href="/vendors/index" class="btn btn-primary btn-sm">
+                <i class="fa fa-align-justify"></i> Back to Vendor List
+            </a>
+        </li> --}}
     </ul>
 </div>
 
@@ -13,37 +18,41 @@
         @method('PUT')
 
         <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="card-header">
                 <strong>Edit Vendor</strong>
-                <a href="/vendors/index" class="btn btn-primary btn-sm">
-                    <i class="fa fa-align-justify"></i> Back to Vendor List
-                </a>
             </div>
 
             <div class="card-body">
                 <!-- Vendor Info -->
-                <div class="row g-3">
+                <div class="row">
                     <div class="col-md-6">
-                        <label class="form-label">Vendor Name</label>
-                        <input class="form-control" name="name" value="{{ $vendor->name }}">
+                        <div class="form-col">
+                            <label for="name">Vendor Name</label>
+                            <input class="form-control" id="name" name="name" value="{{ $vendor->name }}">
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label">Vendor Type</label>
-                        <select class="form-select" name="type">
-                            <option value="">--Select--</option>
-                            @foreach($vendorTypes as $type)
-                                <option value="{{ $type->name }}" {{ $vendor->type == $type->name ? 'selected' : '' }}>{{ $type->name }}</option>
-                            @endforeach
-                        </select>
+                        <div class="form-col">
+                            <label for="type">Vendor Type</label>
+                            <select class="form-control" id="type" name="type">
+                                <option value="">--Select--</option>
+                                @foreach($vendorTypes as $type)
+                                    <option value="{{ $type->name }}" {{ $vendor->type == $type->name ? 'selected' : '' }}>{{ $type->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
                 </div>
 
-                <div class="row g-3 mt-2">
+                <div class="row mt-3">
                     <div class="col-md-6">
-                        <label class="form-label">Description</label>
-                        <input class="form-control" name="description" value="{{ $vendor->description }}">
+                        <div class="form-col">
+                            <label for="description">Description</label>
+                            <input class="form-control" id="description" name="description" value="{{ $vendor->description }}">
+                        </div>
                     </div>
                     <div class="col-md-6">
+                        <div class="col-md-6">
                         <label class="form-label d-block">VAT Registered</label>
                         <div class="form-check form-check-inline mt-1">
                             <input class="form-check-input" type="radio" name="vat_registered" value="Yes" {{ $vendor->vat_registered == 'Yes' ? 'checked' : '' }}>
@@ -54,100 +63,127 @@
                             <label class="form-check-label">No</label>
                         </div>
                     </div>
+                    </div>
                 </div>
 
                 <!-- Contact & VAT -->
-                <div class="row g-3 mt-2">
+                <div class="row mt-3">
                     <div class="col-md-6">
-                        <label class="form-label">VAT Allocation</label>
-                        <input class="form-control" name="vat_allocation" value="{{ $vendor->vat_allocation }}">
+                        <div class="form-col">
+                            <label for="vat_allocation">VAT Allocation</label>
+                            <input class="form-control" id="vat_allocation" name="vat_allocation" value="{{ $vendor->vat_allocation }}">
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label">Contact Number 1</label>
-                        <input class="form-control" name="contact_no_1" value="{{ $vendor->contact_no_1 }}">
+                        <div class="form-col">
+                            <label for="contact_no_1">Contact Number 1</label>
+                            <input class="form-control" id="contact_no_1" name="contact_no_1" value="{{ $vendor->contact_no_1 }}">
+                        </div>
                     </div>
                 </div>
 
-                <div class="row g-3 mt-2">
+                <div class="row mt-3">
                     <div class="col-md-6">
-                        <label class="form-label">Contact Number 2</label>
-                        <input class="form-control" name="contact_no_2" value="{{ $vendor->contact_no_2 }}">
+                        <div class="form-col">
+                            <label for="contact_no_2">Contact Number 2</label>
+                            <input class="form-control" id="contact_no_2" name="contact_no_2" value="{{ $vendor->contact_no_2 }}">
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label">Supplier Code</label>
-                        <input class="form-control" name="supplier_code" value="{{ $vendor->supplier_code }}">
+                        <div class="form-col">
+                            <label for="supplier_code">Supplier Code</label>
+                            <input class="form-control" id="supplier_code" name="supplier_code" value="{{ $vendor->supplier_code }}">
+                        </div>
                     </div>
                 </div>
 
                 <!-- Address & Finance Manager -->
-                <div class="row g-3 mt-2">
+                <div class="row mt-3">
                     <div class="col-md-6">
-                        <label class="form-label">Address</label>
-                        <textarea class="form-control" name="address">{{ $vendor->address }}</textarea>
+                        <div class="form-col">
+                            <label for="address">Address</label>
+                            <textarea class="form-control" id="address" name="address">{{ $vendor->address }}</textarea>
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label">Finance Manager</label>
-                        <select class="form-select" name="finance_manager">
-                            <option value="{{ $vendor->finance_manager }}">{{ $finance->name }}</option>
-                            @foreach($users as $user)
-                                <option value="{{ $user->id }}">{{ $user->name }}</option>
-                            @endforeach
-                        </select>
+                        <div class="form-col">
+                            <label for="finance_manager">Finance Manager</label>
+                            <select class="form-control" id="finance_manager" name="finance_manager">
+                                <option value="{{ $vendor->finance_manager }}">{{ $finance->name }}</option>
+                                @foreach($users as $user)
+                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Bank Info -->
-                <div class="row g-3 mt-2">
+                <div class="row mt-3">
                     <div class="col-md-6">
-                        <label class="form-label">Bank Name</label>
-                        <select name="bank_name" class="form-select">
-                            <option value="">--Select--</option>
-                            @foreach(['ABSA','FNB','Standard Bank','Nedbank','Capitec','Investec'] as $bank)
-                                <option value="{{ $bank }}" {{ $vendor->bank_name == $bank ? 'selected' : '' }}>{{ $bank }}</option>
-                            @endforeach
-                        </select>
+                        <div class="form-col">
+                            <label for="bank_name">Bank Name</label>
+                            <select name="bank_name" id="bank_name" class="form-control">
+                                <option value="">--Select--</option>
+                                @foreach(['ABSA','FNB','Standard Bank','Nedbank','Capitec','Investec'] as $bank)
+                                    <option value="{{ $bank }}" {{ $vendor->bank_name == $bank ? 'selected' : '' }}>{{ $bank }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label">Account Number</label>
-                        <input type="text" class="form-control" name="account_number" value="{{ $vendor->account_number }}">
+                        <div class="form-col">
+                            <label for="account_number">Account Number</label>
+                            <input type="text" class="form-control" id="account_number" name="account_number" value="{{ $vendor->account_number }}">
+                        </div>
                     </div>
                 </div>
 
-                <div class="row g-3 mt-2">
+                <div class="row mt-3">
                     <div class="col-md-6">
-                        <label class="form-label">Account Type</label>
-                        <select name="account_type" class="form-select">
-                            <option value="">--Select--</option>
-                            @foreach(['Cheque','Savings','Business'] as $type)
-                                <option value="{{ $type }}" {{ $vendor->account_type == $type ? 'selected' : '' }}>{{ $type }}</option>
-                            @endforeach
-                        </select>
+                        <div class="form-col">
+                            <label for="account_type">Account Type</label>
+                            <select name="account_type" id="account_type" class="form-control">
+                                <option value="">--Select--</option>
+                                @foreach(['Cheque','Savings','Business'] as $type)
+                                    <option value="{{ $type }}" {{ $vendor->account_type == $type ? 'selected' : '' }}>{{ $type }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label">Branch Code</label>
-                        <input type="text" class="form-control" name="branch_code" value="{{ $vendor->branch_code }}">
+                        <div class="form-col">
+                            <label for="branch_code">Branch Code</label>
+                            <input type="text" class="form-control" id="branch_code" name="branch_code" value="{{ $vendor->branch_code }}">
+                        </div>
                     </div>
                 </div>
 
                 @if(!empty($vendor->message))
                 <div class="row mt-3">
                     <div class="col-md-12">
-                        <label class="form-label">Return Reason</label>
-                        <textarea class="form-control" readonly>{{ $vendor->message }}</textarea>
+                        <div class="form-col">
+                            <label>Return Reason</label>
+                            <textarea class="form-control" readonly>{{ $vendor->message }}</textarea>
+                        </div>
                     </div>
                 </div>
                 @endif
 
                 <!-- Document Upload -->
-                <h4 class="mt-4">Upload Documents</h4>
-                <div class="row g-3">
+                <h4 class="mt-4">Upload Documents</h4></br>
+                <div class="row">
                     <div class="col-md-6">
-                        <label class="form-label">Document Name</label>
-                        <input type="text" class="form-control" id="vendor_document_name_temp" placeholder="Enter document name">
+                        <div class="form-col">
+                            <label for="vendor_document_name_temp">Document Name</label>
+                            <input type="text" class="form-control" id="vendor_document_name_temp" placeholder="Enter document name">
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label">Upload File(s)</label>
-                        <input type="file" class="form-control" id="vendor_document_temp" multiple>
+                        <div class="form-col">
+                            <label for="vendor_document_temp">Upload File(s)</label>
+                            <input type="file" class="form-control" id="vendor_document_temp" multiple>
+                        </div>
                     </div>
                 </div>
                 <button type="button" class="btn btn-primary mt-2" onclick="addDocument()">Add Document</button>
@@ -181,14 +217,17 @@
                 @endif
             </div>
 
-            <div class="card-footer text-end">
-                <button type="submit" class="btn btn-primary">Update Vendor</button>
+            <div class="card-footer">
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-success" style="padding:10px 20px; font-size:16px; min-width:120px;">Update Vendor</button>
+                    <a href="/vendors/index" class="btn btn-danger" style="padding:10px 20px; font-size:16px; min-width:120px;">Cancel</a>
+                </div>
             </div>
         </div>
     </form>
 </div>
-
 @endsection
+
 
 <script>
 let documentIndex = 0;

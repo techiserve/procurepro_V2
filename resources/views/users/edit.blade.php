@@ -1,64 +1,69 @@
-@extends('html.default')
+  @extends('html.default')
 
-@section('content')
-<div class="container-fluid">
-  <div class="animated fadeIn">
+  @section('content')
+  <div class="body-content__header">
+    <ul>
+      <li><a href="#">Edit User</a></li>
+    </ul>
+  </div>
+
+  <div class="body-content__wrapper">
     <div class="row">
-      <div class="col-12"><!-- Full width -->
+      <div class="col-12">
         
         <form method="POST" action="/users/{{ $user->id }}/update">
           @csrf
           @method('put')
-          
+
           <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="card-header">
               <strong>Edit User</strong>
-              <a href="/users/index" class="btn btn-primary btn-sm">
-                <i class="fa fa-align-justify"></i> Users List
-              </a>
             </div>
 
             <div class="card-body">
+              <!-- Row 1 -->
               <div class="row">
-                <div class="col-sm-6">
-                  <div class="form-group">
-                    <label>Name</label>
-                    <input class="form-control" name="name" value="{{ $user->name }}" type="text" placeholder="Name">
+                <div class="col-md-6">
+                  <div class="form-col">
+                    <label for="name">Name</label>
+                    <input class="form-control" id="name" name="name" value="{{ $user->name }}" type="text" placeholder="Enter Full Name...">
                   </div>
                 </div>
 
-                <div class="col-sm-6">
-                  <div class="form-group">
-                    <label>Phone Number</label>
-                    <input class="form-control" name="phonenumber" value="{{ $user->phoneNumber }}" type="text" placeholder="Phone Number">
-                  </div>
-                </div>
-              </div>
-     
-              <div class="row">
-                <div class="col-sm-6">
-                  <div class="form-group">
-                    <label>Password</label>
-                    <input class="form-control" name="password" type="password" placeholder="********">
-                  </div>
-                </div>
-
-                <div class="col-sm-6">
-                  <div class="form-group">
-                    <label>Confirm Password</label>
-                    <input class="form-control" name="confirmpassword" type="password" placeholder="********">
+                <div class="col-md-6">
+                  <div class="form-col">
+                    <label for="phonenumber">Phone Number</label>
+                    <input class="form-control" id="phonenumber" name="phonenumber" value="{{ $user->phoneNumber }}" type="text" placeholder="Enter Phone Number">
                   </div>
                 </div>
               </div>
 
+              <!-- Row 2 -->
               <div class="row">
-                <div class="col-sm-6">
-                  <div class="form-group">
-                    <label>Role</label>
-                    <select class="form-control" name="role">
+                <div class="col-md-6">
+                  <div class="form-col">
+                    <label for="password">Password</label>
+                    <input class="form-control" id="password" name="password" type="password" placeholder="********">
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-col">
+                    <label for="confirmpassword">Confirm Password</label>
+                    <input class="form-control" id="confirmpassword" name="confirmpassword" type="password" placeholder="********">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Row 3 -->
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-col">
+                    <label for="role">Role</label>
+                    <select class="js-example-basic-single form-control" id="role" name="role">
                       @foreach($roles as $role)
                         @if($role->id == $user->userrole)
-                          <option value="{{ $role->id }}">{{ $role->name }}</option>  
+                          <option value="{{ $role->id }}">{{ $role->name }}</option>
                         @endif
                       @endforeach
                       @foreach($roles as $role)
@@ -68,13 +73,13 @@
                   </div>
                 </div>
 
-                <div class="col-sm-6">
-                  <div class="form-group">
-                    <label>Department</label>
-                    <select class="form-control" name="department">
+                <div class="col-md-6">
+                  <div class="form-col">
+                    <label for="department">Department</label>
+                    <select class="js-example-basic-single form-control" id="department" name="department">
                       @foreach($departments as $department)
                         @if($department->id == $user->department)
-                          <option value="{{ $department->id }}">{{ $department->name }}</option>  
+                          <option value="{{ $department->id }}">{{ $department->name }}</option>
                         @endif
                       @endforeach
                       @foreach($departments as $department)
@@ -85,33 +90,35 @@
                 </div>
               </div>
 
+              <!-- Row 4 -->
               <div class="row">
-                <div class="col-sm-6">
-                  <div class="form-group">
-                    <label>Position</label>
-                    <input class="form-control" name="position" value="{{ $user->position }}" type="text" placeholder="Position">
+                <div class="col-md-6">
+                  <div class="form-col">
+                    <label for="position">Position</label>
+                    <input class="form-control" id="position" name="position" value="{{ $user->position }}" type="text" placeholder="Enter Position">
                   </div>
                 </div>
 
-                <div class="col-sm-6">
-                  <div class="form-group">
-                    <label>Email Address</label>
-                    <input class="form-control" name="email" type="text" value="{{ $user->email }}" placeholder="Email Address">
+                <div class="col-md-6">
+                  <div class="form-col">
+                    <label for="email">Email Address</label>
+                    <input class="form-control" id="email" name="email" type="text" value="{{ $user->email }}" placeholder="Enter Email Address">
                   </div>
                 </div>
               </div>
 
+              <!-- Row 5 -->
               <div class="row">
-                <div class="col-sm-6">
-                  <div class="form-group">
-                    <label>Address</label>
-                    <textarea class="form-control" name="address" rows="3">{{ $user->address }}</textarea>
+                <div class="col-md-6">
+                  <div class="form-col">
+                    <label for="address">Address</label>
+                    <textarea class="form-control" id="address" name="address" rows="3" placeholder="Enter Address...">{{ $user->address }}</textarea>
                   </div>
                 </div>
 
-                <div class="col-sm-3 d-flex align-items-center">
+                <div class="col-md-2 d-flex align-items-center">
                   @php $active = $user->isActive; @endphp
-                  <div class="form-check form-switch mt-3">
+                  <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" name="IsActive" value="1" id="flexSwitchCheckDefault" @if($active) checked @endif>
                     <label class="form-check-label" for="flexSwitchCheckDefault">Active</label>
                   </div>
@@ -121,15 +128,17 @@
               <hr style="border-color: black;">
             </div>
 
-            <div class="card-footer text-end">
-              <input type="submit" class="btn btn-success" value="Update"/>
-              <input type="reset" class="btn btn-danger" value="Cancel"/>
+            <div class="card-footer">
+              <div class="d-flex justify-content-end">
+                <input type="submit" class="btn btn-success" value="Update" style="padding:10px 20px; font-size:16px; min-width:100px;">
+                <input type="reset" class="btn btn-danger" value="Cancel" style="padding:10px 20px; font-size:16px; min-width:100px;">
+              </div>
             </div>
           </div>
+
         </form>
 
       </div>
     </div>
   </div>
-</div>
-@endsection
+  @endsection

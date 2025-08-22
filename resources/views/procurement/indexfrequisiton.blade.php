@@ -264,56 +264,60 @@
     </div>
     @endforeach
        
-        <!-- Filter Modal -->
-        <div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="filterModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-primary modal-md" role="document">
-        <form method="post" action="{{ route('requisition.filtered') }}" enctype="multipart/form-data">
-          {{ csrf_field() }}
-          <div class="modal-content">
-            <div class="modal-header">
-              <h4 class="modal-title" id="filterModalLabel">Filter Purchase Order Summary</h4>
-              <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <div class="form-group">
-                <label for="start_date">Date From</label>
-                <input class="form-control" id="start_date" name="start_date" type="date">
-              </div>
-              <div class="form-group">
-                <label for="end_date">Date To</label>
-                <input class="form-control" id="end_date" name="end_date" type="date" >
-              </div>
-              <div class="form-group">
-                <label for="status">Status</label>
-                <select name="status" id="status" class="js-example-basic-single form-control"  style="width:100%;">     
-                    <option value="">--Select Status--</option>       
-                    <option value="2">Approved</option>       
-                    <option value="3">Rejected</option>  
-                    <option value="1">Pending</option>     
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="vendor">Vendor</label>
-                <select name="vendor" id="vendor" class="js-example-basic-single form-control"  style="width:100%;">   
-                <option value="">--Select Vendor--</option> 
-                @foreach($vendors as $vendor)               
-                <option value="{{ $vendor->vendor }}"> {{ $vendor->vendor }}</option>
-                  @endforeach        
-                </select>
-              </div>             
-            </div>
-            <div class="modal-footer">
-              <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
-              <button class="btn btn-primary" type="submit">Filter Summary</button>
-            </div>
+  <!-- Filter Modal -->
+<div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-md">
+    <form method="POST" action="{{ route('requisition.filtered') }}" enctype="multipart/form-data">
+      @csrf
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="filterModalLabel">Filter Purchase Order Summary</h4>
+          <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="form-col">
+            <label for="start_date">Date From</label>
+            <input class="form-control" id="start_date" name="start_date" type="date">
           </div>
-        </form>
-        <!-- /.modal-content-->
+
+          <div class="form-col mt-3">
+            <label for="end_date">Date To</label>
+            <input class="form-control" id="end_date" name="end_date" type="date">
+          </div>
+
+          <div class="form-col mt-3">
+            <label for="status">Status</label>
+            <select name="status" id="status" class="js-example-basic-single form-control" style="width:100%;">
+              <option value="">--Select Status--</option>
+              <option value="2">Approved</option>
+              <option value="3">Rejected</option>
+              <option value="1">Pending</option>
+            </select>
+          </div>
+
+          <div class="form-col mt-3">
+            <label for="vendor">Vendor</label>
+            <select name="vendor" id="vendor" class="js-example-basic-single form-control" style="width:100%;">
+              <option value="">--Select Vendor--</option>
+              @foreach($vendors as $vendor)
+                <option value="{{ $vendor->vendor }}">{{ $vendor->vendor }}</option>
+              @endforeach
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <div class="d-flex justify-content-end">
+            <button class="btn btn-danger" type="button" data-bs-dismiss="modal" style="padding:10px 20px; font-size:16px; min-width:100px;">Close</button>
+            <button class="btn btn-success" type="submit" style="padding:10px 20px; font-size:16px; min-width:140px;">Filter Summary</button>
+          </div>
+        </div>
       </div>
-      <!-- /.modal-dialog-->
-    </div>
+    </form>
+  </div>
+</div>
+
 
   </div>
 </div>

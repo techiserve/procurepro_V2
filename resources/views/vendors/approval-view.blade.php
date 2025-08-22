@@ -1,17 +1,20 @@
 @extends('html.default')
-
 @section('content')
 <div class="body-content__header">
     <ul>
         <li><a href="#">Vendor Details</a></li>
+        {{-- <li class="ms-auto">
+            <a href="{{ route('vendors.approval') }}" class="btn btn-primary btn-sm">
+                Back
+            </a>
+        </li> --}}
     </ul>
 </div>
 
 <div class="body-content__wrapper requesition-body">
     <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="card-header">
             <strong>Vendor Details</strong>
-            <a href="{{ route('vendors.approval') }}" class="btn btn-secondary btn-sm">Back</a>
         </div>
 
         <div class="card-body">
@@ -20,92 +23,124 @@
                 <input type="hidden" name="action" id="actionType" value="">
                 <input type="hidden" name="message" id="returnMessage" value="">
 
-                <div class="row g-3">
+                <div class="row">
                     <div class="col-md-6">
-                        <label class="form-label">Name</label>
-                        <input type="text" class="form-control" value="{{ $vendor->name }}" readonly>
+                        <div class="form-col">
+                            <label class="form-label">Name</label>
+                            <input type="text" class="form-control" value="{{ $vendor->name }}" readonly>
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label">Type</label>
-                        <input type="text" class="form-control" value="{{ $vendor->type }}" readonly>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label">Description</label>
-                        <input type="text" class="form-control" value="{{ $vendor->description }}" readonly>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Finance Manager</label>
-                        @php
-                            $manager = $users->firstWhere('id', $vendor->finance_manager);
-                        @endphp
-                        <input type="text" class="form-control" value="{{ $manager?->name ?? 'N/A' }}" readonly>
+                        <div class="form-col">
+                            <label class="form-label">Type</label>
+                            <input type="text" class="form-control" value="{{ $vendor->type }}" readonly>
+                        </div>
                     </div>
 
-                    <div class="col-md-6">
-                        <label class="form-label">VAT Registered</label>
-                        <input type="text" class="form-control" value="{{ $vendor->vat_registered }}" readonly>
+                    <div class="col-md-6 mt-3">
+                        <div class="form-col">
+                            <label class="form-label">Description</label>
+                            <input type="text" class="form-control" value="{{ $vendor->description }}" readonly>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">VAT Allocation</label>
-                        <input type="text" class="form-control" value="{{ $vendor->vat_allocation }}" readonly>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label">Contact No 1</label>
-                        <input type="text" class="form-control" value="{{ $vendor->contact_no_1 }}" readonly>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Contact No 2</label>
-                        <input type="text" class="form-control" value="{{ $vendor->contact_no_2 }}" readonly>
+                    <div class="col-md-6 mt-3">
+                        <div class="form-col">
+                            <label class="form-label">Finance Manager</label>
+                            @php
+                                $manager = $users->firstWhere('id', $vendor->finance_manager);
+                            @endphp
+                            <input type="text" class="form-control" value="{{ $manager?->name ?? 'N/A' }}" readonly>
+                        </div>
                     </div>
 
-                    <div class="col-md-6">
-                        <label class="form-label">Supplier Code</label>
-                        <input type="text" class="form-control" value="{{ $vendor->supplier_code }}" readonly>
+                    <div class="col-md-6 mt-3">
+                        <div class="form-col">
+                            <label class="form-label">VAT Registered</label>
+                            <input type="text" class="form-control" value="{{ $vendor->vat_registered }}" readonly>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Address</label>
-                        <input type="text" class="form-control" value="{{ $vendor->address }}" readonly>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label">Bank Name</label>
-                        <input type="text" class="form-control" value="{{ $vendor->bank_name }}" readonly>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Account Number</label>
-                        <input type="text" class="form-control" value="{{ $vendor->account_number }}" readonly>
+                    <div class="col-md-6 mt-3">
+                        <div class="form-col">
+                            <label class="form-label">VAT Allocation</label>
+                            <input type="text" class="form-control" value="{{ $vendor->vat_allocation }}" readonly>
+                        </div>
                     </div>
 
-                    <div class="col-md-6">
-                        <label class="form-label">Account Type</label>
-                        <input type="text" class="form-control" value="{{ $vendor->account_type }}" readonly>
+                    <div class="col-md-6 mt-3">
+                        <div class="form-col">
+                            <label class="form-label">Contact No 1</label>
+                            <input type="text" class="form-control" value="{{ $vendor->contact_no_1 }}" readonly>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Branch Code</label>
-                        <input type="text" class="form-control" value="{{ $vendor->branch_code }}" readonly>
+                    <div class="col-md-6 mt-3">
+                        <div class="form-col">
+                            <label class="form-label">Contact No 2</label>
+                            <input type="text" class="form-control" value="{{ $vendor->contact_no_2 }}" readonly>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mt-3">
+                        <div class="form-col">
+                            <label class="form-label">Supplier Code</label>
+                            <input type="text" class="form-control" value="{{ $vendor->supplier_code }}" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <div class="form-col">
+                            <label class="form-label">Address</label>
+                            <input type="text" class="form-control" value="{{ $vendor->address }}" readonly>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mt-3">
+                        <div class="form-col">
+                            <label class="form-label">Bank Name</label>
+                            <input type="text" class="form-control" value="{{ $vendor->bank_name }}" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <div class="form-col">
+                            <label class="form-label">Account Number</label>
+                            <input type="text" class="form-control" value="{{ $vendor->account_number }}" readonly>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mt-3">
+                        <div class="form-col">
+                            <label class="form-label">Account Type</label>
+                            <input type="text" class="form-control" value="{{ $vendor->account_type }}" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <div class="form-col">
+                            <label class="form-label">Branch Code</label>
+                            <input type="text" class="form-control" value="{{ $vendor->branch_code }}" readonly>
+                        </div>
                     </div>
                 </div>
 
                 <div class="mt-4">
                     <label class="form-label">Uploaded Documents</label>
                     @if($vendor->documents && count($vendor->documents))
-                        <ul>
+                        <ul class="mb-0">
                             @foreach($vendor->documents as $doc)
-                                <li><a href="{{ asset('storage/' . $doc->file_path) }}" target="_blank">{{ $doc->document_name }}</a></li>
+                                <li>
+                                    <a href="{{ asset('storage/' . $doc->file_path) }}" target="_blank">{{ $doc->document_name }}</a>
+                                </li>
                             @endforeach
                         </ul>
                     @else
-                        <p>No documents uploaded.</p>
+                        <p class="mb-0">No documents uploaded.</p>
                     @endif
                 </div>
 
                 @if($vendor->finance_manager == auth()->user()->id)
-                <div class="text-center mt-4">
-                    <button type="submit" onclick="submitApproval('approve')" class="btn btn-success me-2">Approve</button>
-                    <button type="button" class="btn btn-info me-2" data-bs-toggle="modal" data-bs-target="#returnModal">Return</button>
-                    <button type="submit" onclick="submitApproval('reject')" class="btn btn-danger">Reject</button>
+                <div class="mt-4">
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="submit" onclick="submitApproval('approve')" class="btn btn-success">Approve</button>
+                        <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#returnModal">Return</button>
+                        <button type="submit" onclick="submitApproval('reject')" class="btn btn-danger">Reject</button>
+                    </div>
                 </div>
                 @endif
             </form>
