@@ -10,7 +10,7 @@
 <div class="body-content__wrapper requesition-body">
     <div class="card">
         <div class="card-header">
-            <strong>Vendors Pending Approval</strong>
+          
         </div>
 
         <div class="card-body">

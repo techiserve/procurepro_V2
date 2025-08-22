@@ -24,6 +24,17 @@ class VendorController extends Controller
         return view('vendors.index', compact('vendors','vendorTypes','users'));
     }
 
+
+     public function myrequest()
+    {    
+        $vendors = Vendor::with('history')->where('companyId', Auth::user()->companyId)->where('finance_manager', Auth::user()->id)->get();
+        $users = User::where('companyId', Auth::user()->companyId)->get();
+        $vendorTypes = VendorType::where('companyId', Auth::user()->companyId)->get();
+
+        return view('vendors.myrequest', compact('vendors','vendorTypes','users'));
+    }
+
+
     public function store(Request $request)
     {
          $company = Auth::user()->companyId;

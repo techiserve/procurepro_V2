@@ -75,7 +75,7 @@
                             <li><a href="/vendors/approval">Pending Requests</a></li>
                         @endif
                         @if($user == 3 || $user == 2 || $data->contains('My Requests'))
-                            <li><a href="/vendors/index">My Requests</a></li>
+                            <li><a href="/vendors/myrequest">My Requests</a></li>
                         @endif
                     </ul>
                 </li>

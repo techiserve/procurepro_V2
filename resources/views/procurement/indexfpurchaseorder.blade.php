@@ -191,36 +191,40 @@
 </div>
 
 {{-- Filter Modal --}}
-<div class="modal fade" id="filterModal" tabindex="-1">
+<div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-md">
-    <form method="post" action="{{ route('purchaseorder.filtered') }}">
-      {{ csrf_field() }}
+    <form method="POST" action="{{ route('purchaseorder.filtered') }}">
+      @csrf
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">Filter Purchase Order Summary</h4>
-          <button class="btn-close" type="button" data-bs-dismiss="modal"></button>
+          <h4 class="modal-title" id="filterModalLabel">Filter Purchase Order Summary</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+
         <div class="modal-body">
-          <div class="form-group mb-3">
-            <label>Date From</label>
-            <input class="form-control" name="start_date" type="date">
+          <div class="form-col">
+            <label for="start_date">Date From</label>
+            <input class="form-control" id="start_date" name="start_date" type="date">
           </div>
-          <div class="form-group mb-3">
-            <label>Date To</label>
-            <input class="form-control" name="end_date" type="date">
+
+          <div class="form-col mt-3">
+            <label for="end_date">Date To</label>
+            <input class="form-control" id="end_date" name="end_date" type="date">
           </div>
-          <div class="form-group mb-3">
-            <label>Status</label>
-            <select name="status" class="form-control">
+
+          <div class="form-col mt-3">
+            <label for="status">Status</label>
+            <select id="status" name="status" class="form-control">
               <option value="">--Select Status--</option>
               <option value="2">Approved</option>
               <option value="3">Rejected</option>
               <option value="1">Pending</option>
             </select>
           </div>
-          <div class="form-group mb-3">
-            <label>Vendor</label>
-            <select name="vendor" class="form-control">
+
+          <div class="form-col mt-3">
+            <label for="vendor">Vendor</label>
+            <select id="vendor" name="vendor" class="form-control">
               <option value="">--Select Vendor--</option>
               @foreach($vendors as $vendor)
                 <option value="{{ $vendor->vendor }}">{{ $vendor->vendor }}</option>
@@ -228,14 +232,22 @@
             </select>
           </div>
         </div>
+
         <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
-          <button class="btn btn-primary" type="submit">Filter Summary</button>
+          <div class="d-flex justify-content-end gap-2 w-100">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal" style="padding:10px 20px; min-width:110px;">
+              Close
+            </button>
+            <button type="submit" class="btn btn-success" style="padding:10px 20px; min-width:150px;">
+              Filter Summary
+            </button>
+          </div>
         </div>
       </div>
     </form>
   </div>
 </div>
+
 @endsection
 
 <script>

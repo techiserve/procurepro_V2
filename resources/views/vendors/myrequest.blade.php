@@ -6,7 +6,7 @@
 @section('content')
 <div class="body-content__header">
     <ul>
-        <li><a href="#">Vendors List</a></li>
+        <li><a href="#">My Requests List</a></li>
     </ul>
 </div>
 

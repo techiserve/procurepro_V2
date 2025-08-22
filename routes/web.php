@@ -176,6 +176,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/banking', [VendorController::class, 'bankingForm']);
         Route::post('/store-banking', [VendorController::class, 'storeBanking']);
         Route::get('/index', [VendorController::class, 'index']);
+           Route::get('/myrequest', [VendorController::class, 'myrequest'])->name('vendors.myrequest');
     });
     
     Route::get('/vendors/view/{id}', [VendorController::class, 'show']);
