@@ -25,14 +25,14 @@
           <div class="card-body">
             {{-- Vendor Details --}}
             <div class="row">
-              <div class="col-sm-6">
+              <div class="col-sm-6"><br>
                 <div class="form-col">
                   <label for="name">Vendor Name</label>
                   <input class="form-control" id="name" name="name" type="text" placeholder="Enter Vendor Name...">
                 </div>
               </div>
 
-              <div class="col-sm-6">
+              <div class="col-sm-6"><br>
                 <div class="form-col">
                   <label for="type">Vendor Type</label>
                   <select class="form-control" id="type" name="type">

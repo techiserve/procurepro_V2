@@ -20,14 +20,14 @@
                     <div class="card-body">
                         <!-- Row 1 -->
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-6"><br>
                                 <div class="form-col">
                                     <label for="name">Name</label>
                                     <input class="form-control" id="name" name="name" type="text" placeholder="Enter Full Name..." required>
                                 </div>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-6"><br>
                                 <div class="form-col">
                                     <label for="phonenumber">Phone Number</label>
                                     <input class="form-control" id="phonenumber" name="phonenumber" type="text" placeholder="Enter Phone Number">

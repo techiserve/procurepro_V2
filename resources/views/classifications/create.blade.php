@@ -25,7 +25,7 @@
                         @endif
 
                        <div class="row">
-                          <div class="col-md-6">
+                          <div class="col-md-6"><br>
                               <div class="form-col">
                                   <label for="name">Classification Name</label>
                                   <input class="form-control" id="name" name="name" type="text" placeholder="Enter Classification Name..." required>
@@ -74,9 +74,9 @@
                                     <td class="text-center">{{ $classification->name }}</td>
                                     <td class="text-center">
                                         @if($classification->active)
-                                            <span class='badge badge-success'>Active</span>
+                                            <span class='btn btn-outline-success'>Active</span>
                                         @else
-                                            <span class='badge badge-secondary'>Inactive</span>
+                                            <span class='btn btn-outline-secondary'>Inactive</span>
                                         @endif
                                     </td>
                                     <td class="text-center">

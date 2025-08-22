@@ -23,7 +23,7 @@
                         <strong>Add New Department</strong>
                     </div>
 
-                    <div class="card-body">
+                    <div class="card-body"><br>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-col">
@@ -33,7 +33,7 @@
                             </div>
 
                             <div class="col-md-1 col-form-label">
-                                <div class="form-check form-switch" style="margin-top:27px;">
+                                <div class="form-check form-switch" style="margin-top:7px;">
                                     <input class="form-check-input" type="checkbox" role="switch" name="IsActive" value="1" id="flexSwitchCheckDefault" />
                                     <label class="form-check-label" for="flexSwitchCheckDefault">Active</label>
                                 </div>
@@ -43,17 +43,17 @@
                         <hr style="border-color:black;"><br>
 
                         <div class="form-group">
-                            <div class="form-check form-switch" style="margin-left:2%;">
+                            <div class="form-check form-switch" style="margin-left:1%;">
                                 <input class="form-check-input" type="checkbox" role="switch" name="po" id="enable_secondary" />
                                 <label for="enable_secondary">Enable Purchase Order Flow</label>
                             </div>
-                        </div>
+                        </div><br>
 
                         <!-- Primary Approval Flow -->
                         <div class="clearfix" id="dynamic_field_primary">
                             <div class="row">
                                 <label for="PR">Purchase Requisition Flow</label>
-                                <div class="col-md-6">
+                                <div class="col-md-6"><br>
                                     <div class="form-group">
                                         <select class="form-control" name="approval[]">
                                             <option value="">Select Approval Level</option>
@@ -66,7 +66,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-5">
+                                <div class="col-md-5"><br>
                                     <div class="form-group">
                                         <select class="form-control" name="role[]">
                                             <option value="">Select Role</option>
@@ -76,7 +76,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-1">
+                                <div class="col-md-1"><br>
                                     <button type="button" name="add_primary" id="add_primary" class="btn btn-primary">+</button>
                                 </div>
                             </div>

@@ -27,7 +27,7 @@
           <div class="card-body">
             <!-- Row 1 -->
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-6"><br>
                 <div class="form-col">
                   <label for="bank">Bank</label>
                   <select id="bank" class="js-example-basic-single form-control" name="bank" required>
@@ -39,7 +39,7 @@
                 </div>
               </div>
 
-              <div class="col-md-6">
+              <div class="col-md-6"><br>
                 <div class="form-col">
                   <label for="branchname">Branch Name</label>
                   <input id="branchname" class="form-control" name="branchname" type="text" placeholder="Enter Branch Name..." required>
@@ -157,9 +157,9 @@
                 <td class="text-center">{{$user->accountNumber}}</td>
                 <td class="text-center">
                   @if($user->isActive == null)
-                    <span class='badge badge-secondary'>Inactive</span>
+                    <span class='btn btn-outline-secondary'>Inactive</span>
                   @else
-                    <span class='badge badge-success'>Active</span>
+                    <span class='btn btn-outline-success'>Active</span>
                   @endif
                 </td>
                 <td class="text-center">

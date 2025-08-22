@@ -27,7 +27,7 @@
 
           <div class="card-body">
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-6"><br>
                 <div class="form-col">
                   <label for="bankname">Bank Name</label>
                   <input class="form-control" id="bankname" name="bankname" type="text" placeholder="Enter Bank Name..." required>
@@ -82,9 +82,9 @@
                   <td class="text-center">{{ $user->name }}</td>
                   <td class="text-center">
                     @if($user->isActive)
-                      <span class="badge badge-success">Active</span>
+                      <span class="btn btn-outline-success">Active</span>
                     @else
-                      <span class="badge badge-secondary">Inactive</span>
+                      <span class="btn btn-outline-secondary">Inactive</span>
                     @endif
                   </td>
                   <td class="text-center">

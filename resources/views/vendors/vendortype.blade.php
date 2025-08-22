@@ -29,7 +29,7 @@
 
           <div class="card-body">
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-6"><br>
                 <div class="form-col">
                   <label for="name">Name</label>
                   <input class="form-control" id="name" name="name" type="text" required>
