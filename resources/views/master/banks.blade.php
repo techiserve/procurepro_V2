@@ -69,7 +69,7 @@
           <table class="table table-responsive-sm table-bordered table-striped table-sm">
             <thead>
               <tr>
-                <th>#</th>
+          
                 <th class="text-center">Name</th>
                 <th class="text-center">Status</th>
                 <th class="text-center">Action</th>
@@ -78,7 +78,7 @@
             <tbody>
               @foreach($banks as $user)
                 <tr>
-                  <td></td>
+               
                   <td class="text-center">{{ $user->name }}</td>
                   <td class="text-center">
                     @if($user->isActive)

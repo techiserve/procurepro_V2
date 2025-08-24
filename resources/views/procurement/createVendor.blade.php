@@ -122,17 +122,17 @@
 
             {{-- Upload Documents --}}
             <hr>
-            <h4 class="mb-3">Upload Documents</h4>
+            <h5 class="mb-3">Upload Documents</h5>
 
             <div class="row">
-              <div class="col-sm-6">
+              <div class="col-sm-6"><br>
                 <div class="form-col">
                   <label for="vendor_document_name_temp">Document Name</label>
                   <input type="text" class="form-control" id="vendor_document_name_temp" placeholder="Enter document name">
                 </div>
               </div>
 
-              <div class="col-sm-6">
+              <div class="col-sm-6"><br>
                 <div class="form-col">
                   <label for="vendor_document_temp">Upload File(s)</label>
                   <input type="file" class="form-control" id="vendor_document_temp" multiple>

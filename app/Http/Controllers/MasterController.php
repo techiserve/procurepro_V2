@@ -464,11 +464,13 @@ class MasterController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'active' => 'required|boolean',
+            'isActive' => 'required|boolean',
         ]);
 
+      //  dd($request->all());
+
         $classification = Bank::findOrFail($id);
-        $classification->update($request->only('name', 'active'));
+        $classification->update($request->only('name', 'isActive'));
 
         return redirect()->route('master.banks')->with('success', 'Bank updated successfully.');
     }

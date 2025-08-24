@@ -34,7 +34,7 @@
 
               <div class="col-md-1 col-form-label d-flex align-items-center">
                 <div class="form-check form-switch">
-                  <input type="checkbox" class="form-check-input" id="flexSwitchCheckDefault" name="active" value="1" {{ $bank->active ? 'checked' : '' }}>
+                  <input type="checkbox" class="form-check-input" id="flexSwitchCheckDefault" name="isActive" value="1" {{ $bank->isActive ? 'checked' : '' }}>
                   <label class="form-check-label" for="flexSwitchCheckDefault">Active</label>
                 </div>
               </div>
