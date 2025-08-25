@@ -114,9 +114,10 @@
                         <li><a href="/reports/requisitionreport">Purchase Req Summary</a></li>
                         <li><a href="/reports/purchaseorderreport">Purchase Order Summary</a></li>
                         <li><a href="/reports/fnb">FNB</a></li>
-                        <li><a href="/reports/albarak">Al Barak</a></li>
+                        <li><a href="/reports/albarak">Al Baraka</a></li>
                         <li><a href="/reports/standardbank">Standard Bank</a></li>
                         <li><a href="/reports">Custom Reports</a></li>
+                        <li><a href="/reports/spendoverview">Spend Overview Reports</a></li>
                     </ul>
                 </li>
             @endif

@@ -11,34 +11,29 @@
 <div class="body-content__wrapper requesition-body">
     <div class="requesition-top">
         <ul class="requesition-btn-list">
-             <li>
-                            <button id="copyBtn"><img src="assets/img/copy-icon.png" alt=""> Copy</button>
-                            <div id="copyPopup" class="copy-popup"></div>
-                        </li>
-                        <li>
-                            <button id="csvBtn"><img src="assets/img/csv-icon.png" alt=""> CSV</button>
-                            <input type="file" id="csvFile" accept=".csv" style="display:none;" />
-                        </li>
-                        <li>
-                            <button id="excelBtn"><img src="assets/img/excel-icon.png" alt=""> Excel</button>
-                            <input type="file" id="excelFile" accept=".xlsx, .xls" style="display:none;">
-                        </li>
-                        <li>
-                            <button id="pdfBtn"><img src="assets/img/pdf-icon.png" alt=""> PDF</button>
-                            <input type="file" id="pdfFile" accept=".pdf" style="display:none;">
-                        </li>
-                        <li>
-                            <button id="printBtn"> <img src="assets/img/print-icon.png" alt=""> Print</button>
-                        </li>
+            <li>
+                <button id="copyBtn"><img src="{{ asset('assets/img/copy-icon.png') }}" alt=""> Copy</button>
+                <div id="copyPopup" class="copy-popup"></div>
+            </li>
+            <li>
+                <button id="csvBtn"><img src="{{ asset('assets/img/csv-icon.png') }}" alt=""> CSV</button>
+            </li>
+            <li>
+                <button id="excelBtn"><img src="{{ asset('assets/img/excel-icon.png') }}" alt=""> Excel</button>
+            </li>
+            <li>
+                <button id="pdfBtn"><img src="{{ asset('assets/img/pdf-icon.png') }}" alt=""> PDF</button>
+            </li>
         </ul>
         <div class="requesition-search">
             <input type="search" id="tableSearch" placeholder="Search Here.........">
-            <button><img src="assets/img/search-icon.png" alt=""></button>
+            <button><img src="{{ asset('assets/img/search-icon.png') }}" alt=""></button>
         </div>
     </div>
 
     <div class="requesition-table">
-        <table id="example" class="display responsive nowrap" style="width:100%">
+        <!-- IMPORTANT: id="myTable" -->
+        <table id="myTable" class="display responsive nowrap" style="width:100%">
             <thead>
                 <tr>
                     <th class="text-center">Name</th>
@@ -110,162 +105,128 @@
             </select>
         </div>
         <ul class="requesition-pagination">
-            <li><button><img src="assets/img/pagi-arrow-left.png" alt=""></button></li>
+            <li><button><img src="{{ asset('assets/img/pagi-arrow-left.png') }}" alt=""></button></li>
             <li><p>0 to {{ count($users) }}</p></li>
-            <li><button><img src="assets/img/pagi-arrow-next.png" alt=""></button></li>
+            <li><button><img src="{{ asset('assets/img/pagi-arrow-next.png') }}" alt=""></button></li>
         </ul>
     </div>
 </div>
 
-{{-- Include SweetAlert2 --}}
+{{-- SweetAlert2 --}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
-{{-- Optional: Table export/print JS functions --}}
+{{-- pdfmake for PDF --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
-        <script>
+<script>
+// Utility: strip HTML tags (so exports don't include raw <button> etc.)
+const stripHtml = (html) => {
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  return div.textContent || div.innerText || '';
+};
+
+// If you have your own search input, wire it to DataTables:
+document.getElementById('tableSearch')?.addEventListener('input', function() {
+  window.dt.search(this.value).draw();
+});
+
+// ===== COPY =====
 document.getElementById("copyBtn").addEventListener("click", function (e) {
-    let table = document.getElementById("myTable");
-    let text = "";
-    for (let row of table.rows) {
-        let cells = [...row.cells].map(cell => cell.innerText.trim());
-        text += cells.join("\t") + "\n";
-    }
+  const headers = window.dt.columns().header().toArray().map(th => th.innerText.trim());
+  const rows = [];
+  window.dt.rows({ search: 'applied' }).every(function () {
+    const data = this.data().map(c => stripHtml(c));
+    rows.push(data);
+  });
+  const text = [headers.join('\t')].concat(rows.map(r => r.join('\t'))).join('\n');
 
-    navigator.clipboard.writeText(text).then(() => {
-        let popup = document.getElementById("copyPopup");
-        popup.style.opacity = 1; // Make visible first
-
-        let btnRect = e.target.getBoundingClientRect();
-
-        // Center above button
-        popup.style.left = (btnRect.left + (btnRect.width / 2) - (120 / 2)) + "px";
-        popup.style.top = (btnRect.top - 35) + "px";
-
-        // Fade out after 1s
-        setTimeout(() => {
-            popup.style.opacity = 0;
-        }, 1000);
-    });
-});
-</script>
-
-<script>
-// Click on CSV button opens file picker
-document.getElementById('csvBtn').addEventListener('click', function() {
-    document.getElementById('csvFile').click();
+  navigator.clipboard.writeText(text).then(() => {
+    const popup = document.getElementById("copyPopup");
+    popup.textContent = "Copied!";
+    popup.style.opacity = 1;
+    const btnRect = e.target.getBoundingClientRect();
+    popup.style.left = (btnRect.left + (btnRect.width/2) - 60) + "px";
+    popup.style.top  = (btnRect.top - 35) + "px";
+    setTimeout(() => popup.style.opacity = 0, 1000);
+  });
 });
 
-// When file selected, read CSV
-document.getElementById('csvFile').addEventListener('change', function(e) {
-    let file = e.target.files[0];
-    if (!file) return;
-
-    let reader = new FileReader();
-    reader.onload = function(e) {
-        let text = e.target.result;
-        let rows = text.split('\n').map(row => row.split(','));
-
-        let table = document.getElementById('myTable');
-        table.innerHTML = ""; // Clear old data
-
-        rows.forEach((row, i) => {
-            let tr = document.createElement('tr');
-            row.forEach(cell => {
-                let td = document.createElement(i === 0 ? 'th' : 'td');
-                td.textContent = cell.trim();
-                tr.appendChild(td);
-            });
-            table.appendChild(tr);
-        });
-    };
-    reader.readAsText(file);
-});
-</script>
-
-<script>
-document.getElementById('excelBtn').addEventListener('click', () => {
-    document.getElementById('excelFile').click();
+// ===== CSV =====
+document.getElementById("csvBtn").addEventListener("click", function () {
+  const headers = window.dt.columns().header().toArray().map(th => '"' + th.innerText.replace(/"/g,'""') + '"');
+  const lines = [headers.join(',')];
+  window.dt.rows({ search: 'applied' }).every(function () {
+    const data = this.data().map(c => '"' + stripHtml(c).replace(/"/g,'""') + '"');
+    lines.push(data.join(','));
+  });
+  const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = Object.assign(document.createElement('a'), { href: url, download: 'table.csv' });
+  a.click();
+  URL.revokeObjectURL(url);
 });
 
-document.getElementById('excelFile').addEventListener('change', (e) => {
-    let file = e.target.files[0];
-    if (!file) return;
-
-    let reader = new FileReader();
-    reader.onload = (event) => {
-        let data = new Uint8Array(event.target.result);
-        let workbook = XLSX.read(data, { type: 'array' });
-        let sheetName = workbook.SheetNames[0];
-        let sheet = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1 });
-
-        loadTable(sheet);
-    };
-    reader.readAsArrayBuffer(file);
-});
-</script>
-<script>
-document.getElementById('pdfBtn').addEventListener('click', () => {
-    document.getElementById('pdfFile').click();
+// ===== EXCEL (xlsx) =====
+document.getElementById("excelBtn").addEventListener("click", function () {
+  const headers = window.dt.columns().header().toArray().map(th => th.innerText.trim());
+  const rows = [headers];
+  window.dt.rows({ search: 'applied' }).every(function () {
+    rows.push(this.data().map(c => stripHtml(c)));
+  });
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  XLSX.utils.book_append_sheet(wb, ws, "Users");
+  XLSX.writeFile(wb, "table.xlsx");
 });
 
-document.getElementById('pdfFile').addEventListener('change', (e) => {
-    let file = e.target.files[0];
-    if (!file) return;
+// ===== PDF (pdfmake) =====
+document.getElementById("pdfBtn").addEventListener("click", function () {
+  const headers = window.dt.columns().header().toArray().map(th => ({ text: th.innerText, style: 'tableHeader' }));
+  const body = [headers];
+  window.dt.rows({ search: 'applied' }).every(function () {
+    body.push(this.data().map(c => stripHtml(c)));
+  });
 
-    let fileReader = new FileReader();
-    fileReader.onload = function() {
-        let typedarray = new Uint8Array(this.result);
+  const docDefinition = {
+    content: [
+      { text: "Users Table", style: "header" },
+      {
+        table: { headerRows: 1, widths: Array(headers.length).fill('*'), body }
+      }
+    ],
+    styles: {
+      header: { fontSize: 16, bold: true, margin: [0, 0, 0, 10] },
+      tableHeader: { bold: true, fillColor: "#eeeeee" }
+    },
+    pageOrientation: 'landscape'
+  };
+  pdfMake.createPdf(docDefinition).download("table.pdf");
+});
 
-        pdfjsLib.getDocument(typedarray).promise.then(pdf => {
-            pdf.getPage(1).then(page => {
-                page.getTextContent().then(textContent => {
-                    let text = textContent.items.map(item => item.str).join(" ");
-                    alert("PDF text: " + text); // Example, you can parse into table
-                });
-            });
-        });
-    };
-    fileReader.readAsArrayBuffer(file);
-});
-</script>
-<script>
-document.getElementById('printBtn').addEventListener('click', () => {
-    let printContents = document.getElementById('myTable').outerHTML;
-    let win = window.open('', '', 'height=600,width=800');
-    win.document.write('<html><head><title>Print</title></head><body>');
-    win.document.write(printContents);
-    win.document.write('</body></html>');
-    win.document.close();
-    win.print();
-});
-</script>
-<script>
-function loadTable(data) {
-    let table = document.getElementById('myTable');
-    table.innerHTML = "";
-    data.forEach((row, i) => {
-        let tr = document.createElement('tr');
-        row.forEach(cell => {
-            let td = document.createElement(i === 0 ? 'th' : 'td');
-            td.textContent = cell;
-            tr.appendChild(td);
-        });
-        table.appendChild(tr);
-    });
-}
-</script>
-<script>
-document.getElementById('printBtn').addEventListener('click', () => {
-    let table = document.getElementById('myTable').cloneNode(true);
-    let win = window.open('', '', 'height=600,width=800');
-    win.document.write('<html><head><title>Print</title>');
-    win.document.write('<link rel="stylesheet" href="assets/css/bootstrap.min.css">');
-    win.document.write('<style>table{border-collapse:collapse;width:100%;}th,td{border:1px solid #000;padding:5px;}</style>');
-    win.document.write('</head><body>');
-    win.document.write(table.outerHTML);
-    win.document.write('</body></html>');
-    win.document.close();
-    win.print();
+// ===== PRINT =====
+document.getElementById("printBtn").addEventListener("click", function () {
+  const headers = window.dt.columns().header().toArray().map(th => th.innerText);
+  const rows = [];
+  window.dt.rows({ search: 'applied' }).every(function () {
+    rows.push(this.data().map(c => stripHtml(c)));
+  });
+
+  let html = "<table border='1' style='border-collapse:collapse;width:100%'>";
+  html += "<thead><tr>" + headers.map(h => `<th>${h}</th>`).join("") + "</tr></thead>";
+  html += "<tbody>";
+  rows.forEach(r => {
+    html += "<tr>" + r.map(c => `<td>${c}</td>`).join("") + "</tr>";
+  });
+  html += "</tbody></table>";
+
+  const w = window.open("");
+  w.document.write(`<html><head><title>Print Table</title></head><body>${html}</body></html>`);
+  w.document.close();
+  w.focus();
+  w.print();
+  w.close();
 });
 </script>
 @endsection

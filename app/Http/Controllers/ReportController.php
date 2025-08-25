@@ -301,6 +301,13 @@ class ReportController extends Controller
 
             return view('reports.index', compact('reports','fpurchaseorderColumns'));
         }
+       
+        
+
+          public function spendoverview()
+        {
+            return view('reports.spendoverviewreport');
+        }
 
     /**
      * Update the specified resource in storage.
