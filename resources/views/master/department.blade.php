@@ -165,9 +165,9 @@
                                     </td>
                                     <td class="text-center">
                                         @if($user->IsActive == null)
-                                            <span class='badge badge-secondary'>Inactive</span>
+                                            <span class='btn btn-outline-secondary'>Inactive</span>
                                         @else
-                                            <span class='badge badge-success'>Active</span>
+                                            <span class='btn btn-outline-success'>Active</span>
                                         @endif
                                     </td>
                                     <td class="text-center">
