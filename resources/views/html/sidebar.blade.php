@@ -158,8 +158,18 @@
             <img src="{{ asset('/coreui/img/avatars/6.jpg') }}" alt="" />
         </div>
         <h3>{{ auth()->user()->name ?? 'User' }}</h3>
-            <a href="{{ route('logout') }}"  onclick="event.preventDefault(); document.getElementById('logout-form').submit();">  </a>
-        <button class="btn-user-profile"><i class="icon-10"></i></button>
+            {{-- Hidden logout form --}}
+<form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+  @csrf
+</form>
+
+{{-- Logout button (keeps classes) --}}
+<button type="button"
+        class="btn-user-profile"
+        title="Logout"
+        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+  <i class="icon-10"></i>
+</button>
     </div>
 
     {{-- Light/Dark Mode Toggle --}}

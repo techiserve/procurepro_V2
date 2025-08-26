@@ -19,25 +19,33 @@ $(document).ready(function(){
   });
 
 // 
+$(document).ready(function () {
+  // Toggle submenu on click
+  $('.nav-right > li > a').click(function (e) {
+    var submenu = $(this).next('.nav-right__sub');
 
-$(document).ready(function() {
-  $(".toggle-btn").click(function() {
-    $(this).toggleClass('open');
-    $('.menu-right').toggleClass('active');
+    // If submenu exists, prevent default link behavior
+    if (submenu.length) {
+      e.preventDefault();
 
-    // Toggle padding class
-    $('.body-section').toggleClass('padding');
+      // Toggle submenu visibility
+      submenu.slideToggle(200);
 
-    // Run something when body-section has class 'padding'
-    if ($('.body-section').hasClass('padding')) {
-      console.log("padding class added → do something");
-      // 👉 Call any function you want here
-    } else {
-      console.log("padding class removed → reverse something");
-      // 👉 Or reverse that function
+      // Close other open submenus (accordion effect)
+      $('.nav-right__sub').not(submenu).slideUp(200);
     }
+
+    // 👉 Add active class to the parent <li>, remove from siblings
+    $(this).parent('li').addClass('active').siblings().removeClass('active');
   });
 });
+
+// Handle submenu item clicks
+$('.nav-right__sub li a').click(function () {
+  $('.nav-right__sub li').removeClass('active'); // remove from all
+  $(this).parent('li').addClass('active'); // add to clicked
+});
+
 
 
 $(".user-dropdown__image").click(function () {
@@ -50,25 +58,6 @@ checkbox.addEventListener("change", () => {
   document.body.classList.toggle("dark")
 })
 
-// 
-
-$(document).ready(function() {
-  // Toggle submenu on click
-  $('.nav-right > li > a').click(function(e) {
-    var submenu = $(this).next('.nav-right__sub');
-
-    // If submenu exists, prevent default link behavior
-    if (submenu.length) {
-      e.preventDefault();
-
-      // Toggle submenu visibility
-      submenu.slideToggle(200);
-
-      // Optional: close other open submenus (accordion effect)
-      $('.nav-right__sub').not(submenu).slideUp(200);
-    }
-  });
-});
 
 
 // 

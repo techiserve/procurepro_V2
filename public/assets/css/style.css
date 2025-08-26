@@ -1824,6 +1824,12 @@ button::-moz-focus-inner,
 	padding: 0;
 }
 
+.requisition-requested {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 50px;
+}
+
 .requisition-requested-item__content h3{
 	font-weight: 500;
 	font-size: 16px;
@@ -1879,6 +1885,14 @@ button::-moz-focus-inner,
 }
 
 @media (min-width:768px) {
+	.requisition-requested {
+	display: flex;
+	justify-content: space-between;
+	gap: 50px;
+}
+	.requisition-requested-item {
+		width: calc(50% - 30px);
+	}
 
 	.requisition-requested-item__wrapper{
 		gap: 38px;
@@ -1890,6 +1904,21 @@ button::-moz-focus-inner,
 
 }
 
+@media (min-width: 1200px) {
+
+	
+
+	.requisition-requested-item {
+		width: 25%;
+	}
+}
+
+@media (min-width: 1920px) {
+
+	.requisition-requested {
+		flex-wrap: nowrap;
+	}
+}
 
 .copy-popup {
     position: fixed; /* fixed so it works with scroll */
