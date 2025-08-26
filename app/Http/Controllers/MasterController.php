@@ -58,6 +58,7 @@ class MasterController extends Controller
           $banks = Bank::where('name', $request->bankname)->first();  
 
           if($banks){
+            
             return back()->with('error', 'Bank already exists!');
         }
 
