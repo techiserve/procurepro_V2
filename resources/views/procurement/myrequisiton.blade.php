@@ -1,16 +1,21 @@
 @extends('html.default')
 
-<link rel="stylesheet" href="https://unpkg.com/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+{{-- Styles --}}
+<link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.4/tutorials/timelines/timeline-7/assets/css/timeline-7.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+  /* Keep action buttons on one line even when the table scrolls */
+  th.actions, td.actions { white-space: nowrap; }
+  td.actions { min-width: 360px; } /* adjust if you have more/less buttons */
+</style>
 
 @section('content')
 <div class="body-content__header">
   <ul>
     <li><a href="#">Requisitions</a></li>
-    <li class="ms-auto">
-    
-    </li>
+    <li class="ms-auto"></li>
   </ul>
 </div>
 
@@ -18,13 +23,21 @@
   <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
       <strong>Requisitions</strong>
-        <div class="d-flex align-items-center gap-2">
-        <button class="btn btn-primary btn-sm mr-2" data-toggle="modal" data-target="#filterModal" style="padding: 10px 20px; font-size: 16px; min-width: 100px;">
+      <div class="d-flex align-items-center gap-2">
+        {{-- Filter --}}
+        <button class="btn btn-primary btn-sm"
+                data-bs-toggle="modal" data-bs-target="#filterModal"
+                style="padding:10px 20px; font-size:16px; min-width:120px;">
           <i class="fa fa-filter"></i> Filter
         </button>
-        <form method="POST" action="{{ route('procurement.downloadrequisitions') }}" class="d-flex align-items-center m-0">
+
+        {{-- Header Download form (will collect selected checkboxes from the table) --}}
+        <form method="POST" action="{{ route('procurement.downloadrequisitions') }}" id="headerDownloadForm" class="m-0">
           @csrf
-          <button type="submit" class="btn btn-success btn-sm"  style="padding: 10px 20px; font-size: 16px; min-width: 100px;">
+          <div id="downloadHiddenInputs"></div>
+          <button type="submit" class="btn btn-success btn-sm"
+                  id="downloadBtnHeader"
+                  style="padding:10px 20px; font-size:16px; min-width:120px;">
             <i class="fa fa-download"></i> Download
           </button>
         </form>
@@ -32,7 +45,7 @@
     </div>
 
     <div class="card-body">
-      <!-- Checkbox form for table data -->
+      {{-- Table form: holds the checkboxes in the table --}}
       <form method="POST" action="{{ route('procurement.downloadrequisitions') }}" id="tableForm">
         @csrf
         <div class="table-responsive">
@@ -42,7 +55,7 @@
                 <th>#</th>
                 <th>Requisition #</th>
                 @php
-                  $hiddenFields = ['invoiceamount','Vendor','vendor','amount','Amount'];
+                  $hiddenFields = ['invoiceamount','vendor','amount']; // case-insensitive handling below
                   $customLabels = [
                     'paymentmethod' => 'Payment Method',
                     'payment_method' => 'Payment Method',
@@ -60,7 +73,7 @@
 
                 <th>Next Approver</th>
                 <th>Status</th>
-                <th class="text-center">Action</th>
+                <th class="text-center actions">Action</th>
               </tr>
             </thead>
 
@@ -68,13 +81,13 @@
               @foreach($frequisitions as $frequisition)
                 @if(auth()->user()->id == $frequisition->userId || auth()->user()->userrole == $frequisition->approvedby)
                 <tr>
-                  <td>
+                  <td class="text-center">
                     <input type="checkbox" id="select_{{ $frequisition->id }}" name="requisition_ids[]" value="{{ $frequisition->id }}">
                   </td>
                   <td>{{ $frequisition->requisitionNumber }}</td>
 
                   @php
-                    $hiddenFields = ['invoiceamount','Vendor','vendor','amount','Amount'];
+                    $hiddenFields = ['invoiceamount','vendor','amount'];
                     $normalizedRequisition = [];
                     foreach ($frequisition->getAttributes() as $key => $value) {
                       $normalizedRequisition[strtolower(trim($key))] = $value;
@@ -93,6 +106,7 @@
                     </td>
                   @endforeach
 
+                  {{-- Next Approver --}}
                   <td class="text-center">
                     @foreach($roles as $role)
                       @if($frequisition->approvedby == $role->id)
@@ -101,56 +115,61 @@
                     @endforeach
                   </td>
 
+                  {{-- Status --}}
                   <td class="text-center">
-                    @if($frequisition->status == 0)
-                      <button type="button" class="btn btn-outline-primary"><span class="fa fa-spinner"></span> Pending</button>
-                    @elseif($frequisition->status == 1)
-                      <button type="button" class="btn btn-outline-primary"><span class="fa fa-spinner"></span> Pending</button>
+                    @if($frequisition->status == 0 || $frequisition->status == 1)
+                      <button type="button" class="btn btn-outline-primary btn-sm"><span class="fa fa-spinner"></span> Pending</button>
                     @elseif($frequisition->status == 2)
-                      <button type="button" class="btn btn-outline-success"><span class="fa fa-check-circle"></span> Approved</button>
+                      <button type="button" class="btn btn-outline-success btn-sm"><span class="fa fa-check-circle"></span> Approved</button>
                     @elseif($frequisition->status == 3)
-                      <button type="button" class="btn btn-outline-danger"><span class="fa fa-times-circle"></span> Rejected</button>
+                      <button type="button" class="btn btn-outline-danger btn-sm"><span class="fa fa-times-circle"></span> Rejected</button>
                     @elseif($frequisition->status == 4)
-                      <button type="button" class="btn btn-outline-info"><span class="fa fa-arrow-left"></span> Returned</button>
+                      <button type="button" class="btn btn-outline-info btn-sm"><span class="fa fa-arrow-left"></span> Returned</button>
                     @else
-                      <button type="button" class="btn btn-outline-primary"><span class="fa fa-spinner"></span> Processing</button>
+                      <button type="button" class="btn btn-outline-primary btn-sm"><span class="fa fa-spinner"></span> Processing</button>
                     @endif
                   </td>
 
-                  <td class="text-center">
-                    @if($frequisition->userId == auth()->user()->id)
-                      @if($frequisition->status == 4)
-                        <a href="/procurement/{{$frequisition->id}}/editrequisition" class="btn btn-info btn-sm" style="color:white;">
-                          <span class="fa fa-desktop"></span> Update
-                        </a>&nbsp;
-                        <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#historyModal{{ $frequisition->id }}" style="color:white;">
-                          <span class="fa fa-pencil"></span> Logs
-                        </button>&nbsp;
-                        <a href="/procurement/{{$frequisition->id}}/download" class="btn btn-primary btn-sm" style="color:white;">
-                          <span class="fa fa-download"></span> Download
-                        </a>&nbsp;
+                  {{-- Actions (forced horizontal layout) --}}
+                  <td class="text-center actions">
+                    <div class="d-inline-flex flex-nowrap align-items-center gap-2">
+                      @if($frequisition->userId == auth()->user()->id)
+                        @if($frequisition->status == 4)
+                          <a href="/procurement/{{ $frequisition->id }}/editrequisition" class="btn btn-info btn-sm text-white">
+                            <span class="fa fa-desktop"></span> Update
+                          </a>
+                          <button type="button" class="btn btn-success btn-sm text-white"
+                                  data-bs-toggle="modal" data-bs-target="#historyModal{{ $frequisition->id }}">
+                            <span class="fa fa-pencil"></span> Logs
+                          </button>
+                          <a href="/procurement/{{ $frequisition->id }}/download" class="btn btn-primary btn-sm text-white">
+                            <span class="fa fa-download"></span> Download
+                          </a>
+                        @else
+                          <a href="/procurement/{{ $frequisition->id }}/viewrequisition" class="btn btn-info btn-sm text-white">
+                            <span class="fa fa-desktop"></span> View
+                          </a>
+                          <button type="button" class="btn btn-success btn-sm text-white"
+                                  data-bs-toggle="modal" data-bs-target="#historyModal{{ $frequisition->id }}">
+                            <span class="fa fa-pencil"></span> Logs
+                          </button>
+                          <a href="/procurement/{{ $frequisition->id }}/download" class="btn btn-primary btn-sm text-white">
+                            <span class="fa fa-download"></span> Download
+                          </a>
+                        @endif
                       @else
-                        <a href="/procurement/{{$frequisition->id}}/viewrequisition" class="btn btn-info btn-sm" style="color:white;">
+                        <a href="/procurement/{{ $frequisition->id }}/viewrequisition" class="btn btn-info btn-sm text-white">
                           <span class="fa fa-desktop"></span> View
-                        </a>&nbsp;
-                        <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#historyModal{{ $frequisition->id }}" style="color:white;">
+                        </a>
+                        <button type="button" class="btn btn-success btn-sm text-white"
+                                data-bs-toggle="modal" data-bs-target="#historyModal{{ $frequisition->id }}">
                           <span class="fa fa-pencil"></span> Logs
-                        </button>&nbsp;
-                        <a href="/procurement/{{$frequisition->id}}/download" class="btn btn-primary btn-sm" style="color:white;">
+                        </button>
+                        <a href="/procurement/{{ $frequisition->id }}/download" class="btn btn-primary btn-sm text-white">
                           <span class="fa fa-download"></span> Download
-                        </a>&nbsp;
+                        </a>
                       @endif
-                    @else
-                      <a href="/procurement/{{$frequisition->id}}/viewrequisition" class="btn btn-info btn-sm" style="color:white;">
-                        <span class="fa fa-desktop"></span> View
-                      </a>&nbsp;
-                      <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#historyModal{{ $frequisition->id }}" style="color:white;">
-                        <span class="fa fa-pencil"></span> Logs
-                      </button>&nbsp;
-                      <a href="/procurement/{{$frequisition->id}}/download" class="btn btn-primary btn-sm" style="color:white;">
-                        <span class="fa fa-download"></span> Download
-                      </a>&nbsp;
-                    @endif
+                    </div>
                   </td>
                 </tr>
                 @endif
@@ -162,17 +181,15 @@
     </div>
   </div>
 
-  <!-- History Modals -->
+  {{-- History Modals (Bootstrap 5) --}}
   @foreach($frequisitions as $frequisition)
     @if(auth()->user()->id == $frequisition->userId || auth()->user()->userrole == $frequisition->approvedby)
-    <div class="modal fade" id="historyModal{{ $frequisition->id }}" tabindex="-1" role="dialog" aria-labelledby="historyModalLabel{{ $frequisition->id }}" aria-hidden="true">
-      <div class="modal-dialog modal-lg" role="document">
+    <div class="modal fade" id="historyModal{{ $frequisition->id }}" tabindex="-1" aria-labelledby="historyModalLabel{{ $frequisition->id }}" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="historyModalLabel{{ $frequisition->id }}">Requisition Logs - {{ $frequisition->requisitionNumber }}</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <section class="bsb-timeline-7 py-3">
@@ -188,7 +205,7 @@
                           <li class="timeline-item">
                             <div class="timeline-body">
                               <div class="timeline-meta">
-                                <div class="d-inline-flex flex-column px-2 py-1 text-success-emphasis bg-success-subtle border border-success-subtle rounded-2 text-md-end">
+                                <div class="d-inline-flex flex-column px-2 py-1 text-success-emphasis bg-success-subtle border rounded-2">
                                   <span class="fw-bold">{{ $date->format('d F Y') }}</span>
                                   <span>{{ $date->format('g:ia') }}</span>
                                 </div>
@@ -213,7 +230,7 @@
             </section>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           </div>
         </div>
       </div>
@@ -221,39 +238,41 @@
     @endif
   @endforeach
 
-  <!-- Filter Modal (Bootstrap 4) -->
-  <div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="filterModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-primary modal-md" role="document">
-      <form method="post" action="{{ route('requisition.filtered') }}" enctype="multipart/form-data">
-        {{ csrf_field() }}
+  {{-- Filter Modal (Bootstrap 5) --}}
+  <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+      <form method="POST" action="{{ route('requisition.filtered') }}" enctype="multipart/form-data">
+        @csrf
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title" id="filterModalLabel">Filter Purchase Order Summary</h4>
-            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">×</span>
-            </button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
+
           <div class="modal-body">
-            <div class="form-group">
-              <label for="start_date">Date From</label>
+            <div class="mb-3">
+              <label for="start_date" class="form-label">Date From</label>
               <input class="form-control" id="start_date" name="start_date" type="date">
             </div>
-            <div class="form-group">
-              <label for="end_date">Date To</label>
+
+            <div class="mb-3">
+              <label for="end_date" class="form-label">Date To</label>
               <input class="form-control" id="end_date" name="end_date" type="date">
             </div>
-            <div class="form-group">
-              <label for="status">Status</label>
-              <select name="status" id="status" class="js-example-basic-single form-control" style="width:100%;">
+
+            <div class="mb-3">
+              <label for="status" class="form-label">Status</label>
+              <select name="status" id="status" class="form-control">
                 <option value="">--Select Status--</option>
                 <option value="2">Approved</option>
                 <option value="3">Rejected</option>
                 <option value="1">Pending</option>
               </select>
             </div>
-            <div class="form-group">
-              <label for="vendor">Vendor</label>
-              <select name="vendor" id="vendor" class="js-example-basic-single form-control" style="width:100%;">
+
+            <div class="mb-3">
+              <label for="vendor" class="form-label">Vendor</label>
+              <select name="vendor" id="vendor" class="form-control">
                 <option value="">--Select Vendor--</option>
                 @if(isset($vendors))
                   @foreach($vendors as $vendor)
@@ -263,40 +282,68 @@
               </select>
             </div>
           </div>
+
           <div class="modal-footer">
-            <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
-            <button class="btn btn-primary" type="submit">Filter Summary</button>
+            <button class="btn btn-danger" type="button" data-bs-dismiss="modal" style="padding:10px 20px; min-width:110px;">Close</button>
+            <button class="btn btn-success" type="submit" style="padding:10px 20px; min-width:150px;">Filter Summary</button>
           </div>
         </div>
       </form>
     </div>
   </div>
+
 </div>
 @endsection
 
-<!-- Include jQuery and Bootstrap JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/js/bootstrap.min.js"></script>
-
+{{-- Scripts --}}
+<script src="https://unpkg.com/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Only trigger SweetAlert on Download submit buttons
-    const submitButtons = document.querySelectorAll('button[type="submit"]');
-    submitButtons.forEach(function(btn) {
-      btn.addEventListener('click', function(event) {
-        if (btn.innerHTML.includes('Download')) {
-          const checked = document.querySelectorAll('input[name="requisition_ids[]"]:checked');
-          if (checked.length === 0) {
-            event.preventDefault();
-            Swal.fire({
-              icon: 'warning',
-              title: 'No Selection',
-              text: 'Please select at least one checkbox before downloading.',
-              confirmButtonText: 'Okay'
-            });
-          }
-        }
+document.addEventListener('DOMContentLoaded', function () {
+  // Header Download: ensure at least one checkbox selected and copy selections into header form
+  const headerForm = document.getElementById('headerDownloadForm');
+  const hiddenContainer = document.getElementById('downloadHiddenInputs');
+
+  headerForm.addEventListener('submit', function (e) {
+    // Clear previous hidden inputs
+    hiddenContainer.innerHTML = '';
+
+    const checked = document.querySelectorAll('input[name="requisition_ids[]"]:checked');
+    if (checked.length === 0) {
+      e.preventDefault();
+      Swal.fire({
+        icon: 'warning',
+        title: 'No Selection',
+        text: 'Please select at least one checkbox before downloading.',
+        confirmButtonText: 'Okay'
       });
+      return false;
+    }
+
+    // Copy selected ids into this form so the server receives them
+    checked.forEach(cb => {
+      const inp = document.createElement('input');
+      inp.type = 'hidden';
+      inp.name = 'requisition_ids[]';
+      inp.value = cb.value;
+      hiddenContainer.appendChild(inp);
     });
   });
+
+  // If someone submits the table form directly (e.g., via keyboard), also protect it
+  const tableForm = document.getElementById('tableForm');
+  if (tableForm) {
+    tableForm.addEventListener('submit', function (e) {
+      const checked = document.querySelectorAll('input[name="requisition_ids[]"]:checked');
+      if (checked.length === 0) {
+        e.preventDefault();
+        Swal.fire({
+          icon: 'warning',
+          title: 'No Selection',
+          text: 'Please select at least one checkbox before downloading.',
+          confirmButtonText: 'Okay'
+        });
+      }
+    });
+  }
+});
 </script>
