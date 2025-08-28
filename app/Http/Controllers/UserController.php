@@ -103,7 +103,7 @@ class UserController extends Controller
         $user->name = $request->name;
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
-        $user->username =  $request->name;
+        $user->username =  Auth::user()->userName;
         $user->phonenumber = $request->phonenumber;
         $user->position = $request->position;
         $user->address = $request->address;  
