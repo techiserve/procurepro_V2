@@ -475,8 +475,10 @@ public function filter(Request $request)
             ->table('vpms_purchase_requisition') // <-- replace with your table name
             ->where('unique_id', 'like', $suffix.'%')
             ->orderByRaw('CAST(SUBSTRING_INDEX(unique_id, "-", -1) AS UNSIGNED)') // natural numeric order
+            ->limit(50)
             ->get();
-
+            
+         //   dd($requisitions);
 
              return view('reports.procureprorequisition', compact('requisitions'));
 
