@@ -22,7 +22,7 @@
         <div class="logine-wrapper">
               <form  id="login-form" action="{{ route('login') }}" method="POST">
                    @csrf
-            <div class="logine-input-row"><input type="email" id="email" name="email"  class="{{ $errors->has('email') ? 'is-invalid' : '' }}" placeholder="Username" value="{{ old('email') }}"></div>
+            <div class="logine-input-row"><input type="email" id="email" name="email"  class="{{ $errors->has('email') ? 'is-invalid' : '' }}" placeholder="email" value="{{ old('email') }}"></div>
                  @error('email')
             <span style="color: #ff7276; font-size: 13px;">{{ $message }}</span>
         @enderror
