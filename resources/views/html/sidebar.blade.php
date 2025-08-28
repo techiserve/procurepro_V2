@@ -118,6 +118,7 @@
                         <li><a href="/reports/standardbank">Standard Bank</a></li>
                         <li><a href="/reports">Custom Reports</a></li>
                         <li><a href="/reports/spendoverview">Spend Overview Reports</a></li>
+                        <li><a href="/reports/procureprorequisition">ProcurePro Requisition</a></li>
                     </ul>
                 </li>
             @endif

@@ -165,7 +165,7 @@ class CompanyController extends Controller
         $user->name = $request->contactPerson;
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
-        $user->username =  $request->username;
+        $user->username =  $request->companyname;
         $company->vendor_source = $request->vendor_source;
        // $user->phonenumber = $request->phonenumber;
         $user->companyId = $company->id;
