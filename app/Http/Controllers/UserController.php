@@ -324,7 +324,7 @@ class UserController extends Controller
     public function userdelete($id)
     {      
 
-         $deleteUser = User::where('companyId', $id)->delete();
+         $deleteUser = User::where('id', $id)->delete();
 
          return back()->with('success', 'User deleted successfully!');
 
