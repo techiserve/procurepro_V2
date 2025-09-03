@@ -280,8 +280,10 @@ class MasterController extends Controller
     
     public function departmentUpdate(Request $request,$id)
     {  
-      
-        
+         
+      //  $request->all();
+       // dd($request->all());  
+
         $userId = Auth::user()->id;
         $companyId = Auth::user()->companyId;
         $approval_a = $request->input('approval_a');
@@ -335,6 +337,7 @@ class MasterController extends Controller
                         'approvalId' =>$approval_b[$key],
                         'companyId' => $companyId,
                         'departmentId'  => $department->id,
+                        'IsBankAccount' => $request->input('is_default_secondary') ==  $userrole_b[$key] ? $request->input('is_default_secondary') : null,
                         'roleId'  => $userrole_b[$key]
                         
                     ])
