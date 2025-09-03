@@ -58,11 +58,9 @@
                     <th class="text-center">MD Approved</th>
                     <th class="text-center">General LGR Alloc</th>
                     <th class="text-center">Bank ID</th>
-             
                     <th class="text-center">Added By (ID)</th>
                     <th class="text-center">Notes</th>
                     <th class="text-center">Created Date</th>
-        
                     <th class="text-center">Action</th>
                 </tr>
             </thead>
@@ -87,7 +85,6 @@
                     <td class="text-center">{{ $req->description }}</td>
                     <td class="text-center">
                         @php
-                            // You can localize/format as needed
                             $amt = is_numeric($req->amount) ? number_format($req->amount, 2) : $req->amount;
                         @endphp
                         {{ $amt }}
@@ -131,19 +128,14 @@
 
                     <td class="text-center">{{ $req->general_lgr_alloc }}</td>
                     <td class="text-center">{{ $req->bank_id }}</td>
-        
                     <td class="text-center">{{ $req->added_by_id }}</td>
                     <td class="text-center">{{ $req->notes }}</td>
                     <td class="text-center">{{ $req->created_date }}</td>
-                   
 
-                    <td class="text-center">
-                        {{-- <a href='/requisitions/{{ $req->unique_id }}' class="btn btn-icon btn-info">
-                            <i class="fa fa-eye"></i> Logs
-                        </a> --}}
-
-                            <a href='/requisitions/{{ $req->unique_id }}' class="btn btn-icon btn-success">
-                            <i class="fa fa-eye"></i> Documents
+                    {{-- Make Action column sortable by giving it a data-order key (use Unique ID) --}}
+                    <td class="text-center" data-order="{{ $req->unique_id }}">
+                        <a href='/requisitions/{{ $req->unique_id }}' class="btn btn-icon btn-success">
+                            <i class=""></i> Documents
                         </a>
                     </td>
                 </tr>
@@ -203,10 +195,13 @@
     lengthChange: false,
     info: true,
     order: [[0, 'desc']], // sort by Unique ID (adjust if needed)
+
+    // ➜ Make Action column sortable so it looks/behaves like the others
     columnDefs: [
-      { targets: -1, orderable: false, searchable: false }, // Action column
-      { targets: [2, 10, 22], responsivePriority: 1 },      // Important columns
+      { targets: -1, searchable: false },               // keep search off for Action, but allow ordering
+      { targets: [2, 10, 22], responsivePriority: 1 },  // important cols on small screens
     ],
+
     dom: 't<"dt-bottom"ip>' // we'll use our own top controls
   });
 
@@ -224,7 +219,7 @@
   document.getElementById('reqPrev')?.addEventListener('click', () => window.reqDT.page('previous').draw('page'));
   document.getElementById('reqNext')?.addEventListener('click', () => window.reqDT.page('next').draw('page'));
 
-  // Update simple "0 to X" text (left as-is if you prefer)
+  // Update range label
   const rangeEl = document.getElementById('reqRange');
   if (rangeEl) {
     window.reqDT.on('draw', function() {
