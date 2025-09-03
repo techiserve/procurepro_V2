@@ -702,6 +702,14 @@ class ProcurementController extends Controller
           
        $accounts = Bankaccount::where('companyId', $fpurchaseorder->companyId)->get();
        $departmentapproval = Departmentapproval::where('departmentId', $departments->id)->where('IsBankAccount' ,'!=', null)->first();
+
+       if ($departmentapproval && $departmentapproval->IsBankAccount !== null) {
+            $departmentapproval = $departmentapproval->IsBankAccount;
+        } else {
+            $departmentapproval = 0;
+        }
+     //   dd($departmentapproval);
+
        $itemizedItems = Itemizedfpurchaseorder::where('requisition_id', $fpurchaseorder->frequisition_id)->get();
       // dd($itemizedItems);
        $history = RequisitionHistory::where('frequisition_id', $id)->where('userId',  Auth::user()->id)->where('action', '=', 'Purchase Order Approved')
