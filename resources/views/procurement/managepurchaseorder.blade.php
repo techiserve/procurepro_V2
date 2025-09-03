@@ -209,7 +209,7 @@
                                             <td>{{ $label }}</td>
                                             <td>
                                               <a href="{{ asset('storage/uploads/' . $file) }}" target="_blank" class="btn btn-sm btn-info">
-                                                <i class="fa fa-eye"></i> View
+                                                <i class=""></i> View
                                               </a>
                                             </td>
                                           </tr>
@@ -227,9 +227,7 @@
 
                             <div class="modal-footer">
                               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                              <button type="submit" class="btn btn-primary">
-                                <i class="fa fa-upload"></i> Upload
-                              </button>
+                         
                             </div>
                           </form>
                         </div>
