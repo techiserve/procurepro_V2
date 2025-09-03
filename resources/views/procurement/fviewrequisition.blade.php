@@ -123,7 +123,7 @@
                 <td class="text-center">
                  @if (!empty($faira->file_path))
                 <a href="{{ asset('/storage/uploads/' . $faira->file_path) }}" target="_blank" class="btn btn-info btn-sm" style="color: white;">
-                <span class="fa fa-eye"></span> View Document
+                <span class=""></span> View Document
                 </a>
                @else
                     <p>No document available.</p>
