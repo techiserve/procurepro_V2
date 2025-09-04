@@ -1,7 +1,7 @@
-{{-- @extends('html.default')
+@extends('html.default')
 
 @section('content')  
-<div class="requisition-requested d-flex justify-content-between gap-3 flex-wrap" 
+<div class="requisition-requested d-flex justify-content-between flex-wrap" 
      style="background: #f4f5f8; width: 100%; padding: 0px;">
 
     <!-- Item 1 -->
@@ -56,7 +56,7 @@
     </div>
 
     <!-- Item 4 -->
-    <div class="requisition-requested-item flex-fill" 
+    {{-- <div class="requisition-requested-item flex-fill" 
          style="background: #f5f6fa;">
         <div class="requisition-requested-item__wrapper" style="background: #f5f6fa;">
             <div class="requisition-requested-item__content">
@@ -70,11 +70,13 @@
                 <img src="assets/img/requisition-requested-img.png" alt="">
             </div>
         </div>
-    </div>
+    </div> --}}
 
 </div>                             
-@endsection --}}
+@endsection
 
+
+{{-- 
 @extends('html.default')
 
 @section('content')
@@ -184,4 +186,4 @@
                     </div>
                 </div>
             </div>
-@endsection
+@endsection --}}

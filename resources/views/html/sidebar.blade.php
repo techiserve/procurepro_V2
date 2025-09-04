@@ -83,14 +83,14 @@
 
             {{-- Procurement --}}
             @if($user == 3 || $user == 2 || 
-                $data->contains('Create Purchase Requistion') || 
+                $data->contains('Create Purchase Requisition') || 
                 $data->contains('View Requisitions') || 
                 $data->contains('View Purchase Orders') || 
                 $data->contains('Manage Purchase Orders'))
                 <li>
                     <a href="#"><i class="icon-8"></i> <span>Procurement</span></a>
                     <ul class="nav-right__sub">
-                        @if($user == 3 || $user == 2 || $data->contains('Create Purchase Requistion'))
+                        @if($user == 3 || $user == 2 || $data->contains('Create Purchase Requisition'))
                             <li><a href="/procurement/createrequisition">New Requisition</a></li>
                         @endif
                         @if($user == 3 || $user == 2 || $data->contains('View Requisitions'))
