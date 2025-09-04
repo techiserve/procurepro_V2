@@ -17,9 +17,11 @@
 
 <div class="body-content__wrapper requesition-body">
   <div class="card">
-    {{-- Wrap header buttons inside the form so they submit correctly --}}
-    <form action="{{ route('purchaseorder.release') }}" method="POST" class="m-0">
+
+    {{-- BULK ACTION FORM (POST). IMPORTANT: Do NOT include any other forms inside this element --}}
+    <form id="bulkReleaseForm" action="{{ route('purchaseorder.release') }}" method="POST" class="m-0">
       @csrf
+
       <div class="card-header d-flex justify-content-between align-items-center">
         <strong>Manage Purchase Orders</strong>
 
@@ -135,191 +137,31 @@
                   </td>
 
                   <td class="text-center" style="white-space: nowrap;">
-                    {{-- Logs --}}
+                    {{-- NOTE: type="button" so they don't submit the bulk form --}}
                     <button type="button" class="btn btn-success btn-sm"
                             data-bs-toggle="modal" data-bs-target="#historyModal{{ $fpurchaseorder->id }}">
                       <span class="fa fa-history"></span> Logs
                     </button>
 
-                    {{-- Upload POP --}}
                     <button type="button" class="btn btn-info btn-sm"
                             data-bs-toggle="modal" data-bs-target="#pop{{ $fpurchaseorder->id }}">
                       <span class="fa fa-upload"></span> Upload POP
                     </button>
 
-                    {{-- Payment Release --}}
                     <a href="/procurement/{{ $fpurchaseorder->id }}/paymentRelease"
                        class="btn btn-secondary btn-sm">
                       <span class="fa fa-pencil"></span> Payment Release
                     </a>
 
-                    {{-- View Requisition --}}
                     <a href="/procurement/{{ $fpurchaseorder->frequisition_id }}/view"
                        class="btn btn-info btn-sm">
                       <span class="fa fa-desktop"></span> View
                     </a>
 
-                    {{-- View Documents --}}
                     <button type="button" class="btn btn-success btn-sm"
                             data-bs-toggle="modal" data-bs-target="#viewdocuments{{ $fpurchaseorder->id }}">
                       <span class="fa fa-file"></span> View Documents
                     </button>
-
-                    {{-- View Documents Modal --}}
-                    <div class="modal fade" id="viewdocuments{{ $fpurchaseorder->id }}" tabindex="-1" aria-labelledby="viewdocuments{{ $fpurchaseorder->id }}Label" aria-hidden="true">
-                      <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h4 class="modal-title" id="viewdocuments{{ $fpurchaseorder->id }}Label">
-                              <i class="fa fa-folder-open"></i> View Documents
-                            </h4>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                          </div>
-
-                          <form method="POST" action="" enctype="multipart/form-data">
-                            @csrf
-                            @method('put')
-
-                            <div class="modal-body" style="font-size:14px;">
-                              @php
-                                $docs = [
-                                  'Quotation' => $fpurchaseorder->quotation ?? null,
-                                  'Invoice'   => $fpurchaseorder->invoice ?? null,
-                                  'POP'       => $fpurchaseorder->pop ?? null,
-                                  'Job Card'  => $fpurchaseorder->jobcard ?? null,
-                                ];
-                              @endphp
-
-                              @if(array_filter($docs))
-                                <div class="mt-2">
-                                  <table class="table table-sm table-bordered table-striped">
-                                    <thead>
-                                      <tr>
-                                        <th>#</th>
-                                        <th>Document Name</th>
-                                        <th>Action</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      @php $counter = 1; @endphp
-                                      @foreach($docs as $label => $file)
-                                        @if($file)
-                                          <tr>
-                                            <td>{{ $counter++ }}</td>
-                                            <td>{{ $label }}</td>
-                                            <td>
-                                              <a href="{{ asset('storage/uploads/' . $file) }}" target="_blank" class="btn btn-sm btn-info">
-                                                <i class=""></i> View
-                                              </a>
-                                            </td>
-                                          </tr>
-                                        @endif
-                                      @endforeach
-                                    </tbody>
-                                  </table>
-                                </div>
-                              @else
-                                <div class="alert alert-info">
-                                  <i class="fa fa-info-circle"></i> No documents available for this purchase order.
-                                </div>
-                              @endif
-                            </div>
-
-                            <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                         
-                            </div>
-                          </form>
-                        </div>
-                      </div>
-                    </div>
-
-                    {{-- History Modal --}}
-                    <div class="modal fade" id="historyModal{{ $fpurchaseorder->id }}" tabindex="-1" aria-labelledby="historyModal{{ $fpurchaseorder->id }}Label" aria-hidden="true">
-                      <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h5 class="modal-title" id="historyModal{{ $fpurchaseorder->id }}Label">Requisition Logs</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                          </div>
-                          <div class="modal-body">
-                            <section class="bsb-timeline-7 py-3">
-                              <div class="container">
-                                @if($fpurchaseorder->histories->isEmpty())
-                                  <div class="alert alert-info">
-                                    <i class="fa fa-info-circle"></i> No history found for this requisition.
-                                  </div>
-                                @else
-                                  <ul class="timeline">
-                                    @foreach($fpurchaseorder->histories as $history)
-                                      @php $date = \Carbon\Carbon::parse($history->created_at); @endphp
-                                      <li class="timeline-item">
-                                        <div class="timeline-body">
-                                          <div class="timeline-meta">
-                                            <div class="d-inline-flex flex-column px-2 py-1 text-success-emphasis bg-success-subtle border rounded-2">
-                                              <span class="fw-bold">{{ $date->format('d F Y') }}</span>
-                                              <span>{{ $date->format('g:ia') }}</span>
-                                            </div>
-                                          </div>
-                                          <div class="timeline-content timeline-indicator">
-                                            <div class="card border-0 shadow">
-                                              <div class="card-body p-xl-4" style="position: relative;">
-                                                <h6 class="card-subtitle text-secondary mb-3" style="position:absolute; top:10px; right:10px;">
-                                                  {{ $loop->iteration }}
-                                                </h6>
-                                                <h2 class="card-title mb-2">{{ $history->doneby }}</h2>
-                                                <p class="card-text m-0">{{ $history->action }}</p>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </li>
-                                    @endforeach
-                                  </ul>
-                                @endif
-                              </div>
-                            </section>
-                          </div>
-                          <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {{-- POP Upload Modal --}}
-                    <div class="modal fade" id="pop{{ $fpurchaseorder->id }}" tabindex="-1" aria-labelledby="pop{{ $fpurchaseorder->id }}Label" aria-hidden="true">
-                      <div class="modal-dialog modal-md">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h4 class="modal-title" id="pop{{ $fpurchaseorder->id }}Label">
-                              <i class="fa fa-envelope"></i> Upload Proof of Payment
-                            </h4>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                          </div>
-
-                          <form method="POST" action="/procurement/{{ $fpurchaseorder->id }}/pop" enctype="multipart/form-data">
-                            @csrf
-                            @method('put')
-
-                            <div class="modal-body" style="font-size:14px;">
-                              <div class="mb-3">
-                                <label for="popfile{{ $fpurchaseorder->id }}" class="form-label">Upload document</label>
-                                <input type="file" name="pop" id="popfile{{ $fpurchaseorder->id }}" class="form-control" required />
-                              </div>
-                            </div>
-
-                            <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                              <button type="submit" class="btn btn-primary">
-                                <span class="fa fa-upload"></span> Upload
-                              </button>
-                            </div>
-                          </form>
-                        </div>
-                      </div>
-                    </div>
-
                   </td>
                 </tr>
               @endforeach
@@ -327,7 +169,161 @@
           </table>
         </div>
       </div>
-    </form>
+    </form> {{-- END BULK FORM --}}
+
+    {{-- ===== Render modals OUTSIDE the bulk form to avoid nested forms ===== --}}
+    @foreach($fpurchaseorders as $fpurchaseorder)
+      {{-- View Documents Modal (no form needed) --}}
+      <div class="modal fade" id="viewdocuments{{ $fpurchaseorder->id }}" tabindex="-1" aria-labelledby="viewdocuments{{ $fpurchaseorder->id }}Label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title" id="viewdocuments{{ $fpurchaseorder->id }}Label">
+                <i class="fa fa-folder-open"></i> View Documents
+              </h4>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body" style="font-size:14px;">
+              @php
+                $docs = [
+                  'Quotation' => $fpurchaseorder->quotation ?? null,
+                  'Invoice'   => $fpurchaseorder->invoice ?? null,
+                  'POP'       => $fpurchaseorder->pop ?? null,
+                  'Job Card'  => $fpurchaseorder->jobcard ?? null,
+                ];
+              @endphp
+
+              @if(array_filter($docs))
+                <div class="mt-2">
+                  <table class="table table-sm table-bordered table-striped">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Document Name</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @php $counter = 1; @endphp
+                      @foreach($docs as $label => $file)
+                        @if($file)
+                          <tr>
+                            <td>{{ $counter++ }}</td>
+                            <td>{{ $label }}</td>
+                            <td>
+                              <a href="{{ asset('storage/uploads/' . $file) }}" target="_blank" class="btn btn-sm btn-info">
+                                View
+                              </a>
+                            </td>
+                          </tr>
+                        @endif
+                      @endforeach
+                    </tbody>
+                  </table>
+                </div>
+              @else
+                <div class="alert alert-info">
+                  <i class="fa fa-info-circle"></i> No documents available for this purchase order.
+                </div>
+              @endif
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {{-- History Modal (no form inside) --}}
+      <div class="modal fade" id="historyModal{{ $fpurchaseorder->id }}" tabindex="-1" aria-labelledby="historyModal{{ $fpurchaseorder->id }}Label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="historyModal{{ $fpurchaseorder->id }}Label">Requisition Logs</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <section class="bsb-timeline-7 py-3">
+                <div class="container">
+                  @if($fpurchaseorder->histories->isEmpty())
+                    <div class="alert alert-info">
+                      <i class="fa fa-info-circle"></i> No history found for this requisition.
+                    </div>
+                  @else
+                    <ul class="timeline">
+                      @foreach($fpurchaseorder->histories as $history)
+                        @php $date = \Carbon\Carbon::parse($history->created_at); @endphp
+                        <li class="timeline-item">
+                          <div class="timeline-body">
+                            <div class="timeline-meta">
+                              <div class="d-inline-flex flex-column px-2 py-1 text-success-emphasis bg-success-subtle border rounded-2">
+                                <span class="fw-bold">{{ $date->format('d F Y') }}</span>
+                                <span>{{ $date->format('g:ia') }}</span>
+                              </div>
+                            </div>
+                            <div class="timeline-content timeline-indicator">
+                              <div class="card border-0 shadow">
+                                <div class="card-body p-xl-4" style="position: relative;">
+                                  <h6 class="card-subtitle text-secondary mb-3" style="position:absolute; top:10px; right:10px;">
+                                    {{ $loop->iteration }}
+                                  </h6>
+                                  <h2 class="card-title mb-2">{{ $history->doneby }}</h2>
+                                  <p class="card-text m-0">{{ $history->action }}</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                      @endforeach
+                    </ul>
+                  @endif
+                </div>
+              </section>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {{-- POP Upload Modal (has its own PUT form, but NOT nested) --}}
+      <div class="modal fade" id="pop{{ $fpurchaseorder->id }}" tabindex="-1" aria-labelledby="pop{{ $fpurchaseorder->id }}Label" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title" id="pop{{ $fpurchaseorder->id }}Label">
+                <i class="fa fa-envelope"></i> Upload Proof of Payment
+              </h4>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form method="POST" action="/procurement/{{ $fpurchaseorder->id }}/pop" enctype="multipart/form-data">
+              @csrf
+              @method('put')
+
+              <div class="modal-body" style="font-size:14px;">
+                <div class="mb-3">
+                  <label for="popfile{{ $fpurchaseorder->id }}" class="form-label">Upload document</label>
+                  <input type="file" name="pop" id="popfile{{ $fpurchaseorder->id }}" class="form-control" required />
+                </div>
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">
+                  <span class="fa fa-upload"></span> Upload
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    @endforeach
+    {{-- ===== end modals ===== --}}
+
   </div>
 </div>
 @endsection
@@ -346,15 +342,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // Optional: log modal lifecycle (kept from your version)
-  document.querySelectorAll('.modal').forEach(modal => {
-    modal.addEventListener('show.bs.modal', e => console.log('Modal opening:', e.target.id));
-    modal.addEventListener('shown.bs.modal', e => console.log('Modal opened:', e.target.id));
-    modal.addEventListener('hide.bs.modal', e => console.log('Modal closing:', e.target.id));
-    modal.addEventListener('hidden.bs.modal', e => console.log('Modal closed:', e.target.id));
-  });
-
-  // POP upload client-side validation (SweetAlert for consistency)
+  // POP upload client-side validation
   document.querySelectorAll('form[action*="/procurement/"][action$="/pop"]').forEach(form => {
     form.addEventListener('submit', function (e) {
       const fileInput = form.querySelector('input[type="file"]');

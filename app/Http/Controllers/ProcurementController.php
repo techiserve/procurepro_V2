@@ -333,10 +333,11 @@ class ProcurementController extends Controller
 
     public function purchaseorderrelease(Request $request)
     { 
+       // dd($request->all());
 
       $selectedPurchaseOrders = $request->input('selected_items');
      
-        if($request->input('action') == 'Complete_Selected_Orders'){
+        if($request->input('action') != 'Complete_Selected_Orders'){
         
       if ($selectedPurchaseOrders) {
        
