@@ -179,8 +179,8 @@
                   <div class="form-col">
                     <label>Vendor Name</label>
                     <input type="hidden" name="vendor_final[]" id="finalVendorInput_1">
-                    <input type="text" class="form-control" id="oneTimeVendorInput_1" style="display:none; margin-top:5px;" placeholder="One-Time Vendor Name" oninput="updateFinalVendorValue(1, this.value)">
-                    <select class="form-control" id="vendorDropdown_1" style="display:block; margin-top:5px;" onchange="updateFinalVendorValue(1, this.value)">
+                    <input type="text" class="form-control" id="oneTimeVendorInput_1" style="display:none; margin-top:1px;" placeholder="One-Time Vendor Name" oninput="updateFinalVendorValue(1, this.value)">
+                    <select class="form-control" id="vendorDropdown_1" style="display:block; margin-top:-1px;" onchange="updateFinalVendorValue(1, this.value)">
                       <option value="">Select Vendor</option>
                       @foreach($vendors as $vendor)
                         <option value="{{ $vendor->SupplierName }}">{{ $vendor->SupplierName }}</option>
