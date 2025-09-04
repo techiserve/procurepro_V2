@@ -13,6 +13,8 @@
    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
    <link href="https://stackpath.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
 </head>
 
 <body>
@@ -22,7 +24,7 @@
         <div class="logine-wrapper">
               <form  id="login-form" action="{{ route('login') }}" method="POST">
                    @csrf
-            <div class="logine-input-row"><input type="email" id="email" name="email"  class="{{ $errors->has('email') ? 'is-invalid' : '' }}" placeholder="Email" value="{{ old('email') }}"></div>
+            <div class="logine-input-row"><input type="email" id="email" name="email"  class="{{ $errors->has('email') ? 'is-invalid' : '' }}" placeholder="Email." value="{{ old('email') }}"></div>
                  @error('email')
             <span style="color: #ff7276; font-size: 13px;">{{ $message }}</span>
         @enderror
@@ -82,6 +84,28 @@
   </div>
 </div>
 
+<script>
+  (function () {
+    var toggleBtn = document.getElementById('btnToggle');
+    var password  = document.getElementById('password');
+    var eyeIcon   = document.getElementById('eyeIcon');
+
+    if (!toggleBtn || !password || !eyeIcon) return;
+
+    toggleBtn.addEventListener('click', function (e) {
+      var isHidden = password.getAttribute('type') === 'password';
+      password.setAttribute('type', isHidden ? 'text' : 'password');
+
+      // swap icon
+      eyeIcon.classList.toggle('fa-eye', !isHidden);
+      eyeIcon.classList.toggle('fa-eye-slash', isHidden);
+
+      // optional a11y
+      toggleBtn.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+    });
+  })();
+</script>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script> 
 </body>
@@ -91,6 +115,7 @@
    {{-- <script src="{{ asset('assets/js/jquery.min.js') }}"></script> --}}
    {{-- <script src="{{ asset('assets/js/slick.min.js') }}"></script>
    <script src="{{ asset('assets/js/custom.js') }}"></script> --}}
+
 
  
 <script>
