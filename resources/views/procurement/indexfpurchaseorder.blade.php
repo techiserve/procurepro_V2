@@ -124,7 +124,7 @@
                     @endif
                   @else
                     <a href='/procurement/{{$fpurchaseorder->id}}/viewpurchaseorder' class='btn btn-info btn-sm'>
-                      <span class='fa fa-eye'></span> View
+                      <span class=''></span> View
                     </a>
                   @endif
 
