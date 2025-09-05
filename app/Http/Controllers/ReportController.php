@@ -87,12 +87,12 @@ class ReportController extends Controller
             ->groupBy('vendor')
             ->distinct()
             ->get();
-        $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
+        // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
         $departments = Department::where('companyId', Auth::user()->companyId)->get();
         $roles = userrole::all(); 
         $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
 
-      return view('reports.filteredrequisitionreport', compact('frequisitions','vendors','servicetype','departments','formFields','roles'));
+      return view('reports.filteredrequisitionreport', compact('frequisitions','vendors','departments','formFields','roles'));
 
     }
 
