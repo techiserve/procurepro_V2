@@ -174,7 +174,7 @@ class ReportController extends Controller
 
         $fpurchaseorders = $query->where('companyId', Auth::user()->companyId)->get();
  
-        $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
+      //  $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
         $departments = Department::where('companyId', Auth::user()->companyId)->get();
          $vendors = Frequisition::where('companyId', Auth::user()->companyId)
             ->select('vendor')
@@ -225,7 +225,7 @@ class ReportController extends Controller
 
         $fpurchaseorders = $query->where('companyId', Auth::user()->companyId)->get();
  
-        $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
+       // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
         $departments = Department::where('companyId', Auth::user()->companyId)->get();
          $vendors = Frequisition::where('companyId', Auth::user()->companyId)
             ->select('vendor')
