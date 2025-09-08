@@ -138,10 +138,10 @@
                       <span class="fa fa-desktop"></span> View
                     </a>
 
-                    {{-- <button type="button" class="btn btn-success btn-sm"
+                    <button type="button" class="btn btn-success btn-sm"
                             data-bs-toggle="modal" data-bs-target="#viewdocuments{{ $fpurchaseorder->id }}">
                       <span class="fa fa-file"></span> View Documents
-                    </button> --}}
+                    </button>
                   </td>
                 </tr>
               @endforeach
