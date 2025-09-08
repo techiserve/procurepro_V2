@@ -9,10 +9,16 @@
 <script src="https://cdn.jsdelivr.net/npm/icheck/icheck.min.js"></script>
 @section('content')
 
+@php
+  $prev = url()->previous();
+  $fallback = route('procurement.indexrequisition');
+  $backUrl = ($prev && str_starts_with($prev, url('/'))) ? $prev : $fallback;
+@endphp
+
 <!-- TOP: Back button (previous page) -->
 <div class="container-fluid">
   <div class="py-2">
-    <a href="{{ url()->previous() }}" class="btn btn-outline-secondary btn-sm">
+    <a href="{{ $backUrl }}" class="btn btn-outline-secondary btn-sm">
       <i class="fa fa-arrow-left"></i> Back
     </a>
   </div>

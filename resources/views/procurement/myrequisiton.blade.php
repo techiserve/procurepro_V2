@@ -241,8 +241,7 @@
   {{-- Filter Modal (Bootstrap 5) --}}
   <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-md">
-      <form method="POST" action="{{ route('requisition.filtered') }}" enctype="multipart/form-data">
-        @csrf
+      <form method="GET" action="{{ route('requisition.filtered') }}" enctype="multipart/form-data">
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title" id="filterModalLabel">Filter Purchase Order Summary</h4>

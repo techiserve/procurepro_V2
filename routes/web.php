@@ -159,7 +159,7 @@ Route::middleware('auth')->group(function () {
 
      //Reports
      Route::get('/reports/requisitionreport', [ReportController::class, 'requisitionreport'])->name('reports.requisitionreport');
-     Route::post('/reports/filteredrequisitionreport', [ReportController::class, 'requisitionfiltered'])->name('requisition.filtered');
+     Route::get('/reports/filteredrequisitionreport', [ReportController::class, 'requisitionfiltered'])->name('requisition.filtered');
      Route::post('/procurement/filter', [ProcurementController::class, 'requisitionfilter'])->name('requisition.filter');
      Route::post('/procurement/purhcasefilter', [ProcurementController::class, 'purchaseorderfilter'])->name('purchaseorder.filter');
      Route::post('/reports/filteredpurchaseorderreport', [ReportController::class, 'purchaseorderfiltered'])->name('purchaseorder.filtered');

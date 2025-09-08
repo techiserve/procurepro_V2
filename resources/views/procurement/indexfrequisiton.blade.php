@@ -238,8 +238,8 @@
   <!-- Filter Modal (Bootstrap 4 attributes) -->
   <div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="filterModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-md" role="document">
-      <form method="POST" action="{{ route('requisition.filtered') }}" enctype="multipart/form-data">
-        @csrf
+      <form method="GET" action="{{ route('requisition.filtered') }}" enctype="multipart/form-data">
+      
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title" id="filterModalLabel">Filter Requisitions</h4>
