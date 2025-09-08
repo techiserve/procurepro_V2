@@ -160,9 +160,11 @@ Route::middleware('auth')->group(function () {
      //Reports
      Route::get('/reports/requisitionreport', [ReportController::class, 'requisitionreport'])->name('reports.requisitionreport');
      Route::get('/reports/filteredrequisitionreport', [ReportController::class, 'requisitionfiltered'])->name('requisition.filtered');
+     Route::get('/reports/filteredrequisitionsummaryreport', [ReportController::class, 'requisitionsummaryfiltered'])->name('requisitionsummary.filtered');
      Route::post('/procurement/filter', [ProcurementController::class, 'requisitionfilter'])->name('requisition.filter');
      Route::post('/procurement/purhcasefilter', [ProcurementController::class, 'purchaseorderfilter'])->name('purchaseorder.filter');
      Route::post('/reports/filteredpurchaseorderreport', [ReportController::class, 'purchaseorderfiltered'])->name('purchaseorder.filtered');
+     Route::get('/reports/filteredpurchaseordsummaryerreport', [ReportController::class, 'purchaseordersummaryfiltered'])->name('purchaseordersummary.filtered');
      Route::get('/reports/purchaseorderreport', [ReportController::class, 'purchaseorderreport'])->name('reports.purchaseorderreport');
      Route::get('/reports/albarak', [ReportController::class, 'albarak'])->name('reports.albarak');
      Route::get('/reports/fnb', [ReportController::class, 'fnb'])->name('reports.fnb');

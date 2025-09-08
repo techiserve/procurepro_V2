@@ -60,7 +60,7 @@
             </thead>
 
             <tbody>
-              @foreach($fpurchaseorders as $fpurchaseorder)
+              @foreach($frequisitions as $fpurchaseorder)
                 @php $active = $fpurchaseorder->status; @endphp
                 <tr>
              
@@ -144,7 +144,7 @@
     {{-- END BULK FORM --}}
 
     {{-- ===== Render modals OUTSIDE the bulk form to avoid nested forms ===== --}}
-    @foreach($fpurchaseorders as $fpurchaseorder)
+    @foreach($frequisitions as $fpurchaseorder)
       {{-- View Documents Modal (no form needed) --}}
       <div class="modal fade" id="viewdocuments{{ $fpurchaseorder->id }}" tabindex="-1" aria-labelledby="viewdocuments{{ $fpurchaseorder->id }}Label" aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -324,6 +324,7 @@
               <option value="">--Select Status--</option>
               <option value="2">Approved</option>
               <option value="3">Rejected</option>
+              <option value="1">Pending</option>
             </select>
           </div>
 

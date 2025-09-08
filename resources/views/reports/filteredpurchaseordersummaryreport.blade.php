@@ -10,7 +10,7 @@
 @section('content')
 <div class="body-content__header">
   <ul>
-    <li><a href="#"><Ri:a>Requisition Summary</Ri:a></a></li>
+    <li><a href="#">Purchase Order Summary</a></li>
     <li class="ms-auto"></li>
   </ul>
 </div>
@@ -19,21 +19,22 @@
   <div class="card">
 
     {{-- BULK ACTION FORM (POST). IMPORTANT: Do NOT include any other forms inside this element --}}
-  
-    <div class="card-header d-flex align-items-center justify-content-end">
-  <button type="button" class="btn btn-primary btn-sm"
-          data-bs-toggle="modal" data-bs-target="#filterModal"
-          style="padding:10px 20px; font-size:16px; min-width:120px;">
-    <i class="fa fa-check-double"></i> Filter
-  </button>
-</div>
+
+
+        <div class="card-header d-flex align-items-center justify-content-end">
+        <button type="button" class="btn btn-primary btn-sm"
+                data-bs-toggle="modal" data-bs-target="#filterModal"
+                style="padding:10px 20px; font-size:16px; min-width:120px;">
+            <i class="fa fa-check-double"></i> Filter
+        </button>
+        </div>
 
       <div class="card-body">
         <div class="table-responsive">
           <table class="table table-striped table-bordered zero-configuration">
             <thead class="table-light text-center">
               <tr>
-               
+                <th><input type="checkbox" id="selectAll"></th>
                 <th>Requisition #</th>
                 @php
                   $hiddenFields = [];
@@ -53,6 +54,8 @@
                   <th>{{ $label }}</th>
                 @endforeach
 
+                <th>Bank</th>
+                <th>Account</th>
                 <th>Approved By</th>
                 <th>Status</th>
                 <th class="text-center" style="width: 280px;">Action</th>
@@ -63,7 +66,9 @@
               @foreach($fpurchaseorders as $fpurchaseorder)
                 @php $active = $fpurchaseorder->status; @endphp
                 <tr>
-             
+                  <td class="text-center">
+                    <input type="checkbox" name="selected_items[]" value="{{ $fpurchaseorder->id }}" @if($active != '2') disabled @endif>
+                  </td>
                   <td>{{ $fpurchaseorder->requisitionNumber }}</td>
 
                   @php
@@ -85,6 +90,8 @@
                     </td>
                   @endforeach
 
+                  <td class="text-center">{{ $fpurchaseorder->bankAccountName }}</td>
+                  <td class="text-center">{{ $fpurchaseorder->bankAccountNumber }}</td>
 
                   <td class="text-center">
                     @foreach($roles as $role)
@@ -125,6 +132,7 @@
                       <span class="fa fa-history"></span> Logs
                     </button>
 
+
                     <a href="/procurement/{{ $fpurchaseorder->id }}/viewrequisition"
                        class="btn btn-info btn-sm">
                       <span class="fa fa-desktop"></span> View
@@ -141,7 +149,7 @@
           </table>
         </div>
       </div>
-    {{-- END BULK FORM --}}
+   {{-- END BULK FORM --}}
 
     {{-- ===== Render modals OUTSIDE the bulk form to avoid nested forms ===== --}}
     @foreach($fpurchaseorders as $fpurchaseorder)
@@ -299,11 +307,11 @@
     {{-- Filter Modal --}}
 <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-md">
-    <form method="GET" action="{{ route('requisitionsummary.filtered') }}">
+    <form method="GET" action="{{ route('purchaseordersummary.filtered') }}">
     
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title" id="filterModalLabel">Filter Purchase Req Summary</h4>
+          <h4 class="modal-title" id="filterModalLabel">Filter Purchase Order Summary</h4>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
 
@@ -324,6 +332,7 @@
               <option value="">--Select Status--</option>
               <option value="2">Approved</option>
               <option value="3">Rejected</option>
+              <option value="1">Pending</option>
             </select>
           </div>
 
@@ -353,11 +362,12 @@
   </div>
 </div>
 
+
   </div>
 </div>
 @endsection
 
-
+@section('scripts')
 <script src="https://unpkg.com/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -392,4 +402,4 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 </script>
-
+@endsection

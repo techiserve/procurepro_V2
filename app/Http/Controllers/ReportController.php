@@ -40,11 +40,11 @@ class ReportController extends Controller
 
         $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
         $departments = Department::all();
-
+        $vendors = Fpurchaseorder::where('companyId', Auth::user()->companyId)->select('vendor')->groupBy('vendor')->distinct()->get();
         $fpurchaseorders = Frequisition::with('histories')->whereIn('status', [2, 3])->where('companyId', Auth::user()->companyId)->get();
         $roles = userrole::where('companyId', Auth::user()->companyId)->get();
 
-       return view('reports.requisitionreport', compact('fpurchaseorders','formFields','roles','departments'));
+        return view('reports.requisitionreport', compact('fpurchaseorders','formFields','roles','departments','vendors'));
 
     }
 
@@ -52,6 +52,7 @@ class ReportController extends Controller
 
     public function requisitionfiltered(Request $request)
     {
+
         $query = Frequisition::query();
          
         if ($request->filled('status')) {
@@ -94,6 +95,50 @@ class ReportController extends Controller
     }
 
 
+    
+
+    public function requisitionsummaryfiltered(Request $request)
+    {
+        $query = Frequisition::query();
+         
+        if ($request->filled('status')) {
+            $query->where('status', 'like', '%' . $request->input('status') . '%');
+        }
+
+        if ($request->filled('vendor')) {
+            $query->where('vendor', 'like', '%' . $request->input('vendor') . '%');
+        }
+     
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            // If both start_date and end_date are provided
+            $start_date = $request->input('start_date') . ' 00:00:00'; // Start of the start_date
+            $end_date = $request->input('end_date') . ' 23:59:59';
+            $query->whereBetween('created_at', [$start_date,$end_date]);
+        } elseif ($request->filled('start_date')) {
+            // If only start_date is provided
+            $start_date = $request->input('start_date') . ' 00:00:00';
+            $query->where('created_at', '>=', $start_date);
+        } elseif ($request->filled('end_date')) {
+            // If only end_date is provided
+            $end_date = $request->input('end_date') . ' 23:59:59';
+            $query->where('created_at', '<=', $end_date);
+        }
+
+        $frequisitions = $query->where('companyId', Auth::user()->companyId)->get();
+
+         $vendors = Frequisition::where('companyId', Auth::user()->companyId)
+            ->select('vendor')
+            ->groupBy('vendor')
+            ->distinct()
+            ->get();
+        // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
+        $departments = Department::where('companyId', Auth::user()->companyId)->get();
+        $roles = userrole::all(); 
+        $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
+
+      return view('reports.filteredrequisitionsummaryreport', compact('frequisitions','vendors','departments','formFields','roles'));
+
+    }
 
 
 
@@ -145,6 +190,57 @@ class ReportController extends Controller
 
     }
 
+
+
+
+     public function purchaseordersummaryfiltered(Request $request)
+    {
+        $query = Fpurchaseorder::query();
+         
+       // dd($request->all());
+        if ($request->filled('status')) {
+            $query->where('status', 'like', '%' . $request->input('status') . '%');
+        }
+        if ($request->filled('service')) {
+            $query->where('services', 'like', '%' . $request->input('service') . '%');
+        }
+        if ($request->filled('vendor')) {
+            $query->where('vendor', 'like', '%' . $request->input('vendor') . '%');
+        }
+     
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            // If both start_date and end_date are provided
+            $start_date = $request->input('start_date') . ' 00:00:00'; // Start of the start_date
+            $end_date = $request->input('end_date') . ' 23:59:59';
+            $query->whereBetween('created_at', [$start_date,$end_date]);
+        } elseif ($request->filled('start_date')) {
+            // If only start_date is provided
+            $start_date = $request->input('start_date') . ' 00:00:00';
+            $query->where('created_at', '>=', $start_date);
+        } elseif ($request->filled('end_date')) {
+            // If only end_date is provided
+            $end_date = $request->input('end_date') . ' 23:59:59';
+            $query->where('created_at', '<=', $end_date);
+        }
+
+        $fpurchaseorders = $query->where('companyId', Auth::user()->companyId)->get();
+ 
+        $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
+        $departments = Department::where('companyId', Auth::user()->companyId)->get();
+         $vendors = Frequisition::where('companyId', Auth::user()->companyId)
+            ->select('vendor')
+            ->groupBy('vendor')
+            ->distinct()
+            ->get();
+        $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
+        $departments = Department::where('companyId', Auth::user()->companyId)->get();
+        $roles = userrole::all(); 
+        $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
+
+      return view('reports.filteredpurchaseordersummaryreport', compact('fpurchaseorders','vendors','servicetype','departments','formFields','roles'));
+
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -156,9 +252,13 @@ class ReportController extends Controller
 
         $fpurchaseorders = Fpurchaseorder::with('histories')->whereIn('status', [2, 3])->where('companyId', Auth::user()->companyId)->get();
         $roles = userrole::where('companyId', Auth::user()->companyId)->get();
+        $vendors = Frequisition::where('companyId', Auth::user()->companyId)
+            ->select('vendor')
+            ->groupBy('vendor')
+            ->distinct()
+            ->get();
 
-
-        return view('reports.purchaseorderreport' , compact('fpurchaseorders','formFields','roles','departments'));
+        return view('reports.purchaseorderreport' , compact('fpurchaseorders','formFields','roles','vendors','departments'));
     }
 
     /**

@@ -19,21 +19,15 @@
   <div class="card">
 
     {{-- BULK ACTION FORM (POST). IMPORTANT: Do NOT include any other forms inside this element --}}
-    <form id="bulkReleaseForm" action="{{ route('purchaseorder.release') }}" method="POST" class="m-0">
-      @csrf
 
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <strong>Purchase Order Summary</strong>
 
-        <div class="d-flex align-items-center gap-2">
-          {{-- <button type="submit" name="action" value="Complete_Selected_Orders"
-                  class="btn btn-primary btn-sm"
-                  style="padding:10px 20px; font-size:16px; min-width:180px;">
-            <i class="fa fa-check-double"></i> Complete Selected Orders
-          </button> --}}
-
+        <div class="card-header d-flex align-items-center justify-content-end">
+        <button type="button" class="btn btn-primary btn-sm"
+                data-bs-toggle="modal" data-bs-target="#filterModal"
+                style="padding:10px 20px; font-size:16px; min-width:120px;">
+            <i class="fa fa-check-double"></i> Filter
+        </button>
         </div>
-      </div>
 
       <div class="card-body">
         <div class="table-responsive">
@@ -139,15 +133,15 @@
                     </button>
 
 
-                    {{-- <a href="/procurement/{{ $fpurchaseorder->frequisition_id }}/view"
+                    <a href="/procurement/{{ $fpurchaseorder->id }}/viewrequisition"
                        class="btn btn-info btn-sm">
                       <span class="fa fa-desktop"></span> View
-                    </a> --}}
+                    </a>
 
-                    <button type="button" class="btn btn-success btn-sm"
+                    {{-- <button type="button" class="btn btn-success btn-sm"
                             data-bs-toggle="modal" data-bs-target="#viewdocuments{{ $fpurchaseorder->id }}">
                       <span class="fa fa-file"></span> View Documents
-                    </button>
+                    </button> --}}
                   </td>
                 </tr>
               @endforeach
@@ -155,7 +149,7 @@
           </table>
         </div>
       </div>
-    </form> {{-- END BULK FORM --}}
+   {{-- END BULK FORM --}}
 
     {{-- ===== Render modals OUTSIDE the bulk form to avoid nested forms ===== --}}
     @foreach($fpurchaseorders as $fpurchaseorder)
@@ -309,6 +303,64 @@
       </div>
     @endforeach
     {{-- ===== end modals ===== --}}
+
+    {{-- Filter Modal --}}
+<div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-md">
+    <form method="GET" action="{{ route('purchaseordersummary.filtered') }}">
+    
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="filterModalLabel">Filter Purchase Order Summary</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="form-col">
+            <label for="start_date">Date From</label>
+            <input class="form-control" id="start_date" name="start_date" type="date">
+          </div>
+
+          <div class="form-col mt-3">
+            <label for="end_date">Date To</label>
+            <input class="form-control" id="end_date" name="end_date" type="date">
+          </div>
+
+          <div class="form-col mt-3">
+            <label for="status">Status</label>
+            <select id="status" name="status" class="form-control">
+              <option value="">--Select Status--</option>
+              <option value="2">Approved</option>
+              <option value="3">Rejected</option>
+            </select>
+          </div>
+
+          <div class="form-col mt-3">
+            <label for="vendor">Vendor</label>
+            <select id="vendor" name="vendor" class="form-control">
+              <option value="">--Select Vendor--</option>
+              @foreach($vendors as $vendor)
+                <option value="{{ $vendor->vendor }}">{{ $vendor->vendor }}</option>
+              @endforeach
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <div class="d-flex justify-content-end gap-2 w-100">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal" style="padding:10px 20px; min-width:110px;">
+              Close
+            </button>
+            <button type="submit" class="btn btn-success" style="padding:10px 20px; min-width:150px;">
+              Filter Summary
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
 
   </div>
 </div>
