@@ -181,7 +181,7 @@ class ReportController extends Controller
             ->groupBy('vendor')
             ->distinct()
             ->get();
-        $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
+       // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
         $departments = Department::where('companyId', Auth::user()->companyId)->get();
         $roles = userrole::all(); 
         $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
@@ -232,7 +232,7 @@ class ReportController extends Controller
             ->groupBy('vendor')
             ->distinct()
             ->get();
-        $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
+       // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
         $departments = Department::where('companyId', Auth::user()->companyId)->get();
         $roles = userrole::all(); 
         $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
@@ -269,7 +269,7 @@ class ReportController extends Controller
 
         $requisitions = Purchaseorder::where('companyId', Auth::user()->companyId)->get();
         $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
-        $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
+       // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
         $departments = Department::where('companyId', Auth::user()->companyId)->get();
 
         return view('reports.waitingpurchaseorder', compact('requisitions','vendors','servicetype','departments'));
