@@ -26,11 +26,11 @@
         <strong>Manage Purchase Orders</strong>
 
         <div class="d-flex align-items-center gap-2">
-          <button type="submit" name="action" value="Complete_Selected_Orders"
+          {{-- <button type="submit" name="action" value="Complete_Selected_Orders"
                   class="btn btn-primary btn-sm"
                   style="padding:10px 20px; font-size:16px; min-width:180px;">
             <i class="fa fa-check-double"></i> Complete Selected Orders
-          </button>
+          </button> --}}
 
           <button type="submit" name="action" value="Release_Selected_Orders"
                   class="btn btn-success btn-sm"

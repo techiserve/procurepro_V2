@@ -38,16 +38,13 @@ class ReportController extends Controller
     public function requisitionreport()
     {
 
-        $requisitions = Requisition::where('companyId', Auth::user()->companyId)->get();
-       // $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get(); 
-         $vendors = Vendor::select(
-                'id as SupplierID', 
-                'name as SupplierName'
-            )->where('companyId', Auth::user()->companyId)->where('status','=', '3')->get(); 
-       // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
-        $departments = Department::where('companyId', Auth::user()->companyId)->get();
+        $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
+        $departments = Department::all();
 
-       return view('reports.requisitionreport', compact('requisitions','vendors','departments'));
+        $fpurchaseorders = Frequisition::with('histories')->whereIn('status', [2, 3])->where('companyId', Auth::user()->companyId)->get();
+        $roles = userrole::where('companyId', Auth::user()->companyId)->get();
+
+       return view('reports.requisitionreport', compact('fpurchaseorders','formFields','roles','departments'));
 
     }
 
@@ -154,16 +151,14 @@ class ReportController extends Controller
     public function purchaseorderreport()
     {
 
-        $requisitions = Purchaseorder::where('companyId', Auth::user()->companyId)->get();
-          $vendors = Vendor::select(
-                'id as SupplierID', 
-                'name as SupplierName'
-            )->where('companyId', Auth::user()->companyId)->where('status','=', '3')->get(); 
-        // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
-        $departments = Department::where('companyId', Auth::user()->companyId)->get();
+        $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
+        $departments = Department::all();
+
+        $fpurchaseorders = Fpurchaseorder::with('histories')->whereIn('status', [2, 3])->where('companyId', Auth::user()->companyId)->get();
+        $roles = userrole::where('companyId', Auth::user()->companyId)->get();
 
 
-        return view('reports.purchaseorderreport' , compact('requisitions','vendors','departments'));
+        return view('reports.purchaseorderreport' , compact('fpurchaseorders','formFields','roles','departments'));
     }
 
     /**
