@@ -186,7 +186,7 @@ class ReportController extends Controller
         $roles = userrole::all(); 
         $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
 
-      return view('reports.filteredpurchaseorderreport', compact('fpurchaseorders','vendors','servicetype','departments','formFields','roles'));
+      return view('reports.filteredpurchaseorderreport', compact('fpurchaseorders','vendors','departments','formFields','roles'));
 
     }
 
@@ -237,7 +237,7 @@ class ReportController extends Controller
         $roles = userrole::all(); 
         $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
 
-      return view('reports.filteredpurchaseordersummaryreport', compact('fpurchaseorders','vendors','servicetype','departments','formFields','roles'));
+      return view('reports.filteredpurchaseordersummaryreport', compact('fpurchaseorders','vendors','departments','formFields','roles'));
 
     }
 
@@ -272,7 +272,7 @@ class ReportController extends Controller
        // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
         $departments = Department::where('companyId', Auth::user()->companyId)->get();
 
-        return view('reports.waitingpurchaseorder', compact('requisitions','vendors','servicetype','departments'));
+        return view('reports.waitingpurchaseorder', compact('requisitions','vendors','departments'));
     }
 
 
