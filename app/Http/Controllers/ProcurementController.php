@@ -113,16 +113,7 @@ class ProcurementController extends Controller
     public function indexrequisition()
     {
 
-        // $emailData = [
-
-        //        'title' => 'Test from Procure Pro',
-        //        'body'  => 'This is a test email.'
-
-        // ];
-
-        // // Queue the email for background processing
-        // Mail::to('itaivincent321@gmail.com')->queue(new SendSampleEmail($emailData));
-        // dd('send mail');
+     
         // $requisitions = Requisition::with('histories')->where('userId', Auth::user()->id)->where('companyId', Auth::user()->companyId)->orwhere('isActive', '=', 1)->where('companyId', Auth::user()->companyId)->orderby('id','desc')->get();
        // $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
        // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
@@ -139,6 +130,12 @@ class ProcurementController extends Controller
           //  dd($vendors);
         
         $frequisitions = Frequisition::with('histories')->where('userId', Auth::user()->id)->where('companyId', Auth::user()->companyId)->orderby('id','desc')->get(); 
+
+        $emailData = $frequisitions;
+
+    
+        // Mail::to('b.essop@techiserve.com')->queue(new SendSampleEmail($emailData));
+       // dd('send mail');
 
         $actions = ['Purchase Requisition Approved', 'Purchase Requisition Returned', 'Purchase Requisition Rejected','Purchase Requisition Approved and Purchase Order Created'];
 
@@ -788,6 +785,15 @@ class ProcurementController extends Controller
     
     // Create the requisition
        $requisition = Frequisition::forceCreate($filteredData);
+
+      // dd($approver->roleId);
+        $user = User::where('userrole', $approver->roleId)->where('companyId', Auth::user()->companyId)->first();
+        if($user){
+        // dd();
+         Mail::to($user->email)->queue(new SendSampleEmail($filteredData));
+           
+        }
+     
  
 
            $requisitiond = RequisitionHistory::create([
@@ -1088,6 +1094,15 @@ class ProcurementController extends Controller
                     'doneby' => Auth::user()->name
                     
                    ]);
+
+
+        $user = User::where('userrole', $approver->roleId)->where('companyId', Auth::user()->companyId)->first();
+
+        if($user){
+        
+         Mail::to($user->email)->queue(new SendSampleEmail($filteredData));
+           
+        }
             
         }
 
@@ -1252,6 +1267,16 @@ class ProcurementController extends Controller
                     'doneby' => Auth::user()->name
                     
                    ]);
+
+
+
+        $user = User::where('userrole', $approver->roleId)->where('companyId', Auth::user()->companyId)->first();
+        
+        if($user){
+        
+         Mail::to($user->email)->queue(new SendSampleEmail($filteredData));
+           
+        }
             
 
         }

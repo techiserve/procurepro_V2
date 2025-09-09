@@ -109,7 +109,7 @@ return [
 
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'v.mhokore@techiserve.com'),
-        'name' => env('MAIL_FROM_NAME', 'TagPay'),
+        'name' => env('MAIL_FROM_NAME', 'Zarq'),
     ],
 
     /*

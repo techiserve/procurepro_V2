@@ -68,36 +68,14 @@
             <h2>Requisition Approval Request</h2>
         </div>
         <div class="content">
-            <p>A request for your approval for a requisition has been submitted by <strong>Subrathi</strong> from the Admin department. The details of the requisition are as follows:</p>
+            <p>A request for your approval for a requisition has been submitted on Zard.digital.</p>
             
-            <table class="details-table">
-                <tr>
-                    <td class="label">Vendor Name:</td>
-                    <td>{{$emailData['vendor']}}</td>
-                </tr>
-                <tr>
-                    <td class="label">Services:</td>
-                    <td>{{$emailData['services']}}</td>
-                </tr>
-                <tr>
-                    <td class="label">Property Name:</td>
-                    <td>{{$emailData['PropertyName']}}</td>
-                </tr>
-                <tr>
-                    <td class="label">Expenses:</td>
-                    <td>{{$emailData['expenses']}}</td>
-                </tr>
-                <tr>
-                    <td class="label">Amount:</td>
-                    <td>{{$emailData['amount']}}</td>
-                </tr>
-            </table>
 
-            <p>Please log in to your Tagpay profile to review the details and approve or reject the request. For ease of access, click the link below:</p>
+            <p>Please log in to your Zarq profile to review the details and approve or reject the request.</p>
 
 
             <p>REGARDS,</p>
-            <p><strong>TagPay System</strong></p>
+            <p><strong>Zarq</strong></p>
         </div>
     </div>
 </body>

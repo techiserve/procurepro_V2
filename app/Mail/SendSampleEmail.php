@@ -28,7 +28,7 @@ class SendSampleEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Send Sample Email',
+            subject: 'Zarq Requisition Update',
             // from: ['itaivincent321@gmail.com' => 'ProcurePro'] // Optional: Set a custom 'From' address
         );
     }
