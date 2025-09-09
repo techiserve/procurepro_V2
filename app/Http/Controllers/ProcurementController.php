@@ -776,6 +776,8 @@ class ProcurementController extends Controller
         }
     }
 
+
+    
     // Filter out null values
     $filteredData = array_filter($data, function ($value) {
         return !is_null($value);
