@@ -371,6 +371,7 @@
 
   </div> {{-- /animated --}}
 </div> {{-- /container-fluid --}}
+
 @endsection
 
 {{-- Inline script (works without jQuery) --}}
