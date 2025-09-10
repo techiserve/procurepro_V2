@@ -139,14 +139,14 @@
                         <li><a href="/reports/albarak">Al Baraka</a></li>
                         <li><a href="/reports/standardbank">Standard Bank</a></li>
                         <li><a href="/reports">Custom Reports</a></li>
-                        <li><a href="/reports/spendoverview">Spend Overview Reports</a></li>
+                        <li><a href="/dashboard/procurement">Spend Overview Reports</a></li>
                         <li><a href="/reports/procureprorequisition">ProcurePro Requisition</a></li>
                         <li><a href="/reports/procurepropurchaseorder">ProcurePro Purchase Order</a></li>
                     </ul>
                 </li>
             @endif
 
-            {{-- Company (Admin only) --}}
+        
             @if($user == 1)
                 <li>
                     <a href="#"><i class="icon-11"></i> <span>Company</span></a>
@@ -242,7 +242,7 @@
                                 <h3>Requisition Requested</h3>
                                 <h4>{{$requisitions}}</h4>
                                 <ul>
-                                    <li>10% less than last week</li>
+                               
                                 </ul>
                             </div>
                             <div class="requisition-requested-item__image"><img src="assets/img/requisition-requested-img.png" alt=""></div>
@@ -254,7 +254,7 @@
                                 <h3>Pending Requisitions</h3>
                                 <h4>{{$departments}}</h4>
                                 <ul>
-                                    <li>5% more than last week</li>
+                                  
                                 </ul>
                             </div>
                             <div class="requisition-requested-item__image"><img src="assets/img/requisition-requested-img2.png" alt=""></div>
@@ -266,7 +266,7 @@
                                 <h3>Purchase orders</h3>
                                 <h4>{{$purchaseorders}}</h4>
                                 <ul>
-                                    <li>No change from last week</li>
+                              
                                 </ul>
                             </div>
                             <div class="requisition-requested-item__image"><img src="assets/img/requisition-requested-img3.png" alt=""></div>
@@ -278,7 +278,7 @@
                                 <h3>Pending  Purchase Orders</h3>
                                 <h4>{{$userCount}}</h4>
                                 <ul>
-                                    <li>20% more than last week</li>
+                                  
                                 </ul>
                             </div>
                             <div class="requisition-requested-item__image"><img src="assets/img/requisition-requested-img4.png" alt=""></div>

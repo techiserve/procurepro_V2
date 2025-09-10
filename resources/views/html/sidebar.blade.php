@@ -117,7 +117,7 @@
                         <li><a href="/reports/albarak">Al Baraka</a></li>
                         <li><a href="/reports/standardbank">Standard Bank</a></li>
                         <li><a href="/reports">Custom Reports</a></li>
-                        <li><a href="/reports/spendoverview">Spend Overview Reports</a></li>
+                        <li><a href="/dashboard/procurement">Spend Overview Reports</a></li>
                         <li><a href="/reports/procureprorequisition">ProcurePro Requisition</a></li>
                         <li><a href="/reports/procurepropurchaseorder">ProcurePro Purchase Order</a></li>
                     </ul>

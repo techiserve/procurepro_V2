@@ -224,7 +224,7 @@ Route::post('/form/configure', [RequisitionController::class, 'storeFormConfigur
 
 
 Route::get('/reports/create', [ReportController::class, 'create'])->name('reports.create');
-Route::get('/reports/spendoverview', [ReportController::class, 'spendoverview'])->name('reports.spendoverviewreport');
+// Route::get('/reports/spendoverview', [ReportController::class, 'spendoverview'])->name('reports.spendoverviewreport');
 Route::get('/reports/procureprorequisition', [ReportController::class, 'procurepro_requisition'])->name('reports.procureprorequisition');
 Route::get('/reports/procurepropurchaseorder', [ReportController::class, 'procurepro_purchaseorder'])->name('reports.procurepropurchaseorder');
 Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
@@ -232,6 +232,14 @@ Route::post('/filter', [ReportController::class, 'filter'])->name('filter.route'
 Route::post('/custom_report/remove', [ReportController::class, 'custom_report_remove'])->name('custom_report.remove');
 Route::get('/reports/{id}', [ReportController::class, 'show'])->name('reports.show');
 Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+
+
+Route::get('/dashboard/procurement', [ReportController::class, 'spendoverview'])
+->name('procurement.dashboard');
+
+
+Route::get('/api/dashboard/procurement', [ReportController::class, 'batchedData'])
+->name('api.procurement.dashboard');
 
 Route::delete('/reports/destroy/{id}', [ReportController::class, 'destroy'])->name('reports.destroy');
 

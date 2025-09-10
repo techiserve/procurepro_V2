@@ -130,7 +130,7 @@ class ProcurementController extends Controller
           //  dd($vendors);
         
         $frequisitions = Frequisition::with('histories')->where('userId', Auth::user()->id)->where('companyId', Auth::user()->companyId)->orderby('id','desc')->get(); 
-
+    //  dd($frequisitions);
         $emailData = $frequisitions;
 
     

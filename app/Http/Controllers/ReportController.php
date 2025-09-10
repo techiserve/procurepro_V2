@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Rolepermission;
 use Alert;
 use DB;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 use App\Models\CompanyRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -401,12 +403,144 @@ class ReportController extends Controller
 
           public function spendoverview()
         {
-            return view('reports.spendoverviewreport');
+            return view('procurement.dashboard');
         }
 
-    /**
-     * Update the specified resource in storage.
-     */
+       
+
+public function batchedData(Request $request)
+{
+    $monthsBack = (int)($request->query('months', 12));
+    $companyId  = $request->query('companyId');
+    $dateFrom   = $request->query('date_from'); // YYYY-MM-DD
+    $dateTo     = $request->query('date_to');   // YYYY-MM-DD
+
+    $from = $dateFrom ? Carbon::parse($dateFrom)->startOfDay() : null;
+    $to   = $dateTo   ? Carbon::parse($dateTo)->endOfDay()     : null;
+
+    $cacheKey = 'proc_dashboard_v3:'
+        . ($from?->toDateString() ?? 'null') . ':'
+        . ($to?->toDateString() ?? 'null') . ':'
+        . 'months:' . $monthsBack . ':company:' . ($companyId ?? 'all');
+
+    $payload = Cache::remember($cacheKey, now()->addMinutes(5), function () use ($monthsBack, $companyId, $from, $to) {
+        [$labels, $spendSeries] = $this->spendByMonth($monthsBack, $companyId, $from, $to);
+
+        return [
+            'spendByMonth'     => ['labels' => $labels, 'data' => $spendSeries],
+            'spendByCategory'  => $this->spendByCategory($companyId, $from, $to),
+            'vendorShare'      => $this->vendorShare(8, $companyId, $from, $to),
+            'statusBreakdown'  => $this->statusBreakdown($companyId, $from, $to),
+            'meta'             => ['generated_at' => now()->toDateTimeString()],
+        ];
+    });
+
+    return response()->json($payload);
+}
+
+/**
+ * Monthly spend (sum(invoiceamount)) grouped by month, filtered by optional date range.
+ */
+private function spendByMonth(int $monthsBack = 12, $companyId = null, ?Carbon $from = null, ?Carbon $to = null): array
+{
+    // Determine span
+    if ($from && $to) {
+        $start = (clone $from)->startOfMonth();
+        $end   = (clone $to)->startOfMonth();
+    } else {
+        $start = now()->startOfMonth()->subMonths($monthsBack - 1);
+        $end   = now()->startOfMonth();
+    }
+
+    $query = Fpurchaseorder::query()
+        ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as ym, SUM(COALESCE(CAST(invoiceamount AS DECIMAL(15,2)),0)) as total");
+
+    if ($companyId) { $query->where('companyId', $companyId); }
+    if ($from && $to) { $query->whereBetween('created_at', [$from, $to]); }
+    else { $query->where('created_at', '>=', $start); }
+
+    $rows = $query->groupBy('ym')->orderBy('ym')->get();
+
+    // Build continuous monthly sequence from $start..$end
+    $labels = [];
+    $dataMap = $rows->pluck('total', 'ym');
+    $cursor = (clone $start);
+    $series = [];
+
+    while ($cursor <= $end) {
+        $key = $cursor->format('Y-m');
+        $labels[] = $cursor->format('M Y');
+        $series[] = (float) ($dataMap[$key] ?? 0);
+        $cursor->addMonth();
+    }
+
+    return [$labels, $series];
+}
+
+private function spendByCategory($companyId = null, ?Carbon $from = null, ?Carbon $to = null): array
+{
+    $query = Fpurchaseorder::query()
+        ->selectRaw("COALESCE(NULLIF(TRIM(expenses), ''), 'Unspecified') as label, SUM(COALESCE(CAST(invoiceamount AS DECIMAL(15,2)),0)) as total");
+    if ($companyId) { $query->where('companyId', $companyId); }
+    if ($from && $to) { $query->whereBetween('created_at', [$from, $to]); }
+
+    $rows = $query->groupBy('label')->orderByDesc('total')->get();
+
+    return [
+        'labels' => $rows->pluck('label')->values(),
+        'data'   => $rows->pluck('total')->map(fn($v) => (float)$v)->values(),
+    ];
+}
+
+private function vendorShare(int $topK = 8, $companyId = null, ?Carbon $from = null, ?Carbon $to = null): array
+{
+    $query = Fpurchaseorder::query()
+        ->selectRaw("COALESCE(NULLIF(TRIM(vendor), ''), 'Unknown') as label, SUM(COALESCE(CAST(invoiceamount AS DECIMAL(15,2)),0)) as total");
+    if ($companyId) { $query->where('companyId', $companyId); }
+    if ($from && $to) { $query->whereBetween('created_at', [$from, $to]); }
+
+    $rows = $query->groupBy('label')->orderByDesc('total')->get();
+
+    $sorted = $rows->sortByDesc('total')->values();
+    $top    = $sorted->take($topK);
+    $rest   = $sorted->slice($topK);
+
+    $labels = $top->pluck('label')->all();
+    $data   = $top->pluck('total')->map(fn($v) => (float)$v)->all();
+
+    if ($rest->isNotEmpty()) {
+        $labels[] = 'Others';
+        $data[]   = (float) $rest->sum('total');
+    }
+
+    return compact('labels', 'data');
+}
+
+private function statusBreakdown($companyId = null, ?Carbon $from = null, ?Carbon $to = null): array
+{
+    $query = Frequisition::query()->select('status', DB::raw('COUNT(*) as cnt'));
+    if ($companyId) { $query->where('companyId', $companyId); }
+    if ($from && $to) { $query->whereBetween('created_at', [$from, $to]); }
+
+    $rows = $query->groupBy('status')->orderBy('status')->get();
+
+    // Map numeric codes → human labels
+    $statusMap = [
+        0 => 'Pending',
+        1 => 'Pending',
+        2 => 'Approved',
+        3 => 'Rejected',
+        4 => 'Returned',
+        6 => 'Voided',
+    ];
+
+    return [
+        'labels' => $rows->map(fn($r) => $statusMap[$r->status] ?? 'Processing')->values(),
+        'data'   => $rows->pluck('cnt')->map(fn($v) => (int)$v)->values(),
+    ];
+}
+ 
+     
  
 public function filter(Request $request)
 {

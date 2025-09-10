@@ -106,31 +106,7 @@
                   </td>
 
                   <td class="text-center">
-                    @if($frequisition->status == 0 || $frequisition->status == 1)
-                      <button type="button" class="btn btn-outline-primary">
-                        <span class="fa fa-spinner"></span> Pending
-                      </button>
-                    @elseif($frequisition->status == 2)
-                      <button type="button" class="btn btn-outline-success">
-                        <span class="fa fa-check-circle"></span> Approved
-                      </button>
-                    @elseif($frequisition->status == 3)
-                      <button type="button" class="btn btn-outline-danger">
-                        <span class="fa fa-times-circle"></span> Rejected
-                      </button>
-                    @elseif($frequisition->status == 4)
-                      <button type="button" class="btn btn-outline-info">
-                        <span class="fa fa-arrow-left"></span> Returned
-                      </button>
-                    @elseif($frequisition->status == 6)
-                      <button type="button" class="btn btn-outline-danger">
-                        <span class="fa fa-arrow-left"></span> Voided
-                      </button>
-                    @else
-                      <button type="button" class="btn btn-outline-primary">
-                        <span class="fa fa-spinner"></span> Processing
-                      </button>
-                    @endif
+            
                   </td>
 
                   <td class="text-center">
