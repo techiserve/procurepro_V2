@@ -579,6 +579,48 @@ public function filter(Request $request)
 
         }
 
+        
+          public function procurepro_purchaseorder()
+        {
+            //  $rows = DB::connection('legacy')
+            // ->table('vpms_purchase_order')
+            // ->limit(50)
+            // ->get();
+
+            // dd($rows);
+
+            if(Auth::user()->userName == 'Olive Wreath Foundation'){
+                $companyId = 41; // Admin companyId
+                $suffix = 'PR-AUW-';
+
+            } elseif(Auth::user()->userName == 'Muldersdrift Wellness Centre NPC'){
+                $companyId = 33; // Admin companyId
+                 $suffix = 'PO-MWC-';
+
+            } elseif(Auth::user()->userName == 'Qurtuba Online Academy'){
+                $companyId = 28; // Other users
+                 $suffix = 'PO-QOA-';
+
+            }else{
+                 $companyId = 28; // Other users
+                 $suffix = 'N/A';
+            }
+
+             // dd($suffix);
+
+             $requisitions = DB::connection('legacy')
+            ->table('vpms_purchase_order') // <-- replace with your table name
+            ->where('unique_id', 'like', $suffix.'%')
+            ->orderByRaw('CAST(SUBSTRING_INDEX(unique_id, "-", -1) AS UNSIGNED)') // natural numeric order
+           // ->limit(50)
+            ->get();
+            
+         //   dd($requisitions);
+
+             return view('reports.procurepropurchaseorder', compact('requisitions'));
+
+        }
+
    
 }
 
