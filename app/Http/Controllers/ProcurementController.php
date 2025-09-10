@@ -792,7 +792,7 @@ class ProcurementController extends Controller
         $user = User::where('userrole', $approver->roleId)->where('companyId', Auth::user()->companyId)->first();
         if($user){
         // dd();
-         Mail::to($user->email)->queue(new SendSampleEmail($filteredData));
+         Mail::to('itaivincent321@gmail.com')->queue(new SendSampleEmail($filteredData));
            
         }
      
@@ -1102,7 +1102,7 @@ class ProcurementController extends Controller
 
         if($user){
         
-         Mail::to($user->email)->queue(new SendSampleEmail($filteredData));
+         Mail::to('itaivincent321@gmail.com')->queue(new SendSampleEmail($filteredData));
            
         }
             
@@ -1276,7 +1276,7 @@ class ProcurementController extends Controller
         
         if($user){
         
-         Mail::to($user->email)->queue(new SendSampleEmail($filteredData));
+         Mail::to('itaivincent321@gmail.com')->queue(new SendSampleEmail($filteredData));
            
         }
             
