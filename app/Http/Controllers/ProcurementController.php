@@ -113,7 +113,6 @@ class ProcurementController extends Controller
     public function indexrequisition()
     {
 
-     
         // $requisitions = Requisition::with('histories')->where('userId', Auth::user()->id)->where('companyId', Auth::user()->companyId)->orwhere('isActive', '=', 1)->where('companyId', Auth::user()->companyId)->orderby('id','desc')->get();
        // $vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
        // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
@@ -792,7 +791,7 @@ class ProcurementController extends Controller
         $user = User::where('userrole', $approver->roleId)->where('companyId', Auth::user()->companyId)->first();
         if($user){
         // dd();
-         Mail::to('itaivincent321@gmail.com')->queue(new SendSampleEmail($filteredData));
+         Mail::to($user->email)->queue(new SendSampleEmail($filteredData));
            
         }
      
@@ -1102,7 +1101,7 @@ class ProcurementController extends Controller
 
         if($user){
         
-         Mail::to('itaivincent321@gmail.com')->queue(new SendSampleEmail($filteredData));
+         Mail::to($user->email)->queue(new SendSampleEmail($filteredData));
            
         }
             
@@ -1276,7 +1275,7 @@ class ProcurementController extends Controller
         
         if($user){
         
-         Mail::to('itaivincent321@gmail.com')->queue(new SendSampleEmail($filteredData));
+         Mail::to($user->email)->queue(new SendSampleEmail($filteredData));
            
         }
             
