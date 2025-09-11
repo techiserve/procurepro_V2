@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->string('po')->nullable();
             $table->integer('IsActive')->nullable();
+            $table->integer('notifications')->nullable();
             $table->integer('companyId')->nullable();
             $table->integer('userId')->nullable();
             $table->timestamps();

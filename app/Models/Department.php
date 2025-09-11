@@ -14,6 +14,7 @@ class Department extends Model
         'name',
         'po',
         'IsActive',
+        'notifications',
         'companyId',
         'userId',
        

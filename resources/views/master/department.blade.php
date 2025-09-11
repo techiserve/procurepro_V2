@@ -38,6 +38,14 @@
                                     <label class="form-check-label" for="flexSwitchCheckDefault">Active</label>
                                 </div>
                             </div>
+
+
+                             <div class="col-md-1 col-form-label">
+                                <div class="form-check form-switch" style="margin-top:7px;">
+                                    <input class="form-check-input" type="checkbox" role="switch" name="notifications" value="1" id="flexSwitchCheckDefault" />
+                                    <label class="form-check-label" for="flexSwitchCheckDefault">Notifications?</label>
+                                </div>
+                            </div>
                         </div>
 
                         <hr style="border-color:black;"><br>

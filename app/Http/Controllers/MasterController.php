@@ -179,6 +179,7 @@ class MasterController extends Controller
         $executive->userId = $userId;
         $executive->companyId = $companyId;
         $executive->IsActive = $request->IsActive;   
+        $executive->notifications = $request->notifications;  
         $executive->po = $request->po;     
         $executive->save();
     
@@ -295,7 +296,8 @@ class MasterController extends Controller
         $updatedepartment = Department::where('id', $id)->update([
 
            'name' => $request->departmentname,
-           'IsActive' => $request->IsActive
+           'IsActive' => $request->IsActive,
+            'notifications' => $request->notifications
         ]);
 
         $department = Department::where('id', $id)->first();

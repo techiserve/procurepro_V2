@@ -35,11 +35,19 @@
               </div> 
 
               @php  $active = $department->IsActive; @endphp  
-        
+              @php  $notification = $department->notifications; @endphp 
+
               <div class="col-md-1 col-form-label d-flex align-items-center">
                 <div class="form-check form-switch">
                   <input class="form-check-input" type="checkbox" role="switch" name="IsActive" value="1" id="flexSwitchCheckDefault" @if($active) checked @endif>
                   <label class="form-check-label" for="flexSwitchCheckDefault">Active</label>
+                </div>
+              </div>
+
+                <div class="col-md-1 col-form-label d-flex align-items-center">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" role="switch" name="notifications" value="1" id="flexSwitchCheckDefault" @if($notification) checked @endif>
+                  <label class="form-check-label" for="flexSwitchCheckDefault">Notifications</label>
                 </div>
               </div>
             </div>
