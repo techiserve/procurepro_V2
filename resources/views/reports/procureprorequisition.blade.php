@@ -134,7 +134,7 @@
 
                     {{-- Make Action column sortable by giving it a data-order key (use Unique ID) --}}
                     <td class="text-center" data-order="{{ $req->unique_id }}">
-                        <a href='/requisitions/{{ $req->unique_id }}' class="btn btn-icon btn-success">
+                        <a href='/procureprorequisition/{{ $req->unique_id }}/view' class="btn btn-icon btn-success">
                             <i class=""></i> Documents
                         </a>
                     </td>

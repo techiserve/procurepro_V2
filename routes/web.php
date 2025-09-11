@@ -154,6 +154,8 @@ Route::middleware('auth')->group(function () {
      Route::put('/procurement/{id}/sendback', [ProcurementController::class, 'sendbackpurchaseorder'])->name('procurement.sendbackpurchaseorder');
      Route::get('download-pdf/{filename}', [YourController::class, 'downloadPDF'])->name('download.pdf');
      Route::get('/procurement/createVendor', [ProcurementController::class, 'createVendor'])->name('procurement.createVendor');
+     Route::get('/procureprorequisition/{id}/view', [ReportController::class, 'procureprorequisition'])->name('procurement.procureprorequisition');
+     Route::get('/procurepropurchaseorder/{id}/view', [ReportController::class, 'procurepropurchaseorder'])->name('procurement.procurepropurchaseorder');
 
 
 

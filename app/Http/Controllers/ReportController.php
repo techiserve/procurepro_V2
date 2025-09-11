@@ -764,6 +764,52 @@ public function filter(Request $request)
 
         }
 
+
+           public function procureprorequisition(string $id)
+        {
+
+        
+             $requisition = DB::connection('legacy')
+            ->table('vpms_purchase_requisition') // <-- replace with your table name
+            ->where('unique_id', '=', $id)
+            ->first();
+
+
+            $documents = DB::connection('legacy')
+            ->table('vpms_documnets_master') // <-- replace with your table name
+            ->where('master_id', '=', $requisition->purchase_req_id)
+            ->get();
+           
+
+
+             return view('reports.viewprocureprorequisition', compact('requisition','documents'));
+
+        }
+
+
+
+
+         public function procurepropurchaseorder(string $id)
+        {
+            //  $rows = DB::connection('legacy')
+         $purchaseOrder = DB::connection('legacy')
+            ->table('vpms_purchase_order') // <-- replace with your table name
+            ->where('purchase_id', '=', $id)
+            ->first();
+        
+           // dd($purchaseOrder,$id);
+
+            $documents = DB::connection('legacy')
+            ->table('vpms_documnets_master') // <-- replace with your table name
+            ->where('master_id', '=', $purchaseOrder->purchase_req_id)
+            ->get();
+           
+
+
+             return view('reports.viewprocurepropurchaseorder', compact('purchaseOrder','documents'));
+
+        }
+
    
 }
 

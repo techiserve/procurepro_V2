@@ -146,7 +146,7 @@
                     <td class="text-center">{{ $req->modified_date }}</td>
                     <td class="text-center">{{ $req->created_date }}</td>
                     <td class="text-center" data-order="{{ $req->purchase_id }}">
-                        <a href="/purchase-orders/{{ $req->purchase_id }}" class="btn btn-icon btn-success">
+                        <a href="/procurepropurchaseorder/{{ $req->purchase_id }}/view" class="btn btn-icon btn-success">
                             Documents
                         </a>
                     </td>
