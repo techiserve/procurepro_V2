@@ -955,6 +955,14 @@ class ProcurementController extends Controller
 
        if($requisition){
 
+        $user = User::where('userrole', $approver->roleId)->where('companyId', Auth::user()->companyId)->first();
+    
+        if($user && $departmentName->notifications == 1){
+   
+         Mail::to($user->email)->queue(new SendSampleEmail($filteredData));
+           
+        }
+
         return redirect()->route('procurement.indexpurchaseorder')->with('success', 'Documents Uploaded successfully!');
     }
       return back()->with('error', 'Failed to update documents!');
