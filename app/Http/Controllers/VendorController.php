@@ -62,7 +62,7 @@ class VendorController extends Controller
 
         // force status = 3
         $payload['status'] = 3;
-        $payload['companyId'] = 52; 
+        $payload['companyId'] = Auth::user()->companyIddo; 
 
         Vendor::create($payload);
     }
