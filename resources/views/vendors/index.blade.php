@@ -48,6 +48,7 @@
                 </tr>
             </thead>
             <tbody>
+                 @if($vendors->count())
                 @forelse($vendors as $vendor)
                 @php
                     $statusLabels = [
@@ -157,7 +158,11 @@
                     <td colspan="8" class="text-center">No vendors found.</td>
                 </tr>
                 @endforelse
+                @endif
             </tbody>
+            @if(!$vendors->count())
+  <div class="mt-3 alert alert-secondary">No vendors found.</div>
+@endif
         </table>
     </div>
 
@@ -195,14 +200,24 @@
 {{-- pdfmake for PDF --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-
 <script>
-// ===== DataTable init (clone of requisitions behavior) =====
+// ====================== Vendors Table JS ======================
+// Requires: jQuery, DataTables 1.13.8 (+ responsive), pdfMake, XLSX
+// Expects the following IDs in your Blade:
+// #myTable, #tableSearch, #pageLength, #prevBtn, #nextBtn, #rangeLabel,
+// #copyBtn, #csvBtn, #excelBtn, #pdfBtn, #copyPopup
+
 (function() {
   const tableEl = document.getElementById('myTable');
   if (!tableEl) return;
 
-  // Initialize DataTable and expose as window.vendorDT
+  // Silence DataTables alert popups and handle errors in console
+  $.fn.dataTable.ext.errMode = 'none';
+  $(tableEl).on('error.dt', function(e, settings, techNote, message){
+    console.warn('DataTables:', message);
+  });
+
+  // Init DataTable (mirrors your requisitions behavior)
   window.vendorDT = $(tableEl).DataTable({
     responsive: true,
     processing: false,
@@ -211,35 +226,37 @@
     lengthChange: false,
     info: true,
     order: [[0, 'asc']], // sort by Name
-
     columnDefs: [
       { targets: -1, searchable: false },               // Action not searchable
-      { targets: [0, 3, 6, 7], responsivePriority: 1 }, // keep key cols on small screens
+      { targets: [0, 3, 6, 7], responsivePriority: 1 }, // key cols on small screens
     ],
-
-    dom: 't<"dt-bottom"ip>' // table + (info/paging) at bottom; custom controls wired below
+    dom: 't<"dt-bottom"ip>',
+    language: {
+      emptyTable: "No vendors found.",
+      zeroRecords: "No matching vendors."
+    }
   });
 
-  // Custom search box
+  // Custom search
   document.getElementById('tableSearch')?.addEventListener('input', function() {
     window.vendorDT.search(this.value).draw();
   });
 
-  // Records-per-page selector (mirrors inspiration)
+  // Records-per-page selector
   document.getElementById('pageLength')?.addEventListener('change', function() {
-    window.vendorDT.page.len(parseInt(this.value, 10)).draw();
+    window.vendorDT.page.len(parseInt(this.value, 10)).draw('page');
   });
 
   // Prev/Next buttons
   document.getElementById('prevBtn')?.addEventListener('click', () => window.vendorDT.page('previous').draw('page'));
   document.getElementById('nextBtn')?.addEventListener('click', () => window.vendorDT.page('next').draw('page'));
 
-  // Update range label: "X to Y of Z"
+  // Range label: "X to Y of Z"
   const rangeEl = document.getElementById('rangeLabel');
   if (rangeEl) {
     window.vendorDT.on('draw', function() {
       const info = window.vendorDT.page.info();
-      rangeEl.textContent = `${info.start + 1} to ${info.end} of ${info.recordsDisplay}`;
+      rangeEl.textContent = `${info.recordsDisplay ? info.start + 1 : 0} to ${info.end} of ${info.recordsDisplay}`;
     });
     window.vendorDT.draw(false);
   }
@@ -263,9 +280,11 @@ function getTableData(dt) {
   return { headers, rows };
 }
 
+function hasRows(dt){ return dt && dt.rows({search:'applied'}).count() > 0; }
+
 // ===== COPY =====
 document.getElementById('copyBtn')?.addEventListener('click', function(e) {
-  const dt = window.vendorDT; if (!dt) return;
+  const dt = window.vendorDT; if (!hasRows(dt)) return;
   const { headers, rows } = getTableData(dt);
   const text = [headers.join('\t'), ...rows.map(r => r.join('\t'))].join('\n');
   navigator.clipboard.writeText(text).then(() => {
@@ -273,6 +292,7 @@ document.getElementById('copyBtn')?.addEventListener('click', function(e) {
     if (!popup) return;
     popup.textContent = 'Copied!';
     popup.style.opacity = 1;
+    popup.style.position = 'fixed';
     const btnRect = e.target.getBoundingClientRect();
     popup.style.left = (btnRect.left + (btnRect.width/2) - 60) + 'px';
     popup.style.top  = (btnRect.top - 35) + 'px';
@@ -282,19 +302,23 @@ document.getElementById('copyBtn')?.addEventListener('click', function(e) {
 
 // ===== CSV =====
 document.getElementById('csvBtn')?.addEventListener('click', function() {
-  const dt = window.vendorDT; if (!dt) return;
+  const dt = window.vendorDT; if (!hasRows(dt)) return;
   const { headers, rows } = getTableData(dt);
   const esc = (s) => '"' + String(s).replace(/"/g, '""') + '"';
   const lines = [headers.map(esc).join(',')].concat(rows.map(r => r.map(esc).join(',')));
   const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
   const url = URL.createObjectURL(blob);
   const a = Object.assign(document.createElement('a'), { href: url, download: 'vendors.csv' });
-  a.click(); URL.revokeObjectURL(url);
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
 });
 
 // ===== EXCEL (xlsx) =====
 document.getElementById('excelBtn')?.addEventListener('click', function() {
-  const dt = window.vendorDT; if (!dt) return;
+  const dt = window.vendorDT; if (!hasRows(dt)) return;
+  if (typeof XLSX === 'undefined') { alert('XLSX not loaded'); return; }
   const { headers, rows } = getTableData(dt);
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
@@ -304,7 +328,8 @@ document.getElementById('excelBtn')?.addEventListener('click', function() {
 
 // ===== PDF (pdfmake) =====
 document.getElementById('pdfBtn')?.addEventListener('click', function() {
-  const dt = window.vendorDT; if (!dt) return;
+  const dt = window.vendorDT; if (!hasRows(dt)) return;
+  if (typeof pdfMake === 'undefined') { alert('pdfMake not loaded'); return; }
   const { headers, rows } = getTableData(dt);
   const body = [
     headers.map(h => ({ text: h, style: 'tableHeader' })),
@@ -313,9 +338,7 @@ document.getElementById('pdfBtn')?.addEventListener('click', function() {
   const docDefinition = {
     content: [
       { text: 'Vendors', style: 'header' },
-      {
-        table: { headerRows: 1, widths: Array(headers.length).fill('*'), body }
-      }
+      { table: { headerRows: 1, widths: Array(headers.length).fill('*'), body } }
     ],
     styles: {
       header: { fontSize: 16, bold: true, margin: [0,0,0,10] },
@@ -326,4 +349,5 @@ document.getElementById('pdfBtn')?.addEventListener('click', function() {
   pdfMake.createPdf(docDefinition).download('vendors.pdf');
 });
 </script>
+
 @endsection
