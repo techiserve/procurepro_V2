@@ -20,53 +20,53 @@ class VendorController extends Controller
     {     
 
 
-       DB::transaction(function () {
-    // fetch records from legacy DB
-    $provenders = DB::connection('legacy')
-        ->table('vpms_vendor_management')
-        ->where('finance_manager', '=', 72)
-        ->get();
+//        DB::transaction(function () {
+//     // fetch records from legacy DB
+//     $provenders = DB::connection('legacy')
+//         ->table('vpms_vendor_management')
+//         ->where('finance_manager', '=', 72)
+//         ->get();
 
-    // map old → new fields
-    $fieldMap = [
-        'name'                => 'name',
-        'type'                => 'type',
-        'description'         => 'description',
-        'vat_registered'      => 'vat_registered',
-        'local_international' => 'local_international',
-        'contact_no_1'        => 'contact_no_1',
-        'contact_no_2'        => 'contact_no_2',
-        'finance_manager'     => 'finance_manager',
-        'address'             => 'address',
-        'supplier_code'       => 'supplier_code',
-        'vat_allocation'      => 'vat_allocation',
-        'active'              => 'active',
-        'branch_code'         => 'branch_code',
+//     // map old → new fields
+//     $fieldMap = [
+//         'name'                => 'name',
+//         'type'                => 'type',
+//         'description'         => 'description',
+//         'vat_registered'      => 'vat_registered',
+//         'local_international' => 'local_international',
+//         'contact_no_1'        => 'contact_no_1',
+//         'contact_no_2'        => 'contact_no_2',
+//         'finance_manager'     => 'finance_manager',
+//         'address'             => 'address',
+//         'supplier_code'       => 'supplier_code',
+//         'vat_allocation'      => 'vat_allocation',
+//         'active'              => 'active',
+//         'branch_code'         => 'branch_code',
 
-        // renamed / corrected
-        'banck_name'          => 'bank_name',
-        'account_no'          => 'account_number',
-        'account_type'        => 'account_type',
-        // status_code intentionally ignored now
-    ];
+//         // renamed / corrected
+//         'banck_name'          => 'bank_name',
+//         'account_no'          => 'account_number',
+//         'account_type'        => 'account_type',
+//         // status_code intentionally ignored now
+//     ];
 
-    foreach ($provenders as $row) {
-        $payload = [];
+//     foreach ($provenders as $row) {
+//         $payload = [];
 
-        foreach ($fieldMap as $oldKey => $newKey) {
-            $val = $row->$oldKey ?? null;
-            if (!is_null($val)) {
-                $payload[$newKey] = $val;
-            }
-        }
+//         foreach ($fieldMap as $oldKey => $newKey) {
+//             $val = $row->$oldKey ?? null;
+//             if (!is_null($val)) {
+//                 $payload[$newKey] = $val;
+//             }
+//         }
 
-        // force status = 3
-        $payload['status'] = 3;
-        $payload['companyId'] = Auth::user()->companyId; 
+//         // force status = 3
+//         $payload['status'] = 3;
+//         $payload['companyId'] = Auth::user()->companyId; 
 
-        Vendor::create($payload);
-    }
-});
+//         Vendor::create($payload);
+//     }
+// });
         
         $vendors = Vendor::with('history')->where('companyId', Auth::user()->companyId)->get();
         $users = User::where('companyId', Auth::user()->companyId)->get();
