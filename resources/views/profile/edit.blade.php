@@ -1,5 +1,4 @@
-@extends('stack.layouts.admin')
-
+@extends('html.default')
 @section('content')
 <div class="content-header row">
                 <div class="content-header-left col-md-6 col-12 mb-2">
