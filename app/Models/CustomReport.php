@@ -9,5 +9,5 @@ class CustomReport extends Model
 {
     use HasFactory;
 
-       protected $fillable = ['name','companyId', 'description', 'config'];
+       protected $fillable = ['name','companyId', 'description', 'config','report_type'];
 }

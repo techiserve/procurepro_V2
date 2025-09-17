@@ -347,6 +347,7 @@ class ReportController extends Controller
             'companyId' => $request->companyId,
             'name' => $validated['report_name'],
             'description' => $request->filterfield,
+            'report_type' => $request->report_type,
             'config' => json_encode($validated['columns'])
         ]);
 
@@ -368,6 +369,8 @@ class ReportController extends Controller
                 ->prepend('id')
                 ->toArray();
 
+      if($report->report_type == 'purchase_order'){
+                //  dd($report->report_type); 
             $fpurchaseorder = DB::table('fpurchaseorders')
                 ->where('companyId', Auth::user()->companyId)
                 ->where('uploadStatus', '=', null)
@@ -383,6 +386,23 @@ class ReportController extends Controller
             ->groupBy($report->description)
             ->pluck($report->description)
             ->toArray();  
+
+              }else{
+                  //  dd($report->report_type); 
+
+                $fpurchaseorder = DB::table('frequisitions')
+                ->where('companyId', Auth::user()->companyId)
+                ->select($columns)
+                ->get();
+
+             $filters = DB::table('frequisitions')
+            ->where('companyId', Auth::user()->companyId)
+            ->select($report->description)
+            ->groupBy($report->description)
+            ->pluck($report->description)
+            ->toArray(); 
+            
+            }
 
          // dd($filters);
 

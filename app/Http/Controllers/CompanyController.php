@@ -294,9 +294,13 @@ class CompanyController extends Controller
      public function configure(string $id)
     {
         $company = Company::where('id', $id)->first();
-        $fpurchaseorderColumns = \Schema::getColumnListing('fpurchaseorders');
 
-        return view('companies.configure', compact('company','fpurchaseorderColumns'));
+        //$departments = Departmentapproval::where('companyId', $id)->get
+        $fpurchaseorderColumns = \Schema::getColumnListing('fpurchaseorders');
+        $frequistionsColumns = \Schema::getColumnListing('frequisitions');
+     //   dd($fpurchaseorderColumns,$frequistionsColumns);
+
+        return view('companies.configure', compact('company','fpurchaseorderColumns','frequistionsColumns'));
 
     }
 

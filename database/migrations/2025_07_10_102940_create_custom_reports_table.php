@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('companyId');
+            $table->string('report_type');
             $table->text('description')->nullable();
-            $table->json('config'); // stores columns definition
+            $table->json('config'); 
             $table->timestamps();
         });
     }

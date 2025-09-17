@@ -20,12 +20,16 @@
 
           <div class="card-body">
            <h2 class="mb-4">Create Custom Reports</h2>
+           
+<!-- Store both column arrays as JSON -->
 <input type="hidden" id="fpurchaseorderColumnsJson" value='@json($fpurchaseorderColumns)'>
+<input type="hidden" id="frequisitionsColumnsJson" value='@json($frequistionsColumns)'>
+
   <form method="POST" action="{{ route('reports.store') }}" id="customReportForm">
     @csrf
 
      <div class="row">
-    <div class="col-md-6 mb-3">
+    <div class="col-md-4 mb-3">
         <div class="form-group">
       <label for="report_name" class="form-label">Report Name</label>
       <input type="text" name="report_name" id="report_name" class="form-control" required>
@@ -34,20 +38,34 @@
 
       <input type="hidden" name="companyId" id="" value="{{$company->id}}" class="form-control" required>
 
-    <div class="col-md-6 mb-3">
+    <!-- New Report Type Dropdown -->
+    <div class="col-md-4 mb-3">
         <div class="form-group">
-      <label for="report_description" class="form-label">Select Filter Field</label>
-       <select name="filterfield" class="form-control column-select">
-                    @foreach($fpurchaseorderColumns as $column)
-                    <option value="{{ $column }}">{{ $column }}</option>
-                    @endforeach
+            <label for="report_type" class="form-label">Report Type</label>
+            <select name="report_type" id="report_type" class="form-control" required>
+                <option value="">Select Report Type</option>
+                <option value="purchase_order">Purchase Order</option>
+                <option value="requisition">Requisition</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="form-group">
+      <label for="filterfield" class="form-label">Select Filter Field</label>
+       <select name="filterfield" id="filterfield" class="form-control filter-select" disabled>
+                    <option value="">Select report type first</option>
                 </select>
     </div>
     </div>
 </div>
 
     <h5 class="mt-4">Columns</h5>
-    <div class="table-responsive mb-3">
+    <div class="alert alert-info" id="selectTypeAlert">
+        <i class="fas fa-info-circle"></i> Please select a Report Type first to configure columns.
+    </div>
+    
+    <div class="table-responsive mb-3" id="columnTableWrapper" style="display: none;">
       <table class="table table-bordered" id="columnConfigTable">
         <thead>
           <tr>
@@ -59,25 +77,13 @@
           </tr>
         </thead>
         <tbody id="columnConfigBody">
-           <tr>
-                <td><input type="text" name="columns[0][label]" class="form-control" required></td>
-                <td>
-                <select name="columns[0][column]" class="form-control column-select">
-                    @foreach($fpurchaseorderColumns as $column)
-                    <option value="{{ $column }}">{{ $column }}</option>
-                    @endforeach
-                </select>
-                </td>
-                <td class="text-center"><input type="checkbox" name="columns[0][blank]" value="1"></td>
-                <td><input type="text" name="columns[0][default]" class="form-control" placeholder="Optional default"></td>
-                <td><button type="button" class="btn btn-danger btn-sm remove-row">Remove</button></td>
-            </tr>
+           <!-- Initial row will be added dynamically -->
         </tbody>
       </table>
       <button type="button" class="btn btn-info" id="addColumnBtn">Add Column</button>
     </div>
 
-    <button type="submit" class="btn btn-success">Save Report</button>
+    <button type="submit" class="btn btn-success" id="submitBtn" disabled>Save Report</button>
   </form>
           </div>
 
@@ -106,55 +112,126 @@
 
 <script>
 $(document).ready(function () {
-  let rowCount = 1;
+  let rowCount = 0;
+  let currentColumns = [];
+  
+  const fpurchaseorderColumns = JSON.parse(document.getElementById('fpurchaseorderColumnsJson').value);
+  const frequisitionsColumns = JSON.parse(document.getElementById('frequisitionsColumnsJson').value);
 
-  const columnList = JSON.parse(document.getElementById('fpurchaseorderColumnsJson').value);
-
-  function generateColumnOptionsHTML() {
+  function generateColumnOptionsHTML(columns) {
     return '<option value="">Select a column</option>' + 
-           columnList.map(col => `<option value="${col}">${col}</option>`).join('');
+           columns.map(col => `<option value="${col}">${col}</option>`).join('');
   }
 
   function initializeSelect2() {
     // Destroy existing Select2 instances first
-    $('.column-select').select2('destroy').off('select2:open select2:close');
+    $('.column-select').each(function() {
+        if ($(this).data('select2')) {
+            $(this).select2('destroy');
+        }
+    });
+    
+    $('.filter-select').each(function() {
+        if ($(this).data('select2')) {
+            $(this).select2('destroy');
+        }
+    });
     
     // Initialize Select2
     $('.column-select').select2({
       width: '100%',
       placeholder: 'Select a column',
       allowClear: true,
-      theme: 'bootstrap-5' // Use bootstrap-5 theme for better compatibility
+      theme: 'bootstrap-5'
+    });
+    
+    $('.filter-select').select2({
+      width: '100%',
+      placeholder: 'Select a column',
+      allowClear: true,
+      theme: 'bootstrap-5'
     });
   }
 
-  // Initialize the first dropdown after DOM is ready
-  setTimeout(function() {
-    initializeSelect2();
-  }, 100);
+  // Handle Report Type change
+  $('#report_type').on('change', function() {
+    const reportType = $(this).val();
+    
+    if (reportType === '') {
+      // Reset everything if no type selected
+      $('#selectTypeAlert').show();
+      $('#columnTableWrapper').hide();
+      $('#filterfield').prop('disabled', true).html('<option value="">Select report type first</option>');
+      $('#submitBtn').prop('disabled', true);
+      currentColumns = [];
+      return;
+    }
+    
+    // Enable submit button and filter field
+    $('#submitBtn').prop('disabled', false);
+    $('#filterfield').prop('disabled', false);
+    
+    // Set columns based on selection
+    if (reportType === 'purchase_order') {
+      currentColumns = fpurchaseorderColumns;
+    } else if (reportType === 'requisition') {
+      currentColumns = frequisitionsColumns;
+    }
+    
+    // Update filter field dropdown
+    $('#filterfield').html(generateColumnOptionsHTML(currentColumns));
+    
+    // Show column table and hide alert
+    $('#selectTypeAlert').hide();
+    $('#columnTableWrapper').show();
+    
+    // Clear existing rows
+    $('#columnConfigBody').empty();
+    rowCount = 0;
+    
+    // Add initial row
+    addNewRow();
+    
+    // Re-initialize Select2
+    setTimeout(function() {
+      initializeSelect2();
+    }, 100);
+  });
+
+  function addNewRow() {
+    const newRow = `
+    <tr>
+        <td><input type="text" name="columns[${rowCount}][label]" class="form-control" required></td>
+        <td>
+        <select name="columns[${rowCount}][column]" class="form-control column-select">
+            ${generateColumnOptionsHTML(currentColumns)}
+        </select>
+        </td>
+        <td class="text-center"><input type="checkbox" name="columns[${rowCount}][blank]" value="1"></td>
+        <td><input type="text" name="columns[${rowCount}][default]" class="form-control" placeholder="Optional default"></td>
+        <td><button type="button" class="btn btn-danger btn-sm remove-row">Remove</button></td>
+    </tr>
+    `;
+    $('#columnConfigBody').append(newRow);
+    rowCount++;
+  }
 
   $('#addColumnBtn').on('click', function () {
-        const newRow = `
-        <tr>
-            <td><input type="text" name="columns[${rowCount}][label]" class="form-control" required></td>
-            <td>
-            <select name="columns[${rowCount}][column]" class="form-control column-select">
-                ${generateColumnOptionsHTML()}
-            </select>
-            </td>
-            <td class="text-center"><input type="checkbox" name="columns[${rowCount}][blank]" value="1"></td>
-            <td><input type="text" name="columns[${rowCount}][default]" class="form-control" placeholder="Optional default"></td>
-            <td><button type="button" class="btn btn-danger btn-sm remove-row">Remove</button></td>
-        </tr>
-        `;
-    $('#columnConfigBody').append(newRow);
+    if (currentColumns.length === 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Warning',
+        text: 'Please select a report type first.'
+      });
+      return;
+    }
+    
+    addNewRow();
     
     // Re-initialize Select2 for all dropdowns
     setTimeout(function() {
       initializeSelect2();
     }, 50);
-    
-    rowCount++;
   });
 
   $('#columnConfigBody').on('click', '.remove-row', function () {
@@ -168,6 +245,29 @@ $(document).ready(function () {
         title: 'Warning',
         text: 'At least one column must remain.'
       });
+    }
+  });
+  
+  // Form validation before submit
+  $('#customReportForm').on('submit', function(e) {
+    if ($('#report_type').val() === '') {
+      e.preventDefault();
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Please select a report type.'
+      });
+      return false;
+    }
+    
+    if ($('#columnConfigBody tr').length === 0) {
+      e.preventDefault();
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Please add at least one column.'
+      });
+      return false;
     }
   });
 });
