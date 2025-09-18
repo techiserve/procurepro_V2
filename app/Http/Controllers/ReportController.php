@@ -388,13 +388,14 @@ class ReportController extends Controller
             ->toArray();  
 
               }else{
-                  //  dd($report->report_type); 
+               
 
                 $fpurchaseorder = DB::table('frequisitions')
                 ->where('companyId', Auth::user()->companyId)
                 ->select($columns)
                 ->get();
 
+                dd($report->description); 
              $filters = DB::table('frequisitions')
             ->where('companyId', Auth::user()->companyId)
             ->select($report->description)
