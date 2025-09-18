@@ -33,7 +33,7 @@
                 <form action="{{ route('custom_report.remove') }}" method="POST" id="removeSelectedRowsForm">
                     @csrf
                     <input type="hidden" name="report_id" value="{{ $report->id }}">
-
+                   <input type="hidden" name="type" value="{{ $type }}">
                     <button type="submit"
                             class="btn btn-danger mb-3"
                             onclick="return confirm('Are you sure you want to remove the selected rows?')">
@@ -93,7 +93,7 @@
 
       <div class="modal-body">
         <input type="hidden" name="report_id" value="{{ $report->id }}">
-
+       <input type="hidden" name="type" value="{{ $type }}">
         <div class="mb-3 d-flex align-items-center gap-2">
           <input type="checkbox" id="select_all_filters" class="form-check-input" />
           <label for="select_all_filters" class="mb-0"><strong>Select All</strong></label>

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('userId');
             $table->string('requisitionNumber');
             $table->integer('status');
+            $table->integer('uploadStatus')->nullable();
             $table->integer('isActive');
             $table->string('approvallevel');
             $table->string('totalapprovallevels');

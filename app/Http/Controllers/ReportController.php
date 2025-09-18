@@ -98,7 +98,6 @@ class ReportController extends Controller
 
 
     
-
     public function requisitionsummaryfiltered(Request $request)
     {
         $query = Frequisition::query();
@@ -374,6 +373,7 @@ class ReportController extends Controller
             $fpurchaseorder = DB::table('fpurchaseorders')
                 ->where('companyId', Auth::user()->companyId)
                 ->where('uploadStatus', '=', null)
+                ->where('status', '=', 2)
                 ->select($columns)
                 ->get();
 
@@ -382,36 +382,45 @@ class ReportController extends Controller
           $filters = DB::table('fpurchaseorders')
             ->where('companyId', Auth::user()->companyId)
             ->where('uploadStatus', '=', null)
+            ->where('status', '=', 2)
             ->select($report->description)
             ->groupBy($report->description)
             ->pluck($report->description)
             ->toArray();  
+
+            $type = 'fpurchaseorders';
 
               }else{
                
 
                 $fpurchaseorder = DB::table('frequisitions')
                 ->where('companyId', Auth::user()->companyId)
+                 ->where('uploadStatus', '=', null)
+                ->where('status', '=', 2)
                 ->select($columns)
                 ->get();
 
               //  dd($report->description); 
              $filters = DB::table('frequisitions')
             ->where('companyId', Auth::user()->companyId)
+            ->where('uploadStatus', '=', null)
+            ->where('status', '=', 2)
             ->select($report->description)
             ->groupBy($report->description)
             ->pluck($report->description)
             ->toArray(); 
+
+           $type = 'frequisitions';
             
             }
 
          // dd($filters);
 
-            return view('reports.show', compact('report', 'config', 'fpurchaseorder','filters'));
+            return view('reports.show', compact('report', 'type','config', 'fpurchaseorder','filters'));
         }
 
 
-      public function index()
+          public function index()
         {
 
             $reports = CustomReport::where('companyId','=', Auth::user()->companyId)->latest()->get();
@@ -577,7 +586,8 @@ public function filter(Request $request)
     $reportId = $request->input('report_id');
     $selectedFilters = $request->input('selected_filters', []);
 
-    // Get report config
+   // dd($request->type);
+   
     $report = CustomReport::findOrFail($reportId);
     $config = json_decode($report->config, true);
 
@@ -595,9 +605,16 @@ public function filter(Request $request)
   //  dd($dbColumns,$report->description);
 
     // Fetch only relevant DB columns
-    $fpurchaseorders = DB::table('fpurchaseorders')
+    if($report->type == 'frequisitions') {
+        $table = 'frequisitions';
+    } else {
+        $table = 'fpurchaseorders';
+    }
+
+    $fpurchaseorders = DB::table($table)
         ->where('companyId', Auth::user()->companyId)
         ->where('uploadStatus', '=', null)
+        ->where('status', '=', 2)
         ->select($dbColumns)
         ->get();
        // dd($fpurchaseorders);
@@ -681,7 +698,7 @@ public function filter(Request $request)
 
          public function custom_report_remove(Request $request)
         {
-
+           // dd($request->type);
              $reportId = $request->input('report_id');
             $selectedRowIds = $request->input('selected_rows', []);
 
@@ -691,11 +708,20 @@ public function filter(Request $request)
            
             //dd($selectedRowIds);
             // Perform your removal logic here, e.g., delete from fpurchaseorders by IDs
+            if($request->type == 'fpurchaseorders'){
             DB::table('fpurchaseorders')->whereIn('id', $selectedRowIds)->update([
 
                 'uploadStatus' => '1', // Assuming you want to set releaseStatus to null
 
             ]);
+
+           }else{
+                    DB::table('frequisitions')->whereIn('id', $selectedRowIds)->update([
+    
+                    'uploadStatus' => '1', // Assuming you want to set releaseStatus to null
+    
+                ]);
+            }
 
             return back()->with('success', count($selectedRowIds) . ' rows removed successfully.');
 
