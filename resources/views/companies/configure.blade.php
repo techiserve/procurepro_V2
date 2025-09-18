@@ -53,7 +53,7 @@
     <div class="col-md-4 mb-3">
         <div class="form-group">
       <label for="filterfield" class="form-label">Select Filter Field</label>
-       <select name="filterfield" id="filterfield" class="form-control filter-select" disabled>
+       <select name="filterfield" id="filterfield" class="form-control filter-select" required disabled>
                     <option value="">Select report type first</option>
                 </select>
     </div>
