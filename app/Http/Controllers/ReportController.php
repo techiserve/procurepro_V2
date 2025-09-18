@@ -395,7 +395,7 @@ class ReportController extends Controller
                 ->select($columns)
                 ->get();
 
-                dd($report->description); 
+              //  dd($report->description); 
              $filters = DB::table('frequisitions')
             ->where('companyId', Auth::user()->companyId)
             ->select($report->description)
