@@ -959,7 +959,7 @@ class ProcurementController extends Controller
     
         if($user && $departmentName->notifications == 1){
    
-         Mail::to($user->email)->queue(new SendSampleEmail($filteredData));
+         Mail::to($user->email)->queue(new SendSampleEmail($user));
            
         }
 
@@ -1286,7 +1286,7 @@ class ProcurementController extends Controller
         
         if($user && $department->notifications == 1){
         
-         Mail::to($user->email)->queue(new SendSampleEmail($filteredData));
+         Mail::to($user->email)->queue(new SendSampleEmail($approver));
            
         }
             
