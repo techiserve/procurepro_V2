@@ -442,7 +442,7 @@ class ProcurementController extends Controller
 
            // dd($history);
 
-            return view('procurement.viewmanagepurchaseorder', compact('frequisition','fpurchaseorder','formFields','invoicepath','history','jobcardpath','vendor'));
+            return view('procurement.viewmanagepurchaseorder', compact('frequisition','departments','fpurchaseorder','formFields','invoicepath','history','jobcardpath','vendor'));
 
      }
 
