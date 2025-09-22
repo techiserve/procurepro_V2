@@ -176,7 +176,7 @@
           <td>{{ $doc->name }}</td>
           <td>{{ $doc->type }}</td>
           <td class="text-center">
-            <a href="{{ asset($doc->file_path) }}" 
+            <a href="{{ Storage::url($doc->file_path) }}" 
                target="_blank" 
                class="btn btn-sm btn-info">
                <i class=""></i> View

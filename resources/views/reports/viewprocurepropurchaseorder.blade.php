@@ -221,7 +221,7 @@
             </a>
           </td>
         </tr>
-      @empty
+       @empty
         <tr>
           <td colspan="4" class="text-center text-muted">
             No documents attached to this requisition.
