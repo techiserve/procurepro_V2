@@ -43,9 +43,9 @@
                         @foreach($fpurchaseorder as $grower)
                             <tr class="text-center">
                                 <td>{{ $grower->Vendor }}</td>
-                                <td>{{ $grower->bankAccountNumber }}</td>
-                                <td>{{ $grower->bankAccountType }}</td>
-                                <td>3310</td>
+                                <td>{{ $grower->vendorbankAccountNumber }}</td>
+                                <td>{{ $grower->vendorbankAccountType }}</td>
+                                <td>{{ $grower->vendorbankBranch }}</td>
                                 <td>{{ $grower->invoiceamount }}</td>
                                 <td>{{ $grower->ownref }}</td>
                                 <td>{{ $grower->benref }}</td>

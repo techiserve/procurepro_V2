@@ -42,6 +42,11 @@ return new class extends Migration
             $table->string('bankAccountNumber')->nullable();
             $table->string('bankAccountType')->nullable();
 
+            $table->string('vendorbankAccountName')->nullable();
+            $table->string('vendorbankAccountNumber')->nullable();
+            $table->string('vendorbankAccountType')->nullable();
+              $table->string('vendorbankBranch')->nullable();
+
             $table->timestamps();
         });
     }

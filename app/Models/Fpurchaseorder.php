@@ -39,7 +39,11 @@ class Fpurchaseorder extends Model
         'uploadStatus',
         'bankAccountName',
         'bankAccountNumber',
-        'bankAccountType'
+        'bankAccountType',
+        'vendorbankAccountName',
+        'vendorbankAccountNumber',
+        'vendorbankBranch',
+        'vendorbankAccountType'
        
     ];
 

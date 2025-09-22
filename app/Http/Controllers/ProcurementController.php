@@ -723,6 +723,8 @@ class ProcurementController extends Controller
     public function requisitionstore(Request $request,WhatsAppService $whatsapp)
     {
 
+    //  dd($request->all());
+
         $company = Company::where('id', Auth::user()->companyId)->first();
         $latest = Frequisition::where('requisitionNumber', 'LIKE', $company->name . '-%')
         ->orderBy('id', 'desc')
@@ -748,8 +750,6 @@ class ProcurementController extends Controller
         }
     }
 
-
-
     // Add additional static fields
     $data['userId'] = Auth::id();
     $data['requisitionNumber'] = $requisitionNumber;
@@ -774,17 +774,12 @@ class ProcurementController extends Controller
             }
         }
     }
-
-
-    
+  
     // Filter out null values
     $filteredData = array_filter($data, function ($value) {
         return !is_null($value);
     });
        
-   // dd($filteredData,$request->all());
-    
-    // Create the requisition
        $requisition = Frequisition::forceCreate($filteredData);
 
       // dd($approver->roleId);
@@ -796,7 +791,6 @@ class ProcurementController extends Controller
            
         }
      
- 
 
            $requisitiond = RequisitionHistory::create([
 
@@ -817,17 +811,56 @@ class ProcurementController extends Controller
     $vendorFinal = $request->input('vendor_final');
     $amounts = $request->input('damount');
     $modalVendorNames = $request->input('modal_vendor_name');
+    $is_one_time_vendor = $request->input('is_one_time_vendor');
     $types = $request->input('type');
     $vatAllocations = $request->input('Vatallocation');
     $supplierCodes = $request->input('supplierCode');
     $banks = $request->input('bank');
     $accountNumbers = $request->input('accountNumber');
     $accountTypes = $request->input('accountType');
-
+    $branchCode = $request->input('branchCode');
     $files = $request->file('dfile');
     $docs = $request->file('doc');
 
     foreach ($vendorFinal as $index => $vendorName) {
+
+
+        if($is_one_time_vendor[$index] == "no"){
+
+              $vendor = Vendor::where('name', $vendorName)->first(); 
+             
+         $frequisition = new FrequisitionVendor();
+        $frequisition->vendor_final = $vendorName;
+        $frequisition->amount = $amounts[$index];
+        $frequisition->frequisition_id = $requisition->id;
+
+        if (isset($files[$index])) {
+             
+             $faira = $files[$index]->store('uploads', 'public');
+             $fieldquote =  Str::afterLast($faira, '/');
+             $frequisition->file_path = $fieldquote;
+        }
+
+        // If modal data exists (for one-time vendors)
+  
+
+          
+            $frequisition->type = $types[$index] ?? null;
+            $frequisition->vat_allocation = $vatAllocations[$index] ?? null;
+            $frequisition->supplier_code = $supplierCodes[$index] ?? null;
+            $frequisition->bank = $vendor->bank_name?? null;
+            $frequisition->account_number = $vendor->account_number ?? null;
+            $frequisition->account_type = $vendor->account_type?? null;
+            $frequisition->branchCode = $vendor->branch_code?? null;
+
+            if (isset($docs[$index])) {
+                $frequisitionfile = $docs[$index]->store('uploads', 'public');
+                $fieldquote1 =  Str::afterLast($frequisitionfile, '/');
+                $frequisition->doc_path = $fieldquote1; 
+            }
+     
+        }else{
+
         $frequisition = new FrequisitionVendor();
         $frequisition->vendor_final = $vendorName;
         $frequisition->amount = $amounts[$index];
@@ -841,21 +874,24 @@ class ProcurementController extends Controller
         }
 
         // If modal data exists (for one-time vendors)
-        if (isset($modalVendorNames[$index])) {
-            $frequisition->modal_vendor_name = $modalVendorNames[$index];
+ 
+           
             $frequisition->type = $types[$index] ?? null;
             $frequisition->vat_allocation = $vatAllocations[$index] ?? null;
             $frequisition->supplier_code = $supplierCodes[$index] ?? null;
             $frequisition->bank = $banks[$index] ?? null;
             $frequisition->account_number = $accountNumbers[$index] ?? null;
             $frequisition->account_type = $accountTypes[$index] ?? null;
+            $frequisition->branchCode = $branchCode[$index] ?? null;
 
             if (isset($docs[$index])) {
                 $frequisitionfile = $docs[$index]->store('uploads', 'public');
                 $fieldquote1 =  Str::afterLast($frequisitionfile, '/');
                 $frequisition->doc_path = $fieldquote1; 
             }
-        }
+     
+     }
+      
 
         $frequisition->save();
     }
@@ -1048,6 +1084,10 @@ class ProcurementController extends Controller
     $purchaseOrderData['frequisition_id'] = $frequisition->id;
     $purchaseOrderData['requisitionNumber'] = $frequisition->requisitionNumber;
     $purchaseOrderData['userId'] = $frequisition->userId;
+    $purchaseOrderData['vendorbankAccountName']  =  $vendor->bank;
+    $purchaseOrderData['vendorbankAccountNumber']  =  $vendor->account_number;
+    $purchaseOrderData['vendorbankAccountType'] =  $vendor->account_type;
+    $purchaseOrderData['vendorbankBranch'] =  $vendor->branchCode;
     $purchaseOrderData['department'] = $frequisition->department;
     $purchaseOrderData['status'] = 0; 
     // $purchaseOrderData['vendor'] = $vendor->vendor_final   ; 

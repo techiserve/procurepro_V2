@@ -50,8 +50,8 @@
                             <tr class="text-center">
                                 <td>{{ $grower->bankAccountNumber }}</td>
                                 <td>{{ $grower->Vendor }}</td>
-                                <td>330</td>
-                                <td>11111</td>
+                                 <td>{{ $grower->vendorbankAccountNumber }}</td>
+                                <td>{{ $grower->vendorbankBranch }}</td>
                                 <td>{{ $grower->ownref }}</td>
                                 <td>{{ $grower->benref }}</td>
                                 <td>No</td>
