@@ -1,12 +1,5 @@
 @extends('html.default')
 
-@section('styles')
-<link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css">
-@endsection
-
 @section('content')
 <div class="body-content__header">
     <ul>
@@ -16,7 +9,7 @@
 
 <div class="body-content__wrapper requesition-body">
     <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
             <strong>FNB Report</strong>
             <div class="d-flex align-items-center gap-2">
                 <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#filterModal">
@@ -26,8 +19,30 @@
         </div>
 
         <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                <ul class="requesition-btn-list mb-0">
+                    <li>
+                        <button id="copyBtn"><i class="fa fa-copy"></i> Copy</button>
+                        <div id="copyPopup" class="copy-popup"></div>
+                    </li>
+                    <li>
+                        <button id="csvBtn"><i class="fa fa-file-csv"></i> CSV</button>
+                    </li>
+                    <li>
+                        <button id="excelBtn"><i class="fa fa-file-excel"></i> Excel</button>
+                    </li>
+                    <li>
+                        <button id="pdfBtn"><i class="fa fa-file-pdf"></i> PDF</button>
+                    </li>
+                </ul>
+                <div class="requesition-search">
+                    <input type="search" id="fnbSearch" class="form-control" placeholder="Search report...">
+                    <button class="btn btn-outline-secondary" type="button"><i class="fa fa-search"></i></button>
+                </div>
+            </div>
+
             <div class="table-responsive">
-                <table class="table table-striped table-bordered" id="fnbReportTable">
+                <table class="table table-striped table-bordered display responsive nowrap" id="fnbReportTable" style="width:100%">
                     <thead class="table-light text-center">
                         <tr>
                             <th class="text-center">RICIPIENT NAME</th>
@@ -55,11 +70,22 @@
                 </table>
             </div>
 
-            {{-- Optional secondary trigger below table --}}
-            <div class="mt-3 text-end">
-                {{-- <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#filterModal">
-                    <i class="fa fa-filter"></i> Filter
-                </button> --}}
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3">
+                <div class="page-number d-flex align-items-center gap-2">
+                    <label class="mb-0">Records per page:</label>
+                    <select id="fnbPageLength" class="form-select form-select-sm" style="width:auto;">
+                        <option value="10" selected>10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+
+                <ul class="requesition-pagination mb-0">
+                    <li><button id="prevBtn" title="Previous"><i class="fa fa-angle-left"></i></button></li>
+                    <li><p id="rangeLabel" class="mb-0 small">0 to {{ count($fpurchaseorder) }}</p></li>
+                    <li><button id="nextBtn" title="Next"><i class="fa fa-angle-right"></i></button></li>
+                </ul>
             </div>
         </div>
     </div>
@@ -114,61 +140,179 @@
         </form>
     </div>
 </div>
-@endsection
 
-@section('scripts')
+
+{{-- <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css"> --}}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css">
+
+{{-- DataTables (jQuery) --}}
+<link href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css" rel="stylesheet"/>
+<link href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css" rel="stylesheet"/>
+
 <!-- Bootstrap JS Bundle -->
 <script src="https://unpkg.com/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<!-- jQuery (required for Select2) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<!-- jQuery (required for Select2 & DataTables) -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <!-- Select2 JS -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-<script>
-// DataTable init: same UX as the reference page
-document.addEventListener("DOMContentLoaded", function () {
-    const table = new DataTable('#fnbReportTable', {
-        responsive: true,
-        paging: true,
-        searching: true,
-        ordering: true,
-        pageLength: 10,
-        lengthMenu: [10, 25, 50, 100],
-        language: {
-            search: "Search report:",
-            lengthMenu: "Show _MENU_ rows per page",
-            info: "Showing _START_ to _END_ of _TOTAL_ rows",
-            infoEmpty: "Showing 0 to 0 of 0 rows",
-            infoFiltered: "(filtered from _MAX_ total rows)"
-        }
-    });
-});
-</script>
+<!-- DataTables (jQuery) + Responsive plugin -->
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+
+<!-- xlsx for Excel export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.20.2/xlsx.full.min.js"></script>
+<!-- pdfmake for PDF export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
 <script>
-// Make modal + selects responsive/working on click
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize Select2 with Bootstrap 5 theme inside modal
-    $('.js-example-basic-single').select2({
-        theme: 'bootstrap-5',
-        dropdownParent: $('#filterModal')
-    });
+// ====================== FNB Report DataTable + Export Buttons ======================
+(function() {
+  const tableEl = document.getElementById('fnbReportTable');
+  if (!tableEl) return;
 
-    // Re-init Select2 every time the modal opens (ensures proper dropdown placement)
-    const filterModal = document.getElementById('filterModal');
-    if (filterModal) {
-        filterModal.addEventListener('shown.bs.modal', function () {
-            $('.js-example-basic-single').select2({
-                theme: 'bootstrap-5',
-                dropdownParent: $('#filterModal')
-            });
-            // Default end date to today if empty
-            const end = document.getElementById('end_date');
-            if (end && !end.value) {
-                end.value = new Date().toISOString().split('T')[0];
-            }
-        });
+  $.fn.dataTable.ext.errMode = 'none';
+  $(tableEl).on('error.dt', function(e, settings, techNote, message){
+    console.warn('DataTables:', message);
+  });
+
+  window.fnbDT = $(tableEl).DataTable({
+    responsive: true,
+    processing: false,
+    serverSide: false,
+    pageLength: 10,
+    lengthChange: false,
+    info: true,
+    order: [[0, 'asc']],
+    columnDefs: [
+      { targets: '_all', className: 'text-center' }
+    ],
+    dom: 't<"dt-bottom"ip>',
+    language: {
+      emptyTable: "No rows found.",
+      zeroRecords: "No matching rows."
     }
+  });
+
+  // Custom search
+  document.getElementById('fnbSearch')?.addEventListener('input', function() {
+    window.fnbDT.search(this.value).draw();
+  });
+
+  // Records-per-page selector
+  document.getElementById('fnbPageLength')?.addEventListener('change', function() {
+    window.fnbDT.page.len(parseInt(this.value, 10)).draw('page');
+  });
+
+  // Prev/Next buttons
+  document.getElementById('prevBtn')?.addEventListener('click', () => window.fnbDT.page('previous').draw('page'));
+  document.getElementById('nextBtn')?.addEventListener('click', () => window.fnbDT.page('next').draw('page'));
+
+  // Range label
+  const rangeEl = document.getElementById('rangeLabel');
+  if (rangeEl) {
+    window.fnbDT.on('draw', function() {
+      const info = window.fnbDT.page.info();
+      rangeEl.textContent = `${info.recordsDisplay ? info.start + 1 : 0} to ${info.end} of ${info.recordsDisplay}`;
+    });
+    window.fnbDT.draw(false);
+  }
+})();
+
+// ===== Utils for exports =====
+const stripHtml = (html) => {
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  return div.textContent || div.innerText || '';
+};
+
+function getTableData(dt) {
+  const headers = dt.columns().header().toArray().map(th => th.innerText.trim());
+  const rows = [];
+  dt.rows({ search: 'applied' }).every(function () {
+    const data = this.data().map(c => stripHtml(c));
+    rows.push(data);
+  });
+  return { headers, rows };
+}
+
+function hasRows(dt){ return dt && dt.rows({search:'applied'}).count() > 0; }
+
+// ===== COPY =====
+document.getElementById('copyBtn')?.addEventListener('click', function(e) {
+  const dt = window.fnbDT; if (!hasRows(dt)) return;
+  const { headers, rows } = getTableData(dt);
+  const text = [headers.join('\t'), ...rows.map(r => r.join('\t'))].join('\n');
+  navigator.clipboard.writeText(text).then(() => {
+    const popup = document.getElementById('copyPopup');
+    if (!popup) return;
+    popup.textContent = 'Copied!';
+    popup.style.opacity = 1;
+    popup.style.position = 'fixed';
+    const btnRect = e.target.getBoundingClientRect();
+    popup.style.left = (btnRect.left + (btnRect.width/2) - 60) + 'px';
+    popup.style.top  = (btnRect.top - 35) + 'px';
+    setTimeout(() => popup.style.opacity = 0, 1000);
+  });
+});
+
+// ===== CSV =====
+document.getElementById('csvBtn')?.addEventListener('click', function() {
+  const dt = window.fnbDT; if (!hasRows(dt)) return;
+  const { headers, rows } = getTableData(dt);
+  const esc = (s) => '"' + String(s).replace(/"/g, '""') + '"';
+  const lines = [headers.map(esc).join(','), ...rows.map(r => r.map(esc).join(','))];
+  const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = Object.assign(document.createElement('a'), { href: url, download: 'fnb-report.csv' });
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+});
+
+// ===== EXCEL (xlsx) =====
+document.getElementById('excelBtn')?.addEventListener('click', function() {
+  const dt = window.fnbDT; if (!hasRows(dt)) return;
+  if (typeof XLSX === 'undefined') { alert('XLSX not loaded'); return; }
+  const { headers, rows } = getTableData(dt);
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+  XLSX.utils.book_append_sheet(wb, ws, 'FNB Report');
+  XLSX.writeFile(wb, 'fnb-report.xlsx');
+});
+
+// ===== PDF (pdfmake) =====
+document.getElementById('pdfBtn')?.addEventListener('click', function() {
+  const dt = window.fnbDT; if (!hasRows(dt)) return;
+  if (typeof pdfMake === 'undefined') { alert('pdfMake not loaded'); return; }
+  const { headers, rows } = getTableData(dt);
+  const body = [ headers.map(h => ({ text: h, style: 'tableHeader' })), ...rows ];
+  const docDefinition = {
+    content: [
+      { text: 'FNB Report', style: 'header' },
+      { table: { headerRows: 1, widths: Array(headers.length).fill('*'), body } }
+    ],
+    styles: {
+      header: { fontSize: 16, bold: true, margin: [0,0,0,10] },
+      tableHeader: { bold: true, fillColor: '#eeeeee' }
+    },
+    pageOrientation: 'landscape'
+  };
+  pdfMake.createPdf(docDefinition).download('fnb-report.pdf');
+});
+
+// Select2 inside modal
+$(function(){
+  $('.js-example-basic-single').select2({ theme: 'bootstrap-5', dropdownParent: $('#filterModal') });
+  const filterModal = document.getElementById('filterModal');
+  if (filterModal) {
+    filterModal.addEventListener('shown.bs.modal', function () {
+      $('.js-example-basic-single').select2({ theme: 'bootstrap-5', dropdownParent: $('#filterModal') });
+      const end = document.getElementById('end_date');
+      if (end && !end.value) end.value = new Date().toISOString().split('T')[0];
+    });
+  }
 });
 </script>
 @endsection

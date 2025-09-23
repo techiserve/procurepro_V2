@@ -30,9 +30,9 @@
             <input type="search" id="tableSearch" placeholder="Search vendors...">
             <button><img src="{{ asset('assets/img/search-icon.png') }}" alt=""></button>
         </div>
-    </div>
+       </div>
 
-    <div class="requesition-table">
+       <div class="requesition-table">
         <!-- IMPORTANT: id="myTable" to match JS below -->
         <table id="myTable" class="display responsive nowrap" style="width:100%">
             <thead>

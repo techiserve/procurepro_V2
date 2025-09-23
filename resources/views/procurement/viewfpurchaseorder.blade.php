@@ -239,8 +239,8 @@
                     <th>ZAR {{ number_format($itemizedItems->sum('vat'), 2) }}</th>
                   </tr>
                   <tr>
-                    <th colspan="6" class="text-end">Total</th>
-                    <th>ZAR {{ number_format($itemizedItems->sum('linetotal') + $itemizedItems->sum('vat'), 2) }}</th>
+                    <th></th>
+                    <th></th>
                     <th></th>
                   </tr>
                 </tfoot>
