@@ -297,7 +297,7 @@ if (form) {
       Swal.fire({
         icon: 'error',
         title: 'Invoice exceeds Purchase Order amount',
-        text: `Invoice amount (${inv.toFixed(2)}) cannot be greater than the PO amount (${amt.toFixed(2)}).`
+        text: `Invoice amount (${inv.toFixed(2)}) cannot be greater than the PR amount (${amt.toFixed(2)}).`
       }).then(() => {
         invoiceInput?.focus();
         invoiceInput?.select?.();
