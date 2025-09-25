@@ -247,7 +247,6 @@
 @endsection
 <script>
 (function() {
-  // wait for DOM
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
@@ -272,6 +271,42 @@
     const itemsPreviewCard = document.getElementById('itemsPreviewCard');
     const itemsPreviewBody = document.getElementById('itemsPreviewBody');
     const previewSumLineTotalInput = document.getElementById('preview_sum_linetotal');
+
+
+    const form = document.getElementById('mainForm');
+
+function toNumber(val) {
+  // handles "1,234.50" and other formatting safely
+  if (val == null) return 0;
+  const cleaned = String(val).replace(/[^0-9.\-]/g, '');
+  const n = parseFloat(cleaned);
+  return isNaN(n) ? 0 : n;
+}
+
+if (form) {
+  form.addEventListener('submit', (e) => {
+    const inv = toNumber(invoiceInput?.value);
+    const amt = toNumber(amountField?.value);
+
+    if (inv > amt) {
+      e.preventDefault(); // ⛔ block submit
+      // visual cue
+      invoiceInput?.classList.add('is-invalid');
+
+      // friendly message
+      Swal.fire({
+        icon: 'error',
+        title: 'Invoice exceeds Purchase Order amount',
+        text: `Invoice amount (${inv.toFixed(2)}) cannot be greater than the PO amount (${amt.toFixed(2)}).`
+      }).then(() => {
+        invoiceInput?.focus();
+        invoiceInput?.select?.();
+      });
+    } else {
+      invoiceInput?.classList.remove('is-invalid');
+    }
+  });
+}
 
     // open modal via checkbox
     if (checkbox) {
