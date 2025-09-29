@@ -233,7 +233,9 @@ Route::post('/reports', [ReportController::class, 'store'])->name('reports.store
 Route::post('/filter', [ReportController::class, 'filter'])->name('filter.route');
 Route::post('/custom_report/remove', [ReportController::class, 'custom_report_remove'])->name('custom_report.remove');
 Route::get('/reports/{id}', [ReportController::class, 'show'])->name('reports.show');
+Route::get('/itemizedreports/{id}', [ReportController::class, 'showitemized'])->name('reports.showitemized');
 Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+Route::get('/itemizedreports', [ReportController::class, 'itemizedindex'])->name('itemizedreports.index');
 
 
 Route::get('/dashboard/procurement', [ReportController::class, 'spendoverview'])

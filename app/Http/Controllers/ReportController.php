@@ -420,6 +420,63 @@ class ReportController extends Controller
         }
 
 
+        public function showitemized($id)
+      {
+            $report = CustomReport::findOrFail($id);
+            $config = json_decode($report->config, true);
+
+            // Get only non-blank columns to query from fpurchaseorder
+            $columns = collect($config)
+                ->filter(fn($col) => empty($col['blank']) && !empty($col['column']))
+                ->pluck('column')
+                ->unique()
+                ->prepend('id')
+                ->toArray();
+
+            //    dd($report);
+
+           if($report->report_type == 'purchase_order'){
+                //  dd($report->report_type); 
+           $fpurchaseorders = DB::table('fpurchaseorders')
+                ->where('companyId', Auth::user()->companyId)
+                ->whereNull('uploadStatus')
+                ->where('status', 2)
+                ->select($columns)
+                ->addSelect('frequisition_id')
+                ->addSelect('requisitionNumber')
+                ->get()
+                ->keyBy('frequisition_id'); // key by frequisition_id for faster lookup
+
+            $fpurchaseorder = DB::table('itemizedfpurchaseorders')->get();
+
+            $fpurchaseorder = $fpurchaseorder->map(function ($item) use ($fpurchaseorders) {
+                if (isset($fpurchaseorders[$item->requisition_id])) {
+                    foreach ($fpurchaseorders[$item->requisition_id] as $key => $value) {
+                        $item->$key = $value; // append fields dynamically
+                    }
+                }
+                return $item;
+            });
+
+           // dd($fpurchaseorder);
+
+            $filters = DB::table('fpurchaseorders')
+            ->where('companyId', Auth::user()->companyId)
+            ->where('uploadStatus', '=', null)
+            ->where('status', '=', 2)
+            ->select($report->description)
+            ->groupBy($report->description)
+            ->pluck($report->description)
+            ->toArray();  
+
+            $type = 'fpurchaseorders';
+
+             }
+
+            return view('reports.showitemized', compact('report', 'type','config', 'fpurchaseorder','filters'));
+
+        }
+
           public function index()
         {
 
@@ -427,6 +484,18 @@ class ReportController extends Controller
             $fpurchaseorderColumns = \Schema::getColumnListing('fpurchaseorder');
 
             return view('reports.index', compact('reports','fpurchaseorderColumns'));
+        }
+
+
+
+            public function itemizedindex()
+        {
+
+            $reports = CustomReport::where('companyId','=', Auth::user()->companyId)->latest()->get();
+            $fpurchaseorderColumns = \Schema::getColumnListing('fpurchaseorder');
+
+            return view('reports.itemizedindex', compact('reports','fpurchaseorderColumns'));
+
         }
        
         
