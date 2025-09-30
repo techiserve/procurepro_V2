@@ -18,7 +18,7 @@
     <div class="card-header d-flex justify-content-between align-items-center">
       <strong>Purchase Orders</strong>
          <div class="d-flex align-items-center gap-2">
-        <form method="POST" action="{{ route('procurement.downloadpurchaseorder') }}" class="d-flex align-items-center m-0">
+        <form method="POST" action="{{ route('procurement.downloadpurchaseorder') }}"  id="downloadForm" class="d-flex align-items-center m-0">
           @csrf
           <button type="submit" class="btn btn-success btn-sm" id="downloadBtn" style="padding:10px 20px; font-size:16px; min-width:120px;">
             <i class="fa fa-download"></i> Download
@@ -253,10 +253,17 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const downloadBtn = document.getElementById('downloadBtn');
-  if (downloadBtn) {
+  const downloadForm = document.getElementById('downloadForm');
+
+  if (downloadBtn && downloadForm) {
     downloadBtn.addEventListener('click', function(event) {
-      const checkboxes = document.querySelectorAll('input[name="requisition_ids[]"]:checked');
-      if (checkboxes.length === 0) {
+      // Remove old hidden inputs from previous attempts
+      downloadForm.querySelectorAll('input[name="requisition_ids[]"]').forEach(el => el.remove());
+
+      // Collect all checked checkboxes in the table
+      const selected = document.querySelectorAll('input[name="requisition_ids[]"]:checked');
+      
+      if (selected.length === 0) {
         event.preventDefault();
         Swal.fire({
           icon: 'warning',
@@ -264,7 +271,17 @@ document.addEventListener('DOMContentLoaded', function() {
           text: 'Please select at least one checkbox before downloading.',
           confirmButtonText: 'Okay'
         });
+        return;
       }
+
+      // Append hidden inputs into the form
+      selected.forEach(cb => {
+        const hidden = document.createElement('input');
+        hidden.type = 'hidden';
+        hidden.name = 'requisition_ids[]';
+        hidden.value = cb.value;
+        downloadForm.appendChild(hidden);
+      });
     });
   }
 });
