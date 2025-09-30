@@ -180,7 +180,7 @@
                   <div class="col-sm-2">
                     <div class="form-group">
                       <label>Amount</label>
-                      <input type="number"   class="form-control" name="damount[]" >
+                      <input type="number" step="0.01"  class="form-control" name="damount[]" >
                     </div>
                   </div>
 
@@ -312,7 +312,7 @@ $(document).ready(function(){
         <div class="col-sm-2">
                     <div class="form-group">
                       <label>Amount</label>
-                      <input type="number"  class="form-control" name="damount[]" required>
+                      <input type="number"  class="form-control" step="0.01" name="damount[]" required>
                     </div>
         </div>
 

@@ -537,6 +537,11 @@ class ProcurementController extends Controller
 
 
 
+
+
+
+
+
     public function updaterequisition(Request $request, $id)
     {
 
@@ -624,18 +629,21 @@ class ProcurementController extends Controller
 }
 
 
-    //   $updaterequisition = Frequisition::where('id', $id)->update([
+        //     $requisitiond = RequisitionHistory::create([
 
-    //     'expenses'  => $request->expenses,
-    //     'projectcode'  => $request->projectcode,
-    //     'amount'  => $request->amount,
-    //     'approvallevel'  => $level,
-    //     'totalapprovallevels'  => $totalapprovallevels,
-    //     'approvedby' => $approver->roleId, 
-    //     'isActive'  => 1,
-    //     'status'  => 1,
+        //     'frequisition_id' => $id,
+        //     'companyId'  =>Auth::user()->companyId,
+        //     'userId'  =>Auth::user()->id,
+        //     'status'  => 1,
+        //     'approvallevel' =>  $level,
+        //     'approvedby' => Auth::user()->userrole, 
+        //     'isActive'  => 1,
+        //     'action'  => "Purchase Requisition Updated",
+        //     'doneby' => Auth::user()->name
+            
+        //    ]);
+    
 
-    //   ]);
 
       return redirect()->route('procurement.indexrequisition')->with('success', 'Requisition Updated successfully!');
 
