@@ -629,19 +629,19 @@ class ProcurementController extends Controller
 }
 
 
-        //     $requisitiond = RequisitionHistory::create([
+            $requisitiond = RequisitionHistory::create([
 
-        //     'frequisition_id' => $id,
-        //     'companyId'  =>Auth::user()->companyId,
-        //     'userId'  =>Auth::user()->id,
-        //     'status'  => 1,
-        //     'approvallevel' =>  $level,
-        //     'approvedby' => Auth::user()->userrole, 
-        //     'isActive'  => 1,
-        //     'action'  => "Purchase Requisition Updated",
-        //     'doneby' => Auth::user()->name
+            'frequisition_id' => $id,
+            'companyId'  =>Auth::user()->companyId,
+            'userId'  =>Auth::user()->id,
+            'status'  => 1,
+            'approvallevel' =>  $level,
+            'approvedby' => Auth::user()->userrole, 
+            'isActive'  => 1,
+            'action'  => "Purchase Requisition Updated",
+            'doneby' => Auth::user()->name
             
-        //    ]);
+           ]);
     
 
 

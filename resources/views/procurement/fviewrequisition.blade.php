@@ -138,7 +138,7 @@
             </div>
 
             {{-- Action buttons (only when approver is eligible) --}}
-            @if($frequisition->userId != auth()->user()->id && $history == NULL && $frequisition->status != 6)
+            @if($frequisition->userId != auth()->user()->id  && $frequisition->status != 6)
               @if($frequisition->approvedby == auth()->user()->userrole && $frequisition->approvallevel <= $frequisition->totalapprovallevels)
                 <div class="card-footer d-flex justify-content-end gap-2">
                   <button type="submit" id="submitBtn" class="btn btn-success" disabled>
