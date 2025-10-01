@@ -544,10 +544,10 @@ class ProcurementController extends Controller
 
     public function updaterequisition(Request $request, $id)
     {
-
+     
+        // dd($request->all());
       
-         $frequisition = Frequisition::findOrFail($id);
-       // dd($request->all());
+        $frequisition = Frequisition::findOrFail($id);
         $departmentName = Department::where('id', $frequisition->department)->first();
         $level = Departmentapproval::where('mode','=','PR')->where('departmentId', $frequisition->department)->min('approvalId');
         $totalapprovallevels = Departmentapproval::where('mode','=','PR')->where('departmentId', $frequisition->department)->count();
