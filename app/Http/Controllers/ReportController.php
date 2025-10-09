@@ -43,7 +43,7 @@ class ReportController extends Controller
         $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
         $departments = Department::all();
         $vendors = Fpurchaseorder::where('companyId', Auth::user()->companyId)->select('vendor')->groupBy('vendor')->distinct()->get();
-        $fpurchaseorders = Frequisition::with('histories')->whereIn('status', [2, 3])->where('companyId', Auth::user()->companyId)->get();
+        $fpurchaseorders = Frequisition::with('histories')->whereIn('status', [1 ,2, 3])->where('companyId', Auth::user()->companyId)->get();
         $roles = userrole::where('companyId', Auth::user()->companyId)->get();
 
         return view('reports.requisitionreport', compact('fpurchaseorders','formFields','roles','departments','vendors'));
@@ -251,7 +251,7 @@ class ReportController extends Controller
         $formFields = FormField::where('companyId', Auth::user()->companyId)->get();
         $departments = Department::all();
 
-        $fpurchaseorders = Fpurchaseorder::with('histories')->whereIn('status', [2, 3])->where('companyId', Auth::user()->companyId)->get();
+        $fpurchaseorders = Fpurchaseorder::with('histories')->whereIn('status', [1, 2, 3])->where('companyId', Auth::user()->companyId)->get();
         $roles = userrole::where('companyId', Auth::user()->companyId)->get();
         $vendors = Frequisition::where('companyId', Auth::user()->companyId)
             ->select('vendor')

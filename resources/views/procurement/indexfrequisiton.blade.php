@@ -57,7 +57,7 @@
                   @endphp
                   <th>{{ $label }}</th>
                 @endforeach
-
+                <th>Date</th>
                 <th>Next Approver</th>
                 <th>Status</th>
                 <th class="text-center">Action</th>
@@ -96,7 +96,9 @@
                       @endif
                     </td>
                   @endforeach
-
+ <td class="text-center"> 
+                    {{ \Carbon\Carbon::parse($frequisition->created_at)->format('d M Y') }}
+ </td>
                   <td class="text-center">
                     @foreach($roles as $role)
                       @if($frequisition->approvedby == $role->id)
