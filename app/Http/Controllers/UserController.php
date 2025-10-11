@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Rolepermission;
 use App\Models\Company;
 use App\Models\ExecutiveRole;
+use App\Models\Executive;
 use Alert;
 use App\Models\Requisition;
 use App\Models\Frequisition;
@@ -323,8 +324,16 @@ class UserController extends Controller
     
     public function userdelete($id)
     {      
+        
+        $user = User::where('id', $id)->first();
+
+        if($user->executiveId != null){
+            $deleteExecutive = Executive::where('email', $user->email)->delete();
+            $deleteExecutiverole = ExecutiveRole::where('userId', $id)->delete();
+        }
 
          $deleteUser = User::where('id', $id)->delete();
+
 
          return back()->with('success', 'User deleted successfully!');
 

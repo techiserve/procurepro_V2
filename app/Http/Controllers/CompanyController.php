@@ -362,8 +362,9 @@ class CompanyController extends Controller
 
         // Update User (manually find and update using executiveId)
         $user = DB::table('users')->where('executiveId', $id)->first();
-
+       //  dd($user);
         if ($user) {
+            
             $userData = [
                 'email' => $request->email,
                 'username' => $request->username,
@@ -373,7 +374,9 @@ class CompanyController extends Controller
                 $userData['password'] = Hash::make($request->password);
             }
 
+            DB::table('executives')->where('email', $user->email)->update($userData);
             DB::table('users')->where('id', $user->id)->update($userData);
+           
         }
 
                         // Sync executive_roles (manually remove and insert)
