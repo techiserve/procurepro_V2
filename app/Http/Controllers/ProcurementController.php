@@ -21,6 +21,7 @@ use App\Models\VendorType;
 use App\Models\FrequisitionVendor;
 use App\Models\Company;
 use App\Models\FormField;
+use App\Models\ExecutiveRole;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use App\Models\Frequisition;
@@ -102,7 +103,12 @@ class ProcurementController extends Controller
     public function createVendor()
     {
         $vendorTypes = VendorType::where('companyId', Auth::user()->companyId)->get();
-        $users = User::where('companyId','=',Auth::user()->companyId)->get();
+       $executiveUserIds = ExecutiveRole::where('companyId', Auth::user()->companyId)
+         ->pluck('userId');
+
+         $users = User::where('userrole', '>', 3)->where('companyId', Auth::user()->companyId)->orWhereIn('id', $executiveUserIds )->get();
+
+        // $users = User::where('companyId','=', Auth::user()->companyId)->get();
         return view('procurement.createVendor', compact('vendorTypes','users'));
     }
 
