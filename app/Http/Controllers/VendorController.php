@@ -70,7 +70,10 @@ class VendorController extends Controller
 // });
         
         $vendors = Vendor::with('history')->where('companyId', Auth::user()->companyId)->get();
-        $users = User::where('companyId', Auth::user()->companyId)->get();
+          $executiveUserIds = ExecutiveRole::where('companyId', Auth::user()->companyId)
+         ->pluck('userId');
+
+        $users = User::where('userrole', '>', 3)->where('companyId', Auth::user()->companyId)->orWhereIn('id', $executiveUserIds )->get();
         $vendorTypes = VendorType::where('companyId', Auth::user()->companyId)->get();
         return view('vendors.index', compact('vendors','vendorTypes','users'));
     }
@@ -79,7 +82,10 @@ class VendorController extends Controller
      public function myrequest()
     {    
         $vendors = Vendor::with('history')->where('companyId', Auth::user()->companyId)->where('finance_manager', Auth::user()->id)->get();
-        $users = User::where('companyId', Auth::user()->companyId)->get();
+        $executiveUserIds = ExecutiveRole::where('companyId', Auth::user()->companyId)
+         ->pluck('userId');
+
+        $users = User::where('userrole', '>', 3)->where('companyId', Auth::user()->companyId)->orWhereIn('id', $executiveUserIds )->get();
         $vendorTypes = VendorType::where('companyId', Auth::user()->companyId)->get();
 
         return view('vendors.myrequest', compact('vendors','vendorTypes','users'));
@@ -328,14 +334,20 @@ foreach ($updatedData as $key => $newValue) {
 public function showApprovalPage()
 {
     $vendors = Vendor::where('status', 2)->where('companyId', Auth::user()->companyId)->get();// status = Pending
-    $users = User::where('companyId', Auth::user()->companyId)->get();
+       $executiveUserIds = ExecutiveRole::where('companyId', Auth::user()->companyId)
+         ->pluck('userId');
+
+     $users = User::where('userrole', '>', 3)->where('companyId', Auth::user()->companyId)->orWhereIn('id', $executiveUserIds )->get();
     return view('vendors.approval', compact('vendors','users'));
 }
 
 public function viewApprovalDetails($id)
 {
     $vendor = Vendor::with('documents')->findOrFail($id);
-    $users = User::where('companyId', Auth::user()->companyId)->get();
+        $executiveUserIds = ExecutiveRole::where('companyId', Auth::user()->companyId)
+         ->pluck('userId');
+
+     $users = User::where('userrole', '>', 3)->where('companyId', Auth::user()->companyId)->orWhereIn('id', $executiveUserIds )->get();
     return view('vendors.approval-view', compact('vendor','users'));
 }
 
