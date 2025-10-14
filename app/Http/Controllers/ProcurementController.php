@@ -103,10 +103,10 @@ class ProcurementController extends Controller
     public function createVendor()
     {
         $vendorTypes = VendorType::where('companyId', Auth::user()->companyId)->get();
-       $executiveUserIds = ExecutiveRole::where('companyId', Auth::user()->companyId)
+        $executiveUserIds = ExecutiveRole::where('companyId', Auth::user()->companyId)
          ->pluck('userId');
 
-         $users = User::where('userrole', '>', 3)->where('companyId', Auth::user()->companyId)->orWhereIn('id', $executiveUserIds )->get();
+        $users = User::where('userrole', '>', 3)->where('companyId', Auth::user()->companyId)->orWhereIn('id', $executiveUserIds )->get();
 
         //  $users = User::where('companyId','>', 1000)->get();
         return view('procurement.createVendor', compact('vendorTypes','users'));

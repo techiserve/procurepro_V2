@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\ClassificationOfExpense;
 use App\Models\VendorDocument;
+use App\Models\ExecutiveRole;
 use App\Models\Vendorhistory;
 use Illuminate\Support\Facades\Storage;
 use DB;
@@ -229,7 +230,10 @@ class VendorController extends Controller
 {
     $vendor = Vendor::with('documents')->findOrFail($id);
     $vendorTypes = VendorType::all(); // assuming VendorType is your list source
-    $users = User::where('companyId','=',Auth::user()->companyId)->get();
+     $executiveUserIds = ExecutiveRole::where('companyId', Auth::user()->companyId)
+         ->pluck('userId');
+
+     $users = User::where('userrole', '>', 3)->where('companyId', Auth::user()->companyId)->orWhereIn('id', $executiveUserIds )->get();
     $finance = User::where('id','=', $vendor->finance_manager)->first();
 
     return view('vendors.edit', compact('vendor', 'users','vendorTypes','finance'));
