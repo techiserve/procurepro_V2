@@ -29,10 +29,23 @@ class UserController extends Controller
      */
     public function index()
     {
-           $user = Auth::user()->companyId;    
-       
-         $users = User::where('userrole', '>', 3)->where('companyId', Auth::user()->companyId)->orwhere('executiveId','!=', null)->get();
+        //  $user = Auth::user()->companyId;     
+        
+         $executiveUserIds = ExecutiveRole::where('companyId', Auth::user()->companyId)
+         ->pluck('userId');
 
+         $users = User::where('userrole', '>', 3)->where('companyId', Auth::user()->companyId)->orWhereIn('id', $executiveUserIds )->get();
+        // dd($users);
+
+        // $users = User::where('companyId', Auth::user()->companyId)
+        //     ->where(function ($q) use ($executiveUserIds) {
+        //         $q->where('userrole', '>', 3)
+        //         ->orWhereIn('id', $executiveUserIds);
+        //     })
+        //     ->get();
+
+     
+    
         return view('users.index', compact('users'));
     }
 
@@ -138,8 +151,9 @@ class UserController extends Controller
       $user = User::where('id', $id)->first();
       $roles = userrole::where('id' ,'>',3)->where('companyId', Auth::user()->companyId)->get();
       $departments = Department::where('companyId', Auth::user()->companyId)->get();
+      $exec = ExecutiveRole::where('userId', $id)->where('companyId', Auth::user()->companyId)->first();
  
-     return view('users.edit',compact('user','roles','departments'));
+     return view('users.edit',compact('user','roles','departments','exec'));
  }
 
 

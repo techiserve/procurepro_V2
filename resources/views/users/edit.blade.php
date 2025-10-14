@@ -62,8 +62,12 @@
                     <label for="role">Role</label>
                     <select class="js-example-basic-single form-control" id="role" name="role">
                       @foreach($roles as $role)
-                        @if($role->id == $user->userrole)
+                        @if($user->executiveId == null && $role->id == $user->userrole)
                           <option value="{{ $role->id }}">{{ $role->name }}</option>
+                        @endif
+                        @if($exec && $role->id == $exec->roleId)
+                          <option value="{{ $role->id }}">{{ $role->name }}</option>
+                                       
                         @endif
                       @endforeach
                       @foreach($roles as $role)
