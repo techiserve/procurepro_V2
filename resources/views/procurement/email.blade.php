@@ -68,7 +68,7 @@
             <h2>Requisition Approval Request</h2>
         </div>
         <div class="content">
-            <p>A request for your approval for a requisition has been submitted on Zarq.digital.</p>
+            <p>A request for your approval for a requisition has been submitted on Zarq.digital for Requisition Number {{$req}}.</p>
             
 
             <p>Please log in to your Zarq profile to review the details and approve or reject the request.</p>

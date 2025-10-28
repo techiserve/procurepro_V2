@@ -3,7 +3,30 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script> 
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<style>
+/* Control overall width */
+.select2-container {
+  width: 720px !important;  /* any width you prefer */
+}
 
+/* Control height and appearance of the visible box */
+.select2-container .select2-selection--single {
+  height: 45px !important;        /* taller dropdown */
+  padding: 6px 12px !important;
+  border: 1px solid #ccc !important;
+  border-radius: 8px !important;
+}
+
+/* Vertically align text */
+.select2-selection__rendered {
+  line-height: 43px !important;   /* should roughly match height minus borders */
+}
+
+/* Adjust the dropdown arrow area */
+.select2-selection__arrow {
+  height: 43px !important;
+}
+</style>
 @section('content')
 <div class="body-content__header">
   <ul>
@@ -40,6 +63,7 @@
               $departmentNames = ['department', 'department list', 'departments','department description'];
               $invoiceNames = ['invoiceamount', 'invoice amount', 'invoices','Invoice'];
               $bankNames = ['bank', 'bank list', 'banks','Bank','BANKS','BANK'];
+              $gls = ['generalledgerallocation','general leger allocation','gl allocation','GL Allocation','GL','Gl','gl'];
 
               // Remove vendor-related fields completely
               $filteredFields = $formFields->reject(function ($field) use ($vendorNames) {
@@ -116,6 +140,15 @@
                             <option value="{{ $servicetype->ServiceTypeDescription }}">{{ $servicetype->ServiceTypeDescription }}</option>
                           @endforeach
                         </select>
+
+                      @elseif(in_array($fieldNameLower, array_map('strtolower', $gls)))
+                        <select class="js-example-basic-single form-control" name="{{ $field->name }}">
+                          <option value="">Select General Leger</option>
+                          @foreach($gl as $gl)
+                            <option value="{{ $gl->account }}">{{ $gl->accountDescription }}</option>
+                          @endforeach
+                        </select>
+
 
                       @elseif(in_array($fieldNameLower, array_map('strtolower', $paymentmethodNames)))
                         <select class="js-example-basic-single form-control" name="{{ $field->name }}">

@@ -11,11 +11,11 @@
     <link rel="stylesheet" href="{{ asset('assets/css/slick.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" />
     <!-- <link rel="stylesheet" href="{{ asset('stack-admin/css/sweetalert2.min.css') }}"> -->
-  
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet" />
-  
     
 </head>
 <body>
@@ -42,6 +42,7 @@
         <script src='https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js'></script>
        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
         <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         <script src="{{ asset('assets/js/slick.min.js') }}"></script>
         <script src="{{ asset('assets/js/custom.js') }}"></script>
           @include('sweetalert::alert')
@@ -53,6 +54,17 @@
         });
       });
     </script>
+
+<script>
+$(document).ready(function() {
+  // Initialize Select2 on all elements with this class
+  $('.js-example-basic-single').select2({
+    width: '700px',
+    placeholder: "Select an option",
+    allowClear: true
+  });
+});
+</script>
 
         <script>
     // Spend To Date - Bar chart

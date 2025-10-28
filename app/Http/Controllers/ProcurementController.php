@@ -20,6 +20,7 @@ use App\Models\Bankaccount;
 use App\Models\VendorType;
 use App\Models\FrequisitionVendor;
 use App\Models\Company;
+use App\Models\Gl;
 use App\Models\FormField;
 use App\Models\ExecutiveRole;
 use Illuminate\Support\Facades\Schema;
@@ -62,6 +63,19 @@ class ProcurementController extends Controller
 
         // $taxes = DB::connection('sqlsrv')->table('TaxTypes')->select('TaxTypeDescription')->get();
 
+        $gls = Gl::all();
+        
+       foreach ($gls as $record) {
+        $value = trim(substr($record->accountDescription, 0, strpos($record->accountDescription, '(')));
+
+        $glupdate = Gl::where('id', $record->id)->update([
+            'account' => $value,
+        ]);
+        // dd($value);
+       }
+
+        
+        $gl = Gl::all();
         $departments = Department::where('IsActive', '!=' , null)->where('companyId', Auth::user()->companyId)->get();
 
         $company = Company::where('id', Auth::user()->companyId)->first();
@@ -87,13 +101,15 @@ class ProcurementController extends Controller
                 return in_array(strtolower($field->name), ['vendor', 'amount']);
             });
 
+
+         //   dd($formFields);
        // dd($formFields);
 
         $expenses = ClassificationOfExpense::all();
 
        // dd($vendors);
         // return view('procurement.createrequisition', compact('departments','vendors','banks','vendorTypes','expenses','servicetypes','properties','transcations','taxes','formFields','company'));
-        return view('procurement.createrequisition', compact('departments','vendors','banks','vendorTypes','expenses','formFields','company'));
+        return view('procurement.createrequisition', compact('departments','gl','vendors','banks','vendorTypes','expenses','formFields','company'));
 
     }
     
@@ -799,7 +815,7 @@ class ProcurementController extends Controller
       //  dd($department);
         if($user && $department->notifications == 1){
         // dd();
-         Mail::to($user->email)->queue(new SendSampleEmail($filteredData));
+         Mail::to($user->email)->queue(new SendSampleEmail($requisitionNumber));
            
         }
      
@@ -1007,7 +1023,7 @@ class ProcurementController extends Controller
     
         if($user && $departmentName->notifications == 1){
    
-         Mail::to($user->email)->queue(new SendSampleEmail($user));
+         Mail::to($user->email)->queue(new SendSampleEmail($freq->requisitionNumber));
            
         }
 
@@ -1163,7 +1179,7 @@ class ProcurementController extends Controller
 
         if($user && $department->notifications == 1){
    
-         Mail::to($user->email)->queue(new SendSampleEmail($approver));
+         Mail::to($user->email)->queue(new SendSampleEmail($frequisition->requisitionNumber));
            
         }
             
@@ -1338,7 +1354,7 @@ class ProcurementController extends Controller
         
         if($user && $department->notifications == 1){
         
-         Mail::to($user->email)->queue(new SendSampleEmail($approver));
+         Mail::to($user->email)->queue(new SendSampleEmail($requisition->requisitionNumber));
            
         }
             
