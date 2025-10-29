@@ -871,9 +871,6 @@ class ProcurementController extends Controller
              $frequisition->file_path = $fieldquote;
         }
 
-        // If modal data exists (for one-time vendors)
-  
-
           
             $frequisition->type = $types[$index] ?? null;
             $frequisition->vat_allocation = $vatAllocations[$index] ?? null;

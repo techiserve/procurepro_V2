@@ -671,7 +671,7 @@ public function filter(Request $request)
     array_unshift($dbColumns, $report->description);
     }
 
-  //  dd($dbColumns,$report->description);
+    dd($dbColumns,$report->description);
 
     // Fetch only relevant DB columns
     if($report->type == 'frequisitions') {
