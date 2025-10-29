@@ -653,9 +653,15 @@ private function statusBreakdown(int $companyId, ?Carbon $from = null, ?Carbon $
 public function filter(Request $request)
 {   
 
-    dd($request->all());
+   // dd($request->all());
     $reportId = $request->input('report_id');
     $selectedFilters = $request->input('selected_filters', []);
+
+    if(!$selectedFilters){
+    
+        return back()->with('error', 'please tick a checkbox.');   
+
+    }
 
    // dd($request->type);
    
