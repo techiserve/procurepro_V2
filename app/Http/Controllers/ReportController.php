@@ -674,7 +674,7 @@ public function filter(Request $request)
    // dd($dbColumns,$report->description);
 
     // Fetch only relevant DB columns
-    if($report->type == 'requisition') {
+    if($report->report_type == 'requisition') {
         $table = 'frequisitions';
     } else {
         $table = 'fpurchaseorders';
@@ -687,7 +687,7 @@ public function filter(Request $request)
         ->select($dbColumns)
         ->get();
 
-      dd($fpurchaseorders, $table ,$report->type ,Auth::user()->companyId);
+      dd($fpurchaseorders, $table ,$report->report_type ,Auth::user()->companyId);
 
     // Prepare ZIP file
     $zipFile = storage_path('app/filtered_exports.zip');
