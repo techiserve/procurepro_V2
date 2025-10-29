@@ -815,7 +815,9 @@ class ProcurementController extends Controller
       //  dd($department);
         if($user && $department->notifications == 1){
         // dd();
-         Mail::to($user->email)->queue(new SendSampleEmail($requisitionNumber));
+        $req = $requisitionNumber;
+
+         Mail::to($user->email)->queue(new SendSampleEmail($req));
            
         }
      
@@ -1022,8 +1024,8 @@ class ProcurementController extends Controller
         $user = User::where('userrole', $approver->roleId)->where('companyId', Auth::user()->companyId)->first();
     
         if($user && $departmentName->notifications == 1){
-   
-         Mail::to($user->email)->queue(new SendSampleEmail($freq->requisitionNumber));
+            $req = $freq->requisitionNumber;
+         Mail::to($user->email)->queue(new SendSampleEmail($req));
            
         }
 
@@ -1178,8 +1180,8 @@ class ProcurementController extends Controller
         $department = Department::find($frequisition->department);
 
         if($user && $department->notifications == 1){
-   
-         Mail::to($user->email)->queue(new SendSampleEmail($frequisition->requisitionNumber));
+            $req = $frequisition->requisitionNumber;
+         Mail::to($user->email)->queue(new SendSampleEmail($req));
            
         }
             
@@ -1353,8 +1355,8 @@ class ProcurementController extends Controller
         $department = Department::find($requisition->department);
         
         if($user && $department->notifications == 1){
-        
-         Mail::to($user->email)->queue(new SendSampleEmail($requisition->requisitionNumber));
+        $req = $requisition->requisitionNumber;
+         Mail::to($user->email)->queue(new SendSampleEmail($req));
            
         }
             
