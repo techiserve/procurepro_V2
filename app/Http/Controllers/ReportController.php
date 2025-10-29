@@ -687,7 +687,7 @@ public function filter(Request $request)
         ->select($dbColumns)
         ->get();
 
-      dd($fpurchaseorders, $table ,$report->report_type ,Auth::user()->companyId);
+    //  dd($fpurchaseorders, $table ,$report->report_type ,Auth::user()->companyId);
 
     // Prepare ZIP file
     $zipFile = storage_path('app/filtered_exports.zip');
