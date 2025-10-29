@@ -651,7 +651,9 @@ private function statusBreakdown(int $companyId, ?Carbon $from = null, ?Carbon $
      
  
 public function filter(Request $request)
-{
+{   
+
+    dd($request->all());
     $reportId = $request->input('report_id');
     $selectedFilters = $request->input('selected_filters', []);
 
