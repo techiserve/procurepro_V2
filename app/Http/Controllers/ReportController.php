@@ -680,13 +680,14 @@ public function filter(Request $request)
         $table = 'fpurchaseorders';
     }
 
-    $fpurchaseorders = DB::table($table)
+       $fpurchaseorders = DB::table($table)
         ->where('companyId', Auth::user()->companyId)
         ->where('uploadStatus', '=', null)
         ->where('status', '=', 2)
         ->select($dbColumns)
         ->get();
-        dd($fpurchaseorders);
+
+      dd($fpurchaseorders, $table ,Auth::user()->companyId);
 
     // Prepare ZIP file
     $zipFile = storage_path('app/filtered_exports.zip');
