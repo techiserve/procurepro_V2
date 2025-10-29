@@ -671,7 +671,7 @@ public function filter(Request $request)
     array_unshift($dbColumns, $report->description);
     }
 
-    dd($dbColumns,$report->description);
+   // dd($dbColumns,$report->description);
 
     // Fetch only relevant DB columns
     if($report->type == 'frequisitions') {
@@ -686,7 +686,7 @@ public function filter(Request $request)
         ->where('status', '=', 2)
         ->select($dbColumns)
         ->get();
-       // dd($fpurchaseorders);
+        dd($fpurchaseorders);
 
     // Prepare ZIP file
     $zipFile = storage_path('app/filtered_exports.zip');
