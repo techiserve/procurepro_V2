@@ -534,4 +534,46 @@ function updateFinalVendorValue(index, value) {
   const finalInput = document.getElementById(`finalVendorInput_${index}`);
   if (finalInput) finalInput.value = value;
 }
+
+
+
+$(document).ready(function () {
+  $('form').on('submit', function (e) {
+    e.preventDefault(); // stop immediate submission
+
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Are you sure you have filled in all details?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Submit',
+      cancelButtonText: 'No, Cancel',
+      confirmButtonColor: '#28a745',
+      cancelButtonColor: '#d33',
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Show loading message (optional)
+        Swal.fire({
+          title: 'Submitting...',
+          text: 'Please wait while we save your data.',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+        // Proceed with form submission
+        e.target.submit();
+      } else {
+        Swal.fire({
+          title: 'Cancelled',
+          text: 'Submission cancelled.',
+          icon: 'info',
+          timer: 1500,
+          showConfirmButton: false
+        });
+      }
+    });
+  });
+});
 </script>
