@@ -105,9 +105,9 @@
                       @endif
                     </td>
                   @endforeach
- <td class="text-center"> 
-                    {{ \Carbon\Carbon::parse($frequisition->created_at)->format('d M Y') }}
- </td>
+                  <td class="text-center"> 
+                   {{ \Carbon\Carbon::parse($frequisition->created_at)->format('d M Y') }}
+                  </td>
                   {{-- Next Approver --}}
                   <td class="text-center">
                     @foreach($roles as $role)

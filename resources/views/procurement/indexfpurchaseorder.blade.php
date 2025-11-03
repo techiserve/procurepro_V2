@@ -3,6 +3,12 @@
 <link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.4/tutorials/timelines/timeline-7/assets/css/timeline-7.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<style>
+  /* Keep action buttons on one line even when the table scrolls */
+  th.actions, td.actions { white-space: nowrap; }
+  td.actions { min-width: 360px; } /* adjust if you have more/less buttons */
+</style>
+
 @section('content')
 <div class="body-content__header">
   <ul>
@@ -89,9 +95,9 @@
                     @endif
                   </td>
                 @endforeach
- <td class="text-center"> 
-                    {{ \Carbon\Carbon::parse($fpurchaseorder->created_at)->format('d M Y') }}
- </td>
+                <td class="text-center"> 
+                 {{ \Carbon\Carbon::parse($fpurchaseorder->created_at)->format('d M Y') }}
+                </td>
                 {{-- Next Approver --}}
                 <td class="text-center">
                   @foreach($roles as $role)
@@ -117,7 +123,7 @@
                 </td>
 
                 {{-- Actions --}}
-                <td class="text-center">
+                <td class="text-center actions">
                   @if($fpurchaseorder->status == 0 || $fpurchaseorder->status == 4)
                     @if($fpurchaseorder->userId == auth()->user()->id)
                       <a href='/procurement/{{$fpurchaseorder->id}}/purchaseorder' class='btn btn-secondary btn-sm'>

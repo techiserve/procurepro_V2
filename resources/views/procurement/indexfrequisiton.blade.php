@@ -1,8 +1,13 @@
 @extends('html.default')
 
-<link rel="stylesheet" href="https://unpkg.com/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.4/tutorials/timelines/timeline-7/assets/css/timeline-7.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+  /* Keep action buttons on one line even when the table scrolls */
+  th.actions, td.actions { white-space: nowrap; }
+  td.actions { min-width: 360px; } /* adjust if you have more/less buttons */
+</style>
 
 @section('content')
 <div class="body-content__header">
@@ -111,7 +116,7 @@
             @if($frequisition->status == 0 || $frequisition->status == 1) <button type="button" class="btn btn-outline-primary"> <span class="fa fa-spinner"></span> Pending </button> @elseif($frequisition->status == 2) <button type="button" class="btn btn-outline-success"> <span class="fa fa-check-circle"></span> Approved </button> @elseif($frequisition->status == 3) <button type="button" class="btn btn-outline-danger"> <span class="fa fa-times-circle"></span> Rejected </button> @elseif($frequisition->status == 4) <button type="button" class="btn btn-outline-info"> <span class="fa fa-arrow-left"></span> Returned </button> @elseif($frequisition->status == 6) <button type="button" class="btn btn-outline-danger"> <span class="fa fa-arrow-left"></span> Voided </button> @else <button type="button" class="btn btn-outline-primary"> <span class="fa fa-spinner"></span> Processing </button> @endif
                   </td>
 
-                  <td>
+                  <td class="text-center actions">
                     @if($frequisition->userId == auth()->user()->id)
                       @if($frequisition->status == 4)
                         <a href="/procurement/{{$frequisition->id}}/editrequisition" class="btn btn-info btn-sm text-white">

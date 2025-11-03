@@ -981,6 +981,12 @@ class ProcurementController extends Controller
         //dd($level);
         $totalapprovallevels = Departmentapproval::where('mode','=','PO')->where('departmentId', $departmentName->id)->count();
         $approver = Departmentapproval::where('mode','=','PO')->where('departmentId', $departmentName->id)->where('approvalId', $level)->first();
+
+        if(!$approver){
+
+            return back()->with('error', 'No approval flow found for the selected department!');
+
+        }
   
         $request->validate([
             'invoice' => 'required|mimes:pdf,doc,docx,txt|max:9048',
