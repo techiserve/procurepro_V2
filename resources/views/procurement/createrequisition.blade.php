@@ -3,39 +3,33 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script> 
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
 <style>
-/* Control overall width */
+/* === Original CSS Preserved === */
 .select2-container {
-  width: 720px !important;  /* any width you prefer */
+  width: 720px !important;
 }
 
-/* Control height and appearance of the visible box */
 .select2-container .select2-selection--single {
-  height: 45px !important;        /* taller dropdown */
+  height: 45px !important;
   padding: 6px 12px !important;
   border: 1px solid #ccc !important;
   border-radius: 8px !important;
 }
 
-/* Vertically align text */
 .select2-selection__rendered {
-  line-height: 43px !important;   /* should roughly match height minus borders */
+  line-height: 43px !important;
 }
 
-/* Adjust the dropdown arrow area */
 .select2-selection__arrow {
   height: 43px !important;
 }
 </style>
+
 @section('content')
 <div class="body-content__header">
   <ul>
     <li><a href="#">Add Purchase Requisition</a></li>
-    {{-- <li class="ms-auto">
-      <a href="/procurement/indexrequisition" class="btn btn-primary btn-sm">
-        <i class="fa fa-align-justify"></i> Requisition List
-      </a>
-    </li> --}}
   </ul>
 </div>
 
@@ -50,7 +44,6 @@
           </div>
 
           <div class="card-body">
-
             <hr style="border-color: black;">
 
             @php
@@ -65,12 +58,12 @@
               $bankNames = ['bank', 'bank list', 'banks','Bank','BANKS','BANK'];
               $gls = ['generalledgerallocation','general leger allocation','gl allocation','GL Allocation','GL','Gl','gl'];
 
-              // Remove vendor-related fields completely
               $filteredFields = $formFields->reject(function ($field) use ($vendorNames) {
                   return in_array(strtolower($field->name), array_map('strtolower', $vendorNames));
               });
             @endphp
 
+            {{-- === Dynamic Form Fields === --}}
             @foreach($formFields->chunk(2) as $fieldPair)
               <div class="row">
                 @foreach($fieldPair as $field)
@@ -190,14 +183,13 @@
 
             <hr style="border-color: black;">
 
-            <!-- document upload -->
+            {{-- === Dynamic Upload Section === --}}
             <div class="clearfix" id="dynamic_field">
               <div class="row" id="row1">
 
                 <div class="col-sm-2">
                   <label>Is Vendor One-Time?</label>
                   <div>
-                    <!-- Hidden array field aligned per row -->
                     <input type="hidden" name="is_one_time_vendor[]" id="isOneTimeInput_1" value="no">
                     <label class="radio-inline">
                       <input type="radio" name="is_one_time_vendor_1" value="yes" onchange="toggleVendorTypeDynamic(1, this.value)"> Yes
@@ -240,16 +232,17 @@
                   <button type="button" name="add" id="add" class="btn add-more btn-primary">+ Add</button>
                 </div>
 
-                <!-- ALWAYS-PRESENT hidden inputs to align array indexes -->
-                <input type="hidden" name="bank[]"         id="bankInput_1"         value="">
+                <!-- Always-present hidden fields for alignment -->
+                <input type="hidden" name="bank[]" id="bankInput_1" value="">
                 <input type="hidden" name="accountNumber[]" id="accountNumberInput_1" value="">
-                <input type="hidden" name="accountType[]"   id="accountTypeInput_1"   value="">
-                <input type="hidden" name="branchCode[]"    id="branchCodeInput_1"    value="">
-
+                <input type="hidden" name="accountType[]" id="accountTypeInput_1" value="">
+                <input type="hidden" name="branchCode[]" id="branchCodeInput_1" value="">
+                <input type="hidden" name="doc[]" id="docPlaceholder_1" value="">
+                <input type="file" name="doc_file[]" id="docInput_1" style="display:none;">
               </div>
             </div>
 
-            <!-- One-Time Vendor Modal for Row 1 -->
+            {{-- === Modal for One-Time Vendor Row 1 === --}}
             <div class="modal fade" id="oneTimeVendorModal_1" tabindex="-1" role="dialog" aria-labelledby="oneTimeVendorModalLabel_1" aria-hidden="true">
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -263,7 +256,6 @@
                     </div>
                     <div class="form-col">
                       <label>Type</label>
-                      <!-- keep posting type as before -->
                       <select class="form-control" name="type[]">
                         <option value="">--Select--</option>
                         @foreach($vendorTypes as $type)
@@ -280,7 +272,6 @@
                       <input type="text" class="form-control" name="supplierCode[]">
                     </div>
 
-                    <!-- These four have NO name attrs; values are copied to the hidden per-row fields -->
                     <div class="form-col">
                       <label>Bank</label>
                       <select class="form-control" id="modalBank_1">
@@ -305,7 +296,7 @@
 
                     <div class="form-col">
                       <label>Upload Document</label>
-                      <input type="file" class="form-control" name="doc[]">
+                      <input type="file" class="form-control" id="modaldoc_1">
                     </div>
                   </div>
                   <div class="modal-footer">
@@ -337,15 +328,12 @@ $(document).ready(function(){
   let i = 1;
   $('#add').click(function(){
     i++;
-    const rowId = 'row' + i;
-    const modalId = 'oneTimeVendorModal_' + i;
-
+    const modalId = `oneTimeVendorModal_${i}`;
     $('#dynamic_field').append(`
-      <div id="${rowId}" class="row dynamic-added">
+      <div id="row${i}" class="row dynamic-added">
         <div class="col-sm-2">
           <label>Is Vendor One-Time?</label>
           <div>
-            <!-- Hidden array field aligned per row -->
             <input type="hidden" name="is_one_time_vendor[]" id="isOneTimeInput_${i}" value="no">
             <label class="radio-inline">
               <input type="radio" name="is_one_time_vendor_${i}" value="yes" onchange="toggleVendorTypeDynamic(${i}, this.value)"> Yes
@@ -380,7 +368,7 @@ $(document).ready(function(){
         <div class="col-sm-2">
           <div class="form-col">
             <label>Amount</label>
-            <input type="number" class="form-control" name="damount[]" required>
+            <input type="number" step="0.01" class="form-control" name="damount[]" required>
           </div>
         </div>
 
@@ -388,11 +376,12 @@ $(document).ready(function(){
           <button type="button" name="remove" id="${i}" class="btn btn_remove btn-danger">&times;</button>
         </div>
 
-        <!-- ALWAYS-PRESENT hidden inputs to align array indexes -->
-        <input type="hidden" name="bank[]"           id="bankInput_${i}"           value="">
-        <input type="hidden" name="accountNumber[]"  id="accountNumberInput_${i}"  value="">
-        <input type="hidden" name="accountType[]"    id="accountTypeInput_${i}"    value="">
-        <input type="hidden" name="branchCode[]"     id="branchCodeInput_${i}"     value="">
+        <input type="hidden" name="bank[]" id="bankInput_${i}" value="">
+        <input type="hidden" name="accountNumber[]" id="accountNumberInput_${i}" value="">
+        <input type="hidden" name="accountType[]" id="accountTypeInput_${i}" value="">
+        <input type="hidden" name="branchCode[]" id="branchCodeInput_${i}" value="">
+        <input type="hidden" name="doc[]" id="docPlaceholder_${i}" value="">
+        <input type="file" name="doc_file[]" id="docInput_${i}" style="display:none;">
 
       </div>
 
@@ -427,8 +416,6 @@ $(document).ready(function(){
                 <label>Supplier Code</label>
                 <input type="text" class="form-control" name="supplierCode[]">
               </div>
-
-              <!-- NO name attrs: copy to hidden per-row inputs -->
               <div class="form-col">
                 <label>Bank</label>
                 <input type="text" class="form-control" id="modalBank_${i}">
@@ -445,10 +432,9 @@ $(document).ready(function(){
                 <label>Branch Code</label>
                 <input type="text" class="form-control" id="modalBranchCode_${i}">
               </div>
-
               <div class="form-col">
                 <label>Upload Document</label>
-                <input type="file" class="form-control" name="doc[]">
+                <input type="file" class="form-control" id="modaldoc_${i}">
               </div>
             </div>
             <div class="modal-footer">
@@ -461,9 +447,9 @@ $(document).ready(function(){
   });
 
   $(document).on('click', '.btn_remove', function(){
-    const button_id = $(this).attr("id");
-    $('#row' + button_id).remove();
-    $('#oneTimeVendorModal_' + button_id).remove();
+    const id = $(this).attr("id");
+    $('#row' + id).remove();
+    $('#oneTimeVendorModal_' + id).remove();
   });
 });
 
@@ -486,43 +472,50 @@ function toggleVendorTypeDynamic(index, value) {
     oneTimeInput.style.display = 'none';
     oneTimeInput.value = '';
     updateFinalVendorValue(index, dropdown.value);
-
-    // Clear per-row hidden OTV banking fields so array index stays empty/null
-    setOTVHiddenFields(index, { bank: '', accountNumber: '', accountType: '', branchCode: '' });
   }
 }
 
 function saveOneTimeVendorDynamic(index) {
   const vendorName = document.getElementById(`modalVendorName_${index}`).value;
   const oneTimeInput = document.getElementById(`oneTimeVendorInput_${index}`);
+
   if (!vendorName) {
     Swal.fire('Error', 'Please enter the Vendor Name', 'error');
     return;
   }
+
   oneTimeInput.value = vendorName;
   updateFinalVendorValue(index, vendorName);
 
-  // Copy modal values into the ALWAYS-PRESENT hidden inputs (to keep array indices aligned)
-  const bank          = getValueById(`modalBank_${index}`);
+  // Copy modal values into hidden inputs
+  const bank = getValueById(`modalBank_${index}`);
   const accountNumber = getValueById(`modalAccountNumber_${index}`);
-  const accountType   = getValueById(`modalAccountType_${index}`);
-  const branchCode    = getValueById(`modalBranchCode_${index}`);
-
+  const accountType = getValueById(`modalAccountType_${index}`);
+  const branchCode = getValueById(`modalBranchCode_${index}`);
   setOTVHiddenFields(index, { bank, accountNumber, accountType, branchCode });
+
+  // Copy uploaded file from modal to hidden input
+  const modalFile = document.getElementById(`modaldoc_${index}`);
+  const hiddenFile = document.getElementById(`docInput_${index}`);
+  const placeholder = document.getElementById(`docPlaceholder_${index}`);
+
+  if (modalFile && modalFile.files.length > 0 && hiddenFile) {
+    const dt = new DataTransfer();
+    dt.items.add(modalFile.files[0]);
+    hiddenFile.files = dt.files;
+    if (placeholder) placeholder.value = 'has_file';
+  } else if (placeholder) {
+    placeholder.value = '';
+  }
 
   $(`#oneTimeVendorModal_${index}`).modal('hide');
 }
 
 function setOTVHiddenFields(index, vals) {
-  const bankInput          = document.getElementById(`bankInput_${index}`);
-  const accountNumberInput = document.getElementById(`accountNumberInput_${index}`);
-  const accountTypeInput   = document.getElementById(`accountTypeInput_${index}`);
-  const branchCodeInput    = document.getElementById(`branchCodeInput_${index}`);
-
-  if (bankInput)          bankInput.value = vals.bank ?? '';
-  if (accountNumberInput) accountNumberInput.value = vals.accountNumber ?? '';
-  if (accountTypeInput)   accountTypeInput.value = vals.accountType ?? '';
-  if (branchCodeInput)    branchCodeInput.value = vals.branchCode ?? '';
+  document.getElementById(`bankInput_${index}`).value = vals.bank ?? '';
+  document.getElementById(`accountNumberInput_${index}`).value = vals.accountNumber ?? '';
+  document.getElementById(`accountTypeInput_${index}`).value = vals.accountType ?? '';
+  document.getElementById(`branchCodeInput_${index}`).value = vals.branchCode ?? '';
 }
 
 function getValueById(id) {
@@ -534,7 +527,6 @@ function updateFinalVendorValue(index, value) {
   const finalInput = document.getElementById(`finalVendorInput_${index}`);
   if (finalInput) finalInput.value = value;
 }
-
 
 
 $(document).ready(function () {

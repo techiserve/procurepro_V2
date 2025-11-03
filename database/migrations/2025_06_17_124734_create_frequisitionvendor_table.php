@@ -18,6 +18,7 @@ class CreateFrequisitionvendorTable extends Migration
             // Optional fields for one-time vendor modal
             $table->string('modal_vendor_name')->nullable();
             $table->string('type')->nullable();
+             $table->string('IsOneTimeVendor')->nullable();
             $table->string('vat_allocation')->nullable();
             $table->string('supplier_code')->nullable();
             $table->string('bank')->nullable();

@@ -60,7 +60,7 @@
                 <th>Date</th>
                 <th>Next Approver</th>
                 <th>Status</th>
-                <th class="text-center">Action</th>
+                <th>Action</th>
               </tr>
             </thead>
 
@@ -96,9 +96,9 @@
                       @endif
                     </td>
                   @endforeach
- <td class="text-center"> 
-                    {{ \Carbon\Carbon::parse($frequisition->created_at)->format('d M Y') }}
- </td>
+                  <td class="text-center"> 
+                      {{ \Carbon\Carbon::parse($frequisition->created_at)->format('d M Y') }}
+                  </td>
                   <td class="text-center">
                     @foreach($roles as $role)
                       @if($frequisition->approvedby == $role->id)
@@ -111,7 +111,7 @@
             @if($frequisition->status == 0 || $frequisition->status == 1) <button type="button" class="btn btn-outline-primary"> <span class="fa fa-spinner"></span> Pending </button> @elseif($frequisition->status == 2) <button type="button" class="btn btn-outline-success"> <span class="fa fa-check-circle"></span> Approved </button> @elseif($frequisition->status == 3) <button type="button" class="btn btn-outline-danger"> <span class="fa fa-times-circle"></span> Rejected </button> @elseif($frequisition->status == 4) <button type="button" class="btn btn-outline-info"> <span class="fa fa-arrow-left"></span> Returned </button> @elseif($frequisition->status == 6) <button type="button" class="btn btn-outline-danger"> <span class="fa fa-arrow-left"></span> Voided </button> @else <button type="button" class="btn btn-outline-primary"> <span class="fa fa-spinner"></span> Processing </button> @endif
                   </td>
 
-                  <td class="text-center">
+                  <td>
                     @if($frequisition->userId == auth()->user()->id)
                       @if($frequisition->status == 4)
                         <a href="/procurement/{{$frequisition->id}}/editrequisition" class="btn btn-info btn-sm text-white">

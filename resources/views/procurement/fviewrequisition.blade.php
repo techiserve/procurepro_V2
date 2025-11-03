@@ -10,7 +10,11 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!-- iCheck JS (optional) -->
 <script src="https://cdn.jsdelivr.net/npm/icheck/icheck.min.js"></script>
-
+<style>
+  .modal-body label {
+    font-weight: 600;
+  }
+</style>
 @section('content')
 
 @php
@@ -100,6 +104,7 @@
 
             <div class="card-body">
               <div class="table-responsive">
+                 
                 <table class="table table-bordered table-striped table-sm align-middle">
                   <thead>
                     <tr>
@@ -109,8 +114,9 @@
                       <th class="text-center">Document</th>
                     </tr>
                   </thead>
+                   @foreach ($frequisitionvendors as $faira)
                   <tbody>
-                    @foreach ($frequisitionvendors as $faira)
+                  
                       <tr>
                         <td class="text-center">
                           <input type="checkbox"
@@ -126,18 +132,88 @@
                             <a href="{{ asset('/storage/uploads/' . $faira->file_path) }}" target="_blank" class="btn btn-info btn-sm text-white">
                               View Document
                             </a>
-                          @else
-                            <span class="text-muted">No document available.</span>
+            
                           @endif
+                               
+                          @if($faira->IsOneTimeVendor == 'yes')                                  
+                         <button type="button"
+                                class="btn btn-success btn-sm"
+                                data-bs-toggle="modal"
+                                data-bs-target="#vendorModal_{{ $faira->id }}">
+                          View Vendor Details
+                        </button>
+                        @endif
+
                         </td>
                       </tr>
-                    @endforeach
+                
                   </tbody>
-                </table>
+
+<!-- Vendor Details Modal for Vendor ID: {{ $faira->id }} -->
+<div class="modal fade" id="vendorModal_{{ $faira->id }}" tabindex="-1" aria-labelledby="vendorModalLabel_{{ $faira->id }}" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="vendorModalLabel_{{ $faira->id }}">
+          Vendor Details - {{ $faira->vendor_final }}
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Vendor Name</label>
+            <input type="text" class="form-control" value="{{ $faira->vendor_final }}" readonly>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Bank</label>
+            <input type="text" class="form-control" value="{{ $faira->bank ?? 'N/A' }}" readonly>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Account Number</label>
+            <input type="text" class="form-control" value="{{ $faira->account_number ?? 'N/A' }}" readonly>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Account Type</label>
+            <input type="text" class="form-control" value="{{ $faira->account_type ?? 'N/A' }}" readonly>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Branch Code</label>
+            <input type="text" class="form-control" value="{{ $faira->branchCode ?? 'N/A' }}" readonly>
+          </div>
+        </div>
+
+        <hr>
+        <div class="text-center">
+          @if (!empty($faira->doc_path))
+            <a href="{{ asset('/storage/uploads/' . $faira->doc_path) }}" target="_blank" class="btn btn-info text-white">
+              <i class="fa fa-file"></i> View Vendor Document
+            </a>
+          @else
+            <span class="text-muted">No vendor document available.</span>
+          @endif
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+                   @endforeach 
+                </table>              
               </div>
             </div>
 
-            {{-- Action buttons (only when approver is eligible) --}}
             @if($frequisition->userId != auth()->user()->id  && $frequisition->status != 6)
               @if($frequisition->approvedby == auth()->user()->userrole && $frequisition->approvallevel <= $frequisition->totalapprovallevels)
                 <div class="card-footer d-flex justify-content-end gap-2">
@@ -158,7 +234,6 @@
             @endif
           </div>
         </form>
-        {{-- /APPROVE form --}}
 
       </div>
     </div>

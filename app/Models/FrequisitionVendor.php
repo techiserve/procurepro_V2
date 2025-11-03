@@ -19,6 +19,7 @@ class FrequisitionVendor extends Model
         'vat_allocation',
         'supplier_code',
         'bank',
+        'IsOneTimeVendor',
         'account_number',
         'account_type',
         'doc_path',

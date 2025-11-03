@@ -751,7 +751,7 @@ class ProcurementController extends Controller
     public function requisitionstore(Request $request,WhatsAppService $whatsapp)
     {
 
-    //  dd($request->all());
+   //   dd($request->all());
 
         $company = Company::where('id', Auth::user()->companyId)->first();
         $latest = Frequisition::where('requisitionNumber', 'LIKE', $company->name . '-%')
@@ -810,13 +810,11 @@ class ProcurementController extends Controller
        
        $requisition = Frequisition::forceCreate($filteredData);
 
-      // dd($approver->roleId);
-        $user = User::where('userrole', $approver->roleId)->where('companyId', Auth::user()->companyId)->first();
-      //  dd($department);
-        if($user && $department->notifications == 1){
-        // dd();
-        $req = $requisitionNumber;
 
+        $user = User::where('userrole', $approver->roleId)->where('companyId', Auth::user()->companyId)->first();
+  
+        if($user && $department->notifications == 1){
+        $req = $requisitionNumber;
          Mail::to($user->email)->queue(new SendSampleEmail($req));
            
         }
@@ -851,6 +849,8 @@ class ProcurementController extends Controller
     $branchCode = $request->input('branchCode');
     $files = $request->file('dfile');
     $docs = $request->file('doc');
+    $doc_file = $request->file('doc_file');
+    // dd($docs,$files);
 
     foreach ($vendorFinal as $index => $vendorName) {
 
@@ -879,6 +879,7 @@ class ProcurementController extends Controller
             $frequisition->account_number = $vendor->account_number ?? null;
             $frequisition->account_type = $vendor->account_type?? null;
             $frequisition->branchCode = $vendor->branch_code?? null;
+            $frequisition->IsOneTimeVendor = $is_one_time_vendor[$index]?? null;
 
             if (isset($docs[$index])) {
                 $frequisitionfile = $docs[$index]->store('uploads', 'public');
@@ -900,8 +901,6 @@ class ProcurementController extends Controller
              $frequisition->file_path = $fieldquote;
         }
 
-        // If modal data exists (for one-time vendors)
- 
            
             $frequisition->type = $types[$index] ?? null;
             $frequisition->vat_allocation = $vatAllocations[$index] ?? null;
@@ -910,9 +909,11 @@ class ProcurementController extends Controller
             $frequisition->account_number = $accountNumbers[$index] ?? null;
             $frequisition->account_type = $accountTypes[$index] ?? null;
             $frequisition->branchCode = $branchCode[$index] ?? null;
+            $frequisition->IsOneTimeVendor = $is_one_time_vendor[$index]?? null;
+           
 
-            if (isset($docs[$index])) {
-                $frequisitionfile = $docs[$index]->store('uploads', 'public');
+            if (isset($doc_file[$index])) {
+                $frequisitionfile = $doc_file[$index]->store('uploads', 'public');
                 $fieldquote1 =  Str::afterLast($frequisitionfile, '/');
                 $frequisition->doc_path = $fieldquote1; 
             }
