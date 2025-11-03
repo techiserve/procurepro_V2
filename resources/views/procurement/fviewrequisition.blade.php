@@ -140,7 +140,7 @@
                                 class="btn btn-success btn-sm"
                                 data-bs-toggle="modal"
                                 data-bs-target="#vendorModal_{{ $faira->id }}">
-                          View Vendor Details
+                          One Time Vendor Details
                         </button>
                         @endif
 
