@@ -124,7 +124,7 @@
                         <div class="form-col">
                             <label for="bank_name">Bank Name</label>
                             <select name="bank_name" id="bank_name" class="form-control">
-                                <option value="">--Select--</option>
+                                <option value="{{$vendor->bank_name}}">{{$vendor->bank_name}}</option>
                                 @foreach($banks as $bank)
                                 <option value="{{ $bank->name }}">{{ $bank->name }}</option>
                                @endforeach
