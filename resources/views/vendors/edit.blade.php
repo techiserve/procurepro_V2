@@ -125,9 +125,9 @@
                             <label for="bank_name">Bank Name</label>
                             <select name="bank_name" id="bank_name" class="form-control">
                                 <option value="">--Select--</option>
-                                @foreach(['ABSA','FNB','Standard Bank','Nedbank','Capitec','Investec'] as $bank)
-                                    <option value="{{ $bank }}" {{ $vendor->bank_name == $bank ? 'selected' : '' }}>{{ $bank }}</option>
-                                @endforeach
+                                @foreach($banks as $bank)
+                                <option value="{{ $bank->name }}">{{ $bank->name }}</option>
+                               @endforeach
                             </select>
                         </div>
                     </div>

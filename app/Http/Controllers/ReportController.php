@@ -460,14 +460,29 @@ class ReportController extends Controller
 
            // dd($fpurchaseorder);
 
+            // $filterss = DB::table('fpurchaseorders')
+            // ->where('companyId', Auth::user()->companyId)
+            // ->where('uploadStatus', '=', null)
+            // ->where('status', '=', 2)
+            // ->select($report->description)
+            // ->groupBy($report->description)
+            // ->pluck($report->description)
+            // ->toArray();  
+
             $filters = DB::table('fpurchaseorders')
             ->where('companyId', Auth::user()->companyId)
-            ->where('uploadStatus', '=', null)
-            ->where('status', '=', 2)
+            ->whereNull('uploadStatus')
+            ->where('status', 2)
+            ->whereIn('frequisition_id', function ($query) {
+                $query->select('requisition_id')
+                    ->from('itemizedfpurchaseorders');
+            })
             ->select($report->description)
-            ->groupBy($report->description)
+            ->distinct()
             ->pluck($report->description)
-            ->toArray();  
+            ->toArray();
+
+           // dd($filters, $filterss);
 
             $type = 'fpurchaseorders';
 

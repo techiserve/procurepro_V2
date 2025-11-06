@@ -232,6 +232,11 @@ class VendorController extends Controller
         return redirect()->route('classifications.create')->with('success', 'Classification created successfully.');
     }
 
+
+
+
+
+
     public function edit($id)
 {
     $vendor = Vendor::with('documents')->findOrFail($id);
@@ -241,8 +246,9 @@ class VendorController extends Controller
 
      $users = User::where('userrole', '>', 3)->where('companyId', Auth::user()->companyId)->orWhereIn('id', $executiveUserIds )->get();
     $finance = User::where('id','=', $vendor->finance_manager)->first();
+     $banks = Bank::all();
 
-    return view('vendors.edit', compact('vendor', 'users','vendorTypes','finance'));
+    return view('vendors.edit', compact('vendor', 'users','vendorTypes','finance','banks'));
 }
 
 public function update(Request $request, $id)
