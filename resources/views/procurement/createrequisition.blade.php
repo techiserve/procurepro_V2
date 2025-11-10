@@ -24,6 +24,14 @@
 .select2-selection__arrow {
   height: 43px !important;
 }
+#vendorDropdown_1.select2-hidden-accessible + .select2-container {
+  width: 100% !important; /* adjust this % as needed */
+  max-width: 650px !important; /* optional, to cap width */
+}
+[id^="vendorDropdown_"]:not(#vendorDropdown_1).select2-hidden-accessible + .select2-container {
+  width: 85% !important;
+  max-width: 500px !important;
+}
 </style>
 
 @section('content')
@@ -205,7 +213,7 @@
                     <label>Vendor Name</label>
                     <input type="hidden" name="vendor_final[]" id="finalVendorInput_1">
                     <input type="text" class="form-control" id="oneTimeVendorInput_1" style="display:none; margin-top:1px;" placeholder="One-Time Vendor Name" oninput="updateFinalVendorValue(1, this.value)">
-                    <select class="form-control" id="vendorDropdown_1" style="display:block; margin-top:-1px;" onchange="updateFinalVendorValue(1, this.value)">
+                    <select class="js-example-basic-single form-control" id="vendorDropdown_1" onchange="updateFinalVendorValue(1, this.value)">
                       <option value="">Select Vendor</option>
                       @foreach($vendors as $vendor)
                         <option value="{{ $vendor->SupplierName }}">{{ $vendor->SupplierName }}</option>
@@ -324,11 +332,18 @@
 @endsection
 
 <script type="text/javascript">
-$(document).ready(function(){
+$(document).ready(function () {
+  // Initialize Select2 only once for existing elements
+  $('.js-example-basic-single').select2({
+    width: 'resolve'
+  });
+
   let i = 1;
-  $('#add').click(function(){
+  $('#add').click(function () {
     i++;
     const modalId = `oneTimeVendorModal_${i}`;
+
+    // Append a new row
     $('#dynamic_field').append(`
       <div id="row${i}" class="row dynamic-added">
         <div class="col-sm-2">
@@ -349,7 +364,7 @@ $(document).ready(function(){
             <label>Vendor Name</label>
             <input type="hidden" name="vendor_final[]" id="finalVendorInput_${i}">
             <input type="text" class="form-control" id="oneTimeVendorInput_${i}" style="display:none; margin-top:5px;" placeholder="One-Time Vendor Name" oninput="updateFinalVendorValue(${i}, this.value)">
-            <select class="form-control" id="vendorDropdown_${i}" style="display:block; margin-top:5px;" onchange="updateFinalVendorValue(${i}, this.value)">
+            <select class="js-example-basic-single form-control vendor-dropdown" id="vendorDropdown_${i}" onchange="updateFinalVendorValue(${i}, this.value)">
               <option value="">Select Vendor</option>
               @foreach($vendors as $vendor)
                 <option value="{{ $vendor->SupplierName }}">{{ $vendor->SupplierName }}</option>
@@ -382,7 +397,6 @@ $(document).ready(function(){
         <input type="hidden" name="branchCode[]" id="branchCodeInput_${i}" value="">
         <input type="hidden" name="doc[]" id="docPlaceholder_${i}" value="">
         <input type="file" name="doc_file[]" id="docInput_${i}" style="display:none;">
-
       </div>
 
       <div class="modal fade" id="${modalId}" tabindex="-1" role="dialog" aria-labelledby="modalLabel_${i}" aria-hidden="true">
@@ -444,9 +458,22 @@ $(document).ready(function(){
         </div>
       </div>
     `);
+
+    // ✅ Initialize Select2 *only for the new vendor dropdown*
+    $(`#vendorDropdown_${i}`).select2({
+      width: 'resolve',
+      dropdownAutoWidth: true
+    });
+
+    // ✅ Make vendor dropdown smaller for 2nd+ rows
+    $(`#vendorDropdown_${i}`).next('.select2-container').css({
+      'max-width': '500px',
+      'width': '85%'
+    });
   });
 
-  $(document).on('click', '.btn_remove', function(){
+  // Remove dynamic rows
+  $(document).on('click', '.btn_remove', function () {
     const id = $(this).attr("id");
     $('#row' + id).remove();
     $('#oneTimeVendorModal_' + id).remove();
@@ -459,21 +486,36 @@ function toggleVendorTypeDynamic(index, value) {
   const modal = $(`#oneTimeVendorModal_${index}`);
   const hiddenIsOneTime = document.getElementById(`isOneTimeInput_${index}`);
 
+  // Select2 container (the visible wrapper)
+  const select2Container = $(`#vendorDropdown_${index}`).next('.select2-container');
+
   if (hiddenIsOneTime) hiddenIsOneTime.value = (value === 'yes') ? 'yes' : 'no';
 
   if (value === 'yes') {
-    dropdown.style.display = 'none';
-    oneTimeInput.style.display = 'block';
-    oneTimeInput.value = '';
+    // Hide dropdown + its Select2 container smoothly
+    if (select2Container.length) select2Container.fadeOut(200);
+    $(dropdown).fadeOut(200);
+
+    // Show one-time vendor input with animation
+    $(oneTimeInput).fadeIn(250).val('');
+
+    // Clear current vendor and show modal
     updateFinalVendorValue(index, '');
-    modal.modal('show');
+    setTimeout(() => modal.modal('show'), 300);
   } else if (value === 'no') {
-    dropdown.style.display = 'block';
-    oneTimeInput.style.display = 'none';
-    oneTimeInput.value = '';
+    // Hide one-time input smoothly
+    $(oneTimeInput).fadeOut(200, function () {
+      $(this).val('');
+      // Show dropdown and its Select2 container again
+      $(dropdown).fadeIn(250);
+      if (select2Container.length) select2Container.fadeIn(250);
+    });
+
+    // Update final vendor
     updateFinalVendorValue(index, dropdown.value);
   }
 }
+
 
 function saveOneTimeVendorDynamic(index) {
   const vendorName = document.getElementById(`modalVendorName_${index}`).value;
