@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('uploadStatus')->nullable();
             $table->integer('isActive');
             $table->string('approvallevel');
+            $table->string('pop');
             $table->string('totalapprovallevels');
             $table->string('reason');
             $table->string('approvedby');

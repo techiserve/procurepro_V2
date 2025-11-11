@@ -12,6 +12,8 @@ class CreateFrequisitionvendorTable extends Migration
             $table->id();
             $table->string('vendor_final')->nullable();
             $table->string('file_path')->nullable();
+            $table->string('file_path2')->nullable();
+            $table->string('file_path3')->nullable();
             $table->integer('frequisition_id')->nullable();
             $table->integer('status')->nullable();
             $table->decimal('amount', 15, 2)->default(0);
@@ -25,6 +27,8 @@ class CreateFrequisitionvendorTable extends Migration
             $table->string('account_number')->nullable();
             $table->string('account_type')->nullable();
             $table->string('doc_path')->nullable();
+            $table->string('doc_path2')->nullable();
+            $table->string('doc_path3')->nullable();
 
             $table->timestamps();
         });

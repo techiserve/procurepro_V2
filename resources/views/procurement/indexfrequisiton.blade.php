@@ -128,6 +128,13 @@
                         <a href="/procurement/{{$frequisition->id}}/download" class="btn btn-primary btn-sm text-white">
                           <span class="fa fa-download"></span> Download
                         </a>&nbsp;
+                        @if(empty($frequisition->pop))
+                       <button type="button" class="btn btn-info btn-sm"
+                            data-bs-toggle="modal" data-bs-target="#pop{{ $frequisition->id }}">
+                       <span class="fa fa-upload"></span> Upload POP
+                       @endif
+                    </button>
+
                       @else
                         <a href="/procurement/{{$frequisition->id}}/viewrequisition" class="btn btn-info btn-sm text-white">
                           <span class="fa fa-desktop"></span> View
@@ -138,6 +145,13 @@
                         <a href="/procurement/{{$frequisition->id}}/download" class="btn btn-primary btn-sm text-white">
                           <span class="fa fa-download"></span> Download
                         </a>&nbsp;
+                         @if(empty($frequisition->pop))
+                       <button type="button" class="btn btn-info btn-sm"
+                            data-bs-toggle="modal" data-bs-target="#pop{{ $frequisition->id }}">
+                      <span class="fa fa-upload"></span> Upload POP
+                      @endif
+                    </button>
+
                       @endif
                     @else
                       <a href="/procurement/{{$frequisition->id}}/viewrequisition" class="btn btn-info btn-sm text-white">
@@ -149,9 +163,46 @@
                       <a href="/procurement/{{$frequisition->id}}/download" class="btn btn-primary btn-sm text-white">
                         <span class="fa fa-download"></span> Download
                       </a>&nbsp;
+                       @if(empty($frequisition->pop))
+                       <button type="button" class="btn btn-info btn-sm"
+                       data-bs-toggle="modal" data-bs-target="#pop{{ $frequisition->id }}">
+                      <span class="fa fa-upload"></span> Upload POP
+                      @endif
+                    </button>
+
                     @endif
                   </td>
                 </tr>
+
+                <div class="modal fade" id="pop{{ $frequisition->id }}" tabindex="-1" aria-labelledby="pop{{ $frequisition->id }}Label" aria-hidden="true">
+                  <div class="modal-dialog modal-md">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h4 class="modal-title" id="pop{{ $frequisition->id }}Label">
+                          <i class="fa fa-envelope"></i> Upload Proof of Payment
+                        </h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <form method="POST" action="/procurement/{{ $frequisition->id }}/reqPop" enctype="multipart/form-data">
+                        @csrf
+                        @method('put')
+                        <div class="modal-body" style="font-size:14px;">
+                          <div class="mb-3">
+                            <label for="popfile{{ $frequisition->id }}" class="form-label">Upload document</label>
+                            <input type="file" name="pop" id="popfile{{ $frequisition->id }}" class="form-control" required />
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                          <button type="submit" class="btn btn-primary">
+                            <span class="fa fa-upload"></span> Upload
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+
               @endforeach
             </tbody>
           </table>
@@ -160,6 +211,11 @@
       {{-- END #tableForm --}}
     </div>
   </div>
+
+
+
+
+
 
   {{-- History Modals (outside the table form) --}}
   @foreach($frequisitions as $frequisition)

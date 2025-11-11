@@ -135,6 +135,19 @@
             
                           @endif
                                
+                              @if (!empty($faira->file_path2))
+                            <a href="{{ asset('/storage/uploads/' . $faira->file_path2) }}" target="_blank" class="btn btn-primary btn-sm text-white">
+                              View Additional Document
+                            </a>
+            
+                          @endif
+                              @if (!empty($faira->file_path3))
+                            <a href="{{ asset('/storage/uploads/' . $faira->file_path3) }}" target="_blank" class="btn btn-info btn-sm text-white">
+                              View Additional Document
+                            </a>
+            
+                          @endif
+
                           @if($faira->IsOneTimeVendor == 'yes')                                  
                          <button type="button"
                                 class="btn btn-success btn-sm"
@@ -194,9 +207,20 @@
             <a href="{{ asset('/storage/uploads/' . $faira->doc_path) }}" target="_blank" class="btn btn-info text-white">
               <i class="fa fa-file"></i> View Vendor Document
             </a>
-          @else
-            <span class="text-muted">No vendor document available.</span>
-          @endif
+            @endif
+
+             @if (!empty($faira->doc_path2))
+            <a href="{{ asset('/storage/uploads/' . $faira->doc_path2) }}" target="_blank" class="btn btn-primary text-white">
+              <i class="fa fa-file"></i> View Additional  Document
+            </a>
+             @endif
+
+             @if (!empty($faira->doc_path3))
+            <a href="{{ asset('/storage/uploads/' . $faira->doc_path3) }}" target="_blank" class="btn btn-danger text-white">
+              <i class="fa fa-file"></i> View Additional  Document
+            </a>
+             @endif
+         
         </div>
       </div>
 
@@ -235,10 +259,49 @@
           </div>
         </form>
 
+
+
+        {{-- Card 3: POP Document --}}
+       @if (!empty($frequisition->pop))
+       <div class="card">
+            <div class="card-header">
+              <strong>POP</strong>
+              <small class="text-muted ms-2">List</small>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                  
+                  <table class="table table-bordered table-striped table-sm align-middle">
+                    <thead>
+                      <tr>
+                        <th class="text-center">POP</th>
+                        <th class="text-center">Document</th>
+                      </tr>
+                    </thead>     
+                    <tbody>  
+                        <tr>
+                           <td class="text-center" >POP</td>
+                          <td class="text-center">
+                            @if (!empty($frequisition->pop))
+                              <a href="{{ asset('/storage/uploads/' . $frequisition->pop) }}" target="_blank" class="btn btn-info btn-sm text-white">
+                                View POP Document
+                              </a>
+                            @endif
+                          </td>
+                         
+                        </tr>
+                    </tbody>
+                  </table>
+              </div>
+            </div>
+          </div>
+   @endif
       </div>
     </div>
   </div>
 </div>
+
+
 
 {{-- ======= MODALS (outside of the approve form) ======= --}}
 

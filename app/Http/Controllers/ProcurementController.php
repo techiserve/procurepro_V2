@@ -751,7 +751,7 @@ class ProcurementController extends Controller
     public function requisitionstore(Request $request,WhatsAppService $whatsapp)
     {
 
-   //   dd($request->all());
+    //  dd($request->all());
 
         $company = Company::where('id', Auth::user()->companyId)->first();
         $latest = Frequisition::where('requisitionNumber', 'LIKE', $company->name . '-%')
@@ -847,9 +847,13 @@ class ProcurementController extends Controller
     $accountNumbers = $request->input('accountNumber');
     $accountTypes = $request->input('accountType');
     $branchCode = $request->input('branchCode');
-    $files = $request->file('dfile');
+    $files1 = $request->file('dfile1');
+     $files2 = $request->file('dfile2');
+      $files3 = $request->file('dfile3');
     $docs = $request->file('doc');
-    $doc_file = $request->file('doc_file');
+    $doc_file1 = $request->file('doc_file');
+    $doc_file2 = $request->file('doc_file2');
+    $doc_file3 = $request->file('doc_file3');
     // dd($docs,$files);
 
     foreach ($vendorFinal as $index => $vendorName) {
@@ -864,12 +868,27 @@ class ProcurementController extends Controller
         $frequisition->amount = $amounts[$index];
         $frequisition->frequisition_id = $requisition->id;
 
-        if (isset($files[$index])) {
+            if (isset($files1[$index])) {
              
-             $faira = $files[$index]->store('uploads', 'public');
-             $fieldquote =  Str::afterLast($faira, '/');
-             $frequisition->file_path = $fieldquote;
-        }
+             $faira = $files1[$index]->store('uploads', 'public');
+             $fieldquote1 =  Str::afterLast($faira, '/');
+             $frequisition->file_path = $fieldquote1;
+           }
+
+           if (isset($files2[$index])) {
+             
+             $faira = $files2[$index]->store('uploads', 'public');
+             $fieldquote2 =  Str::afterLast($faira, '/');
+             $frequisition->file_path2 = $fieldquote2;
+            }
+ 
+           if (isset($files3[$index])) {
+             
+             $faira = $files3[$index]->store('uploads', 'public');
+             $fieldquote3 =  Str::afterLast($faira, '/');
+             $frequisition->file_path3 = $fieldquote3;
+
+           }
 
           
             $frequisition->type = $types[$index] ?? null;
@@ -881,11 +900,11 @@ class ProcurementController extends Controller
             $frequisition->branchCode = $vendor->branch_code?? null;
             $frequisition->IsOneTimeVendor = $is_one_time_vendor[$index]?? null;
 
-            if (isset($docs[$index])) {
-                $frequisitionfile = $docs[$index]->store('uploads', 'public');
-                $fieldquote1 =  Str::afterLast($frequisitionfile, '/');
-                $frequisition->doc_path = $fieldquote1; 
-            }
+            // if (isset($docs[$index])) {
+            //     $frequisitionfile = $docs[$index]->store('uploads', 'public');
+            //     $fieldquote1 =  Str::afterLast($frequisitionfile, '/');
+            //     $frequisition->doc_path = $fieldquote1; 
+            // }
      
         }else{
 
@@ -894,12 +913,27 @@ class ProcurementController extends Controller
         $frequisition->amount = $amounts[$index];
         $frequisition->frequisition_id = $requisition->id;
 
-        if (isset($files[$index])) {
+          if (isset($files1[$index])) {
              
-             $faira = $files[$index]->store('uploads', 'public');
-             $fieldquote =  Str::afterLast($faira, '/');
-             $frequisition->file_path = $fieldquote;
-        }
+             $faira = $files1[$index]->store('uploads', 'public');
+             $fieldquote1 =  Str::afterLast($faira, '/');
+             $frequisition->file_path = $fieldquote1;
+           }
+
+           if (isset($files2[$index])) {
+             
+             $faira = $files2[$index]->store('uploads', 'public');
+             $fieldquote2 =  Str::afterLast($faira, '/');
+             $frequisition->file_path2 = $fieldquote2;
+            }
+ 
+           if (isset($files3[$index])) {
+             
+             $faira = $files3[$index]->store('uploads', 'public');
+             $fieldquote3 =  Str::afterLast($faira, '/');
+             $frequisition->file_path3 = $fieldquote3;
+           }
+
 
            
             $frequisition->type = $types[$index] ?? null;
@@ -912,11 +946,24 @@ class ProcurementController extends Controller
             $frequisition->IsOneTimeVendor = $is_one_time_vendor[$index]?? null;
            
 
-            if (isset($doc_file[$index])) {
-                $frequisitionfile = $doc_file[$index]->store('uploads', 'public');
+            if (isset($doc_file1[$index])) {
+                $frequisitionfile = $doc_file1[$index]->store('uploads', 'public');
                 $fieldquote1 =  Str::afterLast($frequisitionfile, '/');
                 $frequisition->doc_path = $fieldquote1; 
             }
+
+
+               if (isset($doc_file2[$index])) {
+                $frequisitionfile = $doc_file2[$index]->store('uploads', 'public');
+                $fieldquote2 =  Str::afterLast($frequisitionfile, '/');
+                $frequisition->doc_path2 = $fieldquote2; 
+            }
+
+                if (isset($doc_file3[$index])) {
+                 $frequisitionfile = $doc_file3[$index]->store('uploads', 'public');
+                 $fieldquote3 =  Str::afterLast($frequisitionfile, '/');
+                 $frequisition->doc_path3 = $fieldquote3; 
+                }
      
      }
       
@@ -1570,6 +1617,29 @@ class ProcurementController extends Controller
       if($updatereq){
 
        return redirect()->route('procurement.managepurchaseorder')->with('success', 'Pop uploaded, well done buddy!');
+
+      }
+
+    }
+
+
+
+     public function reqPop(Request $request, string $id)
+    {
+   
+        $invoicefilePath = $request->file('pop')->store('uploads', 'public');
+
+        $invoicefilePath =  Str::afterLast($invoicefilePath, '/');
+
+        $updatereq = Frequisition::where('id', $id)->update([
+
+        'pop'  => $invoicefilePath,
+  
+        ]);   
+
+      if($updatereq){
+
+       return redirect()->route('procurement.indexrequisition')->with('success', 'Pop uploaded, well done buddy!');
 
       }
 

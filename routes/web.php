@@ -149,6 +149,7 @@ Route::middleware('auth')->group(function () {
      Route::put('/procurement/{id}/bankAccount', [ProcurementController::class, 'approvepurchaseorderbankAccount'])->name('procurement.bankAccount');
      Route::put('/procurement/{id}/reject', [ProcurementController::class, 'rejectpurchaseorder'])->name('procurement.rejectpurchaseorder');
      Route::put('/procurement/{id}/pop', [ProcurementController::class, 'pop'])->name('procurement.pop');
+      Route::put('/procurement/{id}/reqPop', [ProcurementController::class, 'reqPop'])->name('procurement.reqPop');
      Route::get('/procurement/{id}/paymentRelease', [ProcurementController::class, 'paymentRelease'])->name('procurement.paymentRelease');
       Route::get('/procurement/{id}/view', [ProcurementController::class, 'view'])->name('procurement.view');
      Route::put('/procurement/{id}/sendback', [ProcurementController::class, 'sendbackpurchaseorder'])->name('procurement.sendbackpurchaseorder');

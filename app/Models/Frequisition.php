@@ -18,6 +18,7 @@ class Frequisition extends Model
         'userId',
         'status',
         'uploadStatus',
+        'pop',
         'approvallevel',
         'totalapprovallevels',
         'isActive',

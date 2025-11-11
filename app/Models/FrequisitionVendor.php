@@ -12,6 +12,8 @@ class FrequisitionVendor extends Model
         'vendor_final',
         'frequisition_id',
         'file_path',
+        'file_path2',
+        'file_path3',
         'amount',
         'status',
         'modal_vendor_name',
@@ -23,5 +25,7 @@ class FrequisitionVendor extends Model
         'account_number',
         'account_type',
         'doc_path',
+        'doc_path2',
+        'doc_path3',
     ];
 }
