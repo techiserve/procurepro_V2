@@ -1,12 +1,5 @@
 @extends('html.default')
 
-@section('styles')
-<link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.4/tutorials/timelines/timeline-7/assets/css/timeline-7.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-@endsection
-
 @section('content')
 <div class="body-content__header">
   <ul>
@@ -16,6 +9,28 @@
 </div>
 
 <div class="body-content__wrapper requesition-body">
+      <div class="requesition-top">
+        <ul class="requesition-btn-list">
+            <li>
+                <button id="copyBtn"><img src="{{ asset('assets/img/copy-icon.png') }}" alt=""> Copy</button>
+                <div id="copyPopup" class="copy-popup"></div>
+            </li>
+            <li>
+                <button id="csvBtn"><img src="{{ asset('assets/img/csv-icon.png') }}" alt=""> CSV</button>
+            </li>
+            <li>
+                <button id="excelBtn"><img src="{{ asset('assets/img/excel-icon.png') }}" alt=""> Excel</button>
+            </li>
+            <li>
+                <button id="pdfBtn"><img src="{{ asset('assets/img/pdf-icon.png') }}" alt=""> PDF</button>
+            </li>
+        </ul>
+        <div class="requesition-search">
+            <input type="search" id="tableSearch" placeholder="Search Here.........">
+            <button><img src="{{ asset('assets/img/search-icon.png') }}" alt=""></button>
+        </div>
+    </div>
+
   <div class="card">
 
     {{-- BULK ACTION FORM (POST). IMPORTANT: Do NOT include any other forms inside this element --}}
@@ -29,8 +44,8 @@
 </div>
 
       <div class="card-body">
-        <div class="table-responsive">
-          <table class="table table-striped table-bordered zero-configuration">
+        <div class="table-responsive" style="overflow-x:auto; width:100%;">
+          <table id="myTable"  class="display nowrap" style="width:100%">
             <thead class="table-light text-center">
               <tr>
                
@@ -140,6 +155,21 @@
             </tbody>
           </table>
         </div>
+            <div class="requesition-bottom">
+        <div class="page-number">
+            <label>Records per page:</label>
+            <select>
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+            </select>
+        </div>
+        <ul class="requesition-pagination">
+            <li><button><img src="{{ asset('assets/img/pagi-arrow-left.png') }}" alt=""></button></li>
+            <li><p>0 to {{ count($fpurchaseorders) }}</p></li>
+            <li><button><img src="{{ asset('assets/img/pagi-arrow-next.png') }}" alt=""></button></li>
+        </ul>
+    </div>
       </div>
     {{-- END BULK FORM --}}
 
@@ -355,41 +385,132 @@
 
   </div>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+<script>
+// Utility: strip HTML tags (so exports don't include raw <button> etc.)
+const stripHtml = (html) => {
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  return div.textContent || div.innerText || '';
+};
+
+// If you have your own search input, wire it to DataTables:
+document.getElementById('tableSearch')?.addEventListener('input', function() {
+  window.dt.search(this.value).draw();
+});
+
+// ===== COPY =====
+document.getElementById("copyBtn").addEventListener("click", function (e) {
+  const headers = window.dt.columns().header().toArray().map(th => th.innerText.trim());
+  const rows = [];
+  window.dt.rows({ search: 'applied' }).every(function () {
+    const data = this.data().map(c => stripHtml(c));
+    rows.push(data);
+  });
+  const text = [headers.join('\t')].concat(rows.map(r => r.join('\t'))).join('\n');
+
+  navigator.clipboard.writeText(text).then(() => {
+    const popup = document.getElementById("copyPopup");
+    popup.textContent = "Copied!";
+    popup.style.opacity = 1;
+    const btnRect = e.target.getBoundingClientRect();
+    popup.style.left = (btnRect.left + (btnRect.width/2) - 60) + "px";
+    popup.style.top  = (btnRect.top - 35) + "px";
+    setTimeout(() => popup.style.opacity = 0, 1000);
+  });
+});
+
+// ===== CSV =====
+document.getElementById("csvBtn").addEventListener("click", function () {
+  const headers = window.dt.columns().header().toArray().map(th => '"' + th.innerText.replace(/"/g,'""') + '"');
+  const lines = [headers.join(',')];
+  window.dt.rows({ search: 'applied' }).every(function () {
+    const data = this.data().map(c => '"' + stripHtml(c).replace(/"/g,'""') + '"');
+    lines.push(data.join(','));
+  });
+  const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = Object.assign(document.createElement('a'), { href: url, download: 'table.csv' });
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+// ===== EXCEL (xlsx) =====
+document.getElementById("excelBtn").addEventListener("click", function () {
+  const headers = window.dt.columns().header().toArray().map(th => th.innerText.trim());
+  const rows = [headers];
+  window.dt.rows({ search: 'applied' }).every(function () {
+    rows.push(this.data().map(c => stripHtml(c)));
+  });
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  XLSX.utils.book_append_sheet(wb, ws, "Users");
+  XLSX.writeFile(wb, "table.xlsx");
+});
+
+// ===== PDF (pdfmake) =====
+document.getElementById("pdfBtn").addEventListener("click", function () {
+  const headers = window.dt.columns().header().toArray().map(th => ({ text: th.innerText, style: 'tableHeader' }));
+  const body = [headers];
+  window.dt.rows({ search: 'applied' }).every(function () {
+    body.push(this.data().map(c => stripHtml(c)));
+  });
+
+  const docDefinition = {
+    pageOrientation: 'landscape',       // ✅ makes it landscape
+    pageSize: 'A3',                     // ✅ gives more width for large tables
+    content: [
+      { text: "Requisition Summary", style: "header", alignment: "center" },
+      {
+        table: {
+          headerRows: 1,
+          widths: Array(headers.length).fill('auto'), // ✅ dynamic column widths
+          body: body
+        },
+        layout: {
+          fillColor: function (rowIndex, node, columnIndex) {
+            return rowIndex === 0 ? '#eeeeee' : null;
+          }
+        }
+      }
+    ],
+    styles: {
+      header: { fontSize: 18, bold: true, margin: [0, 0, 0, 10] },
+      tableHeader: { bold: true, fillColor: "#eeeeee" }
+    }
+  };
+
+  pdfMake.createPdf(docDefinition).download("Requisition_Summary.pdf");
+});
+
+// ===== PRINT =====
+document.getElementById("printBtn").addEventListener("click", function () {
+  const headers = window.dt.columns().header().toArray().map(th => th.innerText);
+  const rows = [];
+  window.dt.rows({ search: 'applied' }).every(function () {
+    rows.push(this.data().map(c => stripHtml(c)));
+  });
+
+  let html = "<table border='1' style='border-collapse:collapse;width:100%'>";
+  html += "<thead><tr>" + headers.map(h => `<th>${h}</th>`).join("") + "</tr></thead>";
+  html += "<tbody>";
+  rows.forEach(r => {
+    html += "<tr>" + r.map(c => `<td>${c}</td>`).join("") + "</tr>";
+  });
+  html += "</tbody></table>";
+
+  const w = window.open("");
+  w.document.write(`<html><head><title>Print Table</title></head><body>${html}</body></html>`);
+  w.document.close();
+  w.focus();
+  w.print();
+  w.close();
+});
+</script>
 @endsection
 
 
 <script src="https://unpkg.com/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  // Select All functionality (respects disabled checkboxes)
-  const selectAllCheckbox = document.getElementById('selectAll');
-  if (selectAllCheckbox) {
-    selectAllCheckbox.addEventListener('change', function () {
-      document.querySelectorAll('input[name="selected_items[]"]').forEach(cb => {
-        if (!cb.disabled) cb.checked = selectAllCheckbox.checked;
-      });
-    });
-  }
-
-  // POP upload client-side validation
-  document.querySelectorAll('form[action*="/procurement/"][action$="/pop"]').forEach(form => {
-    form.addEventListener('submit', function (e) {
-      const fileInput = form.querySelector('input[type="file"]');
-      if (!fileInput || !fileInput.value) {
-        e.preventDefault();
-        if (window.Swal) {
-          Swal.fire({
-            icon: 'warning',
-            title: 'No file selected',
-            text: 'Please choose a Proof of Payment file to upload.',
-            confirmButtonText: 'Okay'
-          });
-        } else {
-          alert('Please choose a Proof of Payment file to upload.');
-        }
-      }
-    });
-  });
-});
-</script>
-
