@@ -335,20 +335,3 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/js/bootstrap.min.js"></script>
 
-<script>
-  // Validate ONLY the table form (not the filter modal form)
-  $(function () {
-    $('#tableForm').on('submit', function (e) {
-      var checked = $(this).find('input[name="requisition_ids[]"]:checked').length;
-      if (!checked) {
-        e.preventDefault();
-        Swal.fire({
-          icon: 'warning',
-          title: 'No Selection',
-          text: 'Please select at least one requisition before downloading.',
-          confirmButtonText: 'Okay'
-        });
-      }
-    });
-  });
-</script>

@@ -3,8 +3,12 @@
 @section('styles')
 <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 <!-- SweetAlert2 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+<!-- ✅ DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
 @endsection
 
 @section('content')
@@ -20,9 +24,7 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <strong>{{ $report->name }}</strong>
             <div class="d-flex align-items-center gap-2">
-                <button class="btn btn-primary btn-sm"
-                        data-bs-toggle="modal"
-                        data-bs-target="#filterModal">
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#filterModal">
                     <i class="fa fa-filter"></i> Filter and Download
                 </button>
             </div>
@@ -33,7 +35,7 @@
                 <form action="{{ route('custom_report.remove') }}" method="POST" id="removeSelectedRowsForm">
                     @csrf
                     <input type="hidden" name="report_id" value="{{ $report->id }}">
-                   <input type="hidden" name="type" value="{{ $type }}">
+                    <input type="hidden" name="type" value="{{ $type }}">
                     <button type="submit"
                             class="btn btn-danger mb-3"
                             onclick="return confirm('Are you sure you want to remove the selected rows?')">
@@ -81,7 +83,7 @@
     </div>
 </div>
 
-<!-- Filter Modal (Bootstrap 5) -->
+<!-- Filter Modal -->
 <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <form action="{{ route('filter.route') }}" method="POST" class="modal-content">
@@ -93,7 +95,7 @@
 
       <div class="modal-body">
         <input type="hidden" name="report_id" value="{{ $report->id }}">
-       <input type="hidden" name="type" value="{{ $type }}">
+        <input type="hidden" name="type" value="{{ $type }}">
         <div class="mb-3 d-flex align-items-center gap-2">
           <input type="checkbox" id="select_all_filters" class="form-check-input" />
           <label for="select_all_filters" class="mb-0"><strong>Select All</strong></label>
@@ -136,19 +138,28 @@
 </div>
 @endsection
 
-@section('scripts')
+
+<!-- ✅ Dependencies -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://unpkg.com/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
+<!-- ✅ DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+
 <script>
-// DataTable init to mirror the reference UX
 document.addEventListener("DOMContentLoaded", function () {
+    const tableEl = document.getElementById('customReportDataTable');
+    if (!tableEl) return;
+
+    // ✅ Initialize DataTable
     const table = new DataTable('#customReportDataTable', {
         responsive: true,
         paging: true,
         searching: true,
         ordering: true,
-        pageLength: 10,
+        pageLength: 100,
         lengthMenu: [10, 25, 50, 100],
         language: {
             search: "Search rows:",
@@ -158,32 +169,74 @@ document.addEventListener("DOMContentLoaded", function () {
             infoFiltered: "(filtered from _MAX_ total rows)"
         }
     });
-});
-</script>
 
-<script>
-// Master checkbox: select/deselect all table rows
-document.addEventListener('DOMContentLoaded', function() {
-    const master = document.getElementById('select_all_rows');
-    if (master) {
-        master.addEventListener('change', function () {
-            const checked = this.checked;
-            document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = checked);
+    // ✅ Track selected rows
+    const selectedIds = new Set();
+    const selectAll = document.getElementById('select_all_rows');
+
+    // Select/deselect all visible
+    selectAll?.addEventListener('change', function () {
+        const checked = this.checked;
+        table.rows({ page: 'current' }).every(function () {
+            const tr = this.node();
+            const checkbox = tr.querySelector('.row-checkbox');
+            if (checkbox) {
+                checkbox.checked = checked;
+                const id = checkbox.value;
+                if (checked) selectedIds.add(id);
+                else selectedIds.delete(id);
+            }
         });
-    }
-});
-</script>
+    });
 
-<script>
-// Modal "Select All" for filters
-document.addEventListener('DOMContentLoaded', function() {
+    // Handle individual checkbox toggle
+    tableEl.addEventListener('change', function (e) {
+        if (e.target.classList.contains('row-checkbox')) {
+            const id = e.target.value;
+            if (e.target.checked) selectedIds.add(id);
+            else selectedIds.delete(id);
+        }
+    });
+
+    // Keep selections persistent when paging
+    table.on('draw', function () {
+        table.rows({ page: 'current' }).every(function () {
+            const tr = this.node();
+            const checkbox = tr.querySelector('.row-checkbox');
+            if (checkbox) checkbox.checked = selectedIds.has(checkbox.value);
+        });
+    });
+
+    // Add hidden inputs for all selected IDs on submit
+    const form = document.getElementById('removeSelectedRowsForm');
+  form?.addEventListener('submit', function () {
+    // ✅ 1. Remove old hidden fields
+    form.querySelectorAll('.hidden-selected-id').forEach(el => el.remove());
+
+    // ✅ 2. Remove names from visible checkboxes so they don't duplicate
+    form.querySelectorAll('.row-checkbox[name="selected_rows[]"]').forEach(cb => {
+        cb.removeAttribute('name');
+    });
+
+    // ✅ 3. Add one hidden input per unique selected ID
+    selectedIds.forEach(id => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'selected_rows[]';
+        input.value = id;
+        input.classList.add('hidden-selected-id');
+        form.appendChild(input);
+    });
+});
+
+    // ✅ Select All Filters in modal
     const selectAllFilters = document.getElementById('select_all_filters');
     if (selectAllFilters) {
-        selectAllFilters.addEventListener('change', function() {
+        selectAllFilters.addEventListener('change', function () {
             const checked = this.checked;
             document.querySelectorAll('.filter-checkbox').forEach(cb => cb.checked = checked);
         });
     }
 });
 </script>
-@endsection
+
