@@ -900,12 +900,7 @@ class ProcurementController extends Controller
             $frequisition->branchCode = $vendor->branch_code?? null;
             $frequisition->IsOneTimeVendor = $is_one_time_vendor[$index]?? null;
 
-            // if (isset($docs[$index])) {
-            //     $frequisitionfile = $docs[$index]->store('uploads', 'public');
-            //     $fieldquote1 =  Str::afterLast($frequisitionfile, '/');
-            //     $frequisition->doc_path = $fieldquote1; 
-            // }
-     
+  
         }else{
 
         $frequisition = new FrequisitionVendor();

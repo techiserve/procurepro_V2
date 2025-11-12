@@ -240,7 +240,7 @@
     <div class="col-sm-3 d-flex justify-content-between" style="flex:0 0 50%; gap:6px;">
       <div class="form-col" style="flex:1;">
         <label style="font-size:15px;">Quotation</label>
-        <input type="file" class="form-control" name="dfile1[]" style="height:45px;">
+        <input type="file" class="form-control" name="dfile1[]" style="height:45px;" required>
       </div>
       <div class="form-col" style="flex:1;">
         <label style="font-size:15px;">Additional Doc</label>
@@ -419,7 +419,7 @@ $('#add').click(function () {
       <div class="col-sm-3 d-flex justify-content-between" style="flex:0 0 50%; gap:6px;">
         <div class="form-col" style="flex:1;">
           <label style="font-size:15px;">Quotation</label>
-          <input type="file" class="form-control" name="dfile1[]" style="height:45px;">
+          <input type="file" class="form-control" name="dfile1[]" style="height:45px;" required>
         </div>
         <div class="form-col" style="flex:1;">
           <label style="font-size:15px;">Additional Doc</label>
@@ -434,7 +434,7 @@ $('#add').click(function () {
       <div class="col-sm-1" style="flex:0 0 9%;">
         <div class="form-col">
           <label style="font-size:13px;">Amount</label>
-          <input type="number" step="0.01" class="form-control" name="damount[]" style="height:45px;">
+          <input type="number" step="0.01" class="form-control" name="damount[]" style="height:45px;" required>
         </div>
       </div>
 

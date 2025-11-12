@@ -668,22 +668,18 @@ private function statusBreakdown(int $companyId, ?Carbon $from = null, ?Carbon $
 public function filter(Request $request)
 {   
 
-   // dd($request->all());
     $reportId = $request->input('report_id');
     $selectedFilters = $request->input('selected_filters', []);
-
+  
     if(!$selectedFilters){
     
         return back()->with('error', 'please tick a checkbox.');   
 
     }
-
-   // dd($request->type);
    
     $report = CustomReport::findOrFail($reportId);
     $config = json_decode($report->config, true);
 
-    // DB columns from config
     $dbColumns = collect($config)
         ->filter(fn($col) => empty($col['blank']) && !empty($col['column']))
         ->pluck('column')
@@ -693,8 +689,6 @@ public function filter(Request $request)
      if (!in_array($report->description, $dbColumns)) {
     array_unshift($dbColumns, $report->description);
     }
-
-   // dd($dbColumns,$report->description);
 
     // Fetch only relevant DB columns
     if($report->report_type == 'requisition') {
@@ -710,17 +704,124 @@ public function filter(Request $request)
         ->select($dbColumns)
         ->get();
 
- //    dd($fpurchaseorders, $table ,$report->report_type ,Auth::user()->companyId);
+          $isthere = 0;
+        if($report->report_type != 'requisition'){
+            
+               $column = $report?->description;
 
+                 $columns = collect($config)
+                ->filter(fn($col) => empty($col['blank']) && !empty($col['column']))
+                ->pluck('column')
+                ->unique()
+                ->prepend('id')
+                ->toArray();
+
+               $fpurchaseorderss = DB::table('fpurchaseorders')
+                ->where('companyId', Auth::user()->companyId)
+                ->whereNull('uploadStatus')
+                ->where('status', 2)
+                ->when(!empty($selectedFilters) && !empty($column), function ($query) use ($selectedFilters, $column) {
+                 $query->whereIn($column, $selectedFilters);
+                 })
+                ->select($columns)
+                ->addSelect('frequisition_id')
+                ->addSelect('requisitionNumber')
+                ->get()
+                ->keyBy('frequisition_id'); // key by frequisition_id for faster lookup
+
+            $fpurchaseorder = DB::table('itemizedfpurchaseorders')->whereIn('requisition_id', $fpurchaseorderss->keys())->get();
+               
+            if(!$fpurchaseorder->isEmpty()) {
+               $isthere = 1;
+            $fpurchaseorders = $fpurchaseorder->map(function ($item) use ($fpurchaseorderss) {
+                if (isset($fpurchaseorderss[$item->requisition_id])) {
+                    foreach ($fpurchaseorderss[$item->requisition_id] as $key => $value) {
+                        $item->$key = $value; // append fields dynamically
+                    }
+                }
+                return $item;
+            });
+
+    $zipFile = storage_path('app/filtered_exports.zip');
+    $zip = new ZipArchive;
+    $zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+
+    foreach ($selectedFilters as $filterValue) {
+        // Filter merged rows by current filter
+        $filteredRows = $fpurchaseorders->filter(function ($row) use ($filterValue, $column) {
+            return isset($row->$column) && $row->$column == $filterValue;
+        });
+
+        if ($filteredRows->isEmpty()) continue;
+
+        // === Build CSV content ===
+        $csvContent = '';
+
+        // 1️⃣ Build headers — include *all* fields (itemized + appended + dynamic)
+        $allHeaders = collect($config)->pluck('label')->toArray();
+        // Add any new merged fields not in config
+        $mergedExtraFields = collect($fpurchaseorders->first())->keys()->diff(collect($config)->pluck('column'));
+        $headers = array_merge($allHeaders, $mergedExtraFields->toArray());
+        $csvContent .= implode(',', $headers) . "\n";
+
+        // 2️⃣ Rows
+        foreach ($filteredRows as $row) {
+            $rowData = [];
+
+            // Dynamic columns from config first
+            foreach ($config as $col) {
+                $value = '';
+
+                if (!empty($col['blank'])) {
+                    $value = $col['default'] ?? '';
+                } elseif (!empty($col['column'])) {
+                    $colName = $col['column'];
+                    $value = $row->$colName ?? $col['default'] ?? '';
+                } elseif (isset($col['default'])) {
+                    $value = $col['default'];
+                }
+
+                // Escape CSV-safe
+                $value = str_replace('"', '""', $value);
+                $rowData[] = "\"{$value}\"";
+            }
+
+            // Include extra merged fields (itemized + requisition fields not in config)
+            foreach ($mergedExtraFields as $extraField) {
+                $val = $row->$extraField ?? '';
+                $val = str_replace('"', '""', $val);
+                $rowData[] = "\"{$val}\"";
+            }
+
+            $csvContent .= implode(',', $rowData) . "\n";
+        }
+
+        // === Save temp CSV ===
+        $safeName = preg_replace('/[^A-Za-z0-9_\-]/', '_', $filterValue);
+        $tempCsvPath = storage_path("app/{$safeName}.csv");
+        file_put_contents($tempCsvPath, $csvContent);
+
+        $zip->addFile($tempCsvPath, "{$safeName}.csv");
+    }
+
+    $zip->close();
+
+    return response()->download($zipFile)->deleteFileAfterSend(true);
+
+      }
+              
+         //  dd($fpurchaseorders);
+        }
+
+ //    dd($fpurchaseorders, $table ,$report->report_type ,Auth::user()->companyId);
+      //   dd($isthere);
     // Prepare ZIP file
     $zipFile = storage_path('app/filtered_exports.zip');
     $zip = new ZipArchive;
     $zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE);
 
     foreach ($selectedFilters as $filterValue) {
-        // Filter dataset by this filter value (adjust column name if needed)
-        // Here I’m assuming we filter by a column that exists in $dbColumns
-        // e.g. 'season' or 'status'
+   
         $columnName = $report->description;
 
         $filteredRows = $fpurchaseorders->filter(function ($row) use ($filterValue, $columnName) {
@@ -731,7 +832,12 @@ public function filter(Request $request)
         // Build CSV content
         $csvContent = '';
 
-        // Header row
+        // ////////////////////////////////////////////////////////////////////
+        // $allHeaders = collect($config)->pluck('label')->toArray();
+        // $mergedExtraFields = collect($fpurchaseorders->first())->keys()->diff(collect($config)->pluck('column'));
+        // $headers = array_merge($allHeaders, $mergedExtraFields->toArray());
+        // /////////////////////////////////////////////////////////////////////
+
         $headers = collect($config)->pluck('label')->toArray();
         $csvContent .= implode(',', $headers) . "\n";
 
@@ -756,15 +862,30 @@ public function filter(Request $request)
                 $rowData[] = "\"{$value}\"";
             }
 
+              //////////////////////////////////////////////////////////
+                //  foreach ($mergedExtraFields as $extraField) {
+                // $val = $row->$extraField ?? '';
+                // $val = str_replace('"', '""', $val);
+                // $rowData[] = "\"{$val}\"";
+                // }
+              /////////////////////////////////////////////////////////
             $csvContent .= implode(',', $rowData) . "\n";
         }
 
         // Save temp CSV
         $tempCsvPath = storage_path("app/{$filterValue}.csv");
+        //////////////////////////////////////////
+        // $safeName = preg_replace('/[^A-Za-z0-9_\-]/', '_', $filterValue);
+        // $tempCsvPath = storage_path("app/{$safeName}.csv");
+        //////////////////////////////////////////
         file_put_contents($tempCsvPath, $csvContent);
 
         // Add to ZIP
         $zip->addFile($tempCsvPath, "{$filterValue}.csv");
+
+        ////////////////////////////////////////////////
+        // $zip->addFile($tempCsvPath, "{$safeName}.csv");
+        ///////////////////////////////////////////////
     }
 
     $zip->close();
