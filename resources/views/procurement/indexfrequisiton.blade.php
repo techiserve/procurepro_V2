@@ -173,7 +173,7 @@
                     @endif
                   </td>
                 </tr>
-
+     </form>
                 <div class="modal fade" id="pop{{ $frequisition->id }}" tabindex="-1" aria-labelledby="pop{{ $frequisition->id }}Label" aria-hidden="true">
                   <div class="modal-dialog modal-md">
                     <div class="modal-content">
@@ -207,7 +207,7 @@
             </tbody>
           </table>
         </div>
-      </form>
+ 
       {{-- END #tableForm --}}
     </div>
   </div>
