@@ -723,66 +723,77 @@ public function filter(Request $request)
             ->whereIn('requisition_id', $fpurchaseorderss->keys())
             ->get();
 
-        if ($fpurchaseorder->isNotEmpty()) {
-            $isItemized = true;
+if ($fpurchaseorder->isNotEmpty()) {
+    $isItemized = true;
 
-            // Merge itemized data + main requisition data
-            $fpurchaseorders = $fpurchaseorder->map(function ($item) use ($fpurchaseorderss) {
-                if (isset($fpurchaseorderss[$item->requisition_id])) {
-                    foreach ($fpurchaseorderss[$item->requisition_id] as $key => $value) {
-                        $item->$key = $value; // append main requisition fields
-                    }
-                }
-                return $item;
-            });
-
-            // Build itemized export CSVs
-            foreach ($selectedFilters as $filterValue) {
-                $filteredRows = $fpurchaseorders->filter(fn($row) => isset($row->$column) && $row->$column == $filterValue);
-                if ($filteredRows->isEmpty()) continue;
-
-                $csvContent = '';
-
-                // Headers: dynamic + all merged fields
-                $allHeaders = collect($config)->pluck('label')->toArray();
-                $mergedExtraFields = collect($fpurchaseorders->first())->keys()->diff(collect($config)->pluck('column'));
-                $headers = array_merge($allHeaders, $mergedExtraFields->toArray());
-                $csvContent .= implode(',', $headers) . "\n";
-
-                // Rows
-                foreach ($filteredRows as $row) {
-                    $rowData = [];
-
-                    // dynamic fields
-                    foreach ($config as $col) {
-                        $value = '';
-                        if (!empty($col['blank'])) {
-                            $value = $col['default'] ?? '';
-                        } elseif (!empty($col['column'])) {
-                            $colName = $col['column'];
-                            $value = $row->$colName ?? $col['default'] ?? '';
-                        } elseif (isset($col['default'])) {
-                            $value = $col['default'];
-                        }
-                        $rowData[] = '"' . str_replace('"', '""', $value) . '"';
-                    }
-
-                    // merged itemized + requisition fields
-                    foreach ($mergedExtraFields as $extraField) {
-                        $val = str_replace('"', '""', $row->$extraField ?? '');
-                        $rowData[] = "\"{$val}\"";
-                    }
-
-                    $csvContent .= implode(',', $rowData) . "\n";
-                }
-
-                // Save CSV
-                $safeName = preg_replace('/[^A-Za-z0-9_\-]/', '_', $filterValue);
-                $tempCsvPath = storage_path("app/{$safeName}_itemized.csv");
-                file_put_contents($tempCsvPath, $csvContent);
-                $zip->addFile($tempCsvPath, "{$safeName}_itemized.csv");
+    // Merge itemized data + main requisition data
+    $fpurchaseorders = $fpurchaseorder->map(function ($item) use ($fpurchaseorderss) {
+        if (isset($fpurchaseorderss[$item->requisition_id])) {
+            foreach ($fpurchaseorderss[$item->requisition_id] as $key => $value) {
+                $item->$key = $value; // append main requisition fields
             }
         }
+        return $item;
+    });
+
+    // ✅ Specify which fields to include from the merged $fpurchaseorders
+    $itemizedFields = [
+        'item',
+        'description',
+        'quantity',
+        'price',
+        'weight',
+        'linetotal',
+        'vat'
+        // Add or remove as needed
+    ];
+
+    // ✅ Build itemized export CSVs
+    foreach ($selectedFilters as $filterValue) {
+        $filteredRows = $fpurchaseorders->filter(fn($row) => isset($row->$column) && $row->$column == $filterValue);
+        if ($filteredRows->isEmpty()) continue;
+
+        $csvContent = '';
+
+        // Headers: itemized + dynamic fields
+        $headers = array_merge($itemizedFields, collect($config)->pluck('label')->toArray());
+        $csvContent .= implode(',', $headers) . "\n";
+
+        // Rows
+        foreach ($filteredRows as $row) {
+            $rowData = [];
+
+            // ✅ 1️⃣ Add specified itemized fields
+            foreach ($itemizedFields as $field) {
+                $val = $row->$field ?? '';
+                $val = str_replace('"', '""', $val);
+                $rowData[] = "\"{$val}\"";
+            }
+
+            // ✅ 2️⃣ Add dynamic fields from $config
+            foreach ($config as $col) {
+                $value = '';
+                if (!empty($col['blank'])) {
+                    $value = $col['default'] ?? '';
+                } elseif (!empty($col['column'])) {
+                    $colName = $col['column'];
+                    $value = $row->$colName ?? $col['default'] ?? '';
+                } elseif (isset($col['default'])) {
+                    $value = $col['default'];
+                }
+                $rowData[] = '"' . str_replace('"', '""', $value) . '"';
+            }
+
+            $csvContent .= implode(',', $rowData) . "\n";
+        }
+
+        // Save CSV
+        $safeName = preg_replace('/[^A-Za-z0-9_\-]/', '_', $filterValue);
+        $tempCsvPath = storage_path("app/{$safeName}_itemized.csv");
+        file_put_contents($tempCsvPath, $csvContent);
+        $zip->addFile($tempCsvPath, "{$safeName}_itemized.csv");
+    }
+}
     }
 
     // =====================================================
