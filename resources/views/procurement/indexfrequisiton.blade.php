@@ -38,7 +38,7 @@
 
     <div class="card-body">
       {{-- SINGLE form holding the checkboxes + posts to download route --}}
-      <form method="POST" action="{{ route('procurement.downloadrequisitions') }}" id="tableForm">
+      <form method="POST" id="tableForm">
         @csrf
         <div class="table-responsive">
           <table class="table table-striped table-bordered zero-configuration" id="example" style="width:100%">
