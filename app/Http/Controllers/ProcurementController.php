@@ -1655,7 +1655,8 @@ public function generateAndMergePDFs(string $id)
         foreach ($company->getAttributes() as $key => $value) {
             $normalizedCompanyData[strtolower(trim($key))] = $value;
         }
-
+          
+        dd($formFields,$normalizedCompanyData);
         // Generate new PDF
         $pdf = Pdf::loadView('pdf.requisition', compact('company', 'formFields', 'normalizedCompanyData', 'user','department','history'));
         $newPDFPath = storage_path('app/public/new_report.pdf');

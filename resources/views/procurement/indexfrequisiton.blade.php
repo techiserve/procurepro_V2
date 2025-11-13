@@ -29,10 +29,7 @@
         </button>
 
         <!-- DOWNLOAD BUTTON submits #tableForm (the form that contains the checkboxes) -->
-        <button type="submit" form="tableForm" class="btn btn-success btn-sm"
-                style="padding: 10px 20px; font-size: 16px; min-width: 100px;">
-          <i class="fa fa-download"></i> Download
-        </button>
+    
       </div>
     </div>
 
@@ -173,7 +170,7 @@
                     @endif
                   </td>
                 </tr>
-     </form>
+              </form>
                 <div class="modal fade" id="pop{{ $frequisition->id }}" tabindex="-1" aria-labelledby="pop{{ $frequisition->id }}Label" aria-hidden="true">
                   <div class="modal-dialog modal-md">
                     <div class="modal-content">
