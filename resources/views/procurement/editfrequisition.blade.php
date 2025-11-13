@@ -46,6 +46,14 @@
 
             <div class="card-body">
               <div class="row">
+                  @php
+                  $normalizedRequisition = [];
+                  foreach ($frequisition->getAttributes() as $key => $value) {
+                    $normalizedRequisition[strtolower(trim($key))] = $value;
+                  }
+                  $hiddenFields = ['invoiceamount', 'invoice amount'];
+                @endphp
+
                 @foreach ($formFields as $field)
                   @php
                     $fieldName = $field->name;

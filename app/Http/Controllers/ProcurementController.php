@@ -235,16 +235,18 @@ class ProcurementController extends Controller
         $formFields = FormField::where('companyId', $frequisition->companyId)->get();
         $files = Requisitionfile::where('requisitionId', $id)->get();
         $departments = Department::where('id', $frequisition->department)->first();
-         $frequisitionvendors = FrequisitionVendor::where('frequisition_id', $frequisition->id)->get();
+        $frequisitionvendors = FrequisitionVendor::where('frequisition_id', $frequisition->id)->get();
 
         $company = Company::where('id', Auth::user()->companyId)->first();
-   $vendorTypes = VendorType::where('companyId', Auth::user()->companyId)->get();
+        $vendorTypes = VendorType::where('companyId', Auth::user()->companyId)->get();
             if($company->vendor_source == "Vendor Management"){
            $vendors = Vendor::select(
                 'id as SupplierID', 
                 'name as SupplierName'
             )->where('companyId', Auth::user()->companyId)->where('status','=', '3')->get();
         }
+
+      //  dd($frequisition,$formFields);
 
 
         return view('procurement.editfrequisition', compact('frequisition','formFields','files','departments','frequisitionvendors','company','vendors','vendorTypes'));

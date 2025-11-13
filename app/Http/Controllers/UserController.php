@@ -52,10 +52,10 @@ class UserController extends Controller
     public function home()
     { 
         
-        $departments = Frequisition::where('status','=', 1)->where('companyId', Auth::user()->companyId)->count();
-        $userCount  = Fpurchaseorder::where('status','=', 1)->where('companyId', Auth::user()->companyId)->count();
-        $requisitions = Frequisition::where('companyId', Auth::user()->companyId)->count();
-        $purchaseorders = Fpurchaseorder::where('companyId', Auth::user()->companyId)->count();
+        $departments = Frequisition::where('status','=', 1)->where('companyId', Auth::user()->companyId)->where('userId', Auth::user()->id)->count();
+        $userCount  = Fpurchaseorder::where('status','=', 1)->where('companyId', Auth::user()->companyId)->where('userId', Auth::user()->id)->count();
+        $requisitions = Frequisition::where('companyId', Auth::user()->companyId)->where('userId', Auth::user()->id)->count();
+        $purchaseorders = Fpurchaseorder::where('companyId', Auth::user()->companyId)->where('userId', Auth::user()->id)->count();
 
         $user = Auth::user()->userrole;
 
