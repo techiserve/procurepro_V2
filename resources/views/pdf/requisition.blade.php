@@ -173,13 +173,13 @@
                 @if($field->name !== 'invoiceamount' || $field->name !== 'department'|| $field->name !== 'Department'  ) {{-- Skip this field --}}
                     <tr>
                         <td class="left-column">{{ ucwords(str_replace('_', ' ', $field->name)) }}:</td>
-                        <td class="right-column">{{ $company->{$field->name} ?? '' }}</td>
+                        <td class="right-column">{{ $normalizedCompanyData->{$field->name} ?? '' }}</td>
                     </tr>
                 @endif
             @endforeach
 
             <!-- Approval History -->
-            
+
             {{-- @foreach ($history as $hist)
             <tr>
                 <td class="left-column">{{ $hist->doneby }}:</td>
