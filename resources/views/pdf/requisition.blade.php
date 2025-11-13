@@ -179,12 +179,13 @@
             @endforeach
 
             <!-- Approval History -->
-            @foreach ($history as $hist)
+            
+            {{-- @foreach ($history as $hist)
             <tr>
                 <td class="left-column">{{ $hist->doneby }}:</td>
                 <td class="right-column">{{ $hist->action }} on {{ $hist->created_at->format('d M Y') }}</td>
             </tr>   
-            @endforeach
+            @endforeach --}}
         </table>
 
         <div class="footer">
