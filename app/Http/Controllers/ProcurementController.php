@@ -1656,7 +1656,7 @@ public function generateAndMergePDFs(string $id)
             $normalizedCompanyData[strtolower(trim($key))] = $value;
         }
           
-        dd($formFields,$normalizedCompanyData,$company);
+       // dd($formFields,$normalizedCompanyData,$company);
         
         // Generate new PDF
         $pdf = Pdf::loadView('pdf.requisition', compact('company', 'formFields', 'normalizedCompanyData', 'user','department','history'));

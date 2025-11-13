@@ -170,10 +170,13 @@
 
             <!-- Dynamic Fields -->
             @foreach($formFields as $field)
-                @if($field->name !== 'invoiceamount' || $field->name !== 'department'|| $field->name !== 'Department'  ) {{-- Skip this field --}}
+                {{-- Skip unwanted fields --}}
+                @if($field->name !== 'invoiceamount' && $field->name !== 'department' && $field->name !== 'Department')
                     <tr>
                         <td class="left-column">{{ ucwords(str_replace('_', ' ', $field->name)) }}:</td>
-                        <td class="right-column">{{ $normalizedCompanyData->{$field->name} ?? '' }}</td>
+                        <td class="right-column">
+                            {{ $normalizedCompanyData[$field->name] ?? '' }}
+                        </td>
                     </tr>
                 @endif
             @endforeach
