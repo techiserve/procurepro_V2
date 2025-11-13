@@ -589,51 +589,101 @@ function toggleVendorTypeDynamic(index, value) {
 
 
 function saveOneTimeVendorDynamic(index) {
-  const vendorName = document.getElementById(`modalVendorName_${index}`).value;
-  const oneTimeInput = document.getElementById(`oneTimeVendorInput_${index}`);
+  const requiredFields = [
+    { id: `modalVendorName_${index}`, label: 'Vendor Name' },
+    { id: `modalBank_${index}`, label: 'Bank' },
+    { id: `modalAccountNumber_${index}`, label: 'Account Number' },
+    { id: `modalAccountType_${index}`, label: 'Account Type' },
+    { id: `modalBranchCode_${index}`, label: 'Branch Code' },
+    { id: `modaldoc1_${index}`, label: 'Document 1' },
 
-  if (!vendorName) {
-    Swal.fire('Error', 'Please enter the Vendor Name', 'error');
+  ];
+
+  // Check dropdowns or text fields like type, vat allocation, supplier code
+  const extraFields = [
+    { selector: `#oneTimeVendorModal_${index} select[name='type[]']`, label: 'Type' },
+    { selector: `#oneTimeVendorModal_${index} input[name='Vatallocation[]']`, label: 'VAT Allocation' },
+    { selector: `#oneTimeVendorModal_${index} input[name='supplierCode[]']`, label: 'Supplier Code' },
+  ];
+
+  let missingFields = [];
+
+  // Validate normal inputs
+  requiredFields.forEach(f => {
+    const el = document.getElementById(f.id);
+    if (!el) return;
+    if ((el.type === 'file' && (!el.files || el.files.length === 0)) || !el.value.trim()) {
+      missingFields.push(f.label);
+    }
+  });
+
+  // Validate extra fields using jQuery selectors
+  extraFields.forEach(f => {
+    const val = $(f.selector).val();
+    if (!val || val.trim() === '') {
+      missingFields.push(f.label);
+    }
+  });
+
+  // If any missing field found → stop submission
+  if (missingFields.length > 0) {
+    Swal.fire({
+      title: 'Missing Fields',
+      html: 'Please fill the following required fields:<br><br><strong>' + missingFields.join(', ') + '</strong>',
+      icon: 'warning'
+    });
     return;
   }
 
+  // Copy basic vendor details
+  const vendorName = document.getElementById(`modalVendorName_${index}`).value;
+  const oneTimeInput = document.getElementById(`oneTimeVendorInput_${index}`);
   oneTimeInput.value = vendorName;
   updateFinalVendorValue(index, vendorName);
 
-  // Copy modal values into hidden inputs
+  // Copy hidden field data
   const bank = getValueById(`modalBank_${index}`);
   const accountNumber = getValueById(`modalAccountNumber_${index}`);
   const accountType = getValueById(`modalAccountType_${index}`);
   const branchCode = getValueById(`modalBranchCode_${index}`);
   setOTVHiddenFields(index, { bank, accountNumber, accountType, branchCode });
 
-  // Copy uploaded file from modal to hidden input
-const modalFile1 = document.getElementById(`modaldoc1_${index}`);
-const modalFile2 = document.getElementById(`modaldoc2_${index}`);
-const modalFile3 = document.getElementById(`modaldoc3_${index}`);
-const placeholder = document.getElementById(`docPlaceholder_${index}`);
-const hiddenFile1 = document.getElementById(`docInput_${index}`);
-const hiddenFile2 = document.getElementById(`docInput2_${index}`);
-const hiddenFile3 = document.getElementById(`docInput3_${index}`);
+  // Copy uploaded files into hidden file inputs
+  const modalFile1 = document.getElementById(`modaldoc1_${index}`);
+  const modalFile2 = document.getElementById(`modaldoc2_${index}`);
+  const modalFile3 = document.getElementById(`modaldoc3_${index}`);
+  const hiddenFile1 = document.getElementById(`docInput_${index}`);
+  const hiddenFile2 = document.getElementById(`docInput2_${index}`);
+  const hiddenFile3 = document.getElementById(`docInput3_${index}`);
 
-if (modalFile1?.files?.length && hiddenFile1) {
-  const dt1 = new DataTransfer();
-  dt1.items.add(modalFile1.files[0]);
-  hiddenFile1.files = dt1.files;
-}
-if (modalFile2?.files?.length && hiddenFile2) {
-  const dt2 = new DataTransfer();
-  dt2.items.add(modalFile2.files[0]);
-  hiddenFile2.files = dt2.files;
-}
-if (modalFile3?.files?.length && hiddenFile3) {
-  const dt3 = new DataTransfer();
-  dt3.items.add(modalFile3.files[0]);
-  hiddenFile3.files = dt3.files;
-}
+  if (modalFile1?.files?.length && hiddenFile1) {
+    const dt1 = new DataTransfer();
+    dt1.items.add(modalFile1.files[0]);
+    hiddenFile1.files = dt1.files;
+  }
+  if (modalFile2?.files?.length && hiddenFile2) {
+    const dt2 = new DataTransfer();
+    dt2.items.add(modalFile2.files[0]);
+    hiddenFile2.files = dt2.files;
+  }
+  if (modalFile3?.files?.length && hiddenFile3) {
+    const dt3 = new DataTransfer();
+    dt3.items.add(modalFile3.files[0]);
+    hiddenFile3.files = dt3.files;
+  }
 
+  // Close modal after success
   $(`#oneTimeVendorModal_${index}`).modal('hide');
+
+  Swal.fire({
+    title: 'Saved!',
+    text: 'One-time vendor details captured successfully.',
+    icon: 'success',
+    timer: 1500,
+    showConfirmButton: false
+  });
 }
+
 
 function setOTVHiddenFields(index, vals) {
   document.getElementById(`bankInput_${index}`).value = vals.bank ?? '';
