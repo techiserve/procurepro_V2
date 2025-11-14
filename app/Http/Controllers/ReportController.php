@@ -700,24 +700,36 @@ public function filter(Request $request)
     // =====================================================
     if ($report->report_type !== 'requisition') {
 
-        $columns = collect($config)
-            ->filter(fn($col) => empty($col['blank']) && !empty($col['column']))
-            ->pluck('column')
-            ->unique()
-            ->prepend('id')
-            ->toArray();
+  $columns = collect($config)
+    ->filter(fn($col) => empty($col['blank']) && !empty($col['column']))
+    ->pluck('column')
+    ->unique()
+    ->prepend('id')
+    ->toArray();
 
-        $fpurchaseorderss = DB::table('fpurchaseorders')
-            ->where('companyId', Auth::user()->companyId)
-            ->whereNull('uploadStatus')
-            ->where('status', 2)
-            ->when(!empty($selectedFilters) && !empty($column), function ($query) use ($selectedFilters, $column) {
-                $query->whereIn($column, $selectedFilters);
-            })
-            ->select($columns)
-            ->addSelect('frequisition_id', 'requisitionNumber')
-            ->get()
-            ->keyBy('frequisition_id');
+$hasCreatedAt = in_array('created_at', $columns);
+
+$query = DB::table('fpurchaseorders')
+    ->where('companyId', Auth::user()->companyId)
+    ->whereNull('uploadStatus')
+    ->where('status', 2)
+    ->when(!empty($selectedFilters) && !empty($column), function ($query) use ($selectedFilters, $column) {
+        $query->whereIn($column, $selectedFilters);
+    })
+    ->addSelect($columns)
+    ->addSelect('frequisition_id', 'requisitionNumber');
+
+$fpurchaseorderss = $query->get()->keyBy('frequisition_id');
+
+if ($hasCreatedAt) {
+    $fpurchaseorderss = $fpurchaseorderss->map(function ($row) {
+        if (!empty($row->created_at)) {
+            $row->created_at = \Carbon\Carbon::parse($row->created_at)->format('Y-m-d');
+        }
+        return $row;
+    });
+}
+
 
         $fpurchaseorder = DB::table('itemizedfpurchaseorders')
             ->whereIn('requisition_id', $fpurchaseorderss->keys())
@@ -799,12 +811,21 @@ if ($fpurchaseorder->isNotEmpty()) {
     // =====================================================
     // === MODE B: Simple (requisition-only export) ========
     // =====================================================
-    $fpurchaseorders = DB::table($table)
-        ->where('companyId', Auth::user()->companyId)
-        ->whereNull('uploadStatus')
-        ->where('status', 2)
-        ->select($dbColumns)
-        ->get();
+$fpurchaseorders = DB::table($table)
+    ->where('companyId', Auth::user()->companyId)
+    ->whereNull('uploadStatus')
+    ->where('status', 2)
+    ->select($dbColumns)
+    ->get();
+
+if (in_array('created_at', $dbColumns)) {
+    $fpurchaseorders = $fpurchaseorders->map(function ($row) {
+        if (!empty($row->created_at)) {
+            $row->created_at = \Carbon\Carbon::parse($row->created_at)->format('Y-m-d');
+        }
+        return $row;
+    });
+}
 
     if ($fpurchaseorders->isNotEmpty()) {
         foreach ($selectedFilters as $filterValue) {

@@ -80,6 +80,9 @@
               $bankNames = ['bank', 'bank list', 'banks','Bank','BANKS','BANK'];
               $gls = ['generalledgerallocation','general leger allocation','gl allocation','GL Allocation','GL','Gl','gl'];
 
+              $paye = ['payereference', 'payeereference', 'paye reference','Paye reference'];
+              $description = ['descriptionofexpense', 'Descriptionofexpense'];
+
               $filteredFields = $formFields->reject(function ($field) use ($vendorNames) {
                   return in_array(strtolower($field->name), array_map('strtolower', $vendorNames));
               });
@@ -187,6 +190,19 @@
                             <option value="{{ $bank->name }}">{{ $bank->name }}</option>
                           @endforeach
                         </select>
+
+                      @elseif(in_array($fieldNameLower, array_map('strtolower', $paye)))
+                        <input
+                          type="{{ $field->type === 'integer' ? 'number' : 'text' }}"
+                          class="form-control"
+                          name="{{ $field->name }}" maxlength="22">
+
+
+                     @elseif(in_array($fieldNameLower, array_map('strtolower', $description)))
+                        <input
+                          type="{{ $field->type === 'integer' ? 'number' : 'text' }}"
+                          class="form-control"
+                          name="{{ $field->name }}" maxlength="22">
 
                       @elseif(in_array($fieldNameLower, array_map('strtolower', $invoiceNames)))
                         {{-- Keep invoice inputs hidden/handled as before (no change) --}}
