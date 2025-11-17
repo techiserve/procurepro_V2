@@ -1,5 +1,80 @@
 @extends('html.default')
 
+<style>
+/* ----- DataTables Pagination Styling (Custom Template) ----- */
+
+.dataTables_wrapper .dataTables_paginate {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 15px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    background: #ffffff;
+    border: 1px solid #ddd;
+    padding: 6px 12px;
+    margin: 0 4px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #333 !important;
+    font-size: 14px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: #f8f8f8;
+    border-color: #c9c9c9;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: #0d6efd !important; 
+    color: #fff !important;
+    border-color: #0d6efd;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Replace default text arrows with your icons */
+.dataTables_wrapper .dataTables_paginate .paginate_button.previous:before {
+    content: url('{{ asset("assets/img/pagi-arrow-left.png") }}');
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.next:after {
+    content: url('{{ asset("assets/img/pagi-arrow-next.png") }}');
+}
+
+/* Remove default text so only icons show */
+.dataTables_wrapper .dataTables_paginate .paginate_button.previous,
+.dataTables_wrapper .dataTables_paginate .paginate_button.next {
+    font-size: 0 !important;
+    padding: 6px 10px;
+}
+
+/* ------ Length Menu Styling ----- */
+.dataTables_wrapper .dataTables_length {
+    margin-bottom: 15px;
+}
+
+.dataTables_wrapper .dataTables_length select {
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    margin-left: 6px;
+}
+
+/* Mobile responsiveness */
+@media(max-width: 768px){
+    .dataTables_wrapper .dataTables_paginate {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .dataTables_wrapper .dataTables_length {
+        text-align: center;
+    }
+}
+</style>
 @section('content')
 <div class="body-content__header">
     <ul>
@@ -96,19 +171,7 @@
     </div>
 
     <div class="requesition-bottom">
-        <div class="page-number">
-            <label>Records per page:</label>
-            <select>
-                <option value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-            </select>
-        </div>
-        <ul class="requesition-pagination">
-            <li><button><img src="{{ asset('assets/img/pagi-arrow-left.png') }}" alt=""></button></li>
-            <li><p>0 to {{ count($users) }}</p></li>
-            <li><button><img src="{{ asset('assets/img/pagi-arrow-next.png') }}" alt=""></button></li>
-        </ul>
+ 
     </div>
 </div>
 
@@ -118,6 +181,27 @@
 {{-- pdfmake for PDF --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+<script>
+$(document).ready(function () {
+
+    // Initialize DataTable
+    window.dt = $('#myTable').DataTable({
+        responsive: true,
+        paging: true,
+        searching: true,
+        lengthChange: true,   // <-- allows user to choose 10 / 25 / 50 / 100
+        pageLength: 10,       // default number of rows
+        lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+        ordering: true,
+        autoWidth: false,
+        columnDefs: [
+            { targets: '_all', className: 'text-center' }
+        ]
+    });
+
+});
+</script>
 
 <script>
 // Utility: strip HTML tags (so exports don't include raw <button> etc.)

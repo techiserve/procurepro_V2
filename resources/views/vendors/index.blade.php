@@ -1,5 +1,79 @@
 @extends('html.default')
+<style>
+/* ----- DataTables Pagination Styling (Custom Template) ----- */
 
+.dataTables_wrapper .dataTables_paginate {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 15px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    background: #ffffff;
+    border: 1px solid #ddd;
+    padding: 6px 12px;
+    margin: 0 4px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #333 !important;
+    font-size: 14px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: #f8f8f8;
+    border-color: #c9c9c9;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: #0d6efd !important; 
+    color: #fff !important;
+    border-color: #0d6efd;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Replace default text arrows with your icons */
+.dataTables_wrapper .dataTables_paginate .paginate_button.previous:before {
+    content: url('{{ asset("assets/img/pagi-arrow-left.png") }}');
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.next:after {
+    content: url('{{ asset("assets/img/pagi-arrow-next.png") }}');
+}
+
+/* Remove default text so only icons show */
+.dataTables_wrapper .dataTables_paginate .paginate_button.previous,
+.dataTables_wrapper .dataTables_paginate .paginate_button.next {
+    font-size: 0 !important;
+    padding: 6px 10px;
+}
+
+/* ------ Length Menu Styling ----- */
+.dataTables_wrapper .dataTables_length {
+    margin-bottom: 15px;
+}
+
+.dataTables_wrapper .dataTables_length select {
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    margin-left: 6px;
+}
+
+/* Mobile responsiveness */
+@media(max-width: 768px){
+    .dataTables_wrapper .dataTables_paginate {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .dataTables_wrapper .dataTables_length {
+        text-align: center;
+    }
+}
+</style>
 @section('content')
 <div class="body-content__header">
     <ul>
@@ -167,187 +241,150 @@
     </div>
 
     <div class="requesition-bottom">
-        <div class="page-number">
-            <label>Records per page:</label>
-            <select id="pageLength">
-                <option value="10" selected>10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-            </select>
-        </div>
 
-        <ul class="requesition-pagination">
-            <li><button id="prevBtn"><img src="{{ asset('assets/img/pagi-arrow-left.png') }}" alt=""></button></li>
-            <li><p id="rangeLabel">0 to {{ count($vendors) }}</p></li>
-            <li><button id="nextBtn"><img src="{{ asset('assets/img/pagi-arrow-next.png') }}" alt=""></button></li>
-        </ul>
     </div>
 </div>
 
 {{-- SweetAlert2 (needed for Delete confirm) --}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
-{{-- jQuery + DataTables (match inspiration versions) --}}
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<link  href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css" rel="stylesheet"/>
-<link  href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css" rel="stylesheet"/>
-<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
-
-{{-- xlsx for Excel export --}}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.20.2/xlsx.full.min.js"></script>
-
 {{-- pdfmake for PDF --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
 <script>
-// ====================== Vendors Table JS ======================
-// Requires: jQuery, DataTables 1.13.8 (+ responsive), pdfMake, XLSX
-// Expects the following IDs in your Blade:
-// #myTable, #tableSearch, #pageLength, #prevBtn, #nextBtn, #rangeLabel,
-// #copyBtn, #csvBtn, #excelBtn, #pdfBtn, #copyPopup
+$(document).ready(function () {
 
-(function() {
-  const tableEl = document.getElementById('myTable');
-  if (!tableEl) return;
-
-  // Silence DataTables alert popups and handle errors in console
-  $.fn.dataTable.ext.errMode = 'none';
-  $(tableEl).on('error.dt', function(e, settings, techNote, message){
-    console.warn('DataTables:', message);
-  });
-
-  // Init DataTable (mirrors your requisitions behavior)
-  window.vendorDT = $(tableEl).DataTable({
-    responsive: true,
-    processing: false,
-    serverSide: false,
-    pageLength: 10,
-    lengthChange: false,
-    info: true,
-    order: [[0, 'asc']], // sort by Name
-    columnDefs: [
-      { targets: -1, searchable: false },               // Action not searchable
-      { targets: [0, 3, 6, 7], responsivePriority: 1 }, // key cols on small screens
-    ],
-    dom: 't<"dt-bottom"ip>',
-    language: {
-      emptyTable: "No vendors found.",
-      zeroRecords: "No matching vendors."
+    // Override the layout’s default DataTable initialization safely
+    if ($.fn.DataTable.isDataTable('#myTable')) {
+        $('#myTable').DataTable().destroy();
     }
-  });
 
-  // Custom search
-  document.getElementById('tableSearch')?.addEventListener('input', function() {
-    window.vendorDT.search(this.value).draw();
-  });
-
-  // Records-per-page selector
-  document.getElementById('pageLength')?.addEventListener('change', function() {
-    window.vendorDT.page.len(parseInt(this.value, 10)).draw('page');
-  });
-
-  // Prev/Next buttons
-  document.getElementById('prevBtn')?.addEventListener('click', () => window.vendorDT.page('previous').draw('page'));
-  document.getElementById('nextBtn')?.addEventListener('click', () => window.vendorDT.page('next').draw('page'));
-
-  // Range label: "X to Y of Z"
-  const rangeEl = document.getElementById('rangeLabel');
-  if (rangeEl) {
-    window.vendorDT.on('draw', function() {
-      const info = window.vendorDT.page.info();
-      rangeEl.textContent = `${info.recordsDisplay ? info.start + 1 : 0} to ${info.end} of ${info.recordsDisplay}`;
+    window.dt = $('#myTable').DataTable({
+        responsive: true,
+        paging: true,
+        searching: true,
+        lengthChange: true,
+        pageLength: 10,
+        ordering: true,
+        autoWidth: false,
+        lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+        columnDefs: [
+            { targets: '_all', className: 'text-center' }
+        ]
     });
-    window.vendorDT.draw(false);
-  }
-})();
 
-// ===== Utils =====
+});
+</script>
+
+<script>
+// Utility: strip HTML tags (so exports don't include raw <button> etc.)
 const stripHtml = (html) => {
   const div = document.createElement('div');
   div.innerHTML = html;
   return div.textContent || div.innerText || '';
 };
 
-// Helper to pull headers + visible rows from DataTable
-function getTableData(dt) {
-  const headers = dt.columns().header().toArray().map(th => th.innerText.trim());
+// If you have your own search input, wire it to DataTables:
+document.getElementById('tableSearch')?.addEventListener('input', function() {
+  window.dt.search(this.value).draw();
+});
+
+// ===== COPY =====
+document.getElementById("copyBtn").addEventListener("click", function (e) {
+  const headers = window.dt.columns().header().toArray().map(th => th.innerText.trim());
   const rows = [];
-  dt.rows({ search: 'applied' }).every(function () {
+  window.dt.rows({ search: 'applied' }).every(function () {
     const data = this.data().map(c => stripHtml(c));
     rows.push(data);
   });
-  return { headers, rows };
-}
+  const text = [headers.join('\t')].concat(rows.map(r => r.join('\t'))).join('\n');
 
-function hasRows(dt){ return dt && dt.rows({search:'applied'}).count() > 0; }
-
-// ===== COPY =====
-document.getElementById('copyBtn')?.addEventListener('click', function(e) {
-  const dt = window.vendorDT; if (!hasRows(dt)) return;
-  const { headers, rows } = getTableData(dt);
-  const text = [headers.join('\t'), ...rows.map(r => r.join('\t'))].join('\n');
   navigator.clipboard.writeText(text).then(() => {
-    const popup = document.getElementById('copyPopup');
-    if (!popup) return;
-    popup.textContent = 'Copied!';
+    const popup = document.getElementById("copyPopup");
+    popup.textContent = "Copied!";
     popup.style.opacity = 1;
-    popup.style.position = 'fixed';
     const btnRect = e.target.getBoundingClientRect();
-    popup.style.left = (btnRect.left + (btnRect.width/2) - 60) + 'px';
-    popup.style.top  = (btnRect.top - 35) + 'px';
+    popup.style.left = (btnRect.left + (btnRect.width/2) - 60) + "px";
+    popup.style.top  = (btnRect.top - 35) + "px";
     setTimeout(() => popup.style.opacity = 0, 1000);
   });
 });
 
 // ===== CSV =====
-document.getElementById('csvBtn')?.addEventListener('click', function() {
-  const dt = window.vendorDT; if (!hasRows(dt)) return;
-  const { headers, rows } = getTableData(dt);
-  const esc = (s) => '"' + String(s).replace(/"/g, '""') + '"';
-  const lines = [headers.map(esc).join(',')].concat(rows.map(r => r.map(esc).join(',')));
+document.getElementById("csvBtn").addEventListener("click", function () {
+  const headers = window.dt.columns().header().toArray().map(th => '"' + th.innerText.replace(/"/g,'""') + '"');
+  const lines = [headers.join(',')];
+  window.dt.rows({ search: 'applied' }).every(function () {
+    const data = this.data().map(c => '"' + stripHtml(c).replace(/"/g,'""') + '"');
+    lines.push(data.join(','));
+  });
   const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
   const url = URL.createObjectURL(blob);
-  const a = Object.assign(document.createElement('a'), { href: url, download: 'vendors.csv' });
-  document.body.appendChild(a);
+  const a = Object.assign(document.createElement('a'), { href: url, download: 'table.csv' });
   a.click();
-  a.remove();
   URL.revokeObjectURL(url);
 });
 
 // ===== EXCEL (xlsx) =====
-document.getElementById('excelBtn')?.addEventListener('click', function() {
-  const dt = window.vendorDT; if (!hasRows(dt)) return;
-  if (typeof XLSX === 'undefined') { alert('XLSX not loaded'); return; }
-  const { headers, rows } = getTableData(dt);
+document.getElementById("excelBtn").addEventListener("click", function () {
+  const headers = window.dt.columns().header().toArray().map(th => th.innerText.trim());
+  const rows = [headers];
+  window.dt.rows({ search: 'applied' }).every(function () {
+    rows.push(this.data().map(c => stripHtml(c)));
+  });
   const wb = XLSX.utils.book_new();
-  const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
-  XLSX.utils.book_append_sheet(wb, ws, 'Vendors');
-  XLSX.writeFile(wb, 'vendors.xlsx');
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  XLSX.utils.book_append_sheet(wb, ws, "Users");
+  XLSX.writeFile(wb, "table.xlsx");
 });
 
 // ===== PDF (pdfmake) =====
-document.getElementById('pdfBtn')?.addEventListener('click', function() {
-  const dt = window.vendorDT; if (!hasRows(dt)) return;
-  if (typeof pdfMake === 'undefined') { alert('pdfMake not loaded'); return; }
-  const { headers, rows } = getTableData(dt);
-  const body = [
-    headers.map(h => ({ text: h, style: 'tableHeader' })),
-    ...rows
-  ];
+document.getElementById("pdfBtn").addEventListener("click", function () {
+  const headers = window.dt.columns().header().toArray().map(th => ({ text: th.innerText, style: 'tableHeader' }));
+  const body = [headers];
+  window.dt.rows({ search: 'applied' }).every(function () {
+    body.push(this.data().map(c => stripHtml(c)));
+  });
+
   const docDefinition = {
     content: [
-      { text: 'Vendors', style: 'header' },
-      { table: { headerRows: 1, widths: Array(headers.length).fill('*'), body } }
+      { text: "Users Table", style: "header" },
+      {
+        table: { headerRows: 1, widths: Array(headers.length).fill('*'), body }
+      }
     ],
     styles: {
-      header: { fontSize: 16, bold: true, margin: [0,0,0,10] },
-      tableHeader: { bold: true, fillColor: '#eeeeee' }
+      header: { fontSize: 16, bold: true, margin: [0, 0, 0, 10] },
+      tableHeader: { bold: true, fillColor: "#eeeeee" }
     },
     pageOrientation: 'landscape'
   };
-  pdfMake.createPdf(docDefinition).download('vendors.pdf');
+  pdfMake.createPdf(docDefinition).download("table.pdf");
+});
+
+// ===== PRINT =====
+document.getElementById("printBtn").addEventListener("click", function () {
+  const headers = window.dt.columns().header().toArray().map(th => th.innerText);
+  const rows = [];
+  window.dt.rows({ search: 'applied' }).every(function () {
+    rows.push(this.data().map(c => stripHtml(c)));
+  });
+
+  let html = "<table border='1' style='border-collapse:collapse;width:100%'>";
+  html += "<thead><tr>" + headers.map(h => `<th>${h}</th>`).join("") + "</tr></thead>";
+  html += "<tbody>";
+  rows.forEach(r => {
+    html += "<tr>" + r.map(c => `<td>${c}</td>`).join("") + "</tr>";
+  });
+  html += "</tbody></table>";
+
+  const w = window.open("");
+  w.document.write(`<html><head><title>Print Table</title></head><body>${html}</body></html>`);
+  w.document.close();
+  w.focus();
+  w.print();
+  w.close();
 });
 </script>
-
 @endsection
