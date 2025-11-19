@@ -52,10 +52,34 @@ class UserController extends Controller
     public function home()
     { 
         
-        $departments = Frequisition::where('status','=', 1)->where('companyId', Auth::user()->companyId)->where('userId', Auth::user()->id)->count();
-        $userCount  = Fpurchaseorder::where('status','=', 1)->where('companyId', Auth::user()->companyId)->where('userId', Auth::user()->id)->count();
-        $requisitions = Frequisition::where('companyId', Auth::user()->companyId)->where('userId', Auth::user()->id)->count();
-        $purchaseorders = Fpurchaseorder::where('companyId', Auth::user()->companyId)->where('userId', Auth::user()->id)->count();
+        $departments = Frequisition::where('status', 1)
+            ->where('companyId', Auth::user()->companyId)
+            ->where(function($q) {
+                $q->where('userId', Auth::user()->id)
+                ->orWhere('approvedby', Auth::user()->userrole);
+            })
+            ->count();
+
+          //  dd($departments);
+
+        $userCount  = Fpurchaseorder::where('status', 1)
+            ->where('companyId', Auth::user()->companyId)
+            ->where(function($q) {
+                $q->where('userId', Auth::user()->id)
+                ->orWhere('approvedby', Auth::user()->userrole);
+            })
+            ->count();
+
+        $requisitions = Frequisition::where('companyId', Auth::user()->companyId)
+              ->where(function($q) {
+                $q->where('userId', Auth::user()->id)
+                ->orWhere('approvedby', Auth::user()->userrole);
+            })->count();
+
+        $purchaseorders = Fpurchaseorder::where('companyId', Auth::user()->companyId)->where(function($q) {
+                $q->where('userId', Auth::user()->id)
+                ->orWhere('approvedby', Auth::user()->userrole);
+            })->count();
 
         $user = Auth::user()->userrole;
 
