@@ -1,5 +1,4 @@
 @extends('html.default')
-
 <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.4/tutorials/timelines/timeline-7/assets/css/timeline-7.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -8,7 +7,81 @@
   th.actions, td.actions { white-space: nowrap; }
   td.actions { min-width: 360px; } /* adjust if you have more/less buttons */
 </style>
+<style>
+/* ----- DataTables Pagination Styling (Custom Template) ----- */
 
+.dataTables_wrapper .dataTables_paginate {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 15px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    background: #ffffff;
+    border: 1px solid #ddd;
+    padding: 6px 12px;
+    margin: 0 4px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #333 !important;
+    font-size: 14px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: #f8f8f8;
+    border-color: #c9c9c9;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: #0d6efd !important; 
+    color: #fff !important;
+    border-color: #0d6efd;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Replace default text arrows with your icons */
+.dataTables_wrapper .dataTables_paginate .paginate_button.previous:before {
+    content: url('{{ asset("assets/img/pagi-arrow-left.png") }}');
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.next:after {
+    content: url('{{ asset("assets/img/pagi-arrow-next.png") }}');
+}
+
+/* Remove default text so only icons show */
+.dataTables_wrapper .dataTables_paginate .paginate_button.previous,
+.dataTables_wrapper .dataTables_paginate .paginate_button.next {
+    font-size: 0 !important;
+    padding: 6px 10px;
+}
+
+/* ------ Length Menu Styling ----- */
+.dataTables_wrapper .dataTables_length {
+    margin-bottom: 15px;
+}
+
+.dataTables_wrapper .dataTables_length select {
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    margin-left: 6px;
+}
+
+/* Mobile responsiveness */
+@media(max-width: 768px){
+    .dataTables_wrapper .dataTables_paginate {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .dataTables_wrapper .dataTables_length {
+        text-align: center;
+    }
+}
+</style>
 @section('content')
 <div class="body-content__header">
   <ul>
@@ -23,7 +96,7 @@
 
       <div class="d-flex align-items-center">
         <!-- FILTER BUTTON (BS4 modal trigger) -->
-        <button class="btn btn-primary btn-sm mr-2" data-toggle="modal" data-target="#filterModal"
+        <button class="btn btn-primary btn-sm mr-2" data-bs-toggle="modal" data-bs-target="#filterModal"
                 style="padding: 10px 20px; font-size: 16px; min-width: 100px;">
           <i class="fa fa-filter"></i> Filter
         </button>
@@ -33,12 +106,33 @@
       </div>
     </div>
 
-    <div class="card-body">
+    <div class="body-content__wrapper requesition-body">
+    <div class="requesition-top">
+        <ul class="requesition-btn-list">
+            <li>
+                <button id="copyBtn"><img src="{{ asset('assets/img/copy-icon.png') }}" alt=""> Copy</button>
+                <div id="copyPopup" class="copy-popup"></div>
+            </li>
+            <li>
+                <button id="csvBtn"><img src="{{ asset('assets/img/csv-icon.png') }}" alt=""> CSV</button>
+            </li>
+            <li>
+                <button id="excelBtn"><img src="{{ asset('assets/img/excel-icon.png') }}" alt=""> Excel</button>
+            </li>
+            <li>
+                <button id="pdfBtn"><img src="{{ asset('assets/img/pdf-icon.png') }}" alt=""> PDF</button>
+            </li>
+        </ul>
+        <div class="requesition-search">
+            <input type="search" id="tableSearch" placeholder="Search Here.........">
+            <button><img src="{{ asset('assets/img/search-icon.png') }}" alt=""></button>
+        </div>
+    </div>
       {{-- SINGLE form holding the checkboxes + posts to download route --}}
       <form method="POST" id="tableForm">
         @csrf
         <div class="table-responsive">
-          <table class="table table-striped table-bordered zero-configuration" id="example" style="width:100%">
+          <table class="table table-striped table-bordered zero-configuration"  id="myTable" style="width:100%">
             <thead class="table-light text-center">
               <tr>
                 <th>#</th>
@@ -119,7 +213,7 @@
                         <a href="/procurement/{{$frequisition->id}}/editrequisition" class="btn btn-info btn-sm text-white">
                           <span class="fa fa-desktop"></span> Update
                         </a>&nbsp;
-                        <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#historyModal{{ $frequisition->id }}">
+                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#historyModal{{ $frequisition->id }}">
                           <span class="fa fa-pencil"></span> Logs
                         </button>&nbsp;
                         <a href="/procurement/{{$frequisition->id}}/download" class="btn btn-primary btn-sm text-white">
@@ -136,7 +230,7 @@
                         <a href="/procurement/{{$frequisition->id}}/viewrequisition" class="btn btn-info btn-sm text-white">
                           <span class="fa fa-desktop"></span> View
                         </a>&nbsp;
-                        <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#historyModal{{ $frequisition->id }}">
+                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#historyModal{{ $frequisition->id }}">
                           <span class="fa fa-pencil"></span> Logs
                         </button>&nbsp;
                         <a href="/procurement/{{$frequisition->id}}/download" class="btn btn-primary btn-sm text-white">
@@ -154,7 +248,7 @@
                       <a href="/procurement/{{$frequisition->id}}/viewrequisition" class="btn btn-info btn-sm text-white">
                         <span class="fa fa-desktop"></span> View
                       </a>&nbsp;
-                      <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#historyModal{{ $frequisition->id }}">
+                      <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#historyModal{{ $frequisition->id }}">
                         <span class="fa fa-pencil"></span> Logs
                       </button>&nbsp;
                       <a href="/procurement/{{$frequisition->id}}/download" class="btn btn-primary btn-sm text-white">
@@ -199,7 +293,7 @@
                     </div>
                   </div>
                 </div>
-                
+
               @endforeach
             </tbody>
           </table>
@@ -208,7 +302,6 @@
       {{-- END #tableForm --}}
     </div>
   </div>
-
 
 
 
@@ -264,7 +357,7 @@
             </section>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           </div>
         </div>
       </div>
@@ -317,7 +410,7 @@
           </div>
 
           <div class="modal-footer">
-            <button class="btn btn-danger" type="button" data-dismiss="modal" style="padding:10px 20px; font-size:16px; min-width:100px;">Close</button>
+            <button class="btn btn-danger" type="button" data-bs-dismiss="modal" style="padding:10px 20px; font-size:16px; min-width:100px;">Close</button>
             <button class="btn btn-success" type="submit" style="padding:10px 20px; font-size:16px; min-width:140px;">Filter Summary</button>
           </div>
         </div>
@@ -326,9 +419,145 @@
   </div>
 
 </div>
-@endsection
+
 
 <!-- Include jQuery and Bootstrap JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/js/bootstrap.min.js"></script>
+{{-- pdfmake for PDF --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
+
+<script>
+$(document).ready(function () {
+
+    // Initialize DataTable
+    window.dt = $('#myTable').DataTable({
+        responsive: true,
+        paging: true,
+        searching: true,
+        lengthChange: true,   // <-- allows user to choose 10 / 25 / 50 / 100
+        pageLength: 10,       // default number of rows
+        lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+        ordering: true,
+        autoWidth: false,
+        columnDefs: [
+            { targets: '_all', className: 'text-center' }
+        ]
+    });
+
+});
+</script>
+
+<script>
+// Utility: strip HTML tags (so exports don't include raw <button> etc.)
+const stripHtml = (html) => {
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  return div.textContent || div.innerText || '';
+};
+
+// If you have your own search input, wire it to DataTables:
+document.getElementById('tableSearch')?.addEventListener('input', function() {
+  window.dt.search(this.value).draw();
+});
+
+// ===== COPY =====
+document.getElementById("copyBtn").addEventListener("click", function (e) {
+  const headers = window.dt.columns().header().toArray().map(th => th.innerText.trim());
+  const rows = [];
+  window.dt.rows({ search: 'applied' }).every(function () {
+    const data = this.data().map(c => stripHtml(c));
+    rows.push(data);
+  });
+  const text = [headers.join('\t')].concat(rows.map(r => r.join('\t'))).join('\n');
+
+  navigator.clipboard.writeText(text).then(() => {
+    const popup = document.getElementById("copyPopup");
+    popup.textContent = "Copied!";
+    popup.style.opacity = 1;
+    const btnRect = e.target.getBoundingClientRect();
+    popup.style.left = (btnRect.left + (btnRect.width/2) - 60) + "px";
+    popup.style.top  = (btnRect.top - 35) + "px";
+    setTimeout(() => popup.style.opacity = 0, 1000);
+  });
+});
+
+// ===== CSV =====
+document.getElementById("csvBtn").addEventListener("click", function () {
+  const headers = window.dt.columns().header().toArray().map(th => '"' + th.innerText.replace(/"/g,'""') + '"');
+  const lines = [headers.join(',')];
+  window.dt.rows({ search: 'applied' }).every(function () {
+    const data = this.data().map(c => '"' + stripHtml(c).replace(/"/g,'""') + '"');
+    lines.push(data.join(','));
+  });
+  const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = Object.assign(document.createElement('a'), { href: url, download: 'table.csv' });
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+// ===== EXCEL (xlsx) =====
+document.getElementById("excelBtn").addEventListener("click", function () {
+  const headers = window.dt.columns().header().toArray().map(th => th.innerText.trim());
+  const rows = [headers];
+  window.dt.rows({ search: 'applied' }).every(function () {
+    rows.push(this.data().map(c => stripHtml(c)));
+  });
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  XLSX.utils.book_append_sheet(wb, ws, "Users");
+  XLSX.writeFile(wb, "table.xlsx");
+});
+
+// ===== PDF (pdfmake) =====
+document.getElementById("pdfBtn").addEventListener("click", function () {
+  const headers = window.dt.columns().header().toArray().map(th => ({ text: th.innerText, style: 'tableHeader' }));
+  const body = [headers];
+  window.dt.rows({ search: 'applied' }).every(function () {
+    body.push(this.data().map(c => stripHtml(c)));
+  });
+
+  const docDefinition = {
+    content: [
+      { text: "Users Table", style: "header" },
+      {
+        table: { headerRows: 1, widths: Array(headers.length).fill('*'), body }
+      }
+    ],
+    styles: {
+      header: { fontSize: 16, bold: true, margin: [0, 0, 0, 10] },
+      tableHeader: { bold: true, fillColor: "#eeeeee" }
+    },
+    pageOrientation: 'landscape'
+  };
+  pdfMake.createPdf(docDefinition).download("table.pdf");
+});
+
+// ===== PRINT =====
+document.getElementById("printBtn").addEventListener("click", function () {
+  const headers = window.dt.columns().header().toArray().map(th => th.innerText);
+  const rows = [];
+  window.dt.rows({ search: 'applied' }).every(function () {
+    rows.push(this.data().map(c => stripHtml(c)));
+  });
+
+  let html = "<table border='1' style='border-collapse:collapse;width:100%'>";
+  html += "<thead><tr>" + headers.map(h => `<th>${h}</th>`).join("") + "</tr></thead>";
+  html += "<tbody>";
+  rows.forEach(r => {
+    html += "<tr>" + r.map(c => `<td>${c}</td>`).join("") + "</tr>";
+  });
+  html += "</tbody></table>";
+
+  const w = window.open("");
+  w.document.write(`<html><head><title>Print Table</title></head><body>${html}</body></html>`);
+  w.document.close();
+  w.focus();
+  w.print();
+  w.close();
+});
+</script>
+@endsection
