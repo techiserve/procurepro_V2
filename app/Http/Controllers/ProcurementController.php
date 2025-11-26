@@ -75,7 +75,8 @@ class ProcurementController extends Controller
     //    }
 
         
-        $gl = Gl::all();
+        $gl = Gl::where('companyId', Auth::user()->companyId)->get();
+        
         $departments = Department::where('IsActive', '!=' , null)->where('companyId', Auth::user()->companyId)->get();
 
         $company = Company::where('id', Auth::user()->companyId)->first();
