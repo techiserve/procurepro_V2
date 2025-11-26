@@ -63,19 +63,20 @@ class ProcurementController extends Controller
 
         // $taxes = DB::connection('sqlsrv')->table('TaxTypes')->select('TaxTypeDescription')->get();
 
-        $gls = Gl::all();
+        // $gls = Gl::all();
         
-       foreach ($gls as $record) {
-        $value = trim(substr($record->accountDescription, 0, strpos($record->accountDescription, '(')));
+    //    foreach ($gls as $record) {
+    //     $value = trim(substr($record->accountDescription, 0, strpos($record->accountDescription, '(')));
 
-        $glupdate = Gl::where('id', $record->id)->update([
-            'account' => $value,
-        ]);
-        // dd($value);
-       }
+    //     $glupdate = Gl::where('id', $record->id)->update([
+    //         'account' => $value,
+    //     ]);
+    //     // dd($value);
+    //    }
 
         
-        $gl = Gl::all();
+        $gl = Gl::where('companyId', Auth::user()->companyId)->get();
+        
         $departments = Department::where('IsActive', '!=' , null)->where('companyId', Auth::user()->companyId)->get();
 
         $company = Company::where('id', Auth::user()->companyId)->first();
