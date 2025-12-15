@@ -113,19 +113,16 @@ return [
         // ],
 
 
-        // 'sqlsrv' => [
-        //     'driver' => 'sqlsrv',
-        //     'host' => env('DB_HOST_SQLSRV', 'techiservedb.database.windows.net'),
-        //     'port' => env('DB_PORT_SQLSRV', '1433'),
-        //     'database' => env('DB_DATABASE_SQLSRV', 'TechIServe-SQL-DB'),
-        //     'username' => env('DB_USERNAME_SQLSRV', 'dbadmin'),
-        //     'password' => env('DB_PASSWORD_SQLSRV', 'TechIServe@2024'),
-        //     'charset' => 'utf8',
-        //     'prefix' => '',
-        //     'prefix_indexes' => true,
-        //     'encrypt' => 'yes', // Optional: If SSL encryption is needed
-        //     'trust_server_certificate' => 'true', // Optional: If using self-signed certificate
-        // ],
+'sage' => [
+    'driver' => 'sqlsrv',
+    'host' => env('DB_HOST_SQLSRV', ''),
+    'port' => env('DB_PORT_SQLSRV', '1433'),
+    'database' => env('DB_DATABASE_SQLSRV', ''),
+    'username' => env('DB_USERNAME_SQLSRV', ''),
+    'password' => env('DB_PASSWORD_SQLSRV', ''),
+    'charset' => 'utf8',
+    'prefix' => '',
+],
 
     ],
 

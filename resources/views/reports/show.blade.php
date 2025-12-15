@@ -23,11 +23,20 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <strong>{{ $report->name }}</strong>
-            <div class="d-flex align-items-center gap-2">
-                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#filterModal">
-                    <i class="fa fa-filter"></i> Filter and Download
-                </button>
-            </div>
+        <div class="d-flex align-items-center gap-2">
+    <!-- 🔍 Custom Search Bar -->
+   
+
+    <!-- Filter Button -->
+    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#filterModal">
+        <i class="fa fa-filter"></i> Filter and Download
+    </button>
+     <input type="search"
+           id="tableSearch"
+           class="form-control form-control-sm"
+           placeholder="Search rows..."
+           style="width: 250px;border-radius: 40px;height: 30px; padding-left: 12px;" />
+</div>
         </div>
 
         <div class="card-body">
@@ -147,28 +156,36 @@
 <!-- ✅ DataTables JS -->
 <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     const tableEl = document.getElementById('customReportDataTable');
     if (!tableEl) return;
 
-    // ✅ Initialize DataTable
-    const table = new DataTable('#customReportDataTable', {
-        responsive: true,
+    // ✅ Initialize DataTable (jQuery style for v1.13.x)
+    const table = $('#customReportDataTable').DataTable({
+       // responsive: true,
         paging: true,
         searching: true,
         ordering: true,
         pageLength: 100,
         lengthMenu: [10, 25, 50, 100],
+        // Hide the built-in search box so you only use the custom one
+        dom: 'lrtip',
         language: {
-            search: "Search rows:",
             lengthMenu: "Show _MENU_ rows per page",
             info: "Showing _START_ to _END_ of _TOTAL_ rows",
             infoEmpty: "Showing 0 to 0 of 0 rows",
             infoFiltered: "(filtered from _MAX_ total rows)"
         }
     });
+
+    // 🔍 Custom Search (from first code)
+    const searchInput = document.getElementById('tableSearch');
+    if (searchInput) {
+        searchInput.addEventListener('input', function () {
+            table.search(this.value).draw();
+        });
+    }
 
     // ✅ Track selected rows
     const selectedIds = new Set();
@@ -209,25 +226,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Add hidden inputs for all selected IDs on submit
     const form = document.getElementById('removeSelectedRowsForm');
-  form?.addEventListener('submit', function () {
-    // ✅ 1. Remove old hidden fields
-    form.querySelectorAll('.hidden-selected-id').forEach(el => el.remove());
+    form?.addEventListener('submit', function () {
+        // ✅ 1. Remove old hidden fields
+        form.querySelectorAll('.hidden-selected-id').forEach(el => el.remove());
 
-    // ✅ 2. Remove names from visible checkboxes so they don't duplicate
-    form.querySelectorAll('.row-checkbox[name="selected_rows[]"]').forEach(cb => {
-        cb.removeAttribute('name');
-    });
+        // ✅ 2. Remove names from visible checkboxes so they don't duplicate
+        form.querySelectorAll('.row-checkbox[name="selected_rows[]"]').forEach(cb => {
+            cb.removeAttribute('name');
+        });
 
-    // ✅ 3. Add one hidden input per unique selected ID
-    selectedIds.forEach(id => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'selected_rows[]';
-        input.value = id;
-        input.classList.add('hidden-selected-id');
-        form.appendChild(input);
+        // ✅ 3. Add one hidden input per unique selected ID
+        selectedIds.forEach(id => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'selected_rows[]';
+            input.value = id;
+            input.classList.add('hidden-selected-id');
+            form.appendChild(input);
+        });
     });
-});
 
     // ✅ Select All Filters in modal
     const selectAllFilters = document.getElementById('select_all_filters');

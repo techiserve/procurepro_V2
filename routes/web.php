@@ -31,6 +31,24 @@ Route::get('reset-password/{token}', [PasswordResetController::class, 'resetForm
 Route::post('reset-password', [PasswordResetController::class, 'reset'])->name('password.update');
 
 
+Route::get('/test-sage', function () {
+    try {
+        DB::connection()->getPdo();
+        return "Connected!";
+    } catch (\Exception $e) {
+        return $e->getMessage();
+    }
+});
+
+Route::get('/test-sage', function () {
+    try {
+        DB::connection('sage')->getPdo();
+        return "Connected to Sage!";
+    } catch (\Exception $e) {
+        return $e->getMessage();
+    }
+});
+
 Route::get('/forgot-password', function () {
     return view('auth.forgotpassword');
 });
@@ -55,8 +73,8 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::post('/check-executive', [CompanyController::class, 'checkExecutive'])->name('check-executive');
-Route::middleware('auth')->group(function () {
+     Route::post('/check-executive', [CompanyController::class, 'checkExecutive'])->name('check-executive');
+     Route::middleware('auth')->group(function () {
      Route::get('/profile/{id}', [ProfileController::class, 'edit'])->name('profile.edit');
      Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
      Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
