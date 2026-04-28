@@ -75,6 +75,7 @@
     }
     
 }
+
 </style>
 @section('content')
 <div class="body-content__header">
