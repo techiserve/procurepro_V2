@@ -195,14 +195,14 @@
                         <input
                           type="{{ $field->type === 'integer' ? 'number' : 'text' }}"
                           class="form-control"
-                          name="{{ $field->name }}" maxlength="22">
+                          name="{{ $field->name }}" maxlength="200">
 
 
                      @elseif(in_array($fieldNameLower, array_map('strtolower', $description)))
                         <input
                           type="{{ $field->type === 'integer' ? 'number' : 'text' }}"
                           class="form-control"
-                          name="{{ $field->name }}" maxlength="22">
+                          name="{{ $field->name }}" maxlength="200">
 
                       @elseif(in_array($fieldNameLower, array_map('strtolower', $invoiceNames)))
                         {{-- Keep invoice inputs hidden/handled as before (no change) --}}
@@ -211,7 +211,7 @@
                         <input
                           type="{{ $field->type === 'integer' ? 'number' : 'text' }}"
                           class="form-control"
-                          name="{{ $field->name }}">
+                          name="{{ $field->name }}" maxlength="200">
                       @endif
                     </div>
                   </div>
