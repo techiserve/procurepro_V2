@@ -287,7 +287,7 @@
         <div class="requisition-requested-item">
           <div class="requisition-requested-item__wrapper">
             <div class="requisition-requested-item__content">
-              <h3>Requisition Requested</h3>
+              <h3>Requisition Requested.</h3>
               <h4>{{ $requisitions }}</h4>
               <ul></ul>
             </div>
