@@ -103,14 +103,14 @@
       @endif
 
       {{-- Users --}}
-      @if($user == 3 || $user == 2 || $data->contains('Add New User') || $data->contains('Manage Users'))
+      @if($user == 3 || $user == 2 || $user == 1 || $data->contains('Add New User') || $data->contains('Manage Users'))
         <li>
           <a href="#"><i class="icon-7"></i> <span>Users</span></a>
           <ul class="nav-right__sub">
-            @if($user == 3 || $user == 2 || $data->contains('Add New User'))
+            @if($user == 3 || $user == 2 || $user == 1 || $data->contains('Add New User'))
               <li><a href="/users/create">Add New User</a></li>
             @endif
-            @if($user == 3 || $user == 2 || $data->contains('Manage Users'))
+            @if($user == 3 || $user == 2 || $user == 1 || $data->contains('Manage Users'))
               <li><a href="/users/index">Manage Users</a></li>
             @endif
           </ul>

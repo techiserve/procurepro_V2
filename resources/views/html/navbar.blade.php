@@ -59,6 +59,15 @@
                         </div>
 
                         <ul class="user-dropdown__menu" id="userDropdownMenu">
+                            @if(session('impersonator_id'))
+                            <li>
+                            <form method="POST" action="{{ route('users.stopImpersonating') }}">
+                                @csrf
+                                <button type="submit">Return to Vincent Admin</button>
+                            </form>
+                            </li>
+                            <li><hr class="user-dropdown__divider"></li>
+                            @endif
                             <li><a href="/profile/{{Auth::user()->id}}">Edit Profile</a></li>
                             <li><hr class="user-dropdown__divider"></li>
                             <li>

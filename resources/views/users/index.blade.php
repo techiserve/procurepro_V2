@@ -83,6 +83,16 @@
     <a href="/users/create" class="btn-requisition-list"><i class="icon-20"></i> Add User</a>
 </div>
 
+@if(session('impersonator_id'))
+    <div class="alert alert-warning d-flex justify-content-between align-items-center" role="alert">
+        <span>You are viewing the system as {{ auth()->user()->email }}.</span>
+        <form method="POST" action="{{ route('users.stopImpersonating') }}" class="m-0">
+            @csrf
+            <button type="submit" class="btn btn-sm btn-warning">Return to Vincent Admin</button>
+        </form>
+    </div>
+@endif
+
 <div class="body-content__wrapper requesition-body">
     <div class="requesition-top">
         <ul class="requesition-btn-list">
@@ -162,6 +172,14 @@
                             <a href="/users/{{ $user->id }}/unlock" class="btn btn-icon btn-success mr-1">
                                 <i class="fa fa-check-circle"></i> Unlock
                             </a>
+                        @endif
+                        @if(in_array(auth()->user()->email, ['vincent@admin.com', 'admin@tis.com']) && auth()->id() !== $user->id)
+                            <form method="POST" action="{{ route('users.impersonate', $user->id) }}" style="display:inline-block;" class="m-0">
+                                @csrf
+                                <button type="submit" class="btn btn-icon btn-warning mr-1">
+                                    <i class="fa fa-sign-in"></i> Login As
+                                </button>
+                            </form>
                         @endif
                     </td>
                 </tr>

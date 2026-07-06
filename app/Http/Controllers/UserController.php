@@ -24,17 +24,35 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+    private const IMPERSONATOR_EMAILS = [
+        'vincent@admin.com',
+        'admin@tis.com',
+    ];
+
+    private function canImpersonate(): bool
+    {
+        return Auth::check() && in_array(Auth::user()->email, self::IMPERSONATOR_EMAILS, true);
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         //  $user = Auth::user()->companyId;     
-        
-         $executiveUserIds = ExecutiveRole::where('companyId', Auth::user()->companyId)
-         ->pluck('userId');
 
-         $users = User::where('userrole', '>', 3)->where('companyId', Auth::user()->companyId)->orWhereIn('id', $executiveUserIds )->get();
+        if ($this->canImpersonate()) {
+            $users = User::orderBy('name')->orderBy('email')->get();
+        } else {
+            $executiveUserIds = ExecutiveRole::where('companyId', Auth::user()->companyId)
+            ->pluck('userId');
+
+            $users = User::where(function ($query) use ($executiveUserIds) {
+                $query->where('userrole', '>', 3)
+                    ->where('companyId', Auth::user()->companyId)
+                    ->orWhereIn('id', $executiveUserIds);
+            })->get();
+        }
         // dd($users);
 
         // $users = User::where('companyId', Auth::user()->companyId)
@@ -47,6 +65,45 @@ class UserController extends Controller
      
     
         return view('users.index', compact('users'));
+    }
+
+    public function impersonate(Request $request, string $id)
+    {
+        if (!$this->canImpersonate()) {
+            abort(403);
+        }
+
+        $targetUser = User::findOrFail($id);
+
+        if ($targetUser->id === Auth::id()) {
+            return back()->with('error', 'You are already logged in as this user.');
+        }
+
+        $request->session()->put('impersonator_id', Auth::id());
+        $request->session()->put('impersonator_email', Auth::user()->email);
+
+        Auth::login($targetUser);
+        $request->session()->regenerate();
+
+        return redirect()->route('home')->with('success', 'You are now logged in as '.$targetUser->email.'.');
+    }
+
+    public function stopImpersonating(Request $request)
+    {
+        $impersonatorId = $request->session()->get('impersonator_id');
+        $impersonatorEmail = $request->session()->get('impersonator_email');
+
+        if (!$impersonatorId || !in_array($impersonatorEmail, self::IMPERSONATOR_EMAILS, true)) {
+            abort(403);
+        }
+
+        $impersonator = User::findOrFail($impersonatorId);
+
+        Auth::login($impersonator);
+        $request->session()->forget(['impersonator_id', 'impersonator_email']);
+        $request->session()->regenerate();
+
+        return redirect()->route('users.index')->with('success', 'You are back in your administrator account.');
     }
 
     public function home()

@@ -89,6 +89,8 @@ Route::get('/dashboard', function () {
      Route::get('/users/show', [UserController::class, 'show'])->name('users.show');
      Route::get('/users/fetchData', [UserController::class, 'fetchData'])->name('users.fetchData');
      Route::post('/users/userRole', [UserController::class, 'userRole'])->name('users.userRole');
+     Route::post('/users/{id}/impersonate', [UserController::class, 'impersonate'])->name('users.impersonate');
+     Route::post('/users/stop-impersonating', [UserController::class, 'stopImpersonating'])->name('users.stopImpersonating');
      Route::get('/users/{id}/delete', [UserController::class, 'userdelete'])->name('user.delete');
      Route::get('/users/{id}/edit', [UserController::class, 'useredit'])->name('edit.delete');
      Route::get('/users/{id}/unlock', [UserController::class, 'userunlock'])->name('edit.unlock');
