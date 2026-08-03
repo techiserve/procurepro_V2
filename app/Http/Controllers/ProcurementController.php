@@ -208,6 +208,14 @@ class ProcurementController extends Controller
       
         $frequisition = Frequisition::where('id', $id)->first();
         $formFields = FormField::where('companyId', $frequisition->companyId)->get();
+        $hiddenTopFormFields = ['vendor', 'vendor list', 'vendors', 'vendor name', 'amount'];
+        $normalizeFormField = function ($value) {
+            return strtolower(trim(str_replace(['_', '-'], ' ', $value ?? '')));
+        };
+        $formFields = $formFields->reject(function ($field) use ($hiddenTopFormFields, $normalizeFormField) {
+            return in_array($normalizeFormField($field->name), $hiddenTopFormFields, true)
+                || in_array($normalizeFormField($field->label), $hiddenTopFormFields, true);
+        });
         $frequisitionvendors = FrequisitionVendor::where('frequisition_id', $frequisition->id)->get();
         $files = Requisitionfile::where('requisitionId', $id)->get();
         //$vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
@@ -234,6 +242,14 @@ class ProcurementController extends Controller
      
         $frequisition = Frequisition::where('id', $id)->first();
         $formFields = FormField::where('companyId', $frequisition->companyId)->get();
+        $hiddenTopFormFields = ['vendor', 'vendor list', 'vendors', 'vendor name', 'amount'];
+        $normalizeFormField = function ($value) {
+            return strtolower(trim(str_replace(['_', '-'], ' ', $value ?? '')));
+        };
+        $formFields = $formFields->reject(function ($field) use ($hiddenTopFormFields, $normalizeFormField) {
+            return in_array($normalizeFormField($field->name), $hiddenTopFormFields, true)
+                || in_array($normalizeFormField($field->label), $hiddenTopFormFields, true);
+        });
         $files = Requisitionfile::where('requisitionId', $id)->get();
         $departments = Department::where('id', $frequisition->department)->first();
         $frequisitionvendors = FrequisitionVendor::where('frequisition_id', $frequisition->id)->get();
