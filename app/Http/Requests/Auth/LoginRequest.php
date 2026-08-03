@@ -65,8 +65,10 @@ class LoginRequest extends FormRequest
         ]);
     }
 
+    $remember = $this->boolean('remember') || $this->boolean('remember-me');
+
     // Attempt authentication
-    if (Auth::guard('web')->attempt($credentials)) {
+    if (Auth::guard('web')->attempt($credentials, $remember)) {
         // Reset attempts on success
         if ($user) {
             $user->update([

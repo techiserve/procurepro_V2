@@ -39,7 +39,7 @@
             @enderror
             <div class="logine-flex">
                 <div class="logine-checkbox">
-                    <input type="checkbox" id="remember-me" name="remember-me">
+                    <input type="checkbox" id="remember-me" name="remember" value="1" {{ old('remember') ? 'checked' : '' }}>
                     <label for="remember-me">Remember Me</label>
                 </div>                
                 <a href="#" class="forgot-password">Forgot Password?</a>
@@ -66,6 +66,7 @@
         <div class="modal-body">
           <input type="hidden" name="email" id="modal-email">
           <input type="hidden" name="password" id="modal-password">
+          <input type="hidden" name="remember" id="modal-remember" value="0">
 
           <div class="form-group">
             <label for="companySelect">Company</label>
@@ -127,13 +128,9 @@
             return;
         }
 
-        let hidden = document.createElement('input');
-        hidden.type = 'hidden';
-        hidden.name = 'company_id';
-        hidden.value = company;
-        document.querySelector('form').appendChild(hidden);
+        document.getElementById('modal-remember').value = document.getElementById('remember-me').checked ? '1' : '0';
 
-        document.querySelector('form').submit();
+        document.getElementById('modal-login-form').submit();
     });
 </script>
 <script>
@@ -160,6 +157,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // console.log(data);
                 document.getElementById('modal-email').value = email;
                 document.getElementById('modal-password').value = password;
+                document.getElementById('modal-remember').value = document.getElementById('remember-me').checked ? '1' : '0';
                 const companySelect = document.getElementById('companySelect');
                 companySelect.innerHTML = '';
 

@@ -5,6 +5,8 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\MasterController;
 use App\Http\Controllers\ProcurementController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+use App\Providers\RouteServiceProvider;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReportController;
 use App\Models\Company;
@@ -54,6 +56,9 @@ Route::get('/forgot-password', function () {
 });
 
 Route::get('/', function () {
+    if (Auth::check()) {
+        return redirect(RouteServiceProvider::HOME);
+    }
 
     $companies = Company::all();
 

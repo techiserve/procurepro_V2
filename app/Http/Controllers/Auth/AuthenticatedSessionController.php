@@ -22,7 +22,7 @@ class AuthenticatedSessionController extends Controller
     {
        $companies = Company::all();
 
-        return view('auth.login', compact('companies'));
+        return view('auth.figma', compact('companies'));
     }
 
     /**
