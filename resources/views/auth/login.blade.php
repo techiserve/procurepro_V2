@@ -42,7 +42,7 @@
                     <input type="checkbox" id="remember-me" name="remember" value="1" {{ old('remember') ? 'checked' : '' }}>
                     <label for="remember-me">Remember Me.</label>
                 </div>                
-                <a href="#" class="forgot-password">Forgot Password?</a>
+                <a href="{{ route('password.request') }}" class="forgot-password">Forgot Password?</a>
             </div>
             <div class="btn-logine-input"><input type="submit" id="show-company-modal" value="Login"></div>
         </div>

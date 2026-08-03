@@ -42,6 +42,8 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\HtmlString;
 use Symfony\Component\Mime\Part\TextPart;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use App\Mail\RequisitionLifecycleEmail;
+use App\Mail\RequisitionReturnedEmail;
 use App\Mail\SendSampleEmail;
  
 class ProcurementController extends Controller
@@ -681,6 +683,23 @@ class ProcurementController extends Controller
             'doneby' => Auth::user()->name
             
            ]);
+
+            $updatedFrequisition = Frequisition::find($id);
+            if($updatedFrequisition){
+                $nextApproverUser = $approver
+                    ? User::where('userrole', $approver->roleId)->where('companyId', $updatedFrequisition->companyId)->first()
+                    : null;
+
+                $this->queueDepartmentNotificationToUser(
+                    $nextApproverUser,
+                    $updatedFrequisition->department,
+                    new RequisitionLifecycleEmail(
+                        'Purchase Requisition Resubmitted',
+                        'A purchase requisition has been updated and resubmitted for your review.',
+                        $updatedFrequisition->requisitionNumber
+                    )
+                );
+            }
     
 
 
@@ -1209,6 +1228,18 @@ class ProcurementController extends Controller
             'doneby' => Auth::user()->name
             
            ]);
+
+            if($updatereq){
+                $this->queueDepartmentNotificationToUserId(
+                    $frequisition->userId,
+                    $frequisition->department,
+                    new RequisitionLifecycleEmail(
+                        'Purchase Requisition Approved',
+                        'Your purchase requisition has been fully approved and a purchase order has been created.',
+                        $frequisition->requisitionNumber
+                    )
+                );
+            }
     
 
 
@@ -1266,12 +1297,16 @@ class ProcurementController extends Controller
     {
 
         $requisition = Frequisition::where('id', $id)->first();
+        $requesterId = $requisition->userId;
+        $departmentId = $requisition->department;
+        $requisitionNumber = $requisition->requisitionNumber;
+        $rejectionReason = $request->message;
 
                  $updatereq = Frequisition::where('id', $id)->update([
 
                 'approvedby' => Auth::user()->userrole,
                 'approvallevel' => $requisition->approvallevel,
-                'reason' => $request->message,
+                'reason' => $rejectionReason,
                 'isActive' => 0, 
                 'status'  => 3,
            
@@ -1295,6 +1330,16 @@ class ProcurementController extends Controller
 
 
         if($updatereq){
+            $this->queueDepartmentNotificationToUserId(
+                $requesterId,
+                $departmentId,
+                new RequisitionLifecycleEmail(
+                    'Purchase Requisition Rejected',
+                    'Your purchase requisition has been rejected.',
+                    $requisitionNumber,
+                    $rejectionReason
+                )
+            );
    
          return redirect()->route('procurement.myrequisition')->with('success', 'Requisition order rejected!');
 
@@ -1307,12 +1352,16 @@ class ProcurementController extends Controller
     {
 
         $requisition = Frequisition::where('id', $id)->first();
+        $requester = User::find($requisition->userId);
+        $departmentId = $requisition->department;
+        $requisitionNumber = $requisition->requisitionNumber;
+        $returnReason = $request->message;
 
                  $updatereq = Frequisition::where('id', $id)->update([
 
                 'approvedby' => Auth::user()->userrole,
                 'approvallevel' => $requisition->approvallevel,
-                'reason' => $request->message,
+                'reason' => $returnReason,
                 'isActive' => 0, 
                 'status'  => 4,
 
@@ -1336,6 +1385,11 @@ class ProcurementController extends Controller
 
 
         if($updatereq){
+            $this->queueDepartmentNotificationToUser(
+                $requester,
+                $departmentId,
+                new RequisitionReturnedEmail($requisitionNumber, $returnReason)
+            );
    
          return redirect()->route('procurement.myrequisition')->with('success', 'Requisition returned!');
 
@@ -1381,6 +1435,18 @@ class ProcurementController extends Controller
                     'doneby' => Auth::user()->name
                     
                    ]);
+
+                if($updatereq){
+                    $this->queueDepartmentNotificationToUserId(
+                        $requisition->userId,
+                        $requisition->department,
+                        new RequisitionLifecycleEmail(
+                            'Purchase Order Approved',
+                            'Your purchase order has been fully approved.',
+                            $requisition->requisitionNumber
+                        )
+                    );
+                }
             
 
 
@@ -1478,6 +1544,18 @@ class ProcurementController extends Controller
                     'doneby' => Auth::user()->name
                     
                    ]);
+
+                if($updatereq){
+                    $this->queueDepartmentNotificationToUserId(
+                        $requisition->userId,
+                        $requisition->department,
+                        new RequisitionLifecycleEmail(
+                            'Purchase Order Approved',
+                            'Your purchase order has been fully approved after bank account approval.',
+                            $requisition->requisitionNumber
+                        )
+                    );
+                }
             
 
 
@@ -1514,6 +1592,14 @@ class ProcurementController extends Controller
                     'doneby' => Auth::user()->name
                     
                    ]);
+
+                $user = User::where('userrole', $approver->roleId)->where('companyId', Auth::user()->companyId)->first();
+
+                $this->queueDepartmentNotificationToUser(
+                    $user,
+                    $requisition->department,
+                    new SendSampleEmail($requisition->requisitionNumber)
+                );
             
 
         }
@@ -1530,6 +1616,10 @@ class ProcurementController extends Controller
     {
 
         $requisition = Fpurchaseorder::where('id', $id)->first();
+        $requesterId = $requisition->userId;
+        $departmentId = $requisition->department;
+        $requisitionNumber = $requisition->requisitionNumber;
+        $rejectionReason = $request->message;
 
                  $updatereq = Fpurchaseorder::where('id', $id)->update([
 
@@ -1538,7 +1628,7 @@ class ProcurementController extends Controller
                 'isActive' => 0, 
                 'status'  => 3,
                 'purchaseorderstatus'  => 3,
-                'reason'  => $request->message,
+                'reason'  => $rejectionReason,
 
                  ]);  
                                 
@@ -1561,6 +1651,16 @@ class ProcurementController extends Controller
 
 
         if($updatereq){
+            $this->queueDepartmentNotificationToUserId(
+                $requesterId,
+                $departmentId,
+                new RequisitionLifecycleEmail(
+                    'Purchase Order Rejected',
+                    'Your purchase order has been rejected.',
+                    $requisitionNumber,
+                    $rejectionReason
+                )
+            );
    
          return redirect()->route('procurement.mypurchaseorder')->with('success', 'Purchase order rejected!');
 
@@ -1572,6 +1672,11 @@ class ProcurementController extends Controller
      */
     public function sendbackpurchaseorder(Request $request, string $id)
     {
+        $purchaseOrder = Fpurchaseorder::where('id', $id)->first();
+        $requesterId = $purchaseOrder->userId;
+        $departmentId = $purchaseOrder->department;
+        $requisitionNumber = $purchaseOrder->requisitionNumber;
+        $returnReason = $request->message;
 
         $updatereq = Fpurchaseorder::where('id', $id)->update([
 
@@ -1581,7 +1686,7 @@ class ProcurementController extends Controller
        'totalapprovallevels'  => 0,
        'purchaseorderstatus' => 4, 
        'isActive'  => 0,
-       'reason'  => $request->message,
+       'reason'  => $returnReason,
 
         ]);   
 
@@ -1604,6 +1709,16 @@ class ProcurementController extends Controller
            ]);
 
       if($updatereq){
+        $this->queueDepartmentNotificationToUserId(
+            $requesterId,
+            $departmentId,
+            new RequisitionLifecycleEmail(
+                'Purchase Order Returned',
+                'Your purchase order has been returned.',
+                $requisitionNumber,
+                $returnReason
+            )
+        );
 
       return redirect()->route('procurement.mypurchaseorder')->with('success', 'Purchase order sent back!');
 
@@ -1616,6 +1731,7 @@ class ProcurementController extends Controller
      public function pop(Request $request, string $id)
     {
 
+        $purchaseOrder = Fpurchaseorder::where('id', $id)->first();
 
         // Store the file
         $invoicefilePath = $request->file('pop')->store('uploads', 'public');
@@ -1629,6 +1745,15 @@ class ProcurementController extends Controller
         ]);   
 
       if($updatereq){
+        $this->queueDepartmentNotificationToUserId(
+            $purchaseOrder->userId,
+            $purchaseOrder->department,
+            new RequisitionLifecycleEmail(
+                'Proof of Payment Uploaded',
+                'A proof of payment has been uploaded for your purchase order.',
+                $purchaseOrder->requisitionNumber
+            )
+        );
 
        return redirect()->route('procurement.managepurchaseorder')->with('success', 'Pop uploaded, well done buddy!');
 
@@ -1640,6 +1765,7 @@ class ProcurementController extends Controller
 
      public function reqPop(Request $request, string $id)
     {
+        $requisition = Frequisition::where('id', $id)->first();
    
         $invoicefilePath = $request->file('pop')->store('uploads', 'public');
 
@@ -1652,6 +1778,15 @@ class ProcurementController extends Controller
         ]);   
 
       if($updatereq){
+        $this->queueDepartmentNotificationToUserId(
+            $requisition->userId,
+            $requisition->department,
+            new RequisitionLifecycleEmail(
+                'Proof of Payment Uploaded',
+                'A proof of payment has been uploaded for your purchase requisition.',
+                $requisition->requisitionNumber
+            )
+        );
 
        return redirect()->route('procurement.indexrequisition')->with('success', 'Pop uploaded, well done buddy!');
 
@@ -1893,6 +2028,31 @@ public function downloadpurchaseorder(Request $request)
     
 
 
+
+    private function departmentNotificationsEnabled($departmentId): bool
+    {
+        $department = Department::find($departmentId);
+
+        return $department && (int) $department->notifications === 1;
+    }
+
+    private function queueDepartmentNotificationToUser($user, $departmentId, $mailable): void
+    {
+        if (!$this->departmentNotificationsEnabled($departmentId)) {
+            return;
+        }
+
+        if (!$user || empty($user->email)) {
+            return;
+        }
+
+        Mail::to($user->email)->queue($mailable);
+    }
+
+    private function queueDepartmentNotificationToUserId($userId, $departmentId, $mailable): void
+    {
+        $this->queueDepartmentNotificationToUser(User::find($userId), $departmentId, $mailable);
+    }
 
     /**
      * Remove the specified resource from storage.

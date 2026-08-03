@@ -27,7 +27,7 @@
             <div class="logine-input-row"><input type="email" id="email" name="email"  class="{{ $errors->has('email') ? 'is-invalid' : '' }}" placeholder="Email" value="{{ old('email') }}"></div>
                  @error('email')
             <span style="color: #ff7276; font-size: 13px;">{{ $message }}</span>
-        @enderror
+            @enderror
             <div class="logine-input-row">
                 <input type="password"  id="password"  class="{{ $errors->has('password') ? 'is-invalid' : '' }}" name="password" placeholder="Password"/>
                 <button type="button" id="btnToggle" class="toggle">
@@ -42,7 +42,7 @@
                     <input type="checkbox" id="remember-me" name="remember" value="1" {{ old('remember') ? 'checked' : '' }}>
                     <label for="remember-me">Remember Me</label>
                 </div>                
-                <a href="#" class="forgot-password">Forgot Password?</a>
+                <a href="{{ route('password.request') }}" class="forgot-password">Forgot Password?</a>
             </div>
             <div class="btn-logine-input"><input type="submit" id="show-company-modal" value="Login"></div>
         </div>

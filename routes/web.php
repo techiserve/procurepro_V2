@@ -10,7 +10,6 @@ use App\Providers\RouteServiceProvider;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReportController;
 use App\Models\Company;
-use App\Http\Controllers\PasswordResetLinkController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\RequisitionController;
 
@@ -24,14 +23,6 @@ use App\Http\Controllers\RequisitionController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
-use App\Http\Controllers\Auth\PasswordResetController;
-
-//Route::get('forgot-password', [PasswordResetLinkController::class, 'request'])->name('password.request');
-//Route::post('forgot-password', [PasswordResetController::class, 'email'])->name('password.email');
-Route::get('reset-password/{token}', [PasswordResetController::class, 'resetForm'])->name('password.reset');
-Route::post('reset-password', [PasswordResetController::class, 'reset'])->name('password.update');
-
 
 Route::get('/test-sage', function () {
     try {
@@ -49,10 +40,6 @@ Route::get('/test-sage', function () {
     } catch (\Exception $e) {
         return $e->getMessage();
     }
-});
-
-Route::get('/forgot-password', function () {
-    return view('auth.forgotpassword');
 });
 
 Route::get('/', function () {
@@ -178,7 +165,6 @@ Route::get('/dashboard', function () {
      Route::get('/procurement/{id}/paymentRelease', [ProcurementController::class, 'paymentRelease'])->name('procurement.paymentRelease');
       Route::get('/procurement/{id}/view', [ProcurementController::class, 'view'])->name('procurement.view');
      Route::put('/procurement/{id}/sendback', [ProcurementController::class, 'sendbackpurchaseorder'])->name('procurement.sendbackpurchaseorder');
-     Route::get('download-pdf/{filename}', [YourController::class, 'downloadPDF'])->name('download.pdf');
      Route::get('/procurement/createVendor', [ProcurementController::class, 'createVendor'])->name('procurement.createVendor');
      Route::get('/procureprorequisition/{id}/view', [ReportController::class, 'procureprorequisition'])->name('procurement.procureprorequisition');
      Route::get('/procurepropurchaseorder/{id}/view', [ReportController::class, 'procurepropurchaseorder'])->name('procurement.procurepropurchaseorder');

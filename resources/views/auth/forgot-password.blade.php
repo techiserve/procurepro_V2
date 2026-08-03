@@ -154,7 +154,7 @@
             <input type="email" id="email" name="email" placeholder="Username@gmail.com">
 
             <div class="forgot-password">
-            <a href="/home">Back to Login</a>
+            <a href="{{ route('login') }}">Back to Login</a>
             </div>
 
             <input type="submit" value="Submit" style="font-family: 'Gilroy-Bold', Arial, sans-serif;">
