@@ -198,19 +198,22 @@
                         </li>
                         <li>
                             <a class="menu-item" href="/reports/fnb" data-i18n="nav.starter_kit.2_columns">
-                             FNB 
+                             PO FNB
                             </a>
                         </li>
                         <li>
                             <a class="menu-item" href="/reports/albarak" data-i18n="nav.starter_kit.2_columns">
-                             Al Barak
+                             PO Al Baraka
                             </a>
                         </li>
                         <li>
                             <a class="menu-item" href="/reports/standardbank" data-i18n="nav.starter_kit.2_columns">
-                             Standard Bank
+                             PO Standard Bank
                             </a>
                         </li>
+                        <li><a class="menu-item" href="{{ route('reports.requisitions.fnb') }}">PR FNB</a></li>
+                        <li><a class="menu-item" href="{{ route('reports.requisitions.albaraka') }}">PR Al Baraka</a></li>
+                        <li><a class="menu-item" href="{{ route('reports.requisitions.standardbank') }}">PR Standard Bank</a></li>
                                      <li>
                             <a class="menu-item" href="/reports" data-i18n="nav.starter_kit.2_columns">
                              Custom Reports

@@ -24,6 +24,9 @@
                     </div>
 
                     <div class="card-body"><br>
+                        @if($errors->any())
+                            <div class="alert alert-danger" role="alert">{{ $errors->first() }}</div>
+                        @endif
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-col">
@@ -61,7 +64,7 @@
                         <div class="clearfix" id="dynamic_field_primary">
                             <div class="row">
                                 <label for="PR">Purchase Requisition Flow</label>
-                                <div class="col-md-6"><br>
+                                <div class="col-md-5"><br>
                                     <div class="form-group">
                                         <select class="form-control" name="approval[]">
                                             <option value="">Select Approval Level</option>
@@ -74,14 +77,20 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-5"><br>
+                                <div class="col-md-4"><br>
                                     <div class="form-group">
-                                        <select class="form-control" name="role[]">
+                                        <select class="form-control primary-role-select" name="role[]">
                                             <option value="">Select Role</option>
                                             @foreach($roles as $role)
                                                 <option value="{{ $role->id }}">{{ $role->name }}</option>
                                             @endforeach
                                         </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 d-flex align-items-center">
+                                    <div class="form-check">
+                                        <input class="form-check-input primary-bank-checkbox" type="checkbox" name="is_default_primary" value="0">
+                                        <label class="form-check-label">Assign Bank Account</label>
                                     </div>
                                 </div>
                                 <div class="col-md-1"><br>
@@ -110,7 +119,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <select class="form-control secondary-role-select" name="secondary_role[]" onchange="updateDefaultValue(this)">
+                                        <select class="form-control secondary-role-select" name="secondary_role[]">
                                             <option value="">Select Role</option>
                                             @foreach($roles as $role)
                                                 <option value="{{ $role->id }}">{{ $role->name }}</option>
@@ -120,7 +129,7 @@
                                 </div>
                                 <div class="col-md-2 d-flex align-items-center">
                                     <div class="form-check">
-                                        <input class="form-check-input secondary-default-checkbox" type="checkbox" name="is_default_secondary" value="">
+                                        <input class="form-check-input secondary-default-checkbox" type="checkbox" name="is_default_secondary" value="0">
                                         <label class="form-check-label">Assign Bank Account</label>
                                     </div>
                                 </div>
@@ -218,11 +227,26 @@ $(document).ready(function(){
   let i = 1;
   let j = 1;
 
+  function syncBankAssignments() {
+    $('.primary-bank-checkbox').each(function(index) { this.value = index; });
+    $('.secondary-default-checkbox').each(function(index) { this.value = index; });
+    const $checkboxes = $('.primary-bank-checkbox, .secondary-default-checkbox');
+    const $selected = $checkboxes.filter(':checked').first();
+    $checkboxes.not($selected).prop('checked', false).prop('disabled', $selected.length > 0);
+    $selected.prop('disabled', false);
+  }
+
+  $(document).on('change', '.primary-bank-checkbox, .secondary-default-checkbox', syncBankAssignments);
+  $('form[name="department_form"]').on('submit', syncBankAssignments);
+  $('form[name="department_form"]').on('reset', function() {
+    setTimeout(syncBankAssignments, 0);
+  });
+
   $('#add_primary').click(function(){  
     i++;  
     $('#dynamic_field_primary').append(
       '<div id="primary_row'+i+'" class="row dynamic-added">' +
-        '<div class="col-md-6">' +
+        '<div class="col-md-5">' +
           '<div class="form-group">' +
             '<select class="form-control" name="approval[]">' +
               '<option value="">Select Approval Level</option>' +
@@ -235,12 +259,18 @@ $(document).ready(function(){
             '</select>' +
           '</div>' +
         '</div>' +
-        '<div class="col-md-5">' +
+        '<div class="col-md-4">' +
           '<div class="form-group">' +
-            '<select class="form-control" name="role[]">' +
+            '<select class="form-control primary-role-select" name="role[]">' +
               '<option value="">Select Role</option>' +
               @json($roles).map(role => `<option value="${role.id}">${role.name}</option>`).join('') +
             '</select>' +
+          '</div>' +
+        '</div>' +
+        '<div class="col-md-2 d-flex align-items-center">' +
+          '<div class="form-check">' +
+            '<input class="form-check-input primary-bank-checkbox" type="checkbox" name="is_default_primary" value="">' +
+            '<label class="form-check-label">Assign Bank Account</label>' +
           '</div>' +
         '</div>' +
         '<div class="col-md-1">' +
@@ -248,11 +278,13 @@ $(document).ready(function(){
         '</div>' +
       '</div>'
     );
+    syncBankAssignments();
   });
 
   $(document).on('click', '.btn_remove_primary', function(){  
     const id = $(this).attr("id");   
     $('#primary_row'+id).remove();  
+    syncBankAssignments();
   });
 
   $('#add_secondary').click(function(){  
@@ -274,7 +306,7 @@ $(document).ready(function(){
         </div>
         <div class="col-md-3">
           <div class="form-group">
-            <select class="form-control secondary-role-select" name="secondary_role[]" onchange="updateDefaultValue(this)">
+            <select class="form-control secondary-role-select" name="secondary_role[]">
               <option value="">Select Role</option>
               ${@json($roles).map(role => `<option value="${role.id}" data-name="${role.name}">${role.name}</option>`).join('')}
             </select>
@@ -291,23 +323,14 @@ $(document).ready(function(){
         </div>
       </div>`
     );
+    syncBankAssignments();
   });
 
   $(document).on('click', '.btn_remove_secondary', function(){  
     const id = $(this).attr("id");   
     $('#secondary_row'+id).remove();  
+    syncBankAssignments();
   });
-
-  $(document).on('change', '.secondary-default-checkbox', function(){
-    $('.secondary-default-checkbox').not(this).prop('checked', false);
-  });
-
-  window.updateDefaultValue = function(selectElement) {
-    const checkbox = $(selectElement).closest('.row').find('.secondary-default-checkbox');
-    const selectedOption = selectElement.options[selectElement.selectedIndex];
-    const selectedId = selectedOption.value;
-    checkbox.val(selectedId);
-  }
 
   $('#enable_secondary').change(function(){
     if ($(this).is(':checked')) {
@@ -315,8 +338,10 @@ $(document).ready(function(){
     } else {
       $('#dynamic_field_secondary').hide();
       $('#dynamic_field_secondary').find('.dynamic-added').remove();
+      $('#dynamic_field_secondary .secondary-default-checkbox').prop('checked', false);
     }
+    syncBankAssignments();
   });
+  syncBankAssignments();
 });
 </script>
-

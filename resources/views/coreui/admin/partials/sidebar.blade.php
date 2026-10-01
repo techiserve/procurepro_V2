@@ -265,6 +265,9 @@
             <a class="nav-link" href="/reports/purchaseorderreport">
               <i class="nav-icon icon-settings"></i>Purchase Order Summary</a>
           </li>
+          <li class="nav-item active"><a class="nav-link" href="{{ route('reports.requisitions.fnb') }}">PR FNB</a></li>
+          <li class="nav-item active"><a class="nav-link" href="{{ route('reports.requisitions.albaraka') }}">PR Al Baraka</a></li>
+          <li class="nav-item active"><a class="nav-link" href="{{ route('reports.requisitions.standardbank') }}">PR Standard Bank</a></li>
           <!-- <li class="nav-item active">
             <a class="nav-link" href="/reports/waitingpurchaseorder">
               <i class="nav-icon icon-check"></i>Purchase Orders Awaiting Payment</a>

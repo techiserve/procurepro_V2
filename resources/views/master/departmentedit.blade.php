@@ -26,6 +26,9 @@
           </div>
 
           <div class="card-body">
+            @if($errors->any())
+              <div class="alert alert-danger" role="alert">{{ $errors->first() }}</div>
+            @endif
             <div class="row">
               <div class="col-md-6">
                 <div class="form-col">
@@ -60,7 +63,7 @@
             <div id="dynamic_field_a">
               @foreach($da as $index => $rolez)</br>
                 <div class="row" id="rowa{{ $index }}">
-                  <div class="col-md-6">
+                  <div class="col-md-5">
                     <div class="form-col">
                       <label for="approval_a_{{ $index }}">Approval Level</label>
                       <select class="form-control" id="approval_a_{{ $index }}" name="approval_a[]">
@@ -73,14 +76,21 @@
                       </select>
                     </div>
                   </div>
-                  <div class="col-md-5">
+                  <div class="col-md-4">
                     <div class="form-col">
                       <label for="role_a_{{ $index }}">Role</label>
-                      <select class="form-control" id="role_a_{{ $index }}" name="role_a[]">
+                      <select class="form-control pr-role-select" id="role_a_{{ $index }}" name="role_a[]">
                         @foreach($roles as $role)
                           <option value="{{ $role->id }}" @if($role->id == $rolez->roleId) selected @endif>{{ $role->name }}</option>
                         @endforeach
                       </select>
+                    </div>
+                  </div>
+                  <div class="col-md-2 d-flex align-items-start">
+                    <div class="form-check mt-2">
+                      <input class="form-check-input pr-bank-checkbox" type="checkbox" name="is_default_primary"
+                             value="{{ $index }}" @if(!empty($rolez->IsBankAccount)) checked @endif>
+                      <label class="form-check-label">Assign Bank Account</label>
                     </div>
                   </div>
                   <div class="col-md-1 d-flex align-items-start">
@@ -118,7 +128,7 @@
                   <div class="col-md-3">
                     <div class="form-col">
                       <label for="role_b_{{ $index }}">Role</label>
-                      <select class="form-control po-role-select" id="role_b_{{ $index }}" name="role_b[]" onchange="updatePoCheckboxValue(this)">
+                      <select class="form-control po-role-select" id="role_b_{{ $index }}" name="role_b[]">
                         @foreach($roles as $role)
                           <option value="{{ $role->id }}" @if($role->id == $rolez->roleId) selected @endif>{{ $role->name }}</option>
                         @endforeach
@@ -132,7 +142,7 @@
                       <input class="form-check-input po-default-checkbox"
                              type="checkbox"
                              name="is_default_secondary"
-                             value="{{ $rolez->roleId }}"
+                             value="{{ $index }}"
                              @if(!empty($rolez->IsBankAccount)) checked @endif>
                       <label class="form-check-label">Assign Bank Account</label>
                     </div>
@@ -170,13 +180,28 @@ $(document).ready(function(){
   let i = {{ count($da) }};
   let j = {{ count($da_b) }};
 
+  function syncBankAssignments() {
+    $('.pr-bank-checkbox').each(function(index) { this.value = index; });
+    $('.po-default-checkbox').each(function(index) { this.value = index; });
+    const $checkboxes = $('.pr-bank-checkbox, .po-default-checkbox');
+    const $selected = $checkboxes.filter(':checked').first();
+    $checkboxes.not($selected).prop('checked', false).prop('disabled', $selected.length > 0);
+    $selected.prop('disabled', false);
+  }
+
+  $(document).on('change', '.pr-bank-checkbox, .po-default-checkbox', syncBankAssignments);
+  $('form[action="/department/{{$department->id}}/update"]').on('submit', syncBankAssignments);
+  $('form[action="/department/{{$department->id}}/update"]').on('reset', function() {
+    setTimeout(syncBankAssignments, 0);
+  });
+
   // ========= Primary (Requisition) =========
   $('#add_a').click(function(){
     i++;
     $('#dynamic_field_a').append(`
     </br>
       <div class="row" id="rowa${i}">
-        <div class="col-md-6">
+        <div class="col-md-5">
           <select class="form-control" name="approval_a[]">
             <option value="1">First Line</option>
             <option value="2">Second Line</option>
@@ -186,23 +211,31 @@ $(document).ready(function(){
             <option value="6">Sixth Line</option>
           </select>
         </div>
-        <div class="col-md-5">
-          <select class="form-control" name="role_a[]">
+        <div class="col-md-4">
+          <select class="form-control pr-role-select" name="role_a[]">
             @foreach($roles as $role)
               <option value="{{ $role->id }}">{{ $role->name }}</option>
             @endforeach
           </select>
+        </div>
+        <div class="col-md-2 d-flex align-items-start">
+          <div class="form-check mt-2">
+            <input class="form-check-input pr-bank-checkbox" type="checkbox" name="is_default_primary" value="">
+            <label class="form-check-label">Assign Bank Account</label>
+          </div>
         </div>
         <div class="col-md-1 d-flex align-items-start">
           <button type="button" class="btn btn-danger btn_remove_a mt-4" data-row="rowa${i}">x</button>
         </div>
       </div>
     `);
+    syncBankAssignments();
   });
 
   $(document).on('click', '.btn_remove_a', function(){
     const id = $(this).data("row");
     $('#' + id).remove();
+    syncBankAssignments();
   });
 
   // ========= Secondary (Purchase Order) =========
@@ -223,7 +256,7 @@ $(document).ready(function(){
         </div>
 
         <div class="col-md-3">
-          <select class="form-control po-role-select" name="role_b[]" onchange="updatePoCheckboxValue(this)">
+          <select class="form-control po-role-select" name="role_b[]">
             @foreach($roles as $role)
               <option value="{{ $role->id }}">{{ $role->name }}</option>
             @endforeach
@@ -242,35 +275,14 @@ $(document).ready(function(){
         </div>
       </div>
     `);
-
-    // Set the new checkbox value to the currently selected role in that row
-    const $row = $('#rowb' + j);
-    const roleVal = $row.find('.po-role-select').val() || '';
-    $row.find('.po-default-checkbox').val(roleVal);
+    syncBankAssignments();
   });
 
   $(document).on('click', '.btn_remove_b', function(){
     const id = $(this).data("row");
     $('#' + id).remove();
+    syncBankAssignments();
   });
-
-  // Exclusive selection: only one PO checkbox can be checked at a time
-  $(document).on('change', '.po-default-checkbox', function(){
-    if (this.checked) {
-      $('.po-default-checkbox').not(this).prop('checked', false);
-    }
-  });
-
-  // Keep checkbox value synced with chosen Role in its row
-  window.updatePoCheckboxValue = function(selectEl){
-    const $row = $(selectEl).closest('.row');
-    const roleId = $(selectEl).val() || '';
-    $row.find('.po-default-checkbox').val(roleId);
-  };
-
-  // On load, ensure existing rows have checkbox value synced to their current role
-  $('.po-role-select').each(function(){
-    updatePoCheckboxValue(this);
-  });
+  syncBankAssignments();
 });
 </script>

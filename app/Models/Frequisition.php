@@ -23,9 +23,17 @@ class Frequisition extends Model
         'totalapprovallevels',
         'isActive',
         'reason',
-        'approvedby'
+        'approvedby',
+        'bankAccountName',
+        'bankAccountNumber',
+        'bankAccountType'
        
     ];
+
+    public function selectedVendor()
+    {
+        return $this->hasOne(FrequisitionVendor::class, 'frequisition_id')->where('status', 1);
+    }
 
 
     public function histories()

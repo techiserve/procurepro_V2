@@ -173,21 +173,7 @@
 
       {{-- Reports --}}
       @if($user == 3 || $user == 2 || $data->contains('Reports'))
-        <li>
-          <a href="#"><i class="icon-9"></i> <span>Reports</span></a>
-          <ul class="nav-right__sub">
-            <li><a href="/reports/requisitionreport">Purchase Req Summary</a></li>
-            <li><a href="/reports/purchaseorderreport">Purchase Order Summary</a></li>
-            <li><a href="/reports/fnb">FNB</a></li>
-            <li><a href="/reports/albarak">Al Baraka</a></li>
-            <li><a href="/reports/standardbank">Standard Bank</a></li>
-            <li><a href="/reports">Custom Reports</a></li>
-            <li><a href="/itemizedreports">Itemized Custom Reports</a></li>
-            <li><a href="/dashboard/procurement">Spend Overview Reports</a></li>
-            <li><a href="/reports/procureprorequisition">ProcurePro Requisition</a></li>
-            <li><a href="/reports/procurepropurchaseorder">ProcurePro Purchase Order</a></li>
-          </ul>
-        </li>
+        @include('html.partials.reports-menu')
       @endif
 
       @if($user == 1)

@@ -183,6 +183,9 @@ Route::get('/dashboard', function () {
      Route::get('/reports/albarak', [ReportController::class, 'albarak'])->name('reports.albarak');
      Route::get('/reports/fnb', [ReportController::class, 'fnb'])->name('reports.fnb');
      Route::get('/reports/standardbank', [ReportController::class, 'standardbank'])->name('reports.standardbank');
+     Route::get('/reports/requisitions/fnb', [ReportController::class, 'fnbRequisitions'])->name('reports.requisitions.fnb');
+     Route::get('/reports/requisitions/albaraka', [ReportController::class, 'albarakaRequisitions'])->name('reports.requisitions.albaraka');
+     Route::get('/reports/requisitions/standardbank', [ReportController::class, 'standardBankRequisitions'])->name('reports.requisitions.standardbank');
      Route::get('/reports/waitingpurchaseorder', [ReportController::class, 'waitingpurchaseorder'])->name('reports.waitingpurchaseorder');
 
 

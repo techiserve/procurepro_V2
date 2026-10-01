@@ -38,7 +38,7 @@
       <div class="col-sm-12">
 
         {{-- APPROVE form wraps both cards --}}
-        <form method="POST" action="/procurement/{{ $frequisition->id }}/approve">
+        <form id="pr-approval-form" method="POST" action="/procurement/{{ $frequisition->id }}/approve">
           @csrf
           @method('put')
 
@@ -51,6 +51,7 @@
                   <i class="fa fa-align-justify"></i> Requisitions List
                 </a>
               </div>
+
             </div>
 
             <div class="card-body">
@@ -81,6 +82,23 @@
                   </div>
                 @endforeach
               </div>
+
+              @if($frequisition->bankAccountName)
+                <div class="row">
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label">Company Bank</label>
+                    <input type="text" class="form-control" value="{{ $frequisition->bankAccountName }}" readonly>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label">Account Number</label>
+                    <input type="text" class="form-control" value="{{ $frequisition->bankAccountNumber }}" readonly>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label">Account Type</label>
+                    <input type="text" class="form-control" value="{{ $frequisition->bankAccountType }}" readonly>
+                  </div>
+                </div>
+              @endif
 
               @if($frequisition->reason != null)
                 <div class="row">
@@ -241,9 +259,15 @@
             @if($frequisition->userId != auth()->user()->id  && $frequisition->status != 6)
               @if($frequisition->approvedby == auth()->user()->userrole && $frequisition->approvallevel <= $frequisition->totalapprovallevels)
                 <div class="card-footer d-flex justify-content-end gap-2">
-                  <button type="submit" id="submitBtn" class="btn btn-success" disabled>
-                    <span class="fa fa-check-circle"></span> Approve
-                  </button>
+                  @if($requiresBankAccount)
+                    <button type="button" id="bankTriggerBtn" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#prBankAccount" disabled>
+                      <span class="fa fa-check-circle"></span> Approve
+                    </button>
+                  @else
+                    <button type="submit" id="submitBtn" class="btn btn-success" disabled>
+                      <span class="fa fa-check-circle"></span> Approve
+                    </button>
+                  @endif
 
                   {{-- Modal triggers (Bootstrap 5) --}}
                   <button type="button" class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#returnback">
@@ -258,6 +282,32 @@
             @endif
           </div>
         </form>
+
+        @if($requiresBankAccount && $frequisition->approvedby == auth()->user()->userrole && $frequisition->status == 1)
+          <div class="modal fade" id="prBankAccount" tabindex="-1" aria-labelledby="prBankAccountLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-md">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="prBankAccountLabel">Select Bank Account</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <label for="pr_account_id" class="form-label">Bank Account</label>
+                  <select id="pr_account_id" name="account_id" form="pr-approval-form" class="form-control" required>
+                    <option value="" selected disabled>Select account</option>
+                    @foreach($accounts as $account)
+                      <option value="{{ $account->id }}">{{ $account->bankName }} ({{ $account->accountNumber }})</option>
+                    @endforeach
+                  </select>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="submit" form="pr-approval-form" id="bankApproveBtn" class="btn btn-success" disabled>Approve</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        @endif
 
 
 
@@ -315,7 +365,7 @@
 
         <div class="modal-header">
           <h4 class="modal-title" id="emailCopyLabel">
-            <i class="fa fa-envelope"></i> Reject Purchase Order
+            <i class="fa fa-envelope"></i> Reject Purchase Requisition
           </h4>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
@@ -379,6 +429,8 @@ document.addEventListener('DOMContentLoaded', function () {
   // Single selection among vendor checkboxes
   const checkboxes = document.querySelectorAll('.exclusive-checkbox');
   const submitBtn  = document.getElementById('submitBtn');
+  const bankTriggerBtn = document.getElementById('bankTriggerBtn');
+  const bankApproveBtn = document.getElementById('bankApproveBtn');
 
   function enforceSingleSelection(selected) {
     checkboxes.forEach(cb => { if (cb !== selected) cb.checked = false; });
@@ -386,6 +438,8 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateSubmitButtonState() {
     const isChecked = Array.from(checkboxes).some(cb => cb.checked);
     if (submitBtn) submitBtn.disabled = !isChecked;
+    if (bankTriggerBtn) bankTriggerBtn.disabled = !isChecked;
+    if (bankApproveBtn) bankApproveBtn.disabled = !isChecked;
   }
 
   updateSubmitButtonState();

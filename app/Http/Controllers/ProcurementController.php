@@ -104,20 +104,13 @@ class ProcurementController extends Controller
                 return in_array(strtolower($field->name), ['vendor', 'amount']);
             });
 
-
-         //   dd($formFields);
-       // dd($formFields);
-
         $expenses = ClassificationOfExpense::all();
 
-       // dd($vendors);
         // return view('procurement.createrequisition', compact('departments','vendors','banks','vendorTypes','expenses','servicetypes','properties','transcations','taxes','formFields','company'));
         return view('procurement.createrequisition', compact('departments','gl','vendors','banks','vendorTypes','expenses','formFields','company'));
 
     }
     
-
-
 
     public function createVendor()
     {
@@ -208,7 +201,7 @@ class ProcurementController extends Controller
         public function viewrequisition(string $id)
     {
       
-        $frequisition = Frequisition::where('id', $id)->first();
+        $frequisition = Frequisition::where('companyId', Auth::user()->companyId)->findOrFail($id);
         $formFields = FormField::where('companyId', $frequisition->companyId)->get();
         $hiddenTopFormFields = ['vendor', 'vendor list', 'vendors', 'vendor name', 'amount'];
         $normalizeFormField = function ($value) {
@@ -222,7 +215,20 @@ class ProcurementController extends Controller
         $files = Requisitionfile::where('requisitionId', $id)->get();
         //$vendors = DB::connection('sqlsrv')->table('Suppliers')->select('SupplierID', 'SupplierName')->get();   
        // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
-        $departments = Department::where('id', $frequisition->department)->get();
+         $departments = Department::where('id', $frequisition->department)->get();
+         $bankAccountApproval = Departmentapproval::where('mode', 'PR')
+             ->where('departmentId', $frequisition->department)
+             ->where('approvalId', $frequisition->approvallevel)
+             ->whereNotNull('IsBankAccount')
+             ->first();
+         $requiresBankAccount = $bankAccountApproval
+             && (int) $bankAccountApproval->roleId === (int) Auth::user()->userrole
+             && (int) $frequisition->approvedby === (int) Auth::user()->userrole
+             && (int) $frequisition->userId !== (int) Auth::id()
+             && (int) $frequisition->status === 1;
+         $accounts = $requiresBankAccount
+             ? Bankaccount::where('companyId', $frequisition->companyId)->get()
+             : collect();
 
        // dd($frequisitionvendors);
         if(!$departments){
@@ -234,7 +240,7 @@ class ProcurementController extends Controller
     
         // return view('procurement.downloadrequisitionsewrequisition', compact('frequisition','files','vendors','servicetype','formFields','history','departments'));
             
-        return view('procurement.fviewrequisition', compact('frequisition','frequisitionvendors','files','formFields','history','departments'));
+         return view('procurement.fviewrequisition', compact('frequisition','frequisitionvendors','files','formFields','history','departments','requiresBankAccount','accounts'));
     }
 
 
@@ -764,7 +770,11 @@ class ProcurementController extends Controller
         }
           
        $accounts = Bankaccount::where('companyId', $fpurchaseorder->companyId)->get();
-       $departmentapproval = Departmentapproval::where('departmentId', $departments->id)->where('IsBankAccount' ,'!=', null)->first();
+       $departmentapproval = Departmentapproval::where('departmentId', $departments->id)
+           ->where('mode', 'PO')
+           ->where('approvalId', $fpurchaseorder->approvallevel)
+           ->whereNotNull('IsBankAccount')
+           ->first();
 
        if ($departmentapproval && $departmentapproval->IsBankAccount !== null) {
             $departmentapproval = $departmentapproval->IsBankAccount;
@@ -1128,20 +1138,43 @@ class ProcurementController extends Controller
      */
     public function requisitionapproval(string $id, Request $request)
     {
+        $request->validate(['selected_vendor' => ['required', 'integer']]);
+        $frequisition = Frequisition::where('companyId', Auth::user()->companyId)->findOrFail($id);
+        abort_unless(
+            (int) $frequisition->status === 1
+                && (int) $frequisition->approvedby === (int) Auth::user()->userrole
+                && (int) $frequisition->userId !== (int) Auth::id(),
+            403
+        );
 
+        $currentApproval = Departmentapproval::where('mode', 'PR')
+            ->where('departmentId', $frequisition->department)
+            ->where('approvalId', $frequisition->approvallevel)
+            ->where('roleId', Auth::user()->userrole)
+            ->firstOrFail();
+
+        $bankAccountData = [];
+        if ($currentApproval->IsBankAccount !== null) {
+            $request->validate(['account_id' => ['required', 'integer']]);
+            $bank = Bankaccount::where('companyId', $frequisition->companyId)
+                ->findOrFail($request->input('account_id'));
+            $bankAccountData = [
+                'bankAccountName' => $bank->bankName,
+                'bankAccountNumber' => $bank->accountNumber,
+                'bankAccountType' => $bank->accountType,
+            ];
+        }
+
+        $vendor = FrequisitionVendor::where('frequisition_id', $id)
+            ->findOrFail($request->input('selected_vendor'));
         FrequisitionVendor::where('frequisition_id', $id)->update(['status' => null]);
-        $selectedvendor = FrequisitionVendor::where('id', $request->selected_vendor)->update([
-            'status' => 1
-        ]);
-
-        $vendor = FrequisitionVendor::where('id', $request->selected_vendor)->first();
-        $frequisition = Frequisition::where('id', $id)->first();
+        $vendor->update(['status' => 1]);
 
         if($frequisition->approvallevel+1 > $frequisition->totalapprovallevels){
          
            // dd('zvapera');
             $updatedapprovallevel = $frequisition->approvallevel+1;
-                 $updatereq = Frequisition::where('id', $id)->update([
+                 $updatereq = Frequisition::where('id', $id)->update(array_merge([
                 
                 'vendor' => $vendor->vendor_final,
                 'amount' => $vendor->amount,
@@ -1150,7 +1183,7 @@ class ProcurementController extends Controller
                 'isActive'  => 1,
                 'status'  => 2,
 
-                 ]); 
+                 ], $bankAccountData));
                  
                  
              $savefile = Requisitionfile::create([
@@ -1248,12 +1281,12 @@ class ProcurementController extends Controller
             $updatedapprovallevel = $frequisition->approvallevel+1;
             $approver = Departmentapproval::where('mode','=','PR')->where('departmentId', $frequisition->department)->where('approvalId', $updatedapprovallevel)->first();
 
-            $updatereq = Frequisition::where('id', $id)->update([
+            $updatereq = Frequisition::where('id', $id)->update(array_merge([
 
                 'approvallevel' =>  $updatedapprovallevel,
                 'approvedby' => $approver->roleId,              
 
-                 ]);   
+                 ], $bankAccountData));
                
 
                  $frequisitions = RequisitionHistory::create([
@@ -1403,7 +1436,19 @@ class ProcurementController extends Controller
     {
  
      
-        $requisition = Fpurchaseorder::where('id', $id)->first();
+        $requisition = Fpurchaseorder::where('companyId', Auth::user()->companyId)->findOrFail($id);
+        abort_unless(
+            (int) $requisition->status === 1
+                && (int) $requisition->approvedby === (int) Auth::user()->userrole
+                && (int) $requisition->userId !== (int) Auth::id(),
+            403
+        );
+        abort_if(Departmentapproval::where('mode', 'PO')
+            ->where('departmentId', $requisition->department)
+            ->where('approvalId', $requisition->approvallevel)
+            ->where('roleId', Auth::user()->userrole)
+            ->whereNotNull('IsBankAccount')
+            ->exists(), 403);
 
         if($requisition->approvallevel+1 > $requisition->totalapprovallevels){
          
@@ -1505,10 +1550,22 @@ class ProcurementController extends Controller
 
     public function approvepurchaseorderbankAccount(string $id,Request $request)
     {
-           
-       $bank = Bankaccount::where('id',$request->account_id)->first();
- 
-        $requisition = Fpurchaseorder::where('id', $id)->first();
+        $request->validate(['account_id' => ['required', 'integer']]);
+        $requisition = Fpurchaseorder::where('companyId', Auth::user()->companyId)->findOrFail($id);
+        abort_unless(
+            (int) $requisition->status === 1
+                && (int) $requisition->approvedby === (int) Auth::user()->userrole
+                && (int) $requisition->userId !== (int) Auth::id(),
+            403
+        );
+        abort_unless(Departmentapproval::where('mode', 'PO')
+            ->where('departmentId', $requisition->department)
+            ->where('approvalId', $requisition->approvallevel)
+            ->where('roleId', Auth::user()->userrole)
+            ->whereNotNull('IsBankAccount')
+            ->exists(), 403);
+        $bank = Bankaccount::where('companyId', $requisition->companyId)
+            ->findOrFail($request->input('account_id'));
 
         if($requisition->approvallevel+1 > $requisition->totalapprovallevels){
          

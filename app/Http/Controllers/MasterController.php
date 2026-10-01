@@ -13,6 +13,7 @@ use Alert;
 use App\Models\CompanyRole;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class MasterController extends Controller
 {
@@ -171,6 +172,25 @@ class MasterController extends Controller
 
       //  dd($request->all());
 
+        $request->validate([
+            'is_default_primary' => ['nullable', 'integer', 'min:0'],
+            'is_default_secondary' => ['nullable', 'integer', 'min:0'],
+        ]);
+        if ($request->filled('is_default_primary') && $request->filled('is_default_secondary')) {
+            throw ValidationException::withMessages([
+                'is_default_primary' => 'Assign a bank account to only one PR or PO approval role.',
+            ]);
+        }
+
+        $selectedPrimary = $request->filled('is_default_primary') ? (int) $request->input('is_default_primary') : null;
+        $selectedSecondary = $request->filled('is_default_secondary') ? (int) $request->input('is_default_secondary') : null;
+        if (($selectedPrimary !== null && (!$request->filled("role.$selectedPrimary") || !$request->filled("approval.$selectedPrimary")))
+            || ($selectedSecondary !== null && (!$request->filled("secondary_role.$selectedSecondary") || !$request->filled("secondary_approval.$selectedSecondary")))) {
+            throw ValidationException::withMessages([
+                'is_default_primary' => 'Select a valid bank account approval role.',
+            ]);
+        }
+
         $userId = Auth::user()->id;
         $companyId = Auth::user()->companyId;
 
@@ -206,6 +226,7 @@ class MasterController extends Controller
                     'approvalId' =>$approval[$key],
                     'companyId' => $companyId,
                     'departmentId'  => $executive->id,
+                    'IsBankAccount' => $selectedPrimary === $key ? $userrole[$key] : null,
                     'roleId'  => $userrole[$key]
                     
                 ])
@@ -230,7 +251,7 @@ class MasterController extends Controller
                     'approvalId' =>$second_approval[$key],
                     'companyId' => $companyId,
                     'departmentId'  => $executive->id,
-                    'IsBankAccount' => $request->input('is_default_secondary') ==  $second_userrole[$key] ? $request->input('is_default_secondary') : null,
+                    'IsBankAccount' => $selectedSecondary === $key ? $second_userrole[$key] : null,
                     'roleId'  => $second_userrole[$key]
                     
                 ])
@@ -285,6 +306,25 @@ class MasterController extends Controller
       //  $request->all();
        // dd($request->all());  
 
+        $request->validate([
+            'is_default_primary' => ['nullable', 'integer', 'min:0'],
+            'is_default_secondary' => ['nullable', 'integer', 'min:0'],
+        ]);
+        if ($request->filled('is_default_primary') && $request->filled('is_default_secondary')) {
+            throw ValidationException::withMessages([
+                'is_default_primary' => 'Assign a bank account to only one PR or PO approval role.',
+            ]);
+        }
+
+        $selectedPrimary = $request->filled('is_default_primary') ? (int) $request->input('is_default_primary') : null;
+        $selectedSecondary = $request->filled('is_default_secondary') ? (int) $request->input('is_default_secondary') : null;
+        if (($selectedPrimary !== null && (!$request->filled("role_a.$selectedPrimary") || !$request->filled("approval_a.$selectedPrimary")))
+            || ($selectedSecondary !== null && (!$request->filled("role_b.$selectedSecondary") || !$request->filled("approval_b.$selectedSecondary")))) {
+            throw ValidationException::withMessages([
+                'is_default_primary' => 'Select a valid bank account approval role.',
+            ]);
+        }
+
         $userId = Auth::user()->id;
         $companyId = Auth::user()->companyId;
         $approval_a = $request->input('approval_a');
@@ -317,6 +357,7 @@ class MasterController extends Controller
                         'approvalId' =>$approval_a[$key],
                         'companyId' => $companyId,
                         'departmentId'  => $department->id,
+                        'IsBankAccount' => $selectedPrimary === $key ? $userrole_a[$key] : null,
                         'roleId'  => $userrole_a[$key]
                         
                     ])
@@ -339,7 +380,7 @@ class MasterController extends Controller
                         'approvalId' =>$approval_b[$key],
                         'companyId' => $companyId,
                         'departmentId'  => $department->id,
-                        'IsBankAccount' => $request->input('is_default_secondary') ==  $userrole_b[$key] ? $request->input('is_default_secondary') : null,
+                        'IsBankAccount' => $selectedSecondary === $key ? $userrole_b[$key] : null,
                         'roleId'  => $userrole_b[$key]
                         
                     ])

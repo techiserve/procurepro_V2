@@ -279,7 +279,7 @@ class ReportController extends Controller
 
     public function fnb()
     {        
-          $fpurchaseorder = Fpurchaseorder::where('companyId', Auth::user()->companyId)->where('bankAccountName','=','FNB/RMB')->where('releaseStatus','=', null)->get();
+          $fpurchaseorder = Fpurchaseorder::where('companyId', Auth::user()->companyId)->where('bankAccountName','=','FNB/RMB')->where('status', 2)->whereNull('releaseStatus')->whereIn('department', Departmentapproval::select('departmentId')->where('mode', 'PO')->whereNotNull('IsBankAccount'))->get();
           //dd($fpurchaseorder);
             $vendors = Vendor::select(
                 'id as SupplierID', 
@@ -296,7 +296,7 @@ class ReportController extends Controller
 
         public function albarak()
     {        
-          $fpurchaseorder = Fpurchaseorder::where('companyId', Auth::user()->companyId)->where('bankAccountName','=','Albaraka Bank')->where('releaseStatus','=', null)->get();
+          $fpurchaseorder = Fpurchaseorder::where('companyId', Auth::user()->companyId)->where('bankAccountName','=','Albaraka Bank')->where('status', 2)->whereNull('releaseStatus')->whereIn('department', Departmentapproval::select('departmentId')->where('mode', 'PO')->whereNotNull('IsBankAccount'))->get();
            $vendors = Vendor::select(
                 'id as SupplierID', 
                 'name as SupplierName'
@@ -310,7 +310,7 @@ class ReportController extends Controller
 
         public function standardbank()
     {        
-          $fpurchaseorder = Fpurchaseorder::where('companyId', Auth::user()->companyId)->where('bankAccountName','=','Standard Bank')->where('releaseStatus','=', null)->get();
+          $fpurchaseorder = Fpurchaseorder::where('companyId', Auth::user()->companyId)->where('bankAccountName','=','Standard Bank')->where('status', 2)->whereNull('releaseStatus')->whereIn('department', Departmentapproval::select('departmentId')->where('mode', 'PO')->whereNotNull('IsBankAccount'))->get();
              $vendors = Vendor::select(
                 'id as SupplierID', 
                 'name as SupplierName'
@@ -319,6 +319,53 @@ class ReportController extends Controller
           $departments = Department::where('companyId', Auth::user()->companyId)->get();
 
         return view('reports.standardbank', compact('fpurchaseorder','departments','vendors'));
+    }
+
+    public function fnbRequisitions(Request $request)
+    {
+        return $this->requisitionBankReport($request, 'FNB/RMB', 'FNB', 'fnb');
+    }
+
+    public function albarakaRequisitions(Request $request)
+    {
+        return $this->requisitionBankReport($request, 'Albaraka Bank', 'Al Baraka Bank', 'albaraka');
+    }
+
+    public function standardBankRequisitions(Request $request)
+    {
+        return $this->requisitionBankReport($request, 'Standard Bank', 'Standard Bank', 'standard-bank');
+    }
+
+    private function requisitionBankReport(Request $request, string $bankName, string $bankLabel, string $bankSlug)
+    {
+        $filters = $request->validate([
+            'date_from' => ['nullable', 'date'],
+            'date_to' => ['nullable', 'date', 'after_or_equal:date_from'],
+            'department' => ['nullable', 'integer'],
+        ]);
+
+        $query = Frequisition::with('selectedVendor')
+            ->where('companyId', Auth::user()->companyId)
+            ->where('status', 2)
+            ->where('bankAccountName', $bankName)
+            ->whereIn('department', Departmentapproval::select('departmentId')
+                ->where('mode', 'PR')
+                ->whereNotNull('IsBankAccount'));
+
+        if (!empty($filters['date_from'])) {
+            $query->whereDate('created_at', '>=', $filters['date_from']);
+        }
+        if (!empty($filters['date_to'])) {
+            $query->whereDate('created_at', '<=', $filters['date_to']);
+        }
+        if (!empty($filters['department'])) {
+            $query->where('department', $filters['department']);
+        }
+
+        $frequisitions = $query->orderByDesc('created_at')->get();
+        $departments = Department::where('companyId', Auth::user()->companyId)->pluck('name', 'id');
+
+        return view('reports.requisition-bank', compact('frequisitions', 'departments', 'bankLabel', 'bankSlug', 'filters'));
     }
     /**
      * Show the form for editing the specified resource.
@@ -1052,4 +1099,3 @@ if (in_array('created_at', $dbColumns)) {
 
    
 }
-

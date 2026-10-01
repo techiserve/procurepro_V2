@@ -28,6 +28,10 @@ $(document).ready(function () {
     if (submenu.length) {
       e.preventDefault();
 
+      var opening = !submenu.is(':visible');
+      $(this).attr('aria-expanded', opening ? 'true' : 'false');
+      $('.nav-right > li > a').not(this).attr('aria-expanded', 'false');
+
       // Toggle submenu visibility
       submenu.slideToggle(200);
 

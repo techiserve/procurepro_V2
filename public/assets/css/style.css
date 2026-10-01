@@ -924,6 +924,85 @@ button::-moz-focus-inner,
 	color: #1f5dbd !important;
 }
 
+.nav-right__sub.reports-menu {
+	padding: 6px;
+	margin: 8px 0 16px;
+}
+
+.reports-menu .reports-menu__group {
+	list-style: none;
+	margin: 0;
+}
+
+.reports-menu__group summary {
+	display: flex;
+	list-style: none;
+	align-items: center;
+	justify-content: space-between;
+	padding: 10px 9px;
+	border-radius: 4px;
+	color: #24364f;
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 18px;
+	cursor: pointer;
+}
+
+.reports-menu__group summary::-webkit-details-marker {
+	display: none;
+}
+
+.reports-menu__group summary::after {
+	content: "";
+	width: 6px;
+	height: 6px;
+	flex: 0 0 6px;
+	margin-left: 8px;
+	border-right: 1.5px solid currentColor;
+	border-bottom: 1.5px solid currentColor;
+	transform: rotate(45deg);
+	transition: transform 150ms ease;
+}
+
+.reports-menu__group details[open] > summary::after {
+	transform: rotate(225deg);
+}
+
+.reports-menu__group summary:hover,
+.reports-menu__group details[open] > summary {
+	background: #e3edfc;
+	color: #154eaa;
+}
+
+.reports-menu__group summary:focus-visible {
+	outline: 2px solid #1f5dbd;
+	outline-offset: -2px;
+}
+
+.reports-menu .reports-menu__links {
+	margin: 4px 0 7px 13px;
+	padding: 0 0 0 7px;
+	border-left: 1px solid #c9d8ec;
+}
+
+.reports-menu .reports-menu__links li {
+	list-style: none;
+	margin: 0;
+}
+
+.reports-menu .reports-menu__links a {
+	display: block;
+	padding: 7px 8px !important;
+	border-radius: 4px;
+	line-height: 17px !important;
+}
+
+.reports-menu .reports-menu__links a[aria-current="page"] {
+	background: #d8e6fa !important;
+	color: #154eaa !important;
+	font-weight: 600 !important;
+}
+
 .menu-right__nav ul h4 {
 	font-weight: 400;
 	font-size: 16px;

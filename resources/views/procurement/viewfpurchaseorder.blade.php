@@ -283,6 +283,7 @@
       </div>
     </div>
 
+    @if($departmentapproval)
     {{-- BANK ACCOUNT (APPROVE) MODAL --}}
     <div class="modal fade" id="bankAccount" tabindex="-1" aria-labelledby="bankAccountLabel" aria-hidden="true">
       <div class="modal-dialog modal-primary modal-md" role="document">
@@ -335,6 +336,7 @@
         </div>
       </div>
     </div>
+    @endif
 
     {{-- RETURN MODAL --}}
     <div class="modal fade" id="returnback" tabindex="-1" aria-labelledby="returnbackLabel" aria-hidden="true">
