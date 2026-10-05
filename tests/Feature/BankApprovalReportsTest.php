@@ -48,6 +48,12 @@ class BankApprovalReportsTest extends TestCase
             $table->integer('userrole');
             $table->timestamps();
         });
+        Schema::create('rolepermissions', function (Blueprint $table) {
+            $table->id();
+            $table->integer('role_id');
+            $table->integer('companyId');
+            $table->string('permission');
+        });
         Schema::create('departments', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -117,6 +123,7 @@ class BankApprovalReportsTest extends TestCase
             $table->timestamps();
         });
         (require base_path('database/migrations/2026_09_30_000001_add_bank_account_to_frequisitions_table.php'))->up();
+        (require base_path('database/migrations/2026_10_05_000002_add_bank_report_clear_fields.php'))->up();
         Schema::create('frequisitionvendor', function (Blueprint $table) {
             $table->id();
             $table->integer('frequisition_id');
@@ -194,7 +201,7 @@ class BankApprovalReportsTest extends TestCase
                 ['companyId' => 2, 'department' => 1, 'bankAccountName' => $bank, 'status' => 2, 'releaseStatus' => null],
             ]);
 
-            $orders = app(ReportController::class)->$method()->getData()['fpurchaseorder'];
+            $orders = app(ReportController::class)->$method(Request::create('/', 'GET'))->getData()['fpurchaseorder'];
             $this->assertCount(1, $orders);
             $this->assertSame(2, (int) $orders->first()->status);
         }
@@ -413,7 +420,7 @@ class BankApprovalReportsTest extends TestCase
             'requisitionNumber' => 'PR-1', 'bankAccountName' => 'FNB/RMB',
         ]);
         $reports = app(ReportController::class);
-        $this->assertCount(0, $reports->fnb()->getData()['fpurchaseorder']);
+        $this->assertCount(0, $reports->fnb(Request::create('/', 'GET'))->getData()['fpurchaseorder']);
         $this->assertCount(0, $reports->fnbRequisitions(Request::create('/', 'GET'))->getData()['frequisitions']);
 
         DB::table('departmentapprovals')->insert([
@@ -422,7 +429,7 @@ class BankApprovalReportsTest extends TestCase
         DB::table('fpurchaseorders')->where('id', 1)->update(['status' => 1]);
         $view = app(ProcurementController::class)->viewpurchaseorder('1');
         $this->assertSame(0, $view->getData()['departmentapproval']);
-        $this->assertCount(0, $reports->fnb()->getData()['fpurchaseorder']);
+        $this->assertCount(0, $reports->fnb(Request::create('/', 'GET'))->getData()['fpurchaseorder']);
         $this->assertCount(1, $reports->fnbRequisitions(Request::create('/', 'GET'))->getData()['frequisitions']);
 
         $this->expectException(HttpException::class);
@@ -472,11 +479,11 @@ class BankApprovalReportsTest extends TestCase
         $this->assertCount(1, $reportedPr);
         $this->assertSame('98765', $reportedPr->first()->selectedVendor->account_number);
         $this->assertNull(DB::table('frequisitionvendor')->where('id', 2)->value('status'));
-        $this->assertCount(0, $reports->fnb()->getData()['fpurchaseorder']);
+        $this->assertCount(0, $reports->fnb(Request::create('/', 'GET'))->getData()['fpurchaseorder']);
         DB::table('fpurchaseorders')->where('id', $order->id)->update([
             'status' => 2, 'bankAccountName' => 'FNB',
         ]);
-        $this->assertCount(0, $reports->fnb()->getData()['fpurchaseorder']);
+        $this->assertCount(0, $reports->fnb(Request::create('/', 'GET'))->getData()['fpurchaseorder']);
     }
 
     public function test_po_bank_selection_reports_only_the_po(): void
@@ -513,7 +520,7 @@ class BankApprovalReportsTest extends TestCase
         $this->assertNull(DB::table('frequisitions')->where('id', 1)->value('bankAccountNumber'));
         $this->assertSame(2, (int) DB::table('fpurchaseorders')->where('id', 1)->value('status'));
         $reports = app(ReportController::class);
-        $this->assertCount(1, $reports->fnb()->getData()['fpurchaseorder']);
+        $this->assertCount(1, $reports->fnb(Request::create('/', 'GET'))->getData()['fpurchaseorder']);
         DB::table('frequisitions')->where('id', 1)->update(['bankAccountName' => 'FNB/RMB']);
         $this->assertCount(0, $reports->fnbRequisitions(Request::create('/', 'GET'))->getData()['frequisitions']);
     }
@@ -593,5 +600,120 @@ class BankApprovalReportsTest extends TestCase
 
         $this->assertSame(4, (int) DB::table('frequisitions')->where('id', 1)->value('status'));
         $this->assertSame(0, DB::table('frequisitionvendor')->count());
+    }
+
+    public function test_clearing_selected_pr_bank_rows_only_hides_eligible_company_records(): void
+    {
+        DB::table('departmentapprovals')->insert([
+            'mode' => 'PR', 'departmentId' => 1, 'approvalId' => 1,
+            'roleId' => 7, 'IsBankAccount' => 7,
+        ]);
+        DB::table('frequisitions')->insert([
+            ['id' => 1, 'companyId' => 1, 'userId' => 1, 'department' => 1, 'status' => 2, 'approvallevel' => 2, 'totalapprovallevels' => 1, 'approvedby' => 7, 'requisitionNumber' => 'PR-1', 'bankAccountName' => 'FNB/RMB'],
+            ['id' => 2, 'companyId' => 1, 'userId' => 1, 'department' => 1, 'status' => 2, 'approvallevel' => 2, 'totalapprovallevels' => 1, 'approvedby' => 7, 'requisitionNumber' => 'PR-2', 'bankAccountName' => 'FNB/RMB'],
+            ['id' => 3, 'companyId' => 2, 'userId' => 1, 'department' => 1, 'status' => 2, 'approvallevel' => 2, 'totalapprovallevels' => 1, 'approvedby' => 7, 'requisitionNumber' => 'PR-3', 'bankAccountName' => 'FNB/RMB'],
+            ['id' => 4, 'companyId' => 1, 'userId' => 1, 'department' => 1, 'status' => 2, 'approvallevel' => 2, 'totalapprovallevels' => 1, 'approvedby' => 7, 'requisitionNumber' => 'PR-4', 'bankAccountName' => 'Standard Bank'],
+        ]);
+        $manager = User::forceCreate([
+            'id' => 3, 'name' => 'Reports Manager', 'email' => 'reports@example.test',
+            'companyId' => 1, 'userrole' => 2,
+        ]);
+        Auth::guard('web')->setUser($manager);
+
+        app(ReportController::class)->clearBankReport(Request::create('/', 'POST', [
+            'scope' => 'selected', 'ids' => [1, 3, 4],
+        ]), 'pr', 'fnb');
+
+        $this->assertSame(4, DB::table('frequisitions')->count());
+        $this->assertNotNull(DB::table('frequisitions')->where('id', 1)->value('bank_report_cleared_at'));
+        $this->assertSame(3, (int) DB::table('frequisitions')->where('id', 1)->value('bank_report_cleared_by'));
+        foreach ([2, 3, 4] as $id) {
+            $this->assertNull(DB::table('frequisitions')->where('id', $id)->value('bank_report_cleared_at'));
+        }
+        $visible = app(ReportController::class)->fnbRequisitions(Request::create('/', 'GET'))
+            ->getData()['frequisitions'];
+        $this->assertSame([2], $visible->pluck('id')->all());
+    }
+
+    public function test_clearing_all_po_bank_rows_preserves_orders_and_release_state(): void
+    {
+        DB::table('departmentapprovals')->insert([
+            'mode' => 'PO', 'departmentId' => 1, 'approvalId' => 1,
+            'roleId' => 7, 'IsBankAccount' => 7,
+        ]);
+        DB::table('fpurchaseorders')->insert([
+            ['id' => 1, 'companyId' => 1, 'department' => 1, 'status' => 2, 'bankAccountName' => 'FNB/RMB', 'releaseStatus' => null],
+            ['id' => 2, 'companyId' => 1, 'department' => 1, 'status' => 2, 'bankAccountName' => 'FNB', 'releaseStatus' => null],
+            ['id' => 3, 'companyId' => 2, 'department' => 1, 'status' => 2, 'bankAccountName' => 'FNB/RMB', 'releaseStatus' => null],
+            ['id' => 4, 'companyId' => 1, 'department' => 1, 'status' => 2, 'bankAccountName' => 'Standard Bank', 'releaseStatus' => null],
+            ['id' => 5, 'companyId' => 1, 'department' => 1, 'status' => 2, 'bankAccountName' => 'FNB/RMB', 'releaseStatus' => 1],
+        ]);
+        $manager = User::forceCreate([
+            'id' => 3, 'name' => 'Reports Manager', 'email' => 'reports@example.test',
+            'companyId' => 1, 'userrole' => 2,
+        ]);
+        Auth::guard('web')->setUser($manager);
+
+        app(ReportController::class)->clearBankReport(Request::create('/', 'POST', [
+            'scope' => 'all',
+        ]), 'po', 'fnb');
+
+        $this->assertSame(5, DB::table('fpurchaseorders')->count());
+        $this->assertSame(2, DB::table('fpurchaseorders')->whereNotNull('bank_report_cleared_at')->count());
+        $this->assertNull(DB::table('fpurchaseorders')->where('id', 1)->value('releaseStatus'));
+        $this->assertSame(2, (int) DB::table('fpurchaseorders')->where('id', 1)->value('status'));
+        $this->assertSame(1, (int) DB::table('fpurchaseorders')->where('id', 5)->value('releaseStatus'));
+        $this->assertCount(0, app(ReportController::class)->fnb(Request::create('/', 'GET'))->getData()['fpurchaseorder']);
+    }
+
+    public function test_pr_and_po_bank_pages_render_clear_controls(): void
+    {
+        $manager = User::forceCreate([
+            'id' => 3, 'name' => 'Reports Manager', 'email' => 'reports@example.test',
+            'companyId' => 1, 'userrole' => 2,
+        ]);
+
+        $this->actingAs($manager);
+
+        foreach (['fnb', 'albaraka', 'standardbank'] as $bank) {
+            $this->get("/reports/requisitions/$bank")
+                ->assertOk()
+                ->assertSee('data-select-all', false)
+                ->assertSee('Clear selected')
+                ->assertSee('Clear all');
+        }
+
+        foreach (['fnb', 'albarak', 'standardbank'] as $bank) {
+            $this->get("/reports/$bank")
+                ->assertOk()
+                ->assertSee('data-select-all', false)
+                ->assertSee('Clear selected')
+                ->assertSee('Clear all');
+        }
+    }
+
+    public function test_clear_route_rejects_users_without_reports_permission(): void
+    {
+        DB::table('departmentapprovals')->insert([
+            'mode' => 'PR', 'departmentId' => 1, 'approvalId' => 1,
+            'roleId' => 7, 'IsBankAccount' => 7,
+        ]);
+        DB::table('frequisitions')->insert([
+            'id' => 1, 'companyId' => 1, 'userId' => 1, 'department' => 1,
+            'status' => 2, 'approvallevel' => 2, 'totalapprovallevels' => 1,
+            'approvedby' => 7, 'requisitionNumber' => 'PR-1',
+            'bankAccountName' => 'FNB/RMB',
+        ]);
+        $user = User::forceCreate([
+            'id' => 3, 'name' => 'No Reports', 'email' => 'no-reports@example.test',
+            'companyId' => 1, 'userrole' => 7,
+        ]);
+
+        $this->withoutMiddleware(\App\Http\Middleware\VerifyCsrfToken::class);
+        $this->actingAs($user)->post('/reports/bank/pr/fnb/clear', [
+            'scope' => 'all',
+        ])->assertForbidden();
+
+        $this->assertNull(DB::table('frequisitions')->where('id', 1)->value('bank_report_cleared_at'));
     }
 }

@@ -277,48 +277,33 @@ class ReportController extends Controller
     }
 
 
-    public function fnb()
-    {        
-          $fpurchaseorder = Fpurchaseorder::with('frequisition.selectedVendor')->where('companyId', Auth::user()->companyId)->whereIn(DB::raw('LOWER(TRIM(bankAccountName))'), $this->bankReportNames('FNB/RMB'))->where('status', 2)->whereNull('releaseStatus')->whereIn('department', Departmentapproval::select('departmentId')->where('mode', 'PO')->whereNotNull('IsBankAccount'))->get();
-          //dd($fpurchaseorder);
-            $vendors = Vendor::select(
-                'id as SupplierID', 
-                'name as SupplierName'
-            )->where('companyId', Auth::user()->companyId)->where('status','=', '3')->get();  
-        //   $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
-          $departments = Department::where('companyId', Auth::user()->companyId)->get();
-
-        return view('reports.fnb', compact('fpurchaseorder','departments','vendors'));
+    public function fnb(Request $request)
+    {
+        return $this->purchaseOrderBankReport($request, 'FNB/RMB', 'FNB', 'fnb');
     }
 
-
-
-
-        public function albarak()
-    {        
-          $fpurchaseorder = Fpurchaseorder::with('frequisition.selectedVendor')->where('companyId', Auth::user()->companyId)->whereIn(DB::raw('LOWER(TRIM(bankAccountName))'), $this->bankReportNames('Albaraka Bank'))->where('status', 2)->whereNull('releaseStatus')->whereIn('department', Departmentapproval::select('departmentId')->where('mode', 'PO')->whereNotNull('IsBankAccount'))->get();
-           $vendors = Vendor::select(
-                'id as SupplierID', 
-                'name as SupplierName'
-            )->where('companyId', Auth::user()->companyId)->where('status','=', '3')->get();   
-        //   $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
-          $departments = Department::where('companyId', Auth::user()->companyId)->get();
-
-        return view('reports.albarak', compact('fpurchaseorder','departments','vendors'));
+    public function albarak(Request $request)
+    {
+        return $this->purchaseOrderBankReport($request, 'Albaraka Bank', 'Al Baraka Bank', 'albaraka');
     }
 
+    public function standardbank(Request $request)
+    {
+        return $this->purchaseOrderBankReport($request, 'Standard Bank', 'Standard Bank', 'standard-bank');
+    }
 
-        public function standardbank()
-    {        
-          $fpurchaseorder = Fpurchaseorder::with('frequisition.selectedVendor')->where('companyId', Auth::user()->companyId)->whereIn(DB::raw('LOWER(TRIM(bankAccountName))'), $this->bankReportNames('Standard Bank'))->where('status', 2)->whereNull('releaseStatus')->whereIn('department', Departmentapproval::select('departmentId')->where('mode', 'PO')->whereNotNull('IsBankAccount'))->get();
-             $vendors = Vendor::select(
-                'id as SupplierID', 
-                'name as SupplierName'
-            )->where('companyId', Auth::user()->companyId)->where('status','=', '3')->get();   
-         // $servicetype = DB::connection('sqlsrv')->table('ServiceTypes')->get();
-          $departments = Department::where('companyId', Auth::user()->companyId)->get();
+    private function purchaseOrderBankReport(Request $request, string $bankName, string $bankLabel, string $bankSlug)
+    {
+        $filters = $this->bankReportFilters($request);
+        $totalReportRows = $this->bankReportQuery('po', $bankName)->count();
+        $fpurchaseorder = $this->bankReportQuery('po', $bankName)
+            ->with('frequisition.selectedVendor');
+        $this->applyBankReportFilters($fpurchaseorder, $filters);
 
-        return view('reports.standardbank', compact('fpurchaseorder','departments','vendors'));
+        $fpurchaseorder = $fpurchaseorder->orderByDesc('created_at')->get();
+        $departments = Department::where('companyId', Auth::user()->companyId)->pluck('name', 'id');
+
+        return view('reports.purchase-order-bank', compact('fpurchaseorder', 'departments', 'bankLabel', 'bankSlug', 'filters', 'totalReportRows'));
     }
 
     public function fnbRequisitions(Request $request)
@@ -338,20 +323,77 @@ class ReportController extends Controller
 
     private function requisitionBankReport(Request $request, string $bankName, string $bankLabel, string $bankSlug)
     {
-        $filters = $request->validate([
+        $filters = $this->bankReportFilters($request);
+        $totalReportRows = $this->bankReportQuery('pr', $bankName)->count();
+        $query = $this->bankReportQuery('pr', $bankName)->with('selectedVendor');
+        $this->applyBankReportFilters($query, $filters);
+
+        $frequisitions = $query->orderByDesc('created_at')->get();
+        $departments = Department::where('companyId', Auth::user()->companyId)->pluck('name', 'id');
+
+        return view('reports.requisition-bank', compact('frequisitions', 'departments', 'bankLabel', 'bankSlug', 'filters', 'totalReportRows'));
+    }
+
+    public function clearBankReport(Request $request, string $type, string $bank)
+    {
+        abort_unless(in_array($type, ['pr', 'po'], true), 404);
+        $bankNames = [
+            'fnb' => 'FNB/RMB',
+            'albaraka' => 'Albaraka Bank',
+            'standard-bank' => 'Standard Bank',
+        ];
+        abort_unless(isset($bankNames[$bank]), 404);
+
+        $user = Auth::user();
+        abort_unless(in_array((int) $user->userrole, [2, 3], true)
+            || Rolepermission::where('role_id', $user->userrole)
+                ->where('companyId', $user->companyId)
+                ->where('permission', 'Reports')->exists(), 403);
+
+        $data = $request->validate([
+            'scope' => ['required', 'in:selected,all'],
+            'ids' => ['required_if:scope,selected', 'array', 'min:1'],
+            'ids.*' => ['integer', 'distinct', 'min:1'],
+        ]);
+
+        $query = $this->bankReportQuery($type, $bankNames[$bank]);
+        if ($data['scope'] === 'selected') {
+            $query->whereIn('id', $data['ids']);
+        }
+
+        $count = $query->update([
+            'bank_report_cleared_at' => now(),
+            'bank_report_cleared_by' => $user->id,
+        ]);
+
+        return back()->with('success', "$count bank report " . ($count === 1 ? 'row' : 'rows') . ' cleared.');
+    }
+
+    private function bankReportQuery(string $type, string $bankName)
+    {
+        $query = ($type === 'pr' ? Frequisition::query() : Fpurchaseorder::query())
+            ->where('companyId', Auth::user()->companyId)
+            ->where('status', 2)
+            ->whereNull('bank_report_cleared_at')
+            ->whereIn(DB::raw('LOWER(TRIM(bankAccountName))'), $this->bankReportNames($bankName))
+            ->whereIn('department', Departmentapproval::select('departmentId')
+                ->where('mode', strtoupper($type))
+                ->whereNotNull('IsBankAccount'));
+
+        return $type === 'po' ? $query->whereNull('releaseStatus') : $query;
+    }
+
+    private function bankReportFilters(Request $request): array
+    {
+        return $request->validate([
             'date_from' => ['nullable', 'date'],
             'date_to' => ['nullable', 'date', 'after_or_equal:date_from'],
             'department' => ['nullable', 'integer'],
         ]);
+    }
 
-        $query = Frequisition::with('selectedVendor')
-            ->where('companyId', Auth::user()->companyId)
-            ->where('status', 2)
-            ->whereIn(DB::raw('LOWER(TRIM(bankAccountName))'), $this->bankReportNames($bankName))
-            ->whereIn('department', Departmentapproval::select('departmentId')
-                ->where('mode', 'PR')
-                ->whereNotNull('IsBankAccount'));
-
+    private function applyBankReportFilters($query, array $filters): void
+    {
         if (!empty($filters['date_from'])) {
             $query->whereDate('created_at', '>=', $filters['date_from']);
         }
@@ -361,11 +403,6 @@ class ReportController extends Controller
         if (!empty($filters['department'])) {
             $query->where('department', $filters['department']);
         }
-
-        $frequisitions = $query->orderByDesc('created_at')->get();
-        $departments = Department::where('companyId', Auth::user()->companyId)->pluck('name', 'id');
-
-        return view('reports.requisition-bank', compact('frequisitions', 'departments', 'bankLabel', 'bankSlug', 'filters'));
     }
 
     private function bankReportNames(string $bankName): array

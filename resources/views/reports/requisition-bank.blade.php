@@ -5,18 +5,21 @@
     <ul><li><a href="#">{{ $bankLabel }} Purchase Requisitions</a></li></ul>
 </div>
 
-<div class="body-content__wrapper requesition-body">
+<div class="body-content__wrapper requesition-body" data-bank-report-root data-bank-title="{{ $bankLabel }} Purchase Requisitions" data-bank-filename="{{ $bankSlug }}-purchase-requisitions">
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
             <strong>{{ $bankLabel }} Purchase Requisitions</strong>
             <div class="d-flex gap-2">
-                <button type="button" id="prBankCsv" class="btn btn-outline-secondary btn-sm" title="Download CSV">
+                <button type="button" data-bank-export-action="copy" class="btn btn-outline-secondary btn-sm" title="Copy report">
+                    <i class="fa fa-copy" aria-hidden="true"></i> Copy
+                </button>
+                <button type="button" data-bank-export-action="csv" class="btn btn-outline-secondary btn-sm" title="Download CSV">
                     <i class="fa fa-file-csv"></i> CSV
                 </button>
-                <button type="button" id="prBankExcel" class="btn btn-outline-secondary btn-sm" title="Download Excel">
+                <button type="button" data-bank-export-action="excel" class="btn btn-outline-secondary btn-sm" title="Download Excel">
                     <i class="fa fa-file-excel"></i> Excel
                 </button>
-                <button type="button" id="prBankPdf" class="btn btn-outline-secondary btn-sm" title="Download PDF">
+                <button type="button" data-bank-export-action="pdf" class="btn btn-outline-secondary btn-sm" title="Download PDF">
                     <i class="fa fa-file-pdf"></i> PDF
                 </button>
             </div>
@@ -43,33 +46,32 @@
                 </div>
                 <div class="col-md-3 d-flex gap-2">
                     <button type="submit" class="btn btn-primary">Filter</button>
-                    <a href="{{ url()->current() }}" class="btn btn-outline-secondary">Clear</a>
+                    <a href="{{ url()->current() }}" class="btn btn-outline-secondary">Reset filters</a>
                 </div>
             </form>
 
-            <div class="mb-3">
-                <label for="prBankSearch" class="form-label">Search</label>
-                <input id="prBankSearch" type="search" class="form-control" placeholder="Search requisitions">
-            </div>
+            @include('reports.partials.bank-report-controls', ['reportType' => 'pr'])
 
             <div class="table-responsive">
-                <table id="prBankReportTable" class="table table-striped table-bordered display" style="width:100%">
+                <table id="prBankReportTable" class="table table-striped table-bordered bank-report-table" data-bank-report-table style="width:100%">
                     <thead class="table-light">
                         <tr>
-                            <th>Requisition</th>
-                            <th>Date</th>
-                            <th>Department</th>
-                            <th>Vendor</th>
-                            <th>Vendor Bank</th>
-                            <th>Vendor Account</th>
-                            <th>Account Type</th>
-                            <th>Amount</th>
-                            <th>Company Account</th>
+                            <th class="bank-checkbox-col" data-bank-export="false"><input type="checkbox" class="form-check-input" data-select-all aria-label="Select all matching requisitions" title="Select all matching rows"></th>
+                            <th data-bank-export="true">Requisition</th>
+                            <th data-bank-export="true">Date</th>
+                            <th data-bank-export="true">Department</th>
+                            <th data-bank-export="true">Vendor</th>
+                            <th data-bank-export="true">Vendor Bank</th>
+                            <th data-bank-export="true">Vendor Account</th>
+                            <th data-bank-export="true">Account Type</th>
+                            <th data-bank-export="true">Amount</th>
+                            <th data-bank-export="true">Company Account</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($frequisitions as $requisition)
                             <tr>
+                                <td><input type="checkbox" class="form-check-input bank-row-checkbox" value="{{ $requisition->id }}" aria-label="Select {{ $requisition->requisitionNumber }}"></td>
                                 <td>{{ $requisition->requisitionNumber }}</td>
                                 <td>{{ optional($requisition->created_at)->format('Y-m-d') }}</td>
                                 <td>{{ $departments[$requisition->department] ?? '' }}</td>
@@ -88,66 +90,5 @@
     </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const table = $('#prBankReportTable').DataTable({
-        pageLength: 10,
-        order: [[1, 'desc']],
-        dom: 't<"dt-bottom"ip>',
-        language: { emptyTable: 'No approved requisitions for this bank.' }
-    });
-    document.getElementById('prBankSearch').addEventListener('input', function () {
-        table.search(this.value).draw();
-    });
-
-    const title = @json($bankLabel . ' Purchase Requisitions');
-    const filename = @json($bankSlug . '-purchase-requisitions');
-    function exportData() {
-        const headers = table.columns().header().toArray().map(cell => cell.textContent.trim());
-        const rows = table.rows({ search: 'applied' }).data().toArray().map(row =>
-            row.map(value => {
-                const element = document.createElement('div');
-                element.innerHTML = value;
-                return element.textContent.trim();
-            })
-        );
-        return { headers, rows };
-    }
-
-    document.getElementById('prBankCsv').addEventListener('click', function () {
-        const { headers, rows } = exportData();
-        const quote = value => '"' + String(value).replace(/"/g, '""') + '"';
-        const csv = [headers, ...rows].map(row => row.map(quote).join(',')).join('\r\n');
-        const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = filename + '.csv';
-        link.click();
-        URL.revokeObjectURL(url);
-    });
-
-    document.getElementById('prBankExcel').addEventListener('click', function () {
-        const { headers, rows } = exportData();
-        const workbook = XLSX.utils.book_new();
-        const worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Requisitions');
-        XLSX.writeFile(workbook, filename + '.xlsx');
-    });
-
-    document.getElementById('prBankPdf').addEventListener('click', function () {
-        const { headers, rows } = exportData();
-        pdfMake.createPdf({
-            pageOrientation: 'landscape',
-            content: [
-                { text: title, style: 'header' },
-                { table: { headerRows: 1, widths: Array(headers.length).fill('*'), body: [headers, ...rows] } }
-            ],
-            styles: { header: { fontSize: 15, bold: true, margin: [0, 0, 0, 12] } },
-            defaultStyle: { fontSize: 7 }
-        }).download(filename + '.pdf');
-    });
-});
-</script>
+@include('reports.partials.bank-report-assets')
 @endsection
