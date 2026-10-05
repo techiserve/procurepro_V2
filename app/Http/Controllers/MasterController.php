@@ -260,27 +260,6 @@ class MasterController extends Controller
 
         }
 
-        }else{
-
-                    foreach($approval as $key => $n ) {
-
-            $arrData[] = array(
-
-                $companyrole = Departmentapproval::create([
-
-                    'department' => $executive->name,
-                    'mode' => 'PO',
-                    'userId' => $userId,
-                    'approvalId' =>$approval[$key],
-                    'companyId' => $companyId,
-                    'departmentId'  => $executive->id,
-                    'roleId'  => $userrole[$key]
-                    
-                ])
-            );
-
-        }  
-
         }
 
 

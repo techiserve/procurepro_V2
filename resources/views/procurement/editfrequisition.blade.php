@@ -210,6 +210,7 @@
         <div class="row" id="row1">
           <div class="col-sm-2">
             <label>Is Vendor One-Time?</label><br>
+            <input type="hidden" name="is_one_time_vendor[]" id="isOneTimeInput_1" value="no">
             <label class="radio-inline">
               <input type="radio" name="is_one_time_vendor_1" value="yes" onchange="toggleVendorTypeDynamic(1, this.value)"> Yes
             </label>
@@ -222,6 +223,11 @@
             <div class="form-group">
               <label>Vendor Name</label>
               <input type="hidden" name="vendor_final[]" id="finalVendorInput_1">
+              <input type="hidden" name="vendor_id[]" id="vendorIdInput_1">
+              <input type="hidden" name="bank[]" id="bankInput_1">
+              <input type="hidden" name="accountNumber[]" id="accountNumberInput_1">
+              <input type="hidden" name="accountType[]" id="accountTypeInput_1">
+              <input type="hidden" name="branchCode[]" id="branchCodeInput_1">
               {{-- one-time input (hidden by default) --}}
               <input
                 type="text"
@@ -242,7 +248,7 @@
               >
                 <option value="">Select Vendor</option>
                 @foreach($vendors as $vendor)
-                  <option value="{{ $vendor->SupplierName }}">{{ $vendor->SupplierName }}</option>
+                  <option value="{{ $vendor->SupplierName }}" data-vendor-id="{{ $vendor->SupplierID }}">{{ $vendor->SupplierName }}</option>
                 @endforeach
               </select>
             </div>
@@ -325,15 +331,19 @@
         </div>
         <div class="form-group">
           <label>Bank</label>
-          <input type="text" class="form-control" name="bank">
+          <input type="text" class="form-control" id="modalBank_1">
         </div>
         <div class="form-group">
           <label>Account Number</label>
-          <input type="text" class="form-control" name="accountNumber">
+          <input type="text" class="form-control" id="modalAccountNumber_1">
         </div>
         <div class="form-group">
           <label>Account Type</label>
-          <input type="text" class="form-control" name="accountType">
+          <input type="text" class="form-control" id="modalAccountType_1">
+        </div>
+        <div class="form-group">
+          <label>Branch Code</label>
+          <input type="text" class="form-control" id="modalBranchCode_1">
         </div>
         <div class="form-group">
           <label>Upload Document</label>
@@ -365,6 +375,7 @@ $(document).ready(function(){
       <div id="${rowId}" class="row dynamic-added">
         <div class="col-sm-2">
           <label>Is Vendor One-Time?</label><br>
+          <input type="hidden" name="is_one_time_vendor[]" id="isOneTimeInput_${i}" value="no">
           <label class="radio-inline">
             <input type="radio" name="is_one_time_vendor_${i}" value="yes" onchange="toggleVendorTypeDynamic(${i}, this.value)"> Yes
           </label>
@@ -377,11 +388,16 @@ $(document).ready(function(){
           <div class="form-group">
             <label>Vendor Name</label>
             <input type="hidden" name="vendor_final[]" id="finalVendorInput_${i}">
+            <input type="hidden" name="vendor_id[]" id="vendorIdInput_${i}">
+            <input type="hidden" name="bank[]" id="bankInput_${i}">
+            <input type="hidden" name="accountNumber[]" id="accountNumberInput_${i}">
+            <input type="hidden" name="accountType[]" id="accountTypeInput_${i}">
+            <input type="hidden" name="branchCode[]" id="branchCodeInput_${i}">
             <input type="text" class="form-control" id="oneTimeVendorInput_${i}" style="display:none; margin-top:5px;" placeholder="One-Time Vendor Name" oninput="updateFinalVendorValue(${i}, this.value)">
             <select class="form-control" id="vendorDropdown_${i}" style="display:block; margin-top:5px;" onchange="updateFinalVendorValue(${i}, this.value)">
               <option value="">Select Vendor</option>
               @foreach($vendors as $vendor)
-                <option value="{{ $vendor->SupplierName }}">{{ $vendor->SupplierName }}</option>
+                <option value="{{ $vendor->SupplierName }}" data-vendor-id="{{ $vendor->SupplierID }}">{{ $vendor->SupplierName }}</option>
               @endforeach
             </select>
           </div>
@@ -439,15 +455,19 @@ $(document).ready(function(){
               </div>
               <div class="form-group">
                 <label>Bank</label>
-                <input type="text" class="form-control" name="bank[]">
+                <input type="text" class="form-control" id="modalBank_${i}">
               </div>
               <div class="form-group">
                 <label>Account Number</label>
-                <input type="text" class="form-control" name="accountNumber[]">
+                <input type="text" class="form-control" id="modalAccountNumber_${i}">
               </div>
               <div class="form-group">
                 <label>Account Type</label>
-                <input type="text" class="form-control" name="accountType[]">
+                <input type="text" class="form-control" id="modalAccountType_${i}">
+              </div>
+              <div class="form-group">
+                <label>Branch Code</label>
+                <input type="text" class="form-control" id="modalBranchCode_${i}">
               </div>
               <div class="form-group">
                 <label>Upload Document</label>
@@ -493,6 +513,8 @@ function toggleVendorTypeDynamic(index, value) {
   const dropdown = document.getElementById(`vendorDropdown_${index}`);
   const oneTimeInput = document.getElementById(`oneTimeVendorInput_${index}`);
   const modal = $(`#oneTimeVendorModal_${index}`);
+  const isOneTimeInput = document.getElementById(`isOneTimeInput_${index}`);
+  if (isOneTimeInput) isOneTimeInput.value = value;
 
   if (value === 'yes') {
     dropdown.style.display = 'none';
@@ -517,8 +539,10 @@ function saveOneTimeVendor(index) {
     Swal.fire('Error', 'Please enter the Vendor Name', 'error');
     return;
   }
+  if (!validateOneTimeBankDetails(index)) return;
   oneTimeInput.value = vendorName;
   updateFinalVendorValue(index, vendorName);
+  copyOneTimeBankDetails(index);
   $(`#oneTimeVendorModal_${index}`).modal('hide');
   setVendorRequiredForRow(index, true);
 }
@@ -530,13 +554,44 @@ function saveOneTimeVendorDynamic(index) {
     Swal.fire('Error', 'Please enter the Vendor Name', 'error');
     return;
   }
+  if (!validateOneTimeBankDetails(index)) return;
   oneTimeInput.value = vendorName;
   updateFinalVendorValue(index, vendorName);
+  copyOneTimeBankDetails(index);
   $(`#oneTimeVendorModal_${index}`).modal('hide');
 }
 
 function updateFinalVendorValue(index, value) {
   const hidden = document.getElementById(`finalVendorInput_${index}`);
   if (hidden) hidden.value = value;
+  const vendorIdInput = document.getElementById(`vendorIdInput_${index}`);
+  const dropdown = document.getElementById(`vendorDropdown_${index}`);
+  const isOneTime = document.getElementById(`isOneTimeInput_${index}`)?.value === 'yes';
+  if (vendorIdInput) {
+    vendorIdInput.value = !isOneTime && dropdown?.value === value
+      ? dropdown.selectedOptions[0]?.dataset.vendorId || ''
+      : '';
+  }
+}
+
+function copyOneTimeBankDetails(index) {
+  for (const [field, modalField] of [
+    ['bank', 'Bank'], ['accountNumber', 'AccountNumber'],
+    ['accountType', 'AccountType'], ['branchCode', 'BranchCode']
+  ]) {
+    const hidden = document.getElementById(`${field}Input_${index}`);
+    const source = document.getElementById(`modal${modalField}_${index}`);
+    if (hidden && source) hidden.value = source.value;
+  }
+}
+
+function validateOneTimeBankDetails(index) {
+  for (const field of ['Bank', 'AccountNumber', 'AccountType', 'BranchCode']) {
+    if (!document.getElementById(`modal${field}_${index}`)?.value.trim()) {
+      Swal.fire('Missing bank details', 'Please complete the one-time vendor bank details.', 'warning');
+      return false;
+    }
+  }
+  return true;
 }
 </script>

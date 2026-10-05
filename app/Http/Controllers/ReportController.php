@@ -279,7 +279,7 @@ class ReportController extends Controller
 
     public function fnb()
     {        
-          $fpurchaseorder = Fpurchaseorder::where('companyId', Auth::user()->companyId)->where('bankAccountName','=','FNB/RMB')->where('status', 2)->whereNull('releaseStatus')->whereIn('department', Departmentapproval::select('departmentId')->where('mode', 'PO')->whereNotNull('IsBankAccount'))->get();
+          $fpurchaseorder = Fpurchaseorder::with('frequisition.selectedVendor')->where('companyId', Auth::user()->companyId)->whereIn(DB::raw('LOWER(TRIM(bankAccountName))'), $this->bankReportNames('FNB/RMB'))->where('status', 2)->whereNull('releaseStatus')->whereIn('department', Departmentapproval::select('departmentId')->where('mode', 'PO')->whereNotNull('IsBankAccount'))->get();
           //dd($fpurchaseorder);
             $vendors = Vendor::select(
                 'id as SupplierID', 
@@ -296,7 +296,7 @@ class ReportController extends Controller
 
         public function albarak()
     {        
-          $fpurchaseorder = Fpurchaseorder::where('companyId', Auth::user()->companyId)->where('bankAccountName','=','Albaraka Bank')->where('status', 2)->whereNull('releaseStatus')->whereIn('department', Departmentapproval::select('departmentId')->where('mode', 'PO')->whereNotNull('IsBankAccount'))->get();
+          $fpurchaseorder = Fpurchaseorder::with('frequisition.selectedVendor')->where('companyId', Auth::user()->companyId)->whereIn(DB::raw('LOWER(TRIM(bankAccountName))'), $this->bankReportNames('Albaraka Bank'))->where('status', 2)->whereNull('releaseStatus')->whereIn('department', Departmentapproval::select('departmentId')->where('mode', 'PO')->whereNotNull('IsBankAccount'))->get();
            $vendors = Vendor::select(
                 'id as SupplierID', 
                 'name as SupplierName'
@@ -310,7 +310,7 @@ class ReportController extends Controller
 
         public function standardbank()
     {        
-          $fpurchaseorder = Fpurchaseorder::where('companyId', Auth::user()->companyId)->where('bankAccountName','=','Standard Bank')->where('status', 2)->whereNull('releaseStatus')->whereIn('department', Departmentapproval::select('departmentId')->where('mode', 'PO')->whereNotNull('IsBankAccount'))->get();
+          $fpurchaseorder = Fpurchaseorder::with('frequisition.selectedVendor')->where('companyId', Auth::user()->companyId)->whereIn(DB::raw('LOWER(TRIM(bankAccountName))'), $this->bankReportNames('Standard Bank'))->where('status', 2)->whereNull('releaseStatus')->whereIn('department', Departmentapproval::select('departmentId')->where('mode', 'PO')->whereNotNull('IsBankAccount'))->get();
              $vendors = Vendor::select(
                 'id as SupplierID', 
                 'name as SupplierName'
@@ -347,7 +347,7 @@ class ReportController extends Controller
         $query = Frequisition::with('selectedVendor')
             ->where('companyId', Auth::user()->companyId)
             ->where('status', 2)
-            ->where('bankAccountName', $bankName)
+            ->whereIn(DB::raw('LOWER(TRIM(bankAccountName))'), $this->bankReportNames($bankName))
             ->whereIn('department', Departmentapproval::select('departmentId')
                 ->where('mode', 'PR')
                 ->whereNotNull('IsBankAccount'));
@@ -366,6 +366,15 @@ class ReportController extends Controller
         $departments = Department::where('companyId', Auth::user()->companyId)->pluck('name', 'id');
 
         return view('reports.requisition-bank', compact('frequisitions', 'departments', 'bankLabel', 'bankSlug', 'filters'));
+    }
+
+    private function bankReportNames(string $bankName): array
+    {
+        return match ($bankName) {
+            'FNB/RMB' => ['fnb/rmb', 'fnb', 'rmb', 'first national bank'],
+            'Albaraka Bank' => ['albaraka bank', 'al baraka bank', 'albaraka', 'al baraka'],
+            'Standard Bank' => ['standard bank', 'standard'],
+        };
     }
     /**
      * Show the form for editing the specified resource.

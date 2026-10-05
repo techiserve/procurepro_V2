@@ -59,7 +59,7 @@
                     <tbody>
                         @foreach($fpurchaseorder as $grower)
                             <tr class="text-center">
-                                <td>{{ $grower->Vendor }}</td>
+                                <td>{{ $grower->frequisition?->selectedVendor?->vendor_final ?? $grower->vendor }}</td>
                                 <td>{{ $grower->vendorbankAccountNumber }}</td>
                                 <td>{{ $grower->vendorbankAccountType }}</td>
                                 <td>{{ $grower->vendorbankBranch }}</td>

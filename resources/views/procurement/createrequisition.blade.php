@@ -242,11 +242,12 @@
       <div class="form-col">
         <label style="font-size:13px;">Vendor</label>
         <input type="hidden" name="vendor_final[]" id="finalVendorInput_1">
+        <input type="hidden" name="vendor_id[]" id="vendorIdInput_1">
         <input type="text" class="form-control" id="oneTimeVendorInput_1" style="display:none; margin-top:2px; height:35px;" placeholder="One-Time Vendor Name" oninput="updateFinalVendorValue(1, this.value)">
         <select class="js-example-basic-single form-control" id="vendorDropdown_1" onchange="updateFinalVendorValue(1, this.value)" style="height:35px;">
           <option value="">Select Vendor</option>
           @foreach($vendors as $vendor)
-            <option value="{{ $vendor->SupplierName }}">{{ $vendor->SupplierName }}</option>
+            <option value="{{ $vendor->SupplierName }}" data-vendor-id="{{ $vendor->SupplierID }}">{{ $vendor->SupplierName }}</option>
           @endforeach
         </select>
       </div>
@@ -415,6 +416,7 @@ $('#add').click(function () {
         <div class="form-col">
           <label style="font-size:13px;">Vendor</label>
           <input type="hidden" name="vendor_final[]" id="finalVendorInput_${i}">
+          <input type="hidden" name="vendor_id[]" id="vendorIdInput_${i}">
           <input type="text" class="form-control" id="oneTimeVendorInput_${i}" 
                  style="display:none; margin-top:2px; height:35px;" 
                  placeholder="One-Time Vendor Name" 
@@ -425,7 +427,7 @@ $('#add').click(function () {
                   style="height:35px;">
             <option value="">Select Vendor</option>
             @foreach($vendors as $vendor)
-              <option value="{{ $vendor->SupplierName }}">{{ $vendor->SupplierName }}</option>
+              <option value="{{ $vendor->SupplierName }}" data-vendor-id="{{ $vendor->SupplierID }}">{{ $vendor->SupplierName }}</option>
             @endforeach
           </select>
         </div>
@@ -716,6 +718,14 @@ function getValueById(id) {
 function updateFinalVendorValue(index, value) {
   const finalInput = document.getElementById(`finalVendorInput_${index}`);
   if (finalInput) finalInput.value = value;
+  const vendorIdInput = document.getElementById(`vendorIdInput_${index}`);
+  const dropdown = document.getElementById(`vendorDropdown_${index}`);
+  const isOneTime = document.getElementById(`isOneTimeInput_${index}`)?.value === 'yes';
+  if (vendorIdInput) {
+    vendorIdInput.value = !isOneTime && dropdown?.value === value
+      ? dropdown.selectedOptions[0]?.dataset.vendorId || ''
+      : '';
+  }
 }
 
 

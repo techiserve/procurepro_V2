@@ -36,6 +36,7 @@ use Alert;
 use DB;
 use App\Models\CompanyRole;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
@@ -48,6 +49,35 @@ use App\Mail\SendSampleEmail;
  
 class ProcurementController extends Controller
 {
+    private function validateVendorBankSources(Request $request): void
+    {
+        foreach ($request->input('vendor_final', []) as $index => $vendorName) {
+            if (blank($vendorName)) {
+                continue;
+            }
+
+            if ($request->input("is_one_time_vendor.$index") === 'yes') {
+                foreach (['bank', 'accountNumber', 'accountType', 'branchCode'] as $field) {
+                    if (blank($request->input("$field.$index"))) {
+                        throw ValidationException::withMessages([
+                            "$field.$index" => 'One-time vendor bank details are required.',
+                        ]);
+                    }
+                }
+                continue;
+            }
+
+            $vendor = Vendor::where('companyId', Auth::user()->companyId)->where('status', 3);
+            $vendorId = $request->input("vendor_id.$index");
+            $vendorId ? $vendor->whereKey($vendorId) : $vendor->where('name', $vendorName);
+            if (!$vendor->exists()) {
+                throw ValidationException::withMessages([
+                    "vendor_final.$index" => 'The selected vendor is not available for this company.',
+                ]);
+            }
+        }
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -593,6 +623,7 @@ class ProcurementController extends Controller
 
     public function updaterequisition(Request $request, $id)
     {
+        $this->validateVendorBankSources($request);
           
         $frequisition = Frequisition::findOrFail($id);
         $departmentName = Department::where('id', $frequisition->department)->first();
@@ -623,25 +654,32 @@ class ProcurementController extends Controller
             $frequisition->approvedby = $approver->roleId ?? null;
             $frequisition->isActive = 1;
             $frequisition->status = 1;
+            $frequisition->bankAccountName = null;
+            $frequisition->bankAccountNumber = null;
+            $frequisition->bankAccountType = null;
             // dd($approver,$frequisition);
             $frequisition->save();
 
         $vendorFinal = $request->input('vendor_final');
+        $vendorIds = $request->input('vendor_id', []);
+        $isOneTimeVendor = $request->input('is_one_time_vendor', []);
         $amounts = $request->input('damount');
-        $modalVendorNames = $request->input('modal_vendor_name');
-        $types = $request->input('type');
-        $vatAllocations = $request->input('Vatallocation');
-        $supplierCodes = $request->input('supplierCode');
         $banks = $request->input('bank');
         $accountNumbers = $request->input('accountNumber');
         $accountTypes = $request->input('accountType');
+        $branchCodes = $request->input('branchCode');
 
         $files = $request->file('dfile');
-        $docs = $request->file('doc');
+        $docs = $request->file('doc', []);
+        $docs = is_array($docs) ? $docs : [$docs];
 
         if(!empty(array_filter($request->vendor_final))){
 
     foreach ($vendorFinal as $index => $vendorName) {
+        if (!$vendorName) {
+            continue;
+        }
+
         $frequisition = new FrequisitionVendor();
         $frequisition->vendor_final = $vendorName;
         $frequisition->amount = $amounts[$index];
@@ -654,21 +692,31 @@ class ProcurementController extends Controller
              $frequisition->file_path = $fieldquote;
         }
 
-        // If modal data exists (for one-time vendors)
-        if (isset($modalVendorNames[$index])) {
-            $frequisition->modal_vendor_name = $modalVendorNames[$index];
-            $frequisition->type = $types[$index] ?? null;
-            $frequisition->vat_allocation = $vatAllocations[$index] ?? null;
-            $frequisition->supplier_code = $supplierCodes[$index] ?? null;
+        if (($isOneTimeVendor[$index] ?? 'no') === 'yes') {
+            $frequisition->modal_vendor_name = $vendorName;
             $frequisition->bank = $banks[$index] ?? null;
             $frequisition->account_number = $accountNumbers[$index] ?? null;
             $frequisition->account_type = $accountTypes[$index] ?? null;
+            $frequisition->branchCode = $branchCodes[$index] ?? null;
+            $frequisition->IsOneTimeVendor = 'yes';
 
             if (isset($docs[$index])) {
                 $frequisitionfile = $docs[$index]->store('uploads', 'public');
                 $fieldquote1 =  Str::afterLast($frequisitionfile, '/');
                 $frequisition->doc_path = $fieldquote1; 
             }
+        } else {
+            $vendorQuery = Vendor::where('companyId', Auth::user()->companyId)
+                ->where('status', 3);
+            $vendor = !empty($vendorIds[$index])
+                ? $vendorQuery->findOrFail($vendorIds[$index])
+                : $vendorQuery->where('name', $vendorName)->firstOrFail();
+            $frequisition->vendor_final = $vendor->name;
+            $frequisition->bank = $vendor->bank_name;
+            $frequisition->account_number = $vendor->account_number;
+            $frequisition->account_type = $vendor->account_type;
+            $frequisition->branchCode = $vendor->branch_code;
+            $frequisition->IsOneTimeVendor = 'no';
         }
 
         $frequisition->save();
@@ -798,6 +846,7 @@ class ProcurementController extends Controller
      */
     public function requisitionstore(Request $request,WhatsAppService $whatsapp)
     {
+        $this->validateVendorBankSources($request);
 
     //  dd($request->all());
 
@@ -885,6 +934,7 @@ class ProcurementController extends Controller
     
 
     $vendorFinal = $request->input('vendor_final');
+    $vendorIds = $request->input('vendor_id', []);
     $amounts = $request->input('damount');
     $modalVendorNames = $request->input('modal_vendor_name');
     $is_one_time_vendor = $request->input('is_one_time_vendor');
@@ -909,10 +959,14 @@ class ProcurementController extends Controller
 
         if($is_one_time_vendor[$index] == "no"){
 
-              $vendor = Vendor::where('name', $vendorName)->first(); 
+              $vendorQuery = Vendor::where('companyId', Auth::user()->companyId)
+                  ->where('status', 3);
+              $vendor = !empty($vendorIds[$index])
+                  ? $vendorQuery->findOrFail($vendorIds[$index])
+                  : $vendorQuery->where('name', $vendorName)->firstOrFail();
              
          $frequisition = new FrequisitionVendor();
-        $frequisition->vendor_final = $vendorName;
+        $frequisition->vendor_final = $vendor->name;
         $frequisition->amount = $amounts[$index];
         $frequisition->frequisition_id = $requisition->id;
 
@@ -1168,7 +1222,7 @@ class ProcurementController extends Controller
         $vendor = FrequisitionVendor::where('frequisition_id', $id)
             ->findOrFail($request->input('selected_vendor'));
         FrequisitionVendor::where('frequisition_id', $id)->update(['status' => null]);
-        $vendor->update(['status' => 1]);
+        FrequisitionVendor::whereKey($vendor->id)->update(['status' => 1]);
 
         if($frequisition->approvallevel+1 > $frequisition->totalapprovallevels){
          
@@ -1198,6 +1252,11 @@ class ProcurementController extends Controller
 
             $frequisition = Frequisition::where('id', $id)->first();
 
+            $hasPurchaseOrderFlow = Departmentapproval::where('mode', 'PO')
+                ->where('departmentId', $frequisition->department)
+                ->exists();
+
+            if ($hasPurchaseOrderFlow) {
             $formFields = FormField::where(function ($query) use ($frequisition) {
                 $query->where('companyId', $frequisition->companyId);
             })->pluck('name')->unique();
@@ -1235,6 +1294,9 @@ class ProcurementController extends Controller
     $purchaseOrderData['vendorbankAccountNumber']  =  $vendor->account_number;
     $purchaseOrderData['vendorbankAccountType'] =  $vendor->account_type;
     $purchaseOrderData['vendorbankBranch'] =  $vendor->branchCode;
+    $purchaseOrderData['bankAccountName'] = null;
+    $purchaseOrderData['bankAccountNumber'] = null;
+    $purchaseOrderData['bankAccountType'] = null;
     $purchaseOrderData['department'] = $frequisition->department;
     $purchaseOrderData['status'] = 0; 
     // $purchaseOrderData['vendor'] = $vendor->vendor_final   ; 
@@ -1245,6 +1307,7 @@ class ProcurementController extends Controller
 
 
     $fpurchaseorder = Fpurchaseorder::forceCreate($purchaseOrderData);
+            }
 
 
            $requisitiond = RequisitionHistory::create([
@@ -1257,7 +1320,9 @@ class ProcurementController extends Controller
             'approvallevel' =>  $updatedapprovallevel,
             'approvedby' => Auth::user()->userrole, 
             'isActive'  => 1,
-            'action'  => "Purchase Requisition Approved and Purchase Order Created",
+            'action'  => $hasPurchaseOrderFlow
+                ? "Purchase Requisition Approved and Purchase Order Created"
+                : "Purchase Requisition Approved",
             'doneby' => Auth::user()->name
             
            ]);
@@ -1268,7 +1333,9 @@ class ProcurementController extends Controller
                     $frequisition->department,
                     new RequisitionLifecycleEmail(
                         'Purchase Requisition Approved',
-                        'Your purchase requisition has been fully approved and a purchase order has been created.',
+                        $hasPurchaseOrderFlow
+                            ? 'Your purchase requisition has been fully approved and a purchase order has been created.'
+                            : 'Your purchase requisition has been fully approved.',
                         $frequisition->requisitionNumber
                     )
                 );
@@ -1541,7 +1608,7 @@ class ProcurementController extends Controller
 
 
         if($updatereq){
-   
+
          return redirect()->route('procurement.mypurchaseorder')->with('success', 'Purchase order approved successfully!');
 
         }
@@ -1663,7 +1730,6 @@ class ProcurementController extends Controller
 
 
         if($updatereq){
-   
          return redirect()->route('procurement.mypurchaseorder')->with('success', 'Purchase order approved successfully!');
 
         }

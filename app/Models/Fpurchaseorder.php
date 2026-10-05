@@ -49,9 +49,14 @@ class Fpurchaseorder extends Model
 
 
 
-        public function histories()
+    public function histories()
     {
         return $this->hasMany(RequisitionHistory::class, 'frequisition_id', 'frequisition_id');
 
+    }
+
+    public function frequisition()
+    {
+        return $this->belongsTo(Frequisition::class, 'frequisition_id');
     }
 }
