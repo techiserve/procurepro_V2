@@ -73,7 +73,7 @@
                                 <td>{{ $requisition->requisitionNumber }}</td>
                                 <td>{{ optional($requisition->created_at)->format('Y-m-d') }}</td>
                                 <td>{{ $departments[$requisition->department] ?? '' }}</td>
-                                <td>{{ $requisition->vendor }}</td>
+                                <td>{{ $requisition->bankReportVendorName() }}</td>
                                 <td>{{ $requisition->selectedVendor?->bank }}</td>
                                 <td>{{ $requisition->selectedVendor?->account_number }}</td>
                                 <td>{{ $requisition->selectedVendor?->account_type }}</td>

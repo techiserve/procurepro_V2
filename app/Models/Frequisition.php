@@ -35,6 +35,13 @@ class Frequisition extends Model
         return $this->hasOne(FrequisitionVendor::class, 'frequisition_id')->where('status', 1);
     }
 
+    public function bankReportVendorName(): ?string
+    {
+        $attributes = $this->getAttributes();
+
+        return ($attributes['vendor'] ?? null) ?: ($attributes['Vendor'] ?? null);
+    }
+
 
     public function histories()
     {

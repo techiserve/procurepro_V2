@@ -6,6 +6,7 @@ use App\Http\Controllers\ProcurementController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\MasterController;
 use App\Models\User;
+use App\Models\Frequisition;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
@@ -18,6 +19,19 @@ use Tests\TestCase;
 
 class BankApprovalReportsTest extends TestCase
 {
+    public function test_pr_bank_report_vendor_name_reads_either_database_column_case(): void
+    {
+        $requisition = new Frequisition();
+        $requisition->setRawAttributes(['vendor' => 'Local Vendor']);
+        $this->assertSame('Local Vendor', $requisition->bankReportVendorName());
+
+        $requisition->setRawAttributes(['Vendor' => 'Hosted Vendor']);
+        $this->assertSame('Hosted Vendor', $requisition->bankReportVendorName());
+
+        $requisition->setRawAttributes(['vendor' => '', 'Vendor' => 'Hosted Vendor']);
+        $this->assertSame('Hosted Vendor', $requisition->bankReportVendorName());
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
