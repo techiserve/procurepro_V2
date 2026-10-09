@@ -911,8 +911,7 @@ class ProcurementController extends Controller
         $user = User::where('userrole', $approver->roleId)->where('companyId', Auth::user()->companyId)->first();
   
         if($user && $department->notifications == 1){
-        $req = $requisitionNumber;
-         Mail::to($user->email)->queue(new SendSampleEmail($req));
+         Mail::to($user->email)->queue($this->approvalRequestEmail($requisition));
            
         }
      
@@ -1172,8 +1171,7 @@ class ProcurementController extends Controller
         $user = User::where('userrole', $approver->roleId)->where('companyId', Auth::user()->companyId)->first();
     
         if($user && $departmentName->notifications == 1){
-            $req = $freq->requisitionNumber;
-         Mail::to($user->email)->queue(new SendSampleEmail($req));
+         Mail::to($user->email)->queue($this->approvalRequestEmail($freq));
            
         }
 
@@ -1376,8 +1374,7 @@ class ProcurementController extends Controller
         $department = Department::find($frequisition->department);
 
         if($user && $department->notifications == 1){
-            $req = $frequisition->requisitionNumber;
-         Mail::to($user->email)->queue(new SendSampleEmail($req));
+         Mail::to($user->email)->queue($this->approvalRequestEmail($frequisition));
            
         }
             
@@ -1598,8 +1595,7 @@ class ProcurementController extends Controller
         $department = Department::find($requisition->department);
         
         if($user && $department->notifications == 1){
-        $req = $requisition->requisitionNumber;
-         Mail::to($user->email)->queue(new SendSampleEmail($req));
+         Mail::to($user->email)->queue($this->approvalRequestEmail($requisition));
            
         }
             
@@ -1722,7 +1718,7 @@ class ProcurementController extends Controller
                 $this->queueDepartmentNotificationToUser(
                     $user,
                     $requisition->department,
-                    new SendSampleEmail($requisition->requisitionNumber)
+                    $this->approvalRequestEmail($requisition)
                 );
             
 
@@ -2151,6 +2147,33 @@ public function downloadpurchaseorder(Request $request)
     
 
 
+
+    private function approvalRequestEmail(Frequisition|Fpurchaseorder $record): SendSampleEmail
+    {
+        $requisition = $record;
+        if ($record instanceof Fpurchaseorder) {
+            $requisition = Frequisition::where('companyId', $record->companyId)
+                ->find($record->frequisition_id)
+                ?? Frequisition::where('companyId', $record->companyId)
+                    ->where('requisitionNumber', $record->requisitionNumber)
+                    ->first()
+                ?? $record;
+        }
+
+        $department = Department::where('companyId', $requisition->companyId)
+            ->find($requisition->department);
+        $requester = User::find($requisition->userId);
+        $createdAt = $requisition->created_at?->copy()
+            ->timezone(config('app.timezone'))
+            ->format('d M Y, H:i T');
+
+        return new SendSampleEmail(
+            $requisition->requisitionNumber,
+            $department?->name ?? 'Not available',
+            $requester?->name ?? 'Not available',
+            $createdAt ?? 'Not available'
+        );
+    }
 
     private function departmentNotificationsEnabled($departmentId): bool
     {

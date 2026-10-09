@@ -13,14 +13,20 @@ class SendSampleEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $req;  // Public variable to pass data to the view
+    public string $req;
+    public ?string $departmentName = null;
+    public ?string $requesterName = null;
+    public ?string $createdAt = null;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($req)
+    public function __construct(string $req, ?string $departmentName = null, ?string $requesterName = null, ?string $createdAt = null)
     {
-        $this->req = $req; // Assign the passed data
+        $this->req = $req;
+        $this->departmentName = $departmentName;
+        $this->requesterName = $requesterName;
+        $this->createdAt = $createdAt;
     }
     /**
      * Get the message envelope.
@@ -41,7 +47,12 @@ class SendSampleEmail extends Mailable
 
        return new Content(
             view: 'procurement.email',  // The blade template for the email
-            with: ['req' => $this->req]  // Pass data to the view
+            with: [
+                'req' => $this->req,
+                'departmentName' => $this->departmentName,
+                'requesterName' => $this->requesterName,
+                'createdAt' => $this->createdAt,
+            ]
         );
     }
 

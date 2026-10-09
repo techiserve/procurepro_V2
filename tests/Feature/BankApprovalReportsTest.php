@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Http\Controllers\ProcurementController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\MasterController;
+use App\Mail\SendSampleEmail;
 use App\Models\User;
 use App\Models\Frequisition;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -12,6 +13,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -19,6 +21,14 @@ use Tests\TestCase;
 
 class BankApprovalReportsTest extends TestCase
 {
+    public function test_existing_approval_email_without_metadata_still_renders(): void
+    {
+        $html = (new SendSampleEmail('PR-legacy'))->render();
+
+        $this->assertStringContainsString('PR-legacy', $html);
+        $this->assertStringNotContainsString('Department Name:', $html);
+    }
+
     public function test_pr_bank_report_vendor_name_reads_either_database_column_case(): void
     {
         $requisition = new Frequisition();
@@ -285,6 +295,87 @@ class BankApprovalReportsTest extends TestCase
         $this->assertSame(2, (int) $requisition->approvallevel);
         $this->assertSame(1, (int) $requisition->status);
         $this->assertSame(1, (int) DB::table('frequisitionvendor')->where('id', 1)->value('status'));
+    }
+
+    public function test_next_pr_approver_email_contains_original_requisition_details(): void
+    {
+        Mail::fake();
+        DB::table('departments')->where('id', 1)->update(['notifications' => 1]);
+        User::forceCreate([
+            'id' => 1, 'name' => 'Jane Requester', 'email' => 'jane@example.test',
+            'companyId' => 1, 'userrole' => 9,
+        ]);
+        User::forceCreate([
+            'id' => 3, 'name' => 'Next Approver', 'email' => 'next@example.test',
+            'companyId' => 1, 'userrole' => 8,
+        ]);
+        DB::table('frequisitions')->insert([
+            'id' => 1, 'companyId' => 1, 'userId' => 1, 'department' => 1,
+            'status' => 1, 'approvallevel' => 1, 'totalapprovallevels' => 2,
+            'approvedby' => 7, 'requisitionNumber' => 'Qurtuba Online Academy-0210',
+            'created_at' => '2026-10-09 11:45:00',
+        ]);
+        DB::table('frequisitionvendor')->insert([
+            'id' => 1, 'frequisition_id' => 1, 'vendor_final' => 'Supplier', 'amount' => 120,
+        ]);
+        DB::table('departmentapprovals')->insert([
+            ['mode' => 'PR', 'departmentId' => 1, 'approvalId' => 1, 'roleId' => 7],
+            ['mode' => 'PR', 'departmentId' => 1, 'approvalId' => 2, 'roleId' => 8],
+        ]);
+
+        app(ProcurementController::class)->requisitionapproval('1', Request::create('/', 'PUT', [
+            'selected_vendor' => 1,
+        ]));
+
+        Mail::assertQueued(SendSampleEmail::class, function (SendSampleEmail $mail) {
+            $this->assertSame('Qurtuba Online Academy-0210', $mail->req);
+            $this->assertSame('Operations', $mail->departmentName);
+            $this->assertSame('Jane Requester', $mail->requesterName);
+            $this->assertSame('09 Oct 2026, 11:45 SAST', $mail->createdAt);
+            $this->assertStringContainsString('Department Name:</strong> Operations', $mail->render());
+            $this->assertStringContainsString('Requester Name:</strong> Jane Requester', $mail->render());
+
+            return $mail->hasTo('next@example.test');
+        });
+    }
+
+    public function test_po_approval_request_email_uses_original_pr_creation_details(): void
+    {
+        Mail::fake();
+        DB::table('departments')->where('id', 1)->update(['notifications' => 1]);
+        User::forceCreate([
+            'id' => 1, 'name' => 'Original Requester', 'email' => 'original@example.test',
+            'companyId' => 1, 'userrole' => 9,
+        ]);
+        User::forceCreate([
+            'id' => 3, 'name' => 'Next PO Approver', 'email' => 'po@example.test',
+            'companyId' => 1, 'userrole' => 8,
+        ]);
+        DB::table('frequisitions')->insert([
+            'id' => 1, 'companyId' => 1, 'userId' => 1, 'department' => 1,
+            'status' => 2, 'approvallevel' => 3, 'totalapprovallevels' => 2,
+            'approvedby' => 7, 'requisitionNumber' => 'PR-1',
+            'created_at' => '2026-10-08 09:30:00',
+        ]);
+        DB::table('fpurchaseorders')->insert([
+            'id' => 1, 'frequisition_id' => 1, 'companyId' => 1, 'userId' => 1,
+            'department' => 1, 'status' => 1, 'approvallevel' => 1,
+            'totalapprovallevels' => 2, 'approvedby' => 7,
+            'requisitionNumber' => 'PR-1', 'created_at' => '2026-10-09 10:00:00',
+        ]);
+        DB::table('departmentapprovals')->insert([
+            ['mode' => 'PO', 'departmentId' => 1, 'approvalId' => 1, 'roleId' => 7],
+            ['mode' => 'PO', 'departmentId' => 1, 'approvalId' => 2, 'roleId' => 8],
+        ]);
+
+        app(ProcurementController::class)->approvepurchaseorder('1');
+
+        Mail::assertQueued(SendSampleEmail::class, function (SendSampleEmail $mail) {
+            return $mail->hasTo('po@example.test')
+                && $mail->departmentName === 'Operations'
+                && $mail->requesterName === 'Original Requester'
+                && $mail->createdAt === '08 Oct 2026, 09:30 SAST';
+        });
     }
 
     public function test_final_pr_approval_keeps_selected_vendor_and_skips_po_without_po_flow(): void
