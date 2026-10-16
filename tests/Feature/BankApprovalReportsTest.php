@@ -8,6 +8,7 @@ use App\Http\Controllers\MasterController;
 use App\Mail\SendSampleEmail;
 use App\Models\User;
 use App\Models\Frequisition;
+use App\Services\WhatsAppService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
@@ -134,6 +135,7 @@ class BankApprovalReportsTest extends TestCase
         });
         (require base_path('database/migrations/2026_09_30_000001_add_bank_account_to_frequisitions_table.php'))->up();
         (require base_path('database/migrations/2026_10_05_000002_add_bank_report_clear_fields.php'))->up();
+        (require base_path('database/migrations/2026_10_16_000001_add_references_to_frequisitions_table.php'))->up();
         Schema::create('frequisitionvendor', function (Blueprint $table) {
             $table->id();
             $table->integer('frequisition_id');
@@ -147,6 +149,9 @@ class BankApprovalReportsTest extends TestCase
             $table->string('file_path')->nullable();
             $table->string('IsOneTimeVendor')->nullable();
             $table->string('modal_vendor_name')->nullable();
+            $table->string('type')->nullable();
+            $table->string('vat_allocation')->nullable();
+            $table->string('supplier_code')->nullable();
             $table->timestamps();
         });
         Schema::create('requisitionfiles', function (Blueprint $table) {
@@ -198,6 +203,37 @@ class BankApprovalReportsTest extends TestCase
         Auth::guard('web')->setUser($user);
     }
 
+    public function test_pr_creation_saves_optional_bank_references(): void
+    {
+        Schema::create('companies', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+        });
+        DB::table('companies')->insert(['id' => 1, 'name' => 'Test Company']);
+        DB::table('form_fields')->insert(['companyId' => 1, 'name' => 'department']);
+        DB::table('departmentapprovals')->insert([
+            'mode' => 'PR', 'departmentId' => 1, 'approvalId' => 1, 'roleId' => 7,
+        ]);
+        DB::table('vendors')->insert([
+            'id' => 5, 'companyId' => 1, 'name' => 'Registered Vendor', 'status' => 3,
+        ]);
+
+        $controller = app(ProcurementController::class);
+        $requestData = [
+            'department' => 1, 'vendor_final' => ['Registered Vendor'],
+            'vendor_id' => [5], 'is_one_time_vendor' => ['no'], 'damount' => [100],
+        ];
+        $controller->requisitionstore(Request::create('/', 'POST', $requestData + [
+            'benref' => 'BEN-123', 'ownref' => 'OWN-456',
+        ]), app(WhatsAppService::class));
+        $controller->requisitionstore(Request::create('/', 'POST', $requestData), app(WhatsAppService::class));
+
+        $this->assertSame('BEN-123', DB::table('frequisitions')->where('id', 1)->value('benref'));
+        $this->assertSame('OWN-456', DB::table('frequisitions')->where('id', 1)->value('ownref'));
+        $this->assertNull(DB::table('frequisitions')->where('id', 2)->value('benref'));
+        $this->assertNull(DB::table('frequisitions')->where('id', 2)->value('ownref'));
+    }
+
     public function test_po_bank_reports_only_include_fully_approved_unreleased_orders(): void
     {
         DB::table('departmentapprovals')->insert([
@@ -232,6 +268,55 @@ class BankApprovalReportsTest extends TestCase
             $requisitions = app(ReportController::class)->$method(Request::create('/', 'GET'))->getData()['frequisitions'];
             $this->assertCount(1, $requisitions);
             $this->assertSame($method . '-approved', $requisitions->first()->requisitionNumber);
+        }
+    }
+
+    public function test_pr_bank_reports_use_po_bank_columns_and_saved_references(): void
+    {
+        DB::table('departmentapprovals')->insert([
+            'mode' => 'PR', 'departmentId' => 1, 'approvalId' => 1,
+            'roleId' => 7, 'IsBankAccount' => 7,
+        ]);
+
+        foreach ([
+            ['FNB/RMB', 'fnb'],
+            ['Albaraka Bank', 'albaraka'],
+            ['Standard Bank', 'standardbank'],
+        ] as $index => [$bank, $slug]) {
+            $id = $index + 1;
+            DB::table('frequisitions')->insert([
+                'id' => $id, 'companyId' => 1, 'userId' => 2, 'department' => 1,
+                'status' => 2, 'approvallevel' => 2, 'totalapprovallevels' => 1,
+                'approvedby' => 7, 'requisitionNumber' => "PR-$id",
+                'bankAccountName' => $bank, 'bankAccountNumber' => "COMPANY-$id",
+                'amount' => 1250, 'ownref' => "OWN-$id", 'benref' => "BEN-$id",
+            ]);
+            DB::table('frequisitionvendor')->insert([
+                'frequisition_id' => $id, 'status' => 1, 'vendor_final' => "Chosen Vendor $id",
+                'amount' => 1250, 'account_number' => "VENDOR-$id",
+                'account_type' => 'Current', 'branchCode' => "BRANCH-$id",
+            ]);
+
+            $response = $this->actingAs(User::find(2))->get("/reports/requisitions/$slug");
+            $response->assertOk()
+                ->assertSee("Chosen Vendor $id")
+                ->assertSee("VENDOR-$id")
+                ->assertSee("BRANCH-$id")
+                ->assertSee("OWN-$id")
+                ->assertSee("BEN-$id");
+
+            if ($slug === 'albaraka') {
+                $response->assertSee('FROM ACCOUNT')
+                    ->assertSee('BENEFICIARY BRANCH CODE')
+                    ->assertSee('MY REFERENCES')
+                    ->assertSee('BENEFICIARY REFERENCES')
+                    ->assertSee("COMPANY-$id");
+            } else {
+                $response->assertSee('Recipient Name')
+                    ->assertSee('Recipient Account Type')
+                    ->assertSee('OWN REFERENCES')
+                    ->assertSee('Recipient References');
+            }
         }
     }
 
@@ -637,6 +722,7 @@ class BankApprovalReportsTest extends TestCase
             'is_one_time_vendor' => ['no', 'yes'], 'damount' => [100, 120],
             'bank' => ['', 'One-time Bank'], 'accountNumber' => ['', '222'],
             'accountType' => ['', 'Savings'], 'branchCode' => ['', '456'],
+            'benref' => 'BEN-UPDATED', 'ownref' => 'OWN-UPDATED',
         ]), 1);
 
         $managed = DB::table('frequisitionvendor')->where('vendor_final', 'Shared Name')->first();
@@ -648,6 +734,8 @@ class BankApprovalReportsTest extends TestCase
         $this->assertSame('222', $oneTime->account_number);
         $this->assertSame('456', $oneTime->branchCode);
         $this->assertNull(DB::table('frequisitions')->where('id', 1)->value('bankAccountName'));
+        $this->assertSame('BEN-UPDATED', DB::table('frequisitions')->where('id', 1)->value('benref'));
+        $this->assertSame('OWN-UPDATED', DB::table('frequisitions')->where('id', 1)->value('ownref'));
 
         DB::table('departmentapprovals')->where('departmentId', 1)->update(['IsBankAccount' => 7]);
         DB::table('departmentapprovals')->insert([

@@ -53,7 +53,7 @@
       }
     @endphp
 
-    @foreach ($formFields as $field)
+    @foreach ($formFields->reject(fn ($field) => in_array(strtolower(trim($field->name)), ['benref', 'ownref'])) as $field)
       @php
         $normalizedField = strtolower(trim($field->name));
         $value = $normalizedRequisition[$normalizedField] ?? '';
@@ -116,6 +116,14 @@
         </div>
       @endif
     @endforeach
+    <div class="col-md-6 mb-3">
+      <label class="form-label" for="benref">Beneficiary Reference</label>
+      <input id="benref" type="text" class="form-control" name="benref" value="{{ old('benref', $frequisition->benref) }}" maxlength="255">
+    </div>
+    <div class="col-md-6 mb-3">
+      <label class="form-label" for="ownref">Own Reference</label>
+      <input id="ownref" type="text" class="form-control" name="ownref" value="{{ old('ownref', $frequisition->ownref) }}" maxlength="255">
+    </div>
   </div>
 
   {{-- Reason textarea --}}

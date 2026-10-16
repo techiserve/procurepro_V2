@@ -624,6 +624,10 @@ class ProcurementController extends Controller
     public function updaterequisition(Request $request, $id)
     {
         $this->validateVendorBankSources($request);
+        $references = $request->validate([
+            'benref' => ['nullable', 'string', 'max:255'],
+            'ownref' => ['nullable', 'string', 'max:255'],
+        ]);
           
         $frequisition = Frequisition::findOrFail($id);
         $departmentName = Department::where('id', $frequisition->department)->first();
@@ -647,6 +651,13 @@ class ProcurementController extends Controller
                 if ($request->has($fieldName)) {
                     $frequisition->$fieldName = $request->input($fieldName);
                 }
+            }
+
+            if ($request->has('benref')) {
+                $frequisition->benref = $references['benref'] ?? null;
+            }
+            if ($request->has('ownref')) {
+                $frequisition->ownref = $references['ownref'] ?? null;
             }
 
             $frequisition->approvallevel = $level;
@@ -847,6 +858,10 @@ class ProcurementController extends Controller
     public function requisitionstore(Request $request,WhatsAppService $whatsapp)
     {
         $this->validateVendorBankSources($request);
+        $references = $request->validate([
+            'benref' => ['nullable', 'string', 'max:255'],
+            'ownref' => ['nullable', 'string', 'max:255'],
+        ]);
 
     //  dd($request->all());
 
@@ -881,6 +896,8 @@ class ProcurementController extends Controller
     $data['companyId'] = Auth::user()->companyId;
     $data['status'] = 1;
     $data['isActive'] = 1;
+    $data['benref'] = $references['benref'] ?? null;
+    $data['ownref'] = $references['ownref'] ?? null;
    
 
     if ($request->has('department')) {

@@ -86,10 +86,13 @@
               $filteredFields = $formFields->reject(function ($field) use ($vendorNames) {
                   return in_array(strtolower($field->name), array_map('strtolower', $vendorNames));
               });
+              $formFieldsWithoutReferences = $formFields->reject(function ($field) {
+                  return in_array(strtolower(trim($field->name)), ['benref', 'ownref']);
+              });
             @endphp
 
             {{-- === Dynamic Form Fields === --}}
-            @foreach($formFields->chunk(2) as $fieldPair)
+            @foreach($formFieldsWithoutReferences->chunk(2) as $fieldPair)
               <div class="row">
                 @foreach($fieldPair as $field)
                   <div class="col-md-6">
@@ -218,6 +221,21 @@
                 @endforeach
               </div>
             @endforeach
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-col">
+                  <label for="benref">Beneficiary Reference</label>
+                  <input id="benref" type="text" class="form-control" name="benref" value="{{ old('benref') }}" maxlength="255">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-col">
+                  <label for="ownref">Own Reference</label>
+                  <input id="ownref" type="text" class="form-control" name="ownref" value="{{ old('ownref') }}" maxlength="255">
+                </div>
+              </div>
+            </div>
 
             <hr style="border-color: black;">
 

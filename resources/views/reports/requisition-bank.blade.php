@@ -57,15 +57,32 @@
                     <thead class="table-light">
                         <tr>
                             <th class="bank-checkbox-col" data-bank-export="false"><input type="checkbox" class="form-check-input" data-select-all aria-label="Select all matching requisitions" title="Select all matching rows"></th>
-                            <th data-bank-export="true">Requisition</th>
-                            <th data-bank-export="true">Date</th>
-                            <th data-bank-export="true">Department</th>
-                            <th data-bank-export="true">Vendor</th>
-                            <th data-bank-export="true">Vendor Bank</th>
-                            <th data-bank-export="true">Vendor Account</th>
-                            <th data-bank-export="true">Account Type</th>
-                            <th data-bank-export="true">Amount</th>
-                            <th data-bank-export="true">Company Account</th>
+                            <th data-bank-export="false">Requisition</th>
+                            <th data-bank-export="false">Date</th>
+                            <th data-bank-export="false">Department</th>
+                            @if($bankSlug === 'albaraka')
+                                <th data-bank-export="true">FROM ACCOUNT</th>
+                                <th data-bank-export="true">BENEFICIARY NAME</th>
+                                <th data-bank-export="true">BENEFICIARY BRANCH CODE</th>
+                                <th data-bank-export="true">BENEFICIARY ACCOUNT</th>
+                                <th data-bank-export="true">MY REFERENCES</th>
+                                <th data-bank-export="true">BENEFICIARY REFERENCES</th>
+                                <th data-bank-export="true">NOTIFY RECIPIENT VIA SMS</th>
+                                <th data-bank-export="true">RECIPIENT PHONE</th>
+                                <th data-bank-export="true">NOTIFY RECIPIENT VIA EMAIL</th>
+                                <th data-bank-export="true">RECIPIENT EMAIL</th>
+                                <th data-bank-export="true">AMOUNT</th>
+                                <th data-bank-export="true">INSTANT PAYMENT</th>
+                                <th data-bank-export="true">DATE</th>
+                            @else
+                                <th data-bank-export="true" data-export-label="RICIPIENT NAME">Recipient Name</th>
+                                <th data-bank-export="true" data-export-label="RICIPIENT ACCOUNT">Recipient Account</th>
+                                <th data-bank-export="true" data-export-label="RICIPIENT ACCOUNT TYPE">Recipient Account Type</th>
+                                <th data-bank-export="true">BRANCH</th>
+                                <th data-bank-export="true">AMOUNT</th>
+                                <th data-bank-export="true">OWN REFERENCES</th>
+                                <th data-bank-export="true" data-export-label="RICIPIENT REFERENCES">Recipient References</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -75,12 +92,26 @@
                                 <td>{{ $requisition->requisitionNumber }}</td>
                                 <td>{{ optional($requisition->created_at)->format('Y-m-d') }}</td>
                                 <td>{{ $departments[$requisition->department] ?? '' }}</td>
-                                <td>{{ $requisition->bankReportVendorName() }}</td>
-                                <td>{{ $requisition->selectedVendor?->bank }}</td>
-                                <td>{{ $requisition->selectedVendor?->account_number }}</td>
-                                <td>{{ $requisition->selectedVendor?->account_type }}</td>
-                                <td>{{ number_format((float) $requisition->amount, 2) }}</td>
-                                <td>{{ $requisition->bankAccountNumber }}</td>
+                                @if($bankSlug === 'albaraka')
+                                    <td>{{ $requisition->bankAccountNumber }}</td>
+                                    <td>{{ $requisition->selectedVendor?->vendor_final ?? $requisition->bankReportVendorName() }}</td>
+                                    <td>{{ $requisition->selectedVendor?->branchCode }}</td>
+                                    <td>{{ $requisition->selectedVendor?->account_number }}</td>
+                                    <td>{{ $requisition->ownref }}</td>
+                                    <td>{{ $requisition->benref }}</td>
+                                    <td>No</td><td></td><td>No</td><td></td>
+                                    <td>{{ $requisition->amount }}</td>
+                                    <td>No</td>
+                                    <td>{{ $requisition->created_at }}</td>
+                                @else
+                                    <td>{{ $requisition->selectedVendor?->vendor_final ?? $requisition->bankReportVendorName() }}</td>
+                                    <td>{{ $requisition->selectedVendor?->account_number }}</td>
+                                    <td>{{ $requisition->selectedVendor?->account_type }}</td>
+                                    <td>{{ $requisition->selectedVendor?->branchCode }}</td>
+                                    <td>{{ $requisition->amount }}</td>
+                                    <td>{{ $requisition->ownref }}</td>
+                                    <td>{{ $requisition->benref }}</td>
+                                @endif
                             </tr>
                         @endforeach
                     </tbody>
