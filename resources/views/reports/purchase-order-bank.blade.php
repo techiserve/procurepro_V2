@@ -5,7 +5,7 @@
     <ul><li><a href="#">{{ $bankLabel }} Purchase Orders</a></li></ul>
 </div>
 
-<div class="body-content__wrapper requesition-body" data-bank-report-root data-bank-title="{{ $bankLabel }} Purchase Orders" data-bank-filename="{{ $bankSlug }}-purchase-orders">
+<div class="body-content__wrapper requesition-body" data-bank-report-root data-bank-slug="{{ $bankSlug }}" data-bank-title="{{ $bankLabel }} Purchase Orders" data-bank-filename="{{ $bankSlug }}-purchase-orders">
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
             <strong>{{ $bankLabel }} Purchase Orders</strong>
@@ -79,7 +79,7 @@
                     </thead>
                     <tbody>
                         @foreach($fpurchaseorder as $order)
-                            <tr>
+                            <tr @if($bankSlug === 'fnb') data-fnb-from-account="{{ $order->bankAccountNumber }}" @endif>
                                 <td><input type="checkbox" class="form-check-input bank-row-checkbox" value="{{ $order->id }}" aria-label="Select {{ $order->requisitionNumber }}"></td>
                                 <td>{{ $order->requisitionNumber }}</td>
                                 <td>{{ optional($order->created_at)->format('Y-m-d') }}</td>

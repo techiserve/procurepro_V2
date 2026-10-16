@@ -21,4 +21,7 @@
 <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+@if($bankSlug === 'fnb')
+<script defer src="{{ asset('assets/js/fnb-batch-export.js') }}"></script>
+@endif
 <script defer src="{{ asset('assets/js/bank-report.js') }}"></script>

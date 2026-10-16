@@ -89,22 +89,39 @@
       const columns = table.columns().header().toArray();
       const indexes = columns.flatMap((header, index) => header.dataset.bankExport === 'true' ? [index] : []);
       const headers = indexes.map(index => columns[index].dataset.exportLabel || columns[index].textContent.trim());
-      const rows = table.rows({ search: 'applied' }).data().toArray()
+      const matchingRows = table.rows({ search: 'applied' });
+      const rows = matchingRows.data().toArray()
         .map(row => indexes.map(index => plainText(row[index])));
-      return { headers, rows };
+      const fromAccounts = matchingRows.nodes().toArray().map(row => row.dataset.fnbFromAccount);
+      return { headers, rows, fromAccounts };
     }
 
     root.querySelectorAll('[data-bank-export-action]').forEach(button => {
       button.addEventListener('click', async function () {
-        const { headers, rows } = exportData();
+        const { headers, rows, fromAccounts } = exportData();
         const filename = root.dataset.bankFilename;
         const action = button.dataset.bankExportAction;
+        let fnbRows = null;
+        if (root.dataset.bankSlug === 'fnb' && (action === 'csv' || action === 'excel')) {
+          try {
+            if (!window.FnbBatchExport) throw new Error('The FNB batch template did not load. Please refresh and try again.');
+            fnbRows = window.FnbBatchExport.buildRows(rows.map((values, index) => ({
+              values, fromAccount: fromAccounts[index]
+            })));
+          } catch (error) {
+            if (window.Swal) Swal.fire({ title: 'Cannot download FNB batch', text: error.message, icon: 'warning' });
+            else window.alert(error.message);
+            return;
+          }
+        }
         if (action === 'copy') {
           await navigator.clipboard.writeText([headers.join('\t'), ...rows.map(row => row.join('\t'))].join('\n'));
           if (window.Swal) Swal.fire({ title: 'Copied', icon: 'success', timer: 1200, showConfirmButton: false });
         } else if (action === 'csv') {
           const quote = value => '"' + String(value).replace(/"/g, '""') + '"';
-          const csv = [headers, ...rows].map(row => row.map(quote).join(',')).join('\r\n');
+          const csv = fnbRows
+            ? window.FnbBatchExport.toCsv(fnbRows)
+            : [headers, ...rows].map(row => row.map(quote).join(',')).join('\r\n');
           const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
           const link = document.createElement('a');
           link.href = url;
@@ -113,7 +130,7 @@
           URL.revokeObjectURL(url);
         } else if (action === 'excel' && window.XLSX) {
           const workbook = XLSX.utils.book_new();
-          XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([headers, ...rows]), 'Report');
+          XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet(fnbRows || [headers, ...rows]), 'Report');
           XLSX.writeFile(workbook, filename + '.xlsx');
         } else if (action === 'pdf' && window.pdfMake) {
           pdfMake.createPdf({

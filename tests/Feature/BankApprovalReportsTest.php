@@ -316,8 +316,30 @@ class BankApprovalReportsTest extends TestCase
                     ->assertSee('Recipient Account Type')
                     ->assertSee('OWN REFERENCES')
                     ->assertSee('Recipient References');
+                if ($slug === 'fnb') {
+                    $response->assertSee('data-fnb-from-account="COMPANY-1"', false)
+                        ->assertSee('assets/js/fnb-batch-export.js');
+                }
             }
         }
+    }
+
+    public function test_po_fnb_report_exposes_selected_company_account_for_batch_export(): void
+    {
+        DB::table('departmentapprovals')->insert([
+            'mode' => 'PO', 'departmentId' => 1, 'approvalId' => 1,
+            'roleId' => 7, 'IsBankAccount' => 7,
+        ]);
+        DB::table('fpurchaseorders')->insert([
+            'companyId' => 1, 'department' => 1, 'status' => 2,
+            'requisitionNumber' => 'PO-FNB-1', 'bankAccountName' => 'FNB/RMB',
+            'bankAccountNumber' => 'COMPANY-PO-1', 'releaseStatus' => null,
+        ]);
+
+        $this->actingAs(User::find(2))->get('/reports/fnb')
+            ->assertOk()
+            ->assertSee('data-fnb-from-account="COMPANY-PO-1"', false)
+            ->assertSee('assets/js/fnb-batch-export.js');
     }
 
     public function test_pr_bank_approver_must_select_an_account_from_the_same_company(): void
