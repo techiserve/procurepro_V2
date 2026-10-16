@@ -318,7 +318,8 @@ class BankApprovalReportsTest extends TestCase
                     ->assertSee('Recipient References');
                 if ($slug === 'fnb') {
                     $response->assertSee('data-fnb-from-account="COMPANY-1"', false)
-                        ->assertSee('assets/js/fnb-batch-export.js');
+                        ->assertSee('assets/js/fnb-batch-export.js?v=', false)
+                        ->assertSee('assets/js/bank-report.js?v=', false);
                 }
             }
         }
@@ -339,7 +340,8 @@ class BankApprovalReportsTest extends TestCase
         $this->actingAs(User::find(2))->get('/reports/fnb')
             ->assertOk()
             ->assertSee('data-fnb-from-account="COMPANY-PO-1"', false)
-            ->assertSee('assets/js/fnb-batch-export.js');
+            ->assertSee('assets/js/fnb-batch-export.js?v=', false)
+            ->assertSee('assets/js/bank-report.js?v=', false);
     }
 
     public function test_pr_bank_approver_must_select_an_account_from_the_same_company(): void

@@ -22,6 +22,6 @@
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 @if($bankSlug === 'fnb')
-<script defer src="{{ asset('assets/js/fnb-batch-export.js') }}"></script>
+<script defer src="{{ asset('assets/js/fnb-batch-export.js') }}?v={{ substr(hash_file('sha256', public_path('assets/js/fnb-batch-export.js')), 0, 12) }}"></script>
 @endif
-<script defer src="{{ asset('assets/js/bank-report.js') }}"></script>
+<script defer src="{{ asset('assets/js/bank-report.js') }}?v={{ substr(hash_file('sha256', public_path('assets/js/bank-report.js')), 0, 12) }}"></script>
