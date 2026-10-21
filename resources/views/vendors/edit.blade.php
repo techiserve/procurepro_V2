@@ -1,6 +1,72 @@
 @extends('html.default')
 
 @section('content')
+<style>
+    .vendor-edit-document-list {
+        max-width: 760px;
+        border-top: 1px solid #e2e8f0;
+    }
+    .vendor-edit-document-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-height: 66px;
+        padding: 12px 4px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .vendor-edit-document-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+        flex: 1;
+        color: #25364a;
+        text-decoration: none;
+    }
+    .vendor-edit-document-link:hover,
+    .vendor-edit-document-link:focus-visible {
+        color: #1456b8;
+    }
+    .vendor-edit-document-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        flex: 0 0 38px;
+        border: 1px solid #d6e4f5;
+        border-radius: 6px;
+        background: #eef5ff;
+        color: #1d5fbe;
+    }
+    .vendor-edit-document-name {
+        min-width: 0;
+        flex: 1;
+        overflow-wrap: anywhere;
+        font-weight: 600;
+    }
+    .vendor-edit-document-type {
+        display: block;
+        margin-top: 2px;
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 400;
+    }
+    .vendor-edit-document-delete {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        flex: 0 0 auto;
+        margin: 0;
+        color: #b42336;
+        cursor: pointer;
+    }
+    #vendor_pending_documents td { overflow-wrap: anywhere; }
+    @media (max-width: 575px) {
+        .vendor-edit-document-item { flex-wrap: wrap; }
+        .vendor-edit-document-delete { margin-left: 50px; }
+    }
+</style>
 <div class="body-content__header">
     <ul>
         <li><a href="#">Edit Vendor</a></li>
@@ -171,7 +237,8 @@
                 @endif
 
                 <!-- Document Upload -->
-                <h4 class="mt-4">Upload Documents</h4></br>
+                <section class="mt-4" aria-labelledby="vendor-upload-heading">
+                <h4 id="vendor-upload-heading" class="mb-3">Upload Documents</h4>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-col">
@@ -186,9 +253,10 @@
                         </div>
                     </div>
                 </div>
-                <button type="button" class="btn btn-primary mt-2" onclick="addDocument()">Add Document</button>
+                <button type="button" class="btn btn-primary mt-3" onclick="addDocument()"><i class="fa fa-plus" aria-hidden="true"></i> Add Document</button>
 
-                <table class="table table-bordered mt-3">
+                <div id="vendor_pending_documents" class="table-responsive mt-3 d-none">
+                <table class="table table-bordered table-sm mb-0">
                     <thead>
                         <tr>
                             <th>Document Name</th>
@@ -198,23 +266,38 @@
                     </thead>
                     <tbody id="vendor_documents_list"></tbody>
                 </table>
-                <div id="document_inputs_container"></div>
+                </div>
+                <div id="document_inputs_container" class="d-none"></div>
+                </section>
 
-                <h4 class="mt-4">Existing Documents</h4>
-                @if($vendor->documents && count($vendor->documents))
-                    <ul>
+                <section class="mt-4" aria-labelledby="vendor-existing-documents-heading">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <h4 id="vendor-existing-documents-heading" class="mb-0">Existing Documents</h4>
+                    <span class="badge bg-light text-secondary border">{{ $vendor->documents->count() }}</span>
+                </div>
+                @if($vendor->documents->isNotEmpty())
+                    <div class="vendor-edit-document-list">
                         @foreach($vendor->documents as $doc)
-                            <li>
-                                <a href="{{ asset('storage/' . $doc->file_path) }}" target="_blank">{{ $doc->document_name }}</a>
-                                <label class="ms-2 text-danger" style="cursor:pointer;">
+                            @php($extension = strtoupper(pathinfo($doc->file_path ?? '', PATHINFO_EXTENSION)))
+                            <div class="vendor-edit-document-item">
+                                <a class="vendor-edit-document-link" href="{{ asset('storage/' . $doc->file_path) }}" target="_blank" rel="noopener noreferrer" aria-label="Open {{ $doc->document_name ?: 'document' }} in a new tab">
+                                    <span class="vendor-edit-document-icon" aria-hidden="true"><i class="fa fa-file-o"></i></span>
+                                    <span class="vendor-edit-document-name">
+                                        {{ $doc->document_name ?: 'Untitled document' }}
+                                        <span class="vendor-edit-document-type">{{ $extension ?: 'File' }} document</span>
+                                    </span>
+                                    <i class="fa fa-external-link text-muted" aria-hidden="true"></i>
+                                </a>
+                                <label class="vendor-edit-document-delete">
                                     <input type="checkbox" name="delete_documents[]" value="{{ $doc->id }}"> Delete
                                 </label>
-                            </li>
+                            </div>
                         @endforeach
-                    </ul>
+                    </div>
                 @else
-                    <p>No documents uploaded.</p>
+                    <p class="text-muted mb-0">No documents uploaded.</p>
                 @endif
+                </section>
             </div>
 
             <div class="card-footer">
@@ -245,15 +328,18 @@ function addDocument() {
     for (let i = 0; i < files.length; i++) {
         const rowId = `doc_row_${documentIndex}`;
 
-        const row = `
-        <tr id="${rowId}">
-            <td>${name}</td>
-            <td>${files[i].name}</td>
-            <td>
-                <button type="button" class="btn btn-danger btn-sm" onclick="removeDocument('${rowId}')">Remove</button>
-            </td>
-        </tr>`;
-        document.getElementById('vendor_documents_list').insertAdjacentHTML('beforeend', row);
+        const row = document.createElement('tr');
+        row.id = rowId;
+        row.insertCell().textContent = name;
+        row.insertCell().textContent = files[i].name;
+        const removeButton = document.createElement('button');
+        removeButton.type = 'button';
+        removeButton.className = 'btn btn-danger btn-sm';
+        removeButton.textContent = 'Remove';
+        removeButton.addEventListener('click', () => removeDocument(rowId));
+        row.insertCell().appendChild(removeButton);
+        document.getElementById('vendor_documents_list').appendChild(row);
+        document.getElementById('vendor_pending_documents').classList.remove('d-none');
 
         const container = document.getElementById('document_inputs_container');
 
@@ -283,6 +369,9 @@ function addDocument() {
 function removeDocument(rowId) {
     document.getElementById(rowId)?.remove();
     document.getElementById(`wrapper_${rowId}`)?.remove();
+    if (!document.getElementById('vendor_documents_list').children.length) {
+        document.getElementById('vendor_pending_documents').classList.add('d-none');
+    }
 }
 
 function createFileList(file) {

@@ -258,6 +258,7 @@ class VendorController extends Controller
 {
     $vendor = Vendor::with('documents')->findOrFail($id);
     $this->authorizeVendorCreator($vendor);
+    abort_if((int) $vendor->status === 3, 403);
     $vendorTypes = VendorType::all(); // assuming VendorType is your list source
      $executiveUserIds = ExecutiveRole::where('companyId', Auth::user()->companyId)
          ->pluck('userId');
@@ -273,6 +274,7 @@ public function update(Request $request, $id)
 {
     $vendor = Vendor::findOrFail($id);
     $this->authorizeVendorCreator($vendor);
+    abort_if((int) $vendor->status === 3, 403);
 
 // Capture original attributes
 $original = $vendor->getOriginal();
@@ -314,7 +316,7 @@ foreach ($updatedData as $key => $newValue) {
         // Handle deleting existing documents
     if ($request->has('delete_documents')) {
         foreach ($request->delete_documents as $docId) {
-            $doc = VendorDocument::find($docId);
+            $doc = $vendor->documents()->find($docId);
             if ($doc) {
                 Storage::disk('public')->delete($doc->file_path); // Delete file
                 $doc->delete(); // Delete DB record

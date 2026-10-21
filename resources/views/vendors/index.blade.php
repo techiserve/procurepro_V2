@@ -157,7 +157,7 @@
                         </button>
                     </td>
                     <td class="text-center" data-order="{{ $vendor->name }}">
-                        @if($vendor->status != 5 && $isCreator)
+                        @if(!in_array((int) $vendor->status, [3, 5], true) && $isCreator)
                             <a href="/vendors/edit/{{ $vendor->id }}" class="btn btn-icon btn-info mr-1">
                                 <i class="fa fa-pencil"></i> Edit
                             </a>

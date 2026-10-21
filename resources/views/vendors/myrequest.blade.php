@@ -70,7 +70,7 @@
                                     </span>
                                 </td>
                                 <td class="d-flex justify-content-center flex-wrap gap-2">
-                                    @if($vendor->status != 5 && $vendor->history->contains(fn ($entry) => $entry->action === 'Created' && (int) $entry->userId === (int) Auth::id()))
+                                    @if(!in_array((int) $vendor->status, [3, 5], true) && $vendor->history->contains(fn ($entry) => $entry->action === 'Created' && (int) $entry->userId === (int) Auth::id()))
                                         <a href="/vendors/edit/{{$vendor->id}}" class="btn btn-info btn-sm">
                                             <i class="fa fa-pencil"></i> Edit
                                         </a>

@@ -145,7 +145,7 @@ class ReturnedVendorAccessTest extends TestCase
         $this->assertSame(3, DB::table('vendors')->where('id', 1)->value('status'));
     }
 
-    public function test_only_creator_can_edit_pending_and_approved_vendors(): void
+    public function test_approved_vendors_cannot_be_edited_even_by_the_creator(): void
     {
         $this->withoutMiddleware(\App\Http\Middleware\VerifyCsrfToken::class);
 
@@ -161,8 +161,25 @@ class ReturnedVendorAccessTest extends TestCase
         $this->put('/vendors/update/3', ['name' => 'Approver change'])->assertForbidden();
 
         Auth::guard('web')->setUser(User::find(1));
-        $this->assertSame(3, app(VendorController::class)->edit(3)->getData()['vendor']->id);
-        app(VendorController::class)->update(Request::create('/', 'PUT', ['name' => 'Creator change']), 3);
-        $this->assertSame('Creator change', DB::table('vendors')->where('id', 3)->value('name'));
+        $this->get('/vendors/edit/3')->assertForbidden();
+        $this->put('/vendors/update/3', ['name' => 'Creator change'])->assertForbidden();
+        $this->assertSame('Pending approval', DB::table('vendors')->where('id', 3)->value('name'));
+        $this->assertSame(3, DB::table('vendors')->where('id', 3)->value('status'));
+    }
+
+    public function test_editing_another_vendor_cannot_delete_an_approved_vendors_document(): void
+    {
+        DB::table('vendors')->where('id', 3)->update(['status' => 3]);
+        DB::table('vendor_documents')->insert([
+            'id' => 10, 'vendor_id' => 3, 'file_path' => 'vendor_docs/approved.pdf',
+        ]);
+
+        Auth::guard('web')->setUser(User::find(1));
+        app(VendorController::class)->update(Request::create('/', 'PUT', [
+            'name' => 'Revised vendor',
+            'delete_documents' => [10],
+        ]), 1);
+
+        $this->assertDatabaseHas('vendor_documents', ['id' => 10, 'vendor_id' => 3]);
     }
 }
