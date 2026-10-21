@@ -69,7 +69,15 @@ class VendorController extends Controller
 //     }
 // });
         
-        $vendors = Vendor::with('history')->where('companyId', Auth::user()->companyId)->get();
+        $vendors = Vendor::with('history')
+            ->where('companyId', Auth::user()->companyId)
+            ->where(function ($query) {
+                $query->where('status', '!=', 4)
+                    ->orWhereNull('status')
+                    ->orWhereHas('history', function ($history) {
+                        $history->where('action', 'Created')->where('userId', Auth::id());
+                    });
+            })->get();
           $executiveUserIds = ExecutiveRole::where('companyId', Auth::user()->companyId)
          ->pluck('userId');
 
@@ -81,7 +89,16 @@ class VendorController extends Controller
 
      public function myrequest()
     {    
-        $vendors = Vendor::with('history')->where('companyId', Auth::user()->companyId)->where('finance_manager', Auth::user()->id)->get();
+        $vendors = Vendor::with('history')
+            ->where('companyId', Auth::user()->companyId)
+            ->where('finance_manager', Auth::id())
+            ->where(function ($query) {
+                $query->where('status', '!=', 4)
+                    ->orWhereNull('status')
+                    ->orWhereHas('history', function ($history) {
+                        $history->where('action', 'Created')->where('userId', Auth::id());
+                    });
+            })->get();
         $executiveUserIds = ExecutiveRole::where('companyId', Auth::user()->companyId)
          ->pluck('userId');
 
@@ -240,6 +257,7 @@ class VendorController extends Controller
     public function edit($id)
 {
     $vendor = Vendor::with('documents')->findOrFail($id);
+    $this->authorizeReturnedVendorChange($vendor);
     $vendorTypes = VendorType::all(); // assuming VendorType is your list source
      $executiveUserIds = ExecutiveRole::where('companyId', Auth::user()->companyId)
          ->pluck('userId');
@@ -254,6 +272,7 @@ class VendorController extends Controller
 public function update(Request $request, $id)
 {
     $vendor = Vendor::findOrFail($id);
+    $this->authorizeReturnedVendorChange($vendor);
 
 // Capture original attributes
 $original = $vendor->getOriginal();
@@ -350,6 +369,7 @@ public function showApprovalPage()
 public function viewApprovalDetails($id)
 {
     $vendor = Vendor::with('documents')->findOrFail($id);
+    abort_if((int) $vendor->status === 4, 404);
         $executiveUserIds = ExecutiveRole::where('companyId', Auth::user()->companyId)
          ->pluck('userId');
 
@@ -360,6 +380,7 @@ public function viewApprovalDetails($id)
 public function handleApprovalAction(Request $request, $id)
 {
     $vendor = Vendor::findOrFail($id);
+    abort_if((int) $vendor->status === 4, 403);
     $action = $request->input('action');
 
     switch ($action) {
@@ -436,7 +457,9 @@ public function handleApprovalAction(Request $request, $id)
 
          public function delete($id)
         {
-            $deleteuser = Vendor::where('id', $id)->delete();
+            $vendor = Vendor::findOrFail($id);
+            $this->authorizeReturnedVendorChange($vendor);
+            $deleteuser = $vendor->delete();
         
             if($deleteuser){
         
@@ -449,5 +472,18 @@ public function handleApprovalAction(Request $request, $id)
 
             
         }
+
+    private function authorizeReturnedVendorChange(Vendor $vendor): void
+    {
+        if ((int) $vendor->status !== 4) {
+            return;
+        }
+
+        abort_unless(
+            (int) $vendor->companyId === (int) Auth::user()->companyId
+            && $vendor->history()->where('action', 'Created')->where('userId', Auth::id())->exists(),
+            403
+        );
+    }
 
 }
