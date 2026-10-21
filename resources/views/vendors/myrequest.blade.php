@@ -70,10 +70,12 @@
                                     </span>
                                 </td>
                                 <td class="d-flex justify-content-center flex-wrap gap-2">
-                                    @if($vendor->status != 5)
+                                    @if($vendor->status != 5 && $vendor->history->contains(fn ($entry) => $entry->action === 'Created' && (int) $entry->userId === (int) Auth::id()))
                                         <a href="/vendors/edit/{{$vendor->id}}" class="btn btn-info btn-sm">
                                             <i class="fa fa-pencil"></i> Edit
                                         </a>
+                                    @endif
+                                    @if($vendor->status != 5)
                                         <button type="button" class="btn btn-danger btn-sm" onclick="
                                             Swal.fire({
                                                 title: 'Delete Vendor?',

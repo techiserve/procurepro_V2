@@ -1,5 +1,51 @@
 @extends('html.default')
 @section('content')
+<style>
+    .vendor-document-list {
+        max-width: 760px;
+        border-top: 1px solid #e2e8f0;
+    }
+    .vendor-document-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-height: 66px;
+        padding: 12px 4px;
+        border-bottom: 1px solid #e2e8f0;
+        color: #25364a;
+        text-decoration: none;
+    }
+    .vendor-document-item:hover,
+    .vendor-document-item:focus-visible {
+        color: #1456b8;
+        background: #f7faff;
+    }
+    .vendor-document-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        flex: 0 0 38px;
+        border: 1px solid #d6e4f5;
+        border-radius: 6px;
+        background: #eef5ff;
+        color: #1d5fbe;
+    }
+    .vendor-document-name {
+        min-width: 0;
+        flex: 1;
+        overflow-wrap: anywhere;
+        font-weight: 600;
+    }
+    .vendor-document-type {
+        display: block;
+        margin-top: 2px;
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 400;
+    }
+</style>
 <div class="body-content__header">
     <ul>
         <li><a href="#">Vendor Details</a></li>
@@ -119,20 +165,29 @@
                     </div>
                 </div>
 
-                <div class="mt-4">
-                    <label class="form-label">Uploaded Documents</label>
-                    @if($vendor->documents && count($vendor->documents))
-                        <ul class="mb-0">
+                <section class="mt-4" aria-labelledby="vendor-documents-heading">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <h2 id="vendor-documents-heading" class="h6 mb-0">Uploaded Documents</h2>
+                        <span class="badge bg-light text-secondary border">{{ $vendor->documents->count() }}</span>
+                    </div>
+                    @if($vendor->documents->isNotEmpty())
+                        <div class="vendor-document-list">
                             @foreach($vendor->documents as $doc)
-                                <li>
-                                    <a href="{{ asset('storage/' . $doc->file_path) }}" target="_blank">{{ $doc->document_name }}</a>
-                                </li>
+                                @php($extension = strtoupper(pathinfo($doc->file_path ?? '', PATHINFO_EXTENSION)))
+                                <a class="vendor-document-item" href="{{ asset('storage/' . $doc->file_path) }}" target="_blank" rel="noopener noreferrer" aria-label="Open {{ $doc->document_name ?: 'document' }} in a new tab">
+                                    <span class="vendor-document-icon" aria-hidden="true"><i class="fa fa-file-o"></i></span>
+                                    <span class="vendor-document-name">
+                                        {{ $doc->document_name ?: 'Untitled document' }}
+                                        <span class="vendor-document-type">{{ $extension ?: 'File' }} document</span>
+                                    </span>
+                                    <i class="fa fa-external-link text-muted" aria-hidden="true"></i>
+                                </a>
                             @endforeach
-                        </ul>
+                        </div>
                     @else
-                        <p class="mb-0">No documents uploaded.</p>
+                        <p class="text-muted mb-0">No documents uploaded.</p>
                     @endif
-                </div>
+                </section>
 
                 @if($vendor->finance_manager == auth()->user()->id)
                 <div class="mt-4">

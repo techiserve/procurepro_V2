@@ -136,6 +136,7 @@
                         5 => ['text' => 'Rejected',   'class' => 'btn btn-outline-danger'],
                     ];
                     $currentStatus = $statusLabels[$vendor->status] ?? ['text' => 'Unknown', 'class' => 'btn btn-outline-dark'];
+                    $isCreator = $vendor->history->contains(fn ($entry) => $entry->action === 'Created' && (int) $entry->userId === (int) Auth::id());
 
                     // Resolve Finance Manager name (simple lookup from $users)
                     $fmName = '';
@@ -156,10 +157,12 @@
                         </button>
                     </td>
                     <td class="text-center" data-order="{{ $vendor->name }}">
-                        @if($vendor->status != 5)
+                        @if($vendor->status != 5 && $isCreator)
                             <a href="/vendors/edit/{{ $vendor->id }}" class="btn btn-icon btn-info mr-1">
                                 <i class="fa fa-pencil"></i> Edit
                             </a>
+                        @endif
+                        @if($vendor->status != 5)
                             <a href="#" class="btn btn-icon btn-danger mr-1" onclick="
                                 event.preventDefault();
                                 Swal.fire({

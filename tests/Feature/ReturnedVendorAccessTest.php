@@ -144,4 +144,25 @@ class ReturnedVendorAccessTest extends TestCase
         ]), 1);
         $this->assertSame(3, DB::table('vendors')->where('id', 1)->value('status'));
     }
+
+    public function test_only_creator_can_edit_pending_and_approved_vendors(): void
+    {
+        $this->withoutMiddleware(\App\Http\Middleware\VerifyCsrfToken::class);
+
+        $this->actingAs(User::find(2))
+            ->get('/vendors/edit/3')->assertForbidden();
+        $this->put('/vendors/update/3', ['name' => 'Unauthorized change'])->assertForbidden();
+        $this->assertSame('Pending approval', DB::table('vendors')->where('id', 3)->value('name'));
+
+        $this->actingAs(User::find(3))
+            ->post('/vendors/approval/3', ['action' => 'approve'])->assertRedirect();
+        $this->assertSame(3, DB::table('vendors')->where('id', 3)->value('status'));
+        $this->get('/vendors/edit/3')->assertForbidden();
+        $this->put('/vendors/update/3', ['name' => 'Approver change'])->assertForbidden();
+
+        Auth::guard('web')->setUser(User::find(1));
+        $this->assertSame(3, app(VendorController::class)->edit(3)->getData()['vendor']->id);
+        app(VendorController::class)->update(Request::create('/', 'PUT', ['name' => 'Creator change']), 3);
+        $this->assertSame('Creator change', DB::table('vendors')->where('id', 3)->value('name'));
+    }
 }
