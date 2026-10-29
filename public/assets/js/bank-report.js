@@ -9,16 +9,33 @@
     const selectedCount = root.querySelector('[data-selected-count]');
     const clearSelected = root.querySelector('[data-clear-selected]');
     const clearAll = root.querySelector('[data-clear-all]');
+    const showPagination = root.hasAttribute('data-bank-pagination');
     const table = jQuery(tableElement).DataTable({
       pageLength: 10,
+      ...(showPagination ? {
+        lengthMenu: [10, 100, 1000],
+        pagingType: 'full_numbers'
+      } : {}),
       order: [[2, 'desc']],
       columnDefs: [{ targets: 0, orderable: false, searchable: false }],
-      dom: 't<"dt-bottom"ip>',
+      dom: showPagination ? 't<"dt-bottom"lip>' : 't<"dt-bottom"ip>',
       language: {
         emptyTable: 'No approved rows for this bank.',
-        zeroRecords: 'No matching rows.'
+        zeroRecords: 'No matching rows.',
+        ...(showPagination ? {
+          lengthMenu: 'Show _MENU_ rows',
+          info: 'Page _PAGE_ of _PAGES_ | Showing _START_ to _END_ of _TOTAL_ rows'
+        } : {})
       }
     });
+
+    if (showPagination) {
+      const footer = root.querySelector('.dt-bottom');
+      if (footer) {
+        footer.classList.add('bank-report-pagination');
+        tableElement.closest('.table-responsive').after(footer);
+      }
+    }
 
     const rowCheckboxes = (options = {}) => table.rows(options).nodes().toArray()
       .map(row => row.querySelector('.bank-row-checkbox'))

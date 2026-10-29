@@ -5,7 +5,7 @@
     <ul><li><a href="#">{{ $bankLabel }} Purchase Requisitions</a></li></ul>
 </div>
 
-<div class="body-content__wrapper requesition-body" data-bank-report-root data-bank-slug="{{ $bankSlug }}" data-bank-title="{{ $bankLabel }} Purchase Requisitions" data-bank-filename="{{ $bankSlug }}-purchase-requisitions">
+<div class="body-content__wrapper requesition-body" data-bank-report-root @if($bankSlug === 'fnb') data-bank-pagination @endif data-bank-slug="{{ $bankSlug }}" data-bank-title="{{ $bankLabel }} Purchase Requisitions" data-bank-filename="{{ $bankSlug }}-purchase-requisitions">
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
             <strong>{{ $bankLabel }} Purchase Requisitions</strong>

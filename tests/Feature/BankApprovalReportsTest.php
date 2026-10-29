@@ -879,11 +879,14 @@ class BankApprovalReportsTest extends TestCase
         $this->actingAs($manager);
 
         foreach (['fnb', 'albaraka', 'standardbank'] as $bank) {
-            $this->get("/reports/requisitions/$bank")
+            $response = $this->get("/reports/requisitions/$bank")
                 ->assertOk()
                 ->assertSee('data-select-all', false)
                 ->assertSee('Clear selected')
                 ->assertSee('Clear all');
+            if ($bank === 'fnb') {
+                $response->assertSee('data-bank-pagination', false);
+            }
         }
 
         foreach (['fnb', 'albarak', 'standardbank'] as $bank) {
@@ -893,6 +896,32 @@ class BankApprovalReportsTest extends TestCase
                 ->assertSee('Clear selected')
                 ->assertSee('Clear all');
         }
+    }
+
+    public function test_fnb_pr_report_renders_more_than_the_first_page_of_rows(): void
+    {
+        DB::table('departmentapprovals')->insert([
+            'mode' => 'PR', 'departmentId' => 1, 'approvalId' => 1,
+            'roleId' => 7, 'IsBankAccount' => 7,
+        ]);
+        foreach (range(1, 12) as $id) {
+            DB::table('frequisitions')->insert([
+                'id' => $id, 'companyId' => 1, 'userId' => 1, 'department' => 1,
+                'status' => 2, 'approvallevel' => 2, 'totalapprovallevels' => 1,
+                'approvedby' => 7, 'requisitionNumber' => "PR-$id",
+                'bankAccountName' => 'FNB/RMB',
+            ]);
+        }
+        $manager = User::forceCreate([
+            'id' => 3, 'name' => 'Reports Manager', 'email' => 'reports@example.test',
+            'companyId' => 1, 'userrole' => 2,
+        ]);
+
+        $this->actingAs($manager)->get('/reports/requisitions/fnb')
+            ->assertOk()
+            ->assertSee('data-bank-pagination', false)
+            ->assertSee('PR-1</td>', false)
+            ->assertSee('PR-12</td>', false);
     }
 
     public function test_clear_route_rejects_users_without_reports_permission(): void
