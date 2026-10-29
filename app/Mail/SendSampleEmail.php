@@ -28,6 +28,7 @@ class SendSampleEmail extends Mailable
         $this->requesterName = $requesterName;
         $this->createdAt = $createdAt;
     }
+    
     /**
      * Get the message envelope.
      */
