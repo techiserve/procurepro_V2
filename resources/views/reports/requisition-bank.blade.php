@@ -52,7 +52,7 @@
 
             @include('reports.partials.bank-report-controls', ['reportType' => 'pr'])
 
-            <div class="table-responsive">
+            <div class="{{ $bankSlug === 'fnb' ? 'bank-report-table-host' : 'table-responsive' }}">
                 <table id="prBankReportTable" class="table table-striped table-bordered bank-report-table" data-bank-report-table style="width:100%">
                     <thead class="table-light">
                         <tr>
@@ -106,7 +106,7 @@
                                 @else
                                     <td>{{ $requisition->selectedVendor?->vendor_final ?? $requisition->bankReportVendorName() }}</td>
                                     <td>{{ $requisition->selectedVendor?->account_number }}</td>
-                                    <td>{{ $requisition->selectedVendor?->account_type }}</td>
+                                    <td>{{ \App\Support\BankAccountType::label($requisition->selectedVendor?->account_type) }}</td>
                                     <td>{{ $requisition->selectedVendor?->branchCode }}</td>
                                     <td>{{ $requisition->amount }}</td>
                                     <td>{{ $requisition->ownref }}</td>

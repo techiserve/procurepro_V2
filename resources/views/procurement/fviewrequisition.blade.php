@@ -95,7 +95,7 @@
                   </div>
                   <div class="col-md-4 mb-3">
                     <label class="form-label">Account Type</label>
-                    <input type="text" class="form-control" value="{{ $frequisition->bankAccountType }}" readonly>
+                    <input type="text" class="form-control" value="{{ \App\Support\BankAccountType::label($frequisition->bankAccountType) }}" readonly>
                   </div>
                 </div>
               @endif
@@ -210,7 +210,7 @@
 
           <div class="col-md-6">
             <label class="form-label">Account Type</label>
-            <input type="text" class="form-control" value="{{ $faira->account_type ?? 'N/A' }}" readonly>
+            <input type="text" class="form-control" value="{{ \App\Support\BankAccountType::label($faira->account_type) ?: 'N/A' }}" readonly>
           </div>
 
           <div class="col-md-6">

@@ -62,7 +62,9 @@
               <div class="col-md-6">
                 <div class="form-col">
                   <label for="accountType">Account Type</label>
-                  <input id="accountType" class="form-control" name="accountType" type="text" value="{{ $bank->accountType }}" placeholder="Enter Account Type">
+                  <select id="accountType" class="form-control" name="accountType">
+                    @include('components.bank-account-type-options', ['selected' => old('accountType', $bank->accountType)])
+                  </select>
                 </div>
               </div>
             </div>

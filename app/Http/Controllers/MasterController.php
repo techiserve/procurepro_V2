@@ -9,6 +9,7 @@ use App\Models\Departmentapproval;
 use App\Models\Bankaccount;
 use App\Models\Company;
 use App\Models\Rolepermission;
+use App\Support\BankAccountType;
 use Alert;
 use App\Models\CompanyRole;
 use Illuminate\Support\Facades\Auth;
@@ -98,7 +99,7 @@ class MasterController extends Controller
         $bank->bankName = $request->bank;
         $bank->branch = $request->branchname;
         $bank->accountName = $request->accountname;
-        $bank->accountType = $request->accounttype;
+        $bank->accountType = BankAccountType::normalize($request->accounttype);
         $bank->accountNumber = $request->accountnumber;
         $bank->accountPurpose = $request->accountpurpose;
         $bank->branchCode = $request->branchcode;
@@ -414,7 +415,11 @@ class MasterController extends Controller
 
     $record = Bankaccount::findOrFail($id);
 
-     $record->update($request->only(['bankName', 'branch','accountName','accountType','accountNumber','accountPurpose','branchCode']));
+     $data = $request->only(['bankName', 'branch','accountName','accountType','accountNumber','accountPurpose','branchCode']);
+     if (array_key_exists('accountType', $data)) {
+         $data['accountType'] = BankAccountType::normalize($data['accountType']);
+     }
+     $record->update($data);
 
      if($record){
 

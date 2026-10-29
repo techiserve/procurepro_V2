@@ -13,14 +13,17 @@
     'SMS 2 NOTIFY', 'SMS 2 CODE', 'SMS 2 NUMBER'
   ];
   const accountTypes = {
-    current: '1', cheque: '1', checking: '1',
+    'public recipient': '0',
+    current: '1', cheque: '1', checking: '1', 'current / cheque': '1',
     savings: '2', saving: '2', transmission: '3', bond: '4',
-    'subscription share': '6', 'fnb card': 'F', wesbank: 'W'
+    'subscription share': '6', 'ewallet pro': 'D', 'ewallet send money': 'S',
+    'fnb card': 'F', wesbank: 'W'
   };
 
   function formatAccountType(value) {
     const type = String(value ?? '').trim();
-    return accountTypes[type.toLowerCase()] || type;
+    const code = type.toUpperCase();
+    return accountTypes[type.toLowerCase()] || (['0', '1', '2', '3', '4', '6', 'D', 'S', 'F', 'W'].includes(code) ? code : type);
   }
 
   function reportDate(date) {
@@ -59,6 +62,9 @@
       const values = payment.values;
       for (let index = 0; index < 7; index++) row[index] = String(values[index] ?? '').trim();
       row[2] = formatAccountType(row[2]);
+      const defaultReference = row[0] ? `reference ${row[0]}` : '';
+      if (!row[5]) row[5] = defaultReference;
+      if (!row[6]) row[6] = defaultReference;
       const amount = Number(row[4].replace(/,/g, ''));
       if (row[4] && Number.isFinite(amount)) row[4] = amount.toFixed(2);
       return row;

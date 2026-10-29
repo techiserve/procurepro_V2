@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Http\Controllers\ProcurementController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\MasterController;
+use App\Http\Controllers\VendorController;
 use App\Mail\SendSampleEmail;
 use App\Models\User;
 use App\Models\Frequisition;
@@ -181,6 +182,12 @@ class BankApprovalReportsTest extends TestCase
             $table->string('bankName');
             $table->string('accountNumber');
             $table->string('accountType');
+            $table->string('branch')->nullable();
+            $table->string('accountName')->nullable();
+            $table->string('accountPurpose')->nullable();
+            $table->string('branchCode')->nullable();
+            $table->integer('userId')->nullable();
+            $table->integer('isActive')->nullable();
             $table->timestamps();
         });
         Schema::create('requisition_histories', function (Blueprint $table) {
@@ -216,6 +223,7 @@ class BankApprovalReportsTest extends TestCase
         ]);
         DB::table('vendors')->insert([
             'id' => 5, 'companyId' => 1, 'name' => 'Registered Vendor', 'status' => 3,
+            'account_type' => 'Current',
         ]);
 
         $controller = app(ProcurementController::class);
@@ -227,11 +235,48 @@ class BankApprovalReportsTest extends TestCase
             'benref' => 'BEN-123', 'ownref' => 'OWN-456',
         ]), app(WhatsAppService::class));
         $controller->requisitionstore(Request::create('/', 'POST', $requestData), app(WhatsAppService::class));
+        $controller->requisitionstore(Request::create('/', 'POST', [
+            'department' => 1, 'vendor_final' => ['One-time Vendor'],
+            'is_one_time_vendor' => ['yes'], 'damount' => [100],
+            'bank' => ['FNB/RMB'], 'accountNumber' => ['123456'],
+            'accountType' => ['0'], 'branchCode' => ['250655'],
+        ]), app(WhatsAppService::class));
 
         $this->assertSame('BEN-123', DB::table('frequisitions')->where('id', 1)->value('benref'));
         $this->assertSame('OWN-456', DB::table('frequisitions')->where('id', 1)->value('ownref'));
         $this->assertNull(DB::table('frequisitions')->where('id', 2)->value('benref'));
         $this->assertNull(DB::table('frequisitions')->where('id', 2)->value('ownref'));
+        $this->assertSame('1', DB::table('frequisitionvendor')->where('frequisition_id', 1)->value('account_type'));
+        $this->assertSame('0', DB::table('frequisitionvendor')->where('frequisition_id', 3)->value('account_type'));
+    }
+
+    public function test_vendor_banking_saves_account_type_code(): void
+    {
+        DB::table('vendors')->insert([
+            'id' => 5, 'companyId' => 1, 'name' => 'Vendor', 'status' => 1,
+        ]);
+        session(['vendor_id' => 5]);
+
+        app(VendorController::class)->storeBanking(Request::create('/', 'POST', [
+            'bank_name' => 'FNB/RMB', 'account_number' => '123456',
+            'account_type' => 'eWallet Pro', 'branch_code' => '250655',
+        ]));
+
+        $this->assertSame('D', DB::table('vendors')->where('id', 5)->value('account_type'));
+    }
+
+    public function test_company_bank_account_saves_and_updates_type_code(): void
+    {
+        $controller = app(MasterController::class);
+        $controller->bankaccountStore(Request::create('/', 'POST', [
+            'bank' => 'FNB/RMB', 'accountnumber' => '123456', 'accounttype' => '0',
+        ]));
+        $this->assertSame('0', DB::table('bankaccounts')->where('id', 1)->value('accountType'));
+
+        $controller->bankaccountupdate(Request::create('/', 'PUT', [
+            'accountType' => 'Savings',
+        ]), '1');
+        $this->assertSame('2', DB::table('bankaccounts')->where('id', 1)->value('accountType'));
     }
 
     public function test_po_bank_reports_only_include_fully_approved_unreleased_orders(): void
@@ -294,7 +339,7 @@ class BankApprovalReportsTest extends TestCase
             DB::table('frequisitionvendor')->insert([
                 'frequisition_id' => $id, 'status' => 1, 'vendor_final' => "Chosen Vendor $id",
                 'amount' => 1250, 'account_number' => "VENDOR-$id",
-                'account_type' => 'Current', 'branchCode' => "BRANCH-$id",
+                'account_type' => '1', 'branchCode' => "BRANCH-$id",
             ]);
 
             $response = $this->actingAs(User::find(2))->get("/reports/requisitions/$slug");
@@ -314,6 +359,7 @@ class BankApprovalReportsTest extends TestCase
             } else {
                 $response->assertSee('Recipient Name')
                     ->assertSee('Recipient Account Type')
+                    ->assertSee('Current / Cheque')
                     ->assertSee('OWN REFERENCES')
                     ->assertSee('Recipient References');
                 if ($slug === 'fnb') {
@@ -334,12 +380,13 @@ class BankApprovalReportsTest extends TestCase
         DB::table('fpurchaseorders')->insert([
             'companyId' => 1, 'department' => 1, 'status' => 2,
             'requisitionNumber' => 'PO-FNB-1', 'bankAccountName' => 'FNB/RMB',
-            'bankAccountNumber' => 'COMPANY-PO-1', 'releaseStatus' => null,
+            'bankAccountNumber' => 'COMPANY-PO-1', 'vendorbankAccountType' => 'D', 'releaseStatus' => null,
         ]);
 
         $this->actingAs(User::find(2))->get('/reports/fnb')
             ->assertOk()
             ->assertSee('data-fnb-from-account="COMPANY-PO-1"', false)
+            ->assertSee('eWallet Pro')
             ->assertSee('assets/js/fnb-batch-export.js?v=', false)
             ->assertSee('assets/js/bank-report.js?v=', false);
     }
@@ -753,9 +800,11 @@ class BankApprovalReportsTest extends TestCase
         $oneTime = DB::table('frequisitionvendor')->where('vendor_final', 'Walk-in')->first();
         $this->assertSame('Correct Bank', $managed->bank);
         $this->assertSame('111', $managed->account_number);
+        $this->assertSame('1', $managed->account_type);
         $this->assertSame('123', $managed->branchCode);
         $this->assertSame('One-time Bank', $oneTime->bank);
         $this->assertSame('222', $oneTime->account_number);
+        $this->assertSame('2', $oneTime->account_type);
         $this->assertSame('456', $oneTime->branchCode);
         $this->assertNull(DB::table('frequisitions')->where('id', 1)->value('bankAccountName'));
         $this->assertSame('BEN-UPDATED', DB::table('frequisitions')->where('id', 1)->value('benref'));

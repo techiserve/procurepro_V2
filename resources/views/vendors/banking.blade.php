@@ -42,10 +42,7 @@
                     <div class="col-md-6">
                         <label for="account_type" class="form-label">Account Type</label>
                         <select id="account_type" name="account_type" class="form-select">
-                            <option value="">--Select--</option>
-                            <option value="Cheque">Cheque</option>
-                            <option value="Savings">Savings</option>
-                            <option value="Business">Business</option>
+                            @include('components.bank-account-type-options', ['selected' => old('account_type')])
                         </select>
                     </div>
 

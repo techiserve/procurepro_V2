@@ -12,6 +12,7 @@ use App\Models\ClassificationOfExpense;
 use App\Models\VendorDocument;
 use App\Models\ExecutiveRole;
 use App\Models\Vendorhistory;
+use App\Support\BankAccountType;
 use Illuminate\Support\Facades\Storage;
 use DB;
 
@@ -173,7 +174,7 @@ class VendorController extends Controller
         $vendor->update([
             'bank_name' => $request->bank_name,
             'account_number' => $request->account_number,
-            'account_type' => $request->account_type,
+            'account_type' => BankAccountType::normalize($request->account_type),
             'branch_code' => $request->branch_code,
             'status' => 2,
         ]);
@@ -295,6 +296,10 @@ $updatedData = $request->only([
     'account_type',
     'branch_code',
 ]);
+
+if (array_key_exists('account_type', $updatedData)) {
+    $updatedData['account_type'] = BankAccountType::normalize($updatedData['account_type']);
+}
 
 $updatedData['status'] = 2;
 

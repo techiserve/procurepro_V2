@@ -59,7 +59,9 @@
               <div class="col-md-6">
                 <div class="form-col">
                   <label for="accounttype">Account Type</label>
-                  <input id="accounttype" class="form-control" name="accounttype" type="text" placeholder="Enter Account Type..." required>
+                  <select id="accounttype" class="form-control" name="accounttype" required>
+                    @include('components.bank-account-type-options', ['selected' => old('accounttype')])
+                  </select>
                 </div>
               </div>
             </div>

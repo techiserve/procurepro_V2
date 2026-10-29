@@ -154,7 +154,7 @@
                     <div class="col-md-6 mt-3">
                         <div class="form-col">
                             <label class="form-label">Account Type</label>
-                            <input type="text" class="form-control" value="{{ $vendor->account_type }}" readonly>
+                            <input type="text" class="form-control" value="{{ \App\Support\BankAccountType::label($vendor->account_type) }}" readonly>
                         </div>
                     </div>
                     <div class="col-md-6 mt-3">

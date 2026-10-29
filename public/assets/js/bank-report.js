@@ -18,7 +18,7 @@
       } : {}),
       order: [[2, 'desc']],
       columnDefs: [{ targets: 0, orderable: false, searchable: false }],
-      dom: showPagination ? 't<"dt-bottom"lip>' : 't<"dt-bottom"ip>',
+      dom: showPagination ? '<"table-responsive"t><"dt-bottom bank-report-pagination"lip>' : 't<"dt-bottom"ip>',
       language: {
         emptyTable: 'No approved rows for this bank.',
         zeroRecords: 'No matching rows.',
@@ -28,14 +28,6 @@
         } : {})
       }
     });
-
-    if (showPagination) {
-      const footer = root.querySelector('.dt-bottom');
-      if (footer) {
-        footer.classList.add('bank-report-pagination');
-        tableElement.closest('.table-responsive').after(footer);
-      }
-    }
 
     const rowCheckboxes = (options = {}) => table.rows(options).nodes().toArray()
       .map(row => row.querySelector('.bank-row-checkbox'))

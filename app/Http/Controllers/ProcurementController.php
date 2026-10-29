@@ -26,6 +26,7 @@ use App\Models\ExecutiveRole;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use App\Models\Frequisition;
+use App\Support\BankAccountType;
 use Barryvdh\DomPDF\Facade\Pdf;
 use setasign\Fpdi\Fpdi;
 use setasign\Fpdf\Fpdf;
@@ -707,7 +708,7 @@ class ProcurementController extends Controller
             $frequisition->modal_vendor_name = $vendorName;
             $frequisition->bank = $banks[$index] ?? null;
             $frequisition->account_number = $accountNumbers[$index] ?? null;
-            $frequisition->account_type = $accountTypes[$index] ?? null;
+            $frequisition->account_type = BankAccountType::normalize($accountTypes[$index] ?? null);
             $frequisition->branchCode = $branchCodes[$index] ?? null;
             $frequisition->IsOneTimeVendor = 'yes';
 
@@ -725,7 +726,7 @@ class ProcurementController extends Controller
             $frequisition->vendor_final = $vendor->name;
             $frequisition->bank = $vendor->bank_name;
             $frequisition->account_number = $vendor->account_number;
-            $frequisition->account_type = $vendor->account_type;
+            $frequisition->account_type = BankAccountType::normalize($vendor->account_type);
             $frequisition->branchCode = $vendor->branch_code;
             $frequisition->IsOneTimeVendor = 'no';
         }
@@ -1014,7 +1015,7 @@ class ProcurementController extends Controller
             $frequisition->supplier_code = $supplierCodes[$index] ?? null;
             $frequisition->bank = $vendor->bank_name?? null;
             $frequisition->account_number = $vendor->account_number ?? null;
-            $frequisition->account_type = $vendor->account_type?? null;
+            $frequisition->account_type = BankAccountType::normalize($vendor->account_type);
             $frequisition->branchCode = $vendor->branch_code?? null;
             $frequisition->IsOneTimeVendor = $is_one_time_vendor[$index]?? null;
 
@@ -1054,7 +1055,7 @@ class ProcurementController extends Controller
             $frequisition->supplier_code = $supplierCodes[$index] ?? null;
             $frequisition->bank = $banks[$index] ?? null;
             $frequisition->account_number = $accountNumbers[$index] ?? null;
-            $frequisition->account_type = $accountTypes[$index] ?? null;
+            $frequisition->account_type = BankAccountType::normalize($accountTypes[$index] ?? null);
             $frequisition->branchCode = $branchCode[$index] ?? null;
             $frequisition->IsOneTimeVendor = $is_one_time_vendor[$index]?? null;
            
@@ -1307,7 +1308,7 @@ class ProcurementController extends Controller
     $purchaseOrderData['userId'] = $frequisition->userId;
     $purchaseOrderData['vendorbankAccountName']  =  $vendor->bank;
     $purchaseOrderData['vendorbankAccountNumber']  =  $vendor->account_number;
-    $purchaseOrderData['vendorbankAccountType'] =  $vendor->account_type;
+    $purchaseOrderData['vendorbankAccountType'] =  BankAccountType::normalize($vendor->account_type);
     $purchaseOrderData['vendorbankBranch'] =  $vendor->branchCode;
     $purchaseOrderData['bankAccountName'] = null;
     $purchaseOrderData['bankAccountNumber'] = null;

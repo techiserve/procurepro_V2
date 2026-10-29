@@ -38,8 +38,29 @@ test('FNB batch maps familiar account types and escapes commas in CSV values', (
   ] }]);
 
   assert.equal(rows[4][2], '2');
+  assert.equal(rows[4][5], 'reference Example, Ltd');
+  assert.equal(rows[4][6], 'reference Example, Ltd');
   assert.equal(rows[4][4], '1234.50');
   assert.match(toCsv(rows).split('\r\n')[4], /^"Example, Ltd",000987,2,250655,1234\.50/);
+});
+
+test('FNB batch uses the supplied references and supports every listed account code', () => {
+  const types = [
+    ['Public Recipient', '0'], ['Current / Cheque', '1'], ['Savings', '2'],
+    ['Transmission', '3'], ['Bond', '4'], ['Subscription Share', '6'],
+    ['eWallet Pro', 'D'], ['eWallet Send Money', 'S'], ['FNB Card', 'F'],
+    ['WesBank', 'W']
+  ];
+  const rows = buildRows(types.map(([label]) => ({
+    fromAccount: '123', values: ['Recipient', '456', label, '250655', '10', 'My own', '']
+  })));
+
+  types.forEach(([, code], index) => {
+    assert.equal(rows[index + 4][2], code);
+    assert.equal(rows[index + 4][5], 'My own');
+    assert.equal(rows[index + 4][6], 'reference Recipient');
+  });
+  assert.equal(buildRows([{ fromAccount: '123', values: ['Recipient', '456', 'D', '250655', '10', '', 'Entered'] }])[4][6], 'Entered');
 });
 
 test('FNB hash total changes with the recipients and preserves 12-digit precision', () => {

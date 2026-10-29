@@ -210,10 +210,7 @@
                         <div class="form-col">
                             <label for="account_type">Account Type</label>
                             <select name="account_type" id="account_type" class="form-control">
-                                <option value="">--Select--</option>
-                                @foreach(['Cheque','Savings','Business'] as $type)
-                                    <option value="{{ $type }}" {{ $vendor->account_type == $type ? 'selected' : '' }}>{{ $type }}</option>
-                                @endforeach
+                                @include('components.bank-account-type-options', ['selected' => old('account_type', $vendor->account_type)])
                             </select>
                         </div>
                     </div>

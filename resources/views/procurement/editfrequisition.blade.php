@@ -347,7 +347,9 @@
         </div>
         <div class="form-group">
           <label>Account Type</label>
-          <input type="text" class="form-control" id="modalAccountType_1">
+          <select class="form-control" id="modalAccountType_1">
+            @include('components.bank-account-type-options')
+          </select>
         </div>
         <div class="form-group">
           <label>Branch Code</label>
@@ -471,7 +473,9 @@ $(document).ready(function(){
               </div>
               <div class="form-group">
                 <label>Account Type</label>
-                <input type="text" class="form-control" id="modalAccountType_${i}">
+                <select class="form-control" id="modalAccountType_${i}">
+                  @include('components.bank-account-type-options')
+                </select>
               </div>
               <div class="form-group">
                 <label>Branch Code</label>

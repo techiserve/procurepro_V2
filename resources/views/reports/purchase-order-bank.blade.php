@@ -98,7 +98,7 @@
                                 @else
                                     <td>{{ $order->frequisition?->selectedVendor?->vendor_final ?? $order->vendor }}</td>
                                     <td>{{ $order->vendorbankAccountNumber }}</td>
-                                    <td>{{ $order->vendorbankAccountType }}</td>
+                                    <td>{{ \App\Support\BankAccountType::label($order->vendorbankAccountType) }}</td>
                                     <td>{{ $order->vendorbankBranch }}</td>
                                     <td>{{ $order->invoiceamount }}</td>
                                     <td>{{ $order->ownref }}</td>

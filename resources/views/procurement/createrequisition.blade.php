@@ -356,7 +356,9 @@
                     </div>
                     <div class="form-col">
                       <label>Account Type</label>
-                      <input type="text" class="form-control" id="modalAccountType_1">
+                      <select class="form-control" id="modalAccountType_1">
+                        @include('components.bank-account-type-options')
+                      </select>
                     </div>
                     <div class="form-col">
                       <label>Branch Code</label>
@@ -540,7 +542,9 @@ $('#add').click(function () {
             </div>
             <div class="form-col">
               <label>Account Type</label>
-              <input type="text" class="form-control" id="modalAccountType_${i}">
+              <select class="form-control" id="modalAccountType_${i}">
+                @include('components.bank-account-type-options')
+              </select>
             </div>
             <div class="form-col">
               <label>Branch Code</label>
