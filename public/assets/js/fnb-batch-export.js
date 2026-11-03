@@ -35,18 +35,15 @@
   function hashTotal(fromAccount, payments) {
     const accountNumbers = [fromAccount, ...payments.map(payment => payment.values[1])];
     if (accountNumbers.some(number => !/^\d+$/.test(String(number ?? '').trim()))) {
-      throw new Error('The company and recipient account numbers must contain only digits for the FNB batch total.');
+      return '';
     }
     const total = accountNumbers.reduce((sum, number) => sum + BigInt(String(number).trim()), 0n);
     return total.toString().slice(-12).padStart(12, '0');
   }
 
   function buildRows(payments, date = new Date()) {
-    if (!payments.length) throw new Error('There are no FNB payments to download.');
     const accounts = [...new Set(payments.map(payment => String(payment.fromAccount ?? '').trim()))];
-    if (accounts.length !== 1 || !accounts[0]) {
-      throw new Error('This FNB batch needs one company account. Check that every payment has the same selected FNB account.');
-    }
+    const fromAccount = accounts.length === 1 ? accounts[0] : '';
 
     const blankRow = () => Array(headings.length).fill('');
     const title = blankRow();
@@ -54,8 +51,8 @@
     const dateRow = blankRow();
     dateRow[0] = reportDate(date);
     const accountRow = blankRow();
-    accountRow[0] = accounts[0];
-    accountRow[1] = hashTotal(accounts[0], payments);
+    accountRow[0] = fromAccount;
+    accountRow[1] = hashTotal(fromAccount, payments);
 
     const paymentRows = payments.map(payment => {
       const row = blankRow();
