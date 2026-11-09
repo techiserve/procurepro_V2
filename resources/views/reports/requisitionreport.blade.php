@@ -220,6 +220,11 @@
                       <span class="fa fa-desktop"></span> View
                     </a>
 
+                    <a href="{{ route('reports.requisitionreport.download', $fpurchaseorder->id) }}"
+                       class="btn btn-primary btn-sm" title="Download requisition and PDF attachments">
+                      <span class="fa fa-download"></span> Download
+                    </a>
+
                     {{-- <button type="button" class="btn btn-success btn-sm"
                             data-bs-toggle="modal" data-bs-target="#viewdocuments{{ $fpurchaseorder->id }}">
                       <span class="fa fa-file"></span> View Documents

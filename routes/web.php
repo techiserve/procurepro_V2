@@ -173,6 +173,7 @@ Route::get('/dashboard', function () {
 
      //Reports
      Route::get('/reports/requisitionreport', [ReportController::class, 'requisitionreport'])->name('reports.requisitionreport');
+     Route::get('/reports/requisitionreport/{id}/download', [ReportController::class, 'downloadRequisitionPdf'])->name('reports.requisitionreport.download');
      Route::get('/reports/filteredrequisitionreport', [ReportController::class, 'requisitionfiltered'])->name('requisition.filtered');
      Route::get('/reports/filteredrequisitionsummaryreport', [ReportController::class, 'requisitionsummaryfiltered'])->name('requisitionsummary.filtered');
      Route::post('/procurement/filter', [ProcurementController::class, 'requisitionfilter'])->name('requisition.filter');

@@ -12,6 +12,7 @@ use App\Models\Requisition;
 use App\Models\Fpurchaseorder;
 use App\Models\Vendor;
 use App\Models\Frequisition;
+use App\Models\FrequisitionVendor;
 use App\Models\RequisitionHistory;
 use App\Models\Requisitionfile;
 use App\Models\FormField;
@@ -31,6 +32,10 @@ use Illuminate\Support\Str;
 use ZipArchive;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ArrayExport;
+use Barryvdh\DomPDF\Facade\Pdf;
+use iio\libmergepdf\Merger;
+use setasign\Fpdi\Fpdi;
+use Symfony\Component\Process\Process;
 
 class ReportController extends Controller
 {
@@ -48,6 +53,139 @@ class ReportController extends Controller
 
         return view('reports.requisitionreport', compact('fpurchaseorders','formFields','roles','departments','vendors'));
 
+    }
+
+    public function downloadRequisitionPdf(string $id)
+    {
+        $companyId = Auth::user()->companyId;
+        $requisition = Frequisition::with(['histories' => function ($query) {
+            $query->orderBy('created_at')->orderBy('id');
+        }])->where('companyId', $companyId)->whereIn('status', [1, 2, 3])->findOrFail($id);
+
+        $requester = User::where('companyId', $companyId)->find($requisition->userId);
+        $department = Department::where('companyId', $companyId)->find($requisition->department);
+        $vendors = FrequisitionVendor::where('frequisition_id', $requisition->id)->orderBy('id')->get();
+
+        $attributes = [];
+        foreach ($requisition->getAttributes() as $name => $value) {
+            $attributes[strtolower(trim($name))] = $value;
+        }
+        $details = [];
+        $excluded = ['vendor', 'amount', 'department', 'status', 'requisitionnumber', 'userid', 'companyid', 'invoiceamount'];
+        foreach (FormField::where('companyId', $companyId)->get() as $field) {
+            $name = strtolower(trim($field->name));
+            $value = $attributes[$name] ?? null;
+            if (in_array($name, $excluded, true) || str_contains($name, 'file') || str_contains($name, 'path')
+                || $name === 'pop' || ! is_scalar($value) || trim((string) $value) === '' || isset($details[$name])) {
+                continue;
+            }
+            $details[$name] = [
+                'label' => $field->label ?: ucwords(str_replace('_', ' ', $field->name)),
+                'value' => (string) $value,
+            ];
+        }
+
+        $fileNames = Requisitionfile::where('requisitionId', $requisition->id)->pluck('file')->all();
+        $orders = Fpurchaseorder::where('companyId', $companyId)->where('frequisition_id', $requisition->id)->get();
+        foreach ([$requisition, ...$vendors, ...$orders] as $record) {
+            foreach ($record->getAttributes() as $field => $value) {
+                if (preg_match('/file|path|doc|invoice|quotation|attachment|pop/i', $field) && is_string($value)) {
+                    $fileNames[] = $value;
+                }
+            }
+        }
+
+        $disk = Storage::disk('public');
+        $pdfPaths = [];
+        $temporaryPaths = [];
+        $seen = [];
+        $skippedPdfs = 0;
+        foreach ($fileNames as $fileName) {
+            if (! is_string($fileName) || strtolower(pathinfo($fileName, PATHINFO_EXTENSION)) !== 'pdf') {
+                continue;
+            }
+            $relativePath = 'uploads/'.basename($fileName);
+            if (isset($seen[$relativePath])) {
+                continue;
+            }
+            $seen[$relativePath] = true;
+            if (! $disk->exists($relativePath)) {
+                $skippedPdfs++;
+                continue;
+            }
+            $path = $disk->path($relativePath);
+            if (! $this->isMergeablePdf($path)) {
+                $convertedPath = sys_get_temp_dir().DIRECTORY_SEPARATOR.'zarq-requisition-'.Str::uuid().'.pdf';
+                $temporaryPaths[] = $convertedPath;
+                try {
+                    $process = new Process([
+                        PHP_OS_FAMILY === 'Windows' ? 'gswin64c' : 'gs',
+                        '-sDEVICE=pdfwrite', '-dCompatibilityLevel=1.4',
+                        '-dNOPAUSE', '-dBATCH', '-sOutputFile='.$convertedPath, $path,
+                    ]);
+                    $process->setTimeout(120);
+                    $process->run();
+                    if ($process->isSuccessful() && $this->isMergeablePdf($convertedPath)) {
+                        $path = $convertedPath;
+                    } else {
+                        $skippedPdfs++;
+                        continue;
+                    }
+                } catch (\Throwable $exception) {
+                    report($exception);
+                    $skippedPdfs++;
+                    continue;
+                }
+            }
+            $pdfPaths[] = $path;
+        }
+
+        try {
+            $summary = Pdf::loadView('pdf.requisition-consolidated', compact(
+                'requisition', 'requester', 'department', 'vendors', 'details', 'pdfPaths', 'skippedPdfs'
+            ))->setPaper('a4')->output();
+
+            if ($pdfPaths) {
+                $merger = new Merger();
+                $merger->addRaw($summary);
+                foreach ($pdfPaths as $path) {
+                    $merger->addFile($path);
+                }
+                $summary = $merger->merge();
+            }
+
+            $fileName = (Str::slug($requisition->requisitionNumber) ?: 'requisition-'.$requisition->id).'.pdf';
+
+            return response($summary, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
+            ]);
+        } catch (\Throwable $exception) {
+            report($exception);
+
+            return back()->with('error', 'Could not prepare the requisition PDF.');
+        } finally {
+            foreach ($temporaryPaths as $path) {
+                if (is_file($path)) {
+                    unlink($path);
+                }
+            }
+        }
+    }
+
+    private function isMergeablePdf(string $path): bool
+    {
+        try {
+            $probe = new Fpdi();
+            $pageCount = $probe->setSourceFile($path);
+            for ($page = 1; $page <= $pageCount; $page++) {
+                $probe->importPage($page);
+            }
+
+            return $pageCount > 0;
+        } catch (\Throwable $exception) {
+            return false;
+        }
     }
 
 
