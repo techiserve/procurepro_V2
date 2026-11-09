@@ -85,9 +85,86 @@ class ReportController extends Controller
             ];
         }
 
-        $fileNames = Requisitionfile::where('requisitionId', $requisition->id)->pluck('file')->all();
         $orders = Fpurchaseorder::where('companyId', $companyId)->where('frequisition_id', $requisition->id)->get();
-        foreach ([$requisition, ...$vendors, ...$orders] as $record) {
+        $fileName = (Str::slug($requisition->requisitionNumber) ?: 'requisition-'.$requisition->id).'.pdf';
+
+        return $this->downloadConsolidatedPdf(
+            'pdf.requisition-consolidated',
+            compact('requisition', 'requester', 'department', 'vendors', 'details'),
+            $requisition->id,
+            [$requisition, ...$vendors, ...$orders],
+            $fileName,
+            'Could not prepare the requisition PDF.'
+        );
+    }
+
+    public function downloadPurchaseOrderPdf(string $id)
+    {
+        $companyId = Auth::user()->companyId;
+        $purchaseOrder = Fpurchaseorder::where('companyId', $companyId)
+            ->whereIn('status', [1, 2, 3])->findOrFail($id);
+        $requisition = Frequisition::where('companyId', $companyId)->find($purchaseOrder->frequisition_id)
+            ?? Frequisition::where('companyId', $companyId)
+                ->where('requisitionNumber', $purchaseOrder->requisitionNumber)->first();
+        $requester = User::where('companyId', $companyId)->find($purchaseOrder->userId);
+        $department = Department::where('companyId', $companyId)->find($purchaseOrder->department);
+        $history = $requisition
+            ? RequisitionHistory::where('companyId', $companyId)
+                ->where('frequisition_id', $requisition->id)
+                ->orderBy('created_at')->orderBy('id')->get()
+            : collect();
+
+        $attributes = [];
+        foreach ($purchaseOrder->getAttributes() as $name => $value) {
+            $attributes[strtolower(trim($name))] = $value;
+        }
+        $details = [];
+        $excluded = ['vendor', 'amount', 'department', 'status', 'requisitionnumber', 'userid', 'companyid', 'invoiceamount'];
+        foreach (FormField::where('companyId', $companyId)->get() as $field) {
+            $name = strtolower(trim($field->name));
+            $value = $attributes[$name] ?? null;
+            if (in_array($name, $excluded, true) || preg_match('/file|path|doc|attachment|quotation|^invoice$|^pop$/i', $name)
+                || ! is_scalar($value) || trim((string) $value) === '' || isset($details[$name])) {
+                continue;
+            }
+            $details[$name] = [
+                'label' => $field->label ?: ucwords(str_replace('_', ' ', $field->name)),
+                'value' => (string) $value,
+            ];
+        }
+
+        $vendorName = ($attributes['vendor'] ?? null) ?: $requisition?->bankReportVendorName();
+        $vendors = $requisition
+            ? FrequisitionVendor::where('frequisition_id', $requisition->id)->orderBy('id')->get()
+            : collect();
+        $records = array_filter([$requisition, $purchaseOrder]);
+        foreach ($vendors as $vendor) {
+            $records[] = $vendor;
+        }
+        $fileName = 'purchase-order-'.(Str::slug($purchaseOrder->requisitionNumber) ?: $purchaseOrder->id).'-'.$purchaseOrder->id.'.pdf';
+
+        return $this->downloadConsolidatedPdf(
+            'pdf.purchase-order-consolidated',
+            compact('purchaseOrder', 'requester', 'department', 'history', 'details', 'vendorName'),
+            $requisition?->id,
+            $records,
+            $fileName,
+            'Could not prepare the purchase order PDF.'
+        );
+    }
+
+    private function downloadConsolidatedPdf(
+        string $view,
+        array $viewData,
+        ?int $requisitionId,
+        array $records,
+        string $downloadName,
+        string $errorMessage
+    ) {
+        $fileNames = $requisitionId
+            ? Requisitionfile::where('requisitionId', $requisitionId)->pluck('file')->all()
+            : [];
+        foreach ($records as $record) {
             foreach ($record->getAttributes() as $field => $value) {
                 if (preg_match('/file|path|doc|invoice|quotation|attachment|pop/i', $field) && is_string($value)) {
                     $fileNames[] = $value;
@@ -141,9 +218,9 @@ class ReportController extends Controller
         }
 
         try {
-            $summary = Pdf::loadView('pdf.requisition-consolidated', compact(
-                'requisition', 'requester', 'department', 'vendors', 'details', 'pdfPaths', 'skippedPdfs'
-            ))->setPaper('a4')->output();
+            $viewData['pdfPaths'] = $pdfPaths;
+            $viewData['skippedPdfs'] = $skippedPdfs;
+            $summary = Pdf::loadView($view, $viewData)->setPaper('a4')->output();
 
             if ($pdfPaths) {
                 $merger = new Merger();
@@ -154,16 +231,14 @@ class ReportController extends Controller
                 $summary = $merger->merge();
             }
 
-            $fileName = (Str::slug($requisition->requisitionNumber) ?: 'requisition-'.$requisition->id).'.pdf';
-
             return response($summary, 200, [
                 'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
+                'Content-Disposition' => 'attachment; filename="'.$downloadName.'"',
             ]);
         } catch (\Throwable $exception) {
             report($exception);
 
-            return back()->with('error', 'Could not prepare the requisition PDF.');
+            return back()->with('error', $errorMessage);
         } finally {
             foreach ($temporaryPaths as $path) {
                 if (is_file($path)) {

@@ -181,6 +181,7 @@ Route::get('/dashboard', function () {
      Route::post('/reports/filteredpurchaseorderreport', [ReportController::class, 'purchaseorderfiltered'])->name('purchaseorder.filtered');
      Route::get('/reports/filteredpurchaseordsummaryerreport', [ReportController::class, 'purchaseordersummaryfiltered'])->name('purchaseordersummary.filtered');
      Route::get('/reports/purchaseorderreport', [ReportController::class, 'purchaseorderreport'])->name('reports.purchaseorderreport');
+     Route::get('/reports/purchaseorderreport/{id}/download', [ReportController::class, 'downloadPurchaseOrderPdf'])->name('reports.purchaseorderreport.download');
      Route::get('/reports/albarak', [ReportController::class, 'albarak'])->name('reports.albarak');
      Route::get('/reports/fnb', [ReportController::class, 'fnb'])->name('reports.fnb');
      Route::get('/reports/standardbank', [ReportController::class, 'standardbank'])->name('reports.standardbank');
